@@ -1,0 +1,135 @@
+//!Mup-Arkkra
+define STAFFS 12 @
+header
+	title bold (18) "transpose.mup"
+	paragraph (14) "\
+Test the transpose and addtranspose parameters, their effect on notes
+and on chord names.  Also test slurring across a transposition change."
+score
+	staffs = STAFFS
+	size = 12
+	chorddist = 0
+	key = 3&
+	time = 12/4
+	scale = 0.95
+	transpose = up maj 3
+staff 1
+	transpose = up per 1
+staff 2
+	transpose = up maj 2
+staff 3
+	transpose = up min 3
+staff 5
+	transpose = up per 4
+staff 6
+	transpose = up aug 4
+staff 7
+	transpose = up per 5
+staff 8
+	transpose = up aug 5
+staff 9
+	transpose = down min 2
+staff 10
+	transpose = down dim 3
+staff 11
+	transpose = down min 3
+staff 12
+	transpose = down maj 3
+music
+	rom all: 1 "Page 1: test 'transpose': All staffs have the same input but different transpositions.";
+	rom 1: 1 "no transposition";
+	rom 2: 1 "up maj 2";
+	rom 3: 1 "up min 3";
+	rom 4: 1 "up maj 3";
+	rom 5: 1 "up per 4";
+	rom 6: 1 "up aug 4";
+	rom 7: 1 "up per 5";
+	rom 8: 1 "up aug 5";
+	rom 9: 1 "down min 2";
+	rom 10: 1 "down dim 3";
+	rom 11: 1 "down min 3";
+	rom 12: 1 "down maj 3";
+	rom chord 1-STAFFS: 5 "C D E& F G A& B& C";
+	1-STAFFS: c; d; e; f; g; a; b; c+; f#; d#; a&&; e&;
+	bar
+header2
+	center "page 2: testing transpose and addtranspose"
+	center nl "score has:  transpose = up per 1   addtranspose = up per 1"
+	center nl "staff 1 has:  transpose = up per 1   addtranspose = up per 1"
+	center nl "staffs 2 and 3 have transpositions as shown"
+score
+	transpose = up per 1
+	addtranspose = up per 1
+	staffs = 3
+	time = 4/4
+	key = 3#
+	timeunit = 2
+// staff 1 transpose is cleared because we changed the number of staffs
+staff 2
+	transpose = up min 6
+staff 3
+	transpose = up min 6
+	addtranspose = up min 7
+music
+	rom 2: 0.5 "transpose = up min 6";
+	rom 3: 0.5 "transpose = up min 6";
+	rom 3: 0.5 "addtranspose = up min 7";
+	1-3: df; d&f# slur;
+	bar
+staff 2
+	transpose = down maj 2
+staff 3
+	transpose = down maj 2
+	addtranspose = up per 4
+music
+	rom 2: 0.5 "transpose = down maj 2";
+	rom 3: 0.5 "transpose = down maj 2";
+	rom 3: 0.5 "addtranspose = up per 4";
+	1-3: df; d&f# slur;
+	bar
+staff 2
+	transpose = up per 8
+staff 3
+	transpose = up per 8
+	addtranspose = down per 15
+music
+	rom 2: 0.5 "transpose = up per 8";
+	rom 3: 0.5 "transpose = up per 8";
+	rom 3: 0.5 "addtranspose = down per 15";
+	1-3: df; d&f# slur;
+	bar
+staff 2
+	transpose = up maj 2
+staff 3
+	transpose = up maj 2
+	addtranspose = up maj 2
+music
+	rom 2: 0.5 "transpose = up maj 2";
+	rom 3: 0.5 "transpose = up maj 2";
+	rom 3: 0.5 "addtranspose = up maj 2";
+	1-3: df; d&f# slur;
+	bar
+staff 2
+	transpose = down aug 4
+staff 3
+	transpose = down aug 4
+	addtranspose = up aug 4
+music
+	rom 2: 0.5 "transpose = down aug 4";
+	rom 3: 0.5 "transpose = down aug 4";
+	rom 3: 0.5 "addtranspose = up aug 4";
+	1-3: df; d&f# slur;
+	bar
+score
+	key = 2#
+staff 2
+	transpose = down min 6
+staff 3
+	transpose = down min 6
+	addtranspose = up per 5
+music
+	rom 2: 0.5 "transpose = down min 6";
+	rom 3: 0.5 "transpose = down min 6";
+	rom 3: 0.5 "addtranspose = up per 5";
+	1-3: df; d&f#;
+	bar

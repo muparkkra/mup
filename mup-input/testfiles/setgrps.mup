@@ -1,0 +1,800 @@
+//!Mup-Arkkra
+header
+	title bold (12) "setgrps.mup"
+	paragraph (9) "\
+Test the positioning of notes groups that occur at the same time on the
+same staff.  Test with parentheses, dots, accidentals, rolls,
+and various combinations of voices."
+score
+	scale = 1.5
+	packfact = 1.3
+	vscheme = 2o
+music
+	1 1: 4..(f)(a); 4..(d(#))(a); 8;
+	1 2: 4..(c); 4..(c(#)); 8;
+	bar
+
+	1 1: 4..(g)(b); 4..(e(#))(b); 8;
+	1 2: 4..(c); 4..(c(#)); 8;
+	bar
+
+	1 1: 4....(d); 64d; 4(g)(g+); (g#)(g#+);
+	1 2: 4....c; 64d; 4(g-)(f); (g-#)(f#);
+	bar
+
+	1 1: 4..(f)<\n><n\>(a)<d></n>; 4..(d(#))(a); 8;
+	1 2: 4..(c); 4..(c(#)); 8;
+	bar
+score
+	vscheme = 1
+music
+	1: 1d+&a+n;
+	bar
+	1: 2dnfnbn; dnanf+n;
+	bar
+	1: 2dnf&; dng&;
+	bar
+	1: 2dna&; dnb&;
+	bar
+	1: 2dnf#; dng#;
+	bar
+	1: 2dna#; dnb#;
+	bar
+	1: 2dnc+#; dnd+#;
+	bar
+	1: 2d&fn; d&gn;
+	bar
+	1: 2d&an; d&bn;
+	bar
+	1: 2d#fn; d#gn;
+	bar
+	1: 2d#an; d#bn;
+	bar
+	1: 2d#c+n; d#d+n;
+	bar
+	1: 2dnf#bn; dna#f+n;
+	bar
+	1: 2c#bnf+&; e&b&f+&;
+	bar
+	1: 2d#bne+&; d#bne+n;
+	bar
+	1: 2c#bnf+&; f&b&e+&;
+	bar
+	1: 2c#b(n)f+&; e(&)b(&)f+(&);
+	bar
+	1: 1d+(&)a+(n);
+	bar
+	1: 2d(n)f(n)b(n); d(n)a(n)f+(n);
+	bar
+	1: 2d(n)f(&); d(n)g(&);
+	bar
+	1: 2d(n)a(&); d(n)b(&);
+	bar
+	1: 2d(n)f(#); d(n)g(#);
+	bar
+	1: 2d(n)a(#); d(n)b(#);
+	bar
+	1: 2d(n)c+(#); d(n)d+(#);
+	bar
+	1: 2d(&)f(n); d(&)g(n);
+	bar
+	1: 2d(&)a(n); d(&)b(n);
+	bar
+	1: 2d(#)f(n); d(#)g(n);
+	bar
+	1: 2d(#)a(n); d(#)b(n);
+	bar
+	1: 2d(#)c+(n); d(#)d+(n);
+	bar
+	1: 2d(n)f(#)b(n); d(n)a(#)f+(n);
+	bar
+	1: 2c(#)b(n)f+(&); e(&)b(&)f+(&);
+	bar
+	1: 2d(#)b(n)e+(&); d(#)b(n)e+(n);
+	bar
+	1: 2c(#)b(n)f+(&); f(&)b(&)e+(&);
+	bar
+	1: [cue]... 1d+&a+n;
+	bar
+	1: [cue]... 2dnfnbn; dnanf+n;
+	bar
+	1: [cue]... 2dnf&; dng&;
+	bar
+	1: [cue]... 2dna&; dnb&;
+	bar
+	1: [cue]... 2dnf#; dng#;
+	bar
+	1: [cue]... 2dna#; dnb#;
+	bar
+	1: [cue]... 2dnc+#; dnd+#;
+	bar
+	1: [cue]... 2d&fn; d&gn;
+	bar
+	1: [cue]... 2d&an; d&bn;
+	bar
+	1: [cue]... 2d#fn; d#gn;
+	bar
+	1: [cue]... 2d#an; d#bn;
+	bar
+	1: [cue]... 2d#c+n; d#d+n;
+	bar
+	1: [cue]... 2dnf#bn; dna#f+n;
+	bar
+	1: [cue]... 2c#bnf+&; e&b&f+&;
+	bar
+	1: [cue]... 2d#bne+&; d#bne+n;
+	bar
+	1: [cue]... 2c#bnf+&; f&b&e+&;
+	bar
+	1: [cue]... 2c#b(n)f+&; e(&)b(&)f+(&);
+	bar
+	1: [cue]... 1d+(&)a+(n);
+	bar
+	1: [cue]... 2d(n)f(n)b(n); d(n)a(n)f+(n);
+	bar
+	1: [cue]... 2d(n)f(&); d(n)g(&);
+	bar
+	1: [cue]... 2d(n)a(&); d(n)b(&);
+	bar
+	1: [cue]... 2d(n)f(#); d(n)g(#);
+	bar
+	1: [cue]... 2d(n)a(#); d(n)b(#);
+	bar
+	1: [cue]... 2d(n)c+(#); d(n)d+(#);
+	bar
+	1: [cue]... 2d(&)f(n); d(&)g(n);
+	bar
+	1: [cue]... 2d(&)a(n); d(&)b(n);
+	bar
+	1: [cue]... 2d(#)f(n); d(#)g(n);
+	bar
+	1: [cue]... 2d(#)a(n); d(#)b(n);
+	bar
+	1: [cue]... 2d(#)c+(n); d(#)d+(n);
+	bar
+	1: [cue]... 2d(n)f(#)b(n); d(n)a(#)f+(n);
+	bar
+	1: [cue]... 2c(#)b(n)f+(&); e(&)b(&)f+(&);
+	bar
+	1: [cue]... 2d(#)b(n)e+(&); d(#)b(n)e+(n);
+	bar
+	1: [cue]... 2c(#)b(n)f+(&); f(&)b(&)e+(&);
+	bar
+	newscore
+	1: [grace] 8d+&a+n; [cue] 1b;
+	bar
+	1: [grace] 8dnfnbn; [cue] 2b; [grace] 8 dnanf+n;  [cue] 2b;
+	bar
+	1: [grace] 8dnf&; [cue] 2b; [grace] 8 dng&;  [cue] 2b;
+	bar
+	1: [grace] 8dna&; [cue] 2b; [grace] 8 dnb&;  [cue] 2b;
+	bar
+	1: [grace] 8dnf#; [cue] 2b; [grace] 8 dng#;  [cue] 2b;
+	bar
+	1: [grace] 8dna#; [cue] 2b; [grace] 8 dnb#;  [cue] 2b;
+	bar
+	1: [grace] 8dnc+#; [cue] 2b; [grace] 8 dnd+#;  [cue] 2b;
+	bar
+	1: [grace] 8d&fn; [cue] 2b; [grace] 8 d&gn;  [cue] 2b;
+	bar
+	1: [grace] 8d&an; [cue] 2b; [grace] 8 d&bn;  [cue] 2b;
+	bar
+	1: [grace] 8d#fn; [cue] 2b; [grace] 8 d#gn;  [cue] 2b;
+	bar
+	1: [grace] 8d#an; [cue] 2b; [grace] 8 d#bn;  [cue] 2b;
+	bar
+	1: [grace] 8d#c+n; [cue] 2b; [grace] 8 d#d+n;  [cue] 2b;
+	bar
+	1: [grace] 8dnf#bn; [cue] 2b; [grace] 8 dna#f+n;  [cue] 2b;
+	bar
+	1: [grace] 8c#bnf+&; [cue] 2b; [grace] 8 e&b&f+&;  [cue] 2b;
+	bar
+	1: [grace] 8d#bne+&; [cue] 2b; [grace] 8 d#bne+n;  [cue] 2b;
+	bar
+	1: [grace] 8c#bnf+&; [cue] 2b; [grace] 8 f&b&e+&;  [cue] 2b;
+	bar
+	1: [grace] 8c#b(n)f+&; [cue] 2b; [grace] 8 e(&)b(&)f+(&);  [cue] 2b;
+	bar
+	1: [grace] 8d+(&)a+(n); [cue] 1b;
+	bar
+	1: [grace] 8d(n)f(n)b(n); [cue] 2b; [grace] 8 d(n)a(n)f+(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)f(&); [cue] 2b; [grace] 8 d(n)g(&);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)a(&); [cue] 2b; [grace] 8 d(n)b(&);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)f(#); [cue] 2b; [grace] 8 d(n)g(#);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)a(#); [cue] 2b; [grace] 8 d(n)b(#);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)c+(#); [cue] 2b; [grace] 8 d(n)d+(#);  [cue] 2b;
+	bar
+	1: [grace] 8d(&)f(n); [cue] 2b; [grace] 8 d(&)g(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(&)a(n); [cue] 2b; [grace] 8 d(&)b(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(#)f(n); [cue] 2b; [grace] 8 d(#)g(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(#)a(n); [cue] 2b; [grace] 8 d(#)b(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(#)c+(n); [cue] 2b; [grace] 8 d(#)d+(n);  [cue] 2b;
+	bar
+	1: [grace] 8d(n)f(#)b(n); [cue] 2b; [grace] 8 d(n)a(#)f+(n);  [cue] 2b;
+	bar
+	1: [grace] 8c(#)b(n)f+(&); [cue] 2b; [grace] 8 e(&)b(&)f+(&);  [cue] 2b;
+	bar
+	1: [grace] 8d(#)b(n)e+(&); [cue] 2b; [grace] 8 d(#)b(n)e+(n);  [cue] 2b;
+	bar
+	1: [grace] 8c(#)b(n)f+(&); [cue] 2b; [grace] 8 f(&)b(&)e+(&);  [cue] 2b;
+	bar
+	newscore
+score
+	time = 6/4
+	timeunit = 4.
+music
+	rom all: 1 "Test dot positions.";
+	rom all: 1 "vscheme = 1";
+define VTEST
+	1: f; g; ef; fg;
+	bar
+	1: df; eg; dg; ea;
+	bar
+	1: cde; def; cdf; deg;
+	bar
+	1: cdef; defg; cdeg; defa;
+	bar
+	1: cdfg; dega; cefg; dfga;
+	bar
+@
+	VTEST
+score
+	defoct = 5
+music
+	VTEST
+score
+	defoct = 4
+	vscheme = 2o
+music
+	rom all: 1 "vscheme = 2o  voice 1";
+define V2TEST
+	1 1: a; b; ga; ab;
+	bar
+	1 1: fa; gb; gc+; ad+;
+	bar
+	1 1: cde; def; cdf; deg;
+	bar
+	1 1: cdef; defg; cdeg; defa;
+	bar
+	1 1: cdfg; dega; cefg; dfga;
+	bar
+	rom all: 1 "vscheme = 2o  voice 2";
+	1 2: a; b; ga; ab;
+	bar
+	1 2: fa; gb; gc+; ad+;
+	bar
+	1 2: cde; def; cdf; deg;
+	bar
+	1 2: cdef; defg; cdeg; defa;
+	bar
+	1 2: cdfg; dega; cefg; dfga;
+	bar
+@
+	V2TEST
+score
+	vscheme = 2f
+	defoct = 5
+music
+	rom all: 1 "vscheme = 2f  voice 1";
+	V2TEST
+score
+	defoct = 4
+music
+	rom all: 1 "vscheme = 2f  voices 1 and 2";
+	rom (8) 1: 2.5 "space"; 4 "space";
+	1 1: b; s; s; b;
+	1 2: g; ; ; ;
+	bar
+	rom (8) 1: 2.5 "space" til 4.5;
+	1 1: b; 2.s; 4.b;
+	1 2: 2.g; ;
+	bar
+	1 1: g; ; ; ;
+	1 2: d; e; f; g;
+	bar
+	1 1: a; ; ; ;
+	1 2: e; f; g; a;
+	bar
+	1 1: bd+; ; ; ;
+	1 2: df; eg; fa; gb;
+	bar
+	1 1: ac+; ; ; ;
+	1 2: ce; df; eg; fa;
+	bar
+	1 1: bd+; ; ; ;
+	1 2: ef; fg; ga; ab;
+	bar
+	1 1: bc+; ; ; ;
+	1 2: ef; fg; ga; ab;
+	bar
+	1 1: ac+; ; ; ;
+	1 2: cde; def; efg; fga;
+	bar
+	1 1: bd+; ; ; ;
+	1 2: def; efg; fga; gab;
+	bar
+	1 1: abc+; ; ; ;
+	1 2: cde; def; efg; fga;
+	bar
+	1 1: bc+d+; ; ; ;
+	1 2: def; efg; fga; gab;
+	bar
+
+	newscore
+score
+	time = 4/4
+	vscheme = 3f
+music
+	rom all: 1 "vscheme = 3f";
+	rom all: 1 "v1 and v2";
+	1 1: d+e+; d+f+; d+g+; d+a+;
+	1 2: de; df; dg; da;
+	bar
+
+	1 1: (d+)(e+); (d+)(f+); (d+)(g+); (d+)(a+);
+	1 2: (d)(e); (d)(f); (d)(g); (c)(g);
+	bar
+
+	1 1: [cue]... (d+)(e+); (d+)(f+); (d+)(g+); (d+)(a+);
+	1 2: [cue]... (d)(e); (d)(f); (d)(g); (c)(g);
+	bar
+
+	1 1: d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 2: d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	1 1: [cue]... d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 2: [cue]... d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	rom all: 1 "v1 and v3";
+	1 1: d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 3: d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	1 1: [cue]... d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 3: [cue]... d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	rom all: 1 "v3 and v2";
+	1 3: d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 2: d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	1 3: [cue]... d#+e#+; d#+f#+; d#+g#+; d#+a#+;
+	1 2: [cue]... d#e#; d#f#; d#g#; d#a#;
+	bar
+
+	rom all: 1 "v1 and v2";
+	1 1: (d#+)(e#+); (d#+)(f#+); (d#+)(g#+); (d#+)(a#+);
+	1 2: (d#)(e#); (d#)(f#); (d#)(g#); (c#)(g#);
+	bar
+
+	1 1: [cue]... (d#+)(e#+); (d#+)(f#+); (d#+)(g#+); (d#+)(a#+);
+	1 2: [cue]... (d#)(e#); (d#)(f#); (d#)(g#); (c#)(g#);
+	bar
+
+	1 1: (d#+)(f+)(a&+); ;;;
+	1 2: fx; e&&; dn; f;
+	bar
+
+	1 1: [cue]... (d#+)(f+)(a&+); ;;;
+	1 2: [cue]... fx; e&&; dn; f;
+	bar
+
+        1 1: aa+; aa+; aa#+; aa+;
+        1 2: c#b; cb&; cb; c#b&;
+        bar
+
+        1 1: [cue]... aa+; aa+; aa#+; aa+;
+        1 2: [cue]... c#b; cb&; cb; c#b&;
+        bar
+
+        1 1: aa+; aa+; ab#+; aa+;
+        1 2: c#d+; cd+&; cd+; c#d+&;
+        bar
+
+        1 1: [cue]... aa+; aa+; ab#+; aa+;
+        1 2: [cue]... c#d+; cd+&; cd+; c#d+&;
+        bar
+
+        1 1: a&a+; aa+; ab#+; aa+;
+        1 2: c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+        1 1: [cue]... a&a+; aa+; ab#+; aa+;
+        1 2: [cue]... c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+        1 1: f&c++; aa+; ab#+; aa+;
+        1 2: c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+        1 1: [cue]... f&c++; aa+; ab#+; aa+;
+        1 2: [cue]... c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+	rom all: 1 "v1, v2, and v3";
+        1 1: f&c++; aa+; ab#+; aa+;
+	1 3: fb; g#d+&; cxe; e&e&+;
+        1 2: c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+        1 1: [cue]...f&c++; aa+; ab#+; aa+;
+	1 3: [cue]...fb; g#d+&; cxe; e&e&+;
+        1 2: [cue]...c#d+#; cd+&; c&&d+; cxd+&;
+        bar
+
+        1 1: (f&)(c++); (a)(a+); (a)(b#+); (a)(a+);
+	1 3: (f)(b); (g#)(d+&); (cx)(e); (e&)(e&+);
+        1 2: (c#)(d+#); (c)(d+&); (c&&)(d+); (cx)(d+&);
+	bar
+
+        1 1: [cue]...(f&)(c++); (a)(a+); (a)(b#+); (a)(a+);
+	1 3: [cue]...(f)(b); (g#)(d+&); (cx)(e); (e&)(e&+);
+        1 2: [cue]...(c#)(d+#); (c)(d+&); (c&&)(d+); (cx)(d+&);
+	bar
+
+	rom all: 1 "v1 and v2";
+	1 1: fbf+; f#bf+; f#?bf+; f#bf+?;
+	1 2: f?af+?; faf#+?; faf#+; faf+;
+	bar
+
+	1 1: fbf+; f#bf+?; f#?bf+; f#bf+?;
+	1 2: f?af+?; faf#+?; f?af#+; faf+;
+	bar
+
+	newscore
+score
+	packfact = 1.3
+	time = 2/4
+music
+	rom all: 1 "v1 and v2";
+	1 1: b; r;
+	1 2: r; b;
+	bar
+
+	rom all: 1 "v1 and v3 up";
+	1 1: b; r;
+	1 3: r; [up]b;
+	bar
+
+	rom all: 1 "v1 and v3 down";
+	1 1: b; r;
+	1 3: r; [down]b;
+	bar
+
+	rom all: 1 "v3 up and v2";
+	1 3: [up]b; r;
+	1 2: r; b;
+	bar
+
+	rom all: 1 "v3 down and v2";
+	1 3: [down]b; r;
+	1 2: r; b;
+	bar
+
+	rom all: 1 "v1 and v2";
+	1 1: b&; r;
+	1 2: r; b&;
+	bar
+
+	rom all: 1 "v1 and v3 up";
+	1 1: b&; r;
+	1 3: r; [up]b&;
+	bar
+
+	rom all: 1 "v1 and v3 down";
+	1 1: b&; r;
+	1 3: r; [down]b&;
+	bar
+
+	rom all: 1 "v3 up and v2";
+	1 3: [up]b&; r;
+	1 2: r; b&;
+	bar
+
+	rom all: 1 "v3 down and v2";
+	1 3: [down]b&; r;
+	1 2: r; b&;
+	bar
+
+	rom all: 1 "v1 and v2";
+	1 1: a; r;
+	1 2: r; a;
+	bar
+
+	rom all: 1 "v1 and v3 up";
+	1 1: a; r;
+	1 3: r; [up]a;
+	bar
+
+	rom all: 1 "v1 and v3 down";
+	1 1: a; r;
+	1 3: r; [down]a;
+	bar
+
+	rom all: 1 "v3 up and v2";
+	1 3: [up]a; r;
+	1 2: r; a;
+	bar
+
+	rom all: 1 "v3 down and v2";
+	1 3: [down]a; r;
+	1 2: r; a;
+	bar
+
+	rom all: 1 "v1 and v2";
+	1 1: a&; r;
+	1 2: r; a&;
+	bar
+
+	rom all: 1 "v1 and v3 up";
+	1 1: a&; r;
+	1 3: r; [up]a&;
+	bar
+
+	rom all: 1 "v1 and v3 down";
+	1 1: a&; r;
+	1 3: r; [down]a&;
+	bar
+
+	rom all: 1 "v3 up and v2";
+	1 3: [up]a&; r;
+	1 2: r; a&;
+	bar
+
+	rom all: 1 "v3 down and v2";
+	1 3: [down]a&; r;
+	1 2: r; a&;
+	bar
+score
+	time = 4/4
+music
+	rom all: 1 "roll 1: 1; 2; 3;";
+	1: f#e+&; f#e+; fe+; f#e&+;
+	roll 1: 1; 2; 3;
+	bar
+
+	rom all: 1 "The following measures all have:";
+	rom all: 1 "roll 1 1: 1; 2;";
+	rom all: 1 "roll 1 2: 1; 3;";
+	rom all: 1 "roll 1 1 to 1 2: 4;";
+	1 1: fe+; ; ; ;
+	1 2: b-b; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe+; ; ; ;
+	1 2: b-b&; b-b&; b-b&; b-b&;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe+; ; ; ;
+	1 2: b&-b; b&-b; b&-b; b&-b;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe&+; fe&+; fe&+; fe&+;
+	1 2: b-b; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: f#e+; f#e+; f#e+; f#e+;
+	1 2: b-b; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: f#e+; f#e+; f#e+; f#e+;
+	1 2: b-b&; b-b&; b-b&; b-b&;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe+; ; ; ;
+	1 2: b-g; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe+; ; ; ;
+	1 2: b-gn; b-gn; b-gn; b-gn;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: f#e+; f#e+; f#e+; f#e+;
+	1 2: b-gn; b-gn; b-gn; b-gn;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe+; ; ; ;
+	1 2: b&-g; b&-g; b&-g; b&-g;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: fe&+; fe&+; fe&+; fe&+;
+	1 2: b-g; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: f#e+; f#e+; f#e+; f#e+;
+	1 2: b-g; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: d+f+; ; ; ;
+	1 2: b-e; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: d+f+; ; ; ;
+	1 2: b-e&&; b-e&&; b-e&&; b-e&&;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: d#+f+; d#f+; d#f+; d#f+;
+	1 2: b-e; ; ; ;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+
+	1 1: d+f#+; d+f#+; d+f#+; d+f#+;
+	1 2: b-e&&; b-e&&; b-e&&; b-e&&;
+	roll 1 1: 1; 2;
+	roll 1 2: 1; 3;
+	roll 1 1 to 1 2: 4;
+	bar
+score
+	staffs = 2
+	staffsep = 10
+	vscheme = 1
+staff 2
+	clef = bass
+music
+	1: fc# with b&- below; f#g# with b&-a- below; ; with g&&- below;
+	roll 1: 3; 4;
+	bar
+
+	2: fc# with b&+ above; f#g# with b&+a+ above; ; with g&&+ above;
+	roll 2: 3; 4;
+	bar
+score
+	staffs = 1
+	vscheme = 2f
+music
+	rom 1: 1 "graces";
+	1: [grace] 8g&a&; [grace] 8f#; 4b; [grace] 8ga; 4b&; [grace] 8g&a&; 4b&; ;
+	bar
+
+	rom 1: 1 "vscheme = 2f";
+	rom 1: 1 "ho 3 on voice 1";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho 3]...g; ; g#; g#;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho -3 on voice 1";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho -3]...g; ; g#; g#;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho 3 on voice 2";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 2: [ho 3]...d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho -3 on voice 2";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 2: [ho -3]...d; d#; d; d#;
+	bar
+
+	newscore
+score
+	vscheme = 3f
+music
+	rom 1: 1 "graces";
+
+	rom 1: 1 "vscheme = 3f";
+	rom 1: 1 "ho 3 on voice 1";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho 3]...g; ; g#; g#;
+	1 3: f; ; ; ;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho 3]...g; ; g#; g#;
+	1 3: f#; f#; f#; f#;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho -3 on voice 1";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho -3]...g; ; g#; g#;
+	1 3: f; ; ; ;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: [ho -3]...g; ; g#; g#;
+	1 3: f#; f#; f#; f#;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho 3 on voice 2";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: f; ; ; ;
+	1 2: [ho 3]...d; d#; d; d#;
+	bar
+
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: f#; f#; f#; f#;
+	1 2: [ho 3]...d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho -3 on voice 1";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: f; ; ; ;
+	1 2: [ho -3]...d; d#; d; d#;
+	bar
+
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: f#; f#; f#; f#;
+	1 2: [ho -3]...d; d#; d; d#;
+	bar
+
+	rom 1: 1 "ho -3 on voice 3";
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: [ho -3]...f; ; ; ;
+	1 2: d; d#; d; d#;
+	bar
+
+	rom 1: 1 "|"; 2 "|"; 3 "|"; 4 "|";
+	1 1: g; ; g#; g#;
+	1 3: [ho -3]...f#; f#; f#; f#;
+	1 2: d; d#; d; d#;
+	bar

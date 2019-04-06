@@ -1,0 +1,26 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "midi_err.mup"
+	paragraph (14) "This tests input errors related to MIDI.
+When run to produce PostScript output, there should be no errors reported,
+but when run to produce MIDI output, there will be errors reported."
+
+music
+
+
+midi all: 3.7 "program=19";
+midi 1: 2 "program=190";
+midi 1: 0 "chanpressure=140";
+midi all: 2 "onvelocity=4"; 3 "offvelocity=12";
+midi 1: 1 "tempo=56";
+midi 1: 2.5 "onvelocity=0"; 3 "offvelocity=129";
+midi 1: 2 "parameter=6";
+1: c;;;;
+bar
+
+midi 1: 0 "invalid=4";
+midi all: 1 "tempo=2";  4 "tempo=1009";
+midi 1: 3 "hex=not hex";
+1: g;;;;
+bar

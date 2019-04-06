@@ -1,0 +1,163 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "labels.mup"
+	paragraph (14) "This file tests staff labels."
+
+score
+	topmargin=1
+	staffs=5
+	bracket=1-4 ("group A", "GA"), 2-3 ("subgroup\nline 2", "sg")
+	brace=5
+
+staff 1
+	label="S1"
+	label2="s1"
+
+staff 3
+	label="Q\nI&II"
+staff 5
+	label="staff 5"
+
+music
+1-5: c;;;;
+bar
+1-5:c;;;;
+bar
+1-5: d;;;;
+bar
+newscore
+1-5: e;;;;
+bar
+1-5: f;;;;
+bar
+newpage
+score
+bracket=
+brace=
+music
+1-5: g;;;;
+bar
+1-5: a;;;;
+endbar
+
+// More flexible labels, version 4.4
+newpage
+
+score staffs=2
+	staffscale=0.6
+	size=18
+	brace=1-2 ("Label1", "Label2")
+music
+
+define M
+1: c;;;;
+bar
+@
+
+M
+newscore
+M
+newscore
+M
+score
+	brace=1-2( "New label #1", "New Label #2")
+music
+M
+newscore
+M
+newscore
+M
+newscore
+
+score
+	brace=1-2("L1", "L2")
+music
+M
+newscore
+M
+newscore
+
+score
+	brace=1-2("Really long label 1", "X")
+music
+M
+newscore
+M
+
+score
+	brace=1-2("Y", "Really long label 2")
+music
+M
+newscore
+M
+newscore
+M
+
+newscore leftmargin=2
+rom above 1: 1 "Leftmargin=2";
+M
+
+restart
+M
+
+score
+	brace=1-2("new", "second")
+music
+M
+restart
+M
+newscore leftmargin=3
+rom above 1: 1 "Leftmargin=3";
+M
+newscore
+M
+
+staff 1 label="S1"
+music
+
+newscore
+M
+newscore
+M
+staff 2 label="A1" ; label2="A2";
+music
+
+M
+newscore
+M
+newscore
+M
+
+score
+	brace=
+staff 1 label="a long label"
+music
+newscore
+M
+newscore
+M
+
+staff 1 label2="new label 2"
+music
+newscore
+M
+newscore
+M
+newscore leftmargin=2.5
+rom above 1: 1 "Leftmargin=2.5";
+M
+
+staff 1 label=""
+staff 2 label=""
+music
+newscore
+M
+newscore
+M
+staff 1 label2=""
+staff 2 label2=""
+music
+newscore
+M
+

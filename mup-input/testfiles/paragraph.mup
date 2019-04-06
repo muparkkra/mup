@@ -1,0 +1,59 @@
+//!Mup-Arkkra
+
+score
+	scoresep=9,10
+	scale=1.1
+	rightmargin=1
+	leftmargin=1
+	label=" "
+header
+	title bold (18) "paragraph.mup"
+	ragged paragraph (14) "This file tests paragraphs. This paragraph is
+a test \
+of a paragraph in a header. It is fairly long to make it go to multiple lines"
+
+top
+	title "left" "right"
+	justified paragraph helvetica ital (20) "this is a test of a justified paragraph inside of \"top\" that should wrap around onto several lines."
+
+
+music
+
+block
+paragraph avantgarde (12) "This is a paragraph using the default from previous
+(i.e., justified).
+It's a nice long paragraph to test how things work,
+but really doesn't say anything very useful, since
+I just want to ramble on and on for a while to make it long.
+Or as the \f(TI)Monty Python\f(PV) sketch said so succintly, \"Blah, blah,
+blah, blah, blah....\"
+After all, no one expects the Spanish Inquisition.
+But enough of this nonsense. Now for something completely different:
+the end."
+
+music
+
+1: c;;;;
+bar
+
+newscore leftmargin 1.5
+
+block
+ragged paragraph newcentury bold (16) "This is a ragged paragraph.
+Apart from that, and the fact that its left and right margins have
+been altered, it is as uninteresting as the previous paragraph.
+It just rambles on for a while so that it will take up several lines."
+newscore rightmargin=1.5
+paragraph "This is a second paragraph in the same block, but without
+any margin overrides. It is a fairly short paragraph."
+
+
+music
+1: d;;;;
+bar
+
+footer
+	ragged paragraph (14) "This is a ragged paragraph inside a footer.
+The quick brown fox jumped over the lazy dog, and all that jazz...
+Not to mention that now is the time for all good men to come to the
+aid of their party."

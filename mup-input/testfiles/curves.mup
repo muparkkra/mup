@@ -1,0 +1,254 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "curves.mup"
+	paragraph (14) "This file tests curves: ties, slurs, phrase marks, and manually drawn."
+
+score
+	beamstyle=4,4,4,4
+
+music
+
+rom above 1: 1 "Ties";
+1: 1b~;
+bar
+
+1: 1b~;
+bar
+
+1: 2b~;;
+bar
+
+1: 4b~;;;~;
+bar
+
+1: 4b;8~;;16~;~;8~;4;
+bar
+
+rom above 1: 1 "Slurs";
+1: c<>;d<>;f<>;b;
+bar
+
+1: c<>;g<>;e+<>;d++;
+bar
+
+1: c<>;c+<>;d++<>;c+;
+bar
+
+1: c+<>;c<>;d-;;
+bar
+
+1: d++<>;e+<>;g<>;c;
+bar
+
+1: b<>;f<>;d<>;c;
+bar
+
+rom above 1: 1 "Phrases";
+1: c;a;f+;d++;
+phrase 1: 1 til 4;
+bar
+
+1: a-;c+;2a-;
+phrase 1: 1 til 3;
+bar
+
+1: d++;e+;g;b-;
+phrase 1: 1 til 4;
+bar
+
+1: g+;g-;g+;g-;
+phrase 1: 1 til 4;
+bar
+
+1: g-;g+;g-;g+;
+phrase 1: 1 til 4;
+bar
+
+1: c;c;b-;g+;
+phrase 1: 1 til 4;
+bar
+
+1: g+; f+;g+;b-;
+phrase 1: 1 til 4;
+bar
+
+1: f-;;f+;f+;
+phrase 1: 1 til 4;
+bar
+
+1: f+;;f-;;
+phrase 1: 1 til 4;
+bar
+
+1: c+;g++;c+;g++;
+phrase 1: 1 til 4;
+bar
+
+1: g++;c+;g++;c+;
+phrase 1: 1 til 4;
+bar
+
+1: d-;a;d-;a;
+phrase 1: 1 til 4;
+bar
+
+1: a;d-;a;d-;
+phrase 1: 1 til 4;
+bar
+
+1: c-;a;;c;
+phrase 1: 1 til 4;
+bar
+
+1: 8d-;a;d+;g;a-;c#+;f-;g-;
+phrase 1: 1 til 4.5;
+bar
+
+newscore
+
+1: 1a-;
+phrase above 1: 1 til 1m+1;
+bar
+
+1: 1a+;
+phrase above 1: 1 til 1m+1;
+bar
+
+1: 1a-;
+phrase below 1: 1 til 1m+1;
+bar
+
+1: 1a+;
+phrase below 1: 1 til 1m+1;
+bar
+
+1: 1a-;
+bar
+
+1: g-;g+;2g-;
+phrase above 1: 1 til 3;
+bar
+
+1: g-;g+;2g-;
+phrase below 1: 1 til 3;
+bar
+
+1: g+;g-;2g+;
+phrase above 1: 1 til 3;
+bar
+
+1: g+;g-;2g+;
+phrase below 1: 1 til 3;
+bar
+
+1: 8a-;;;;;;a+;a-;
+phrase above 1: 1 til 4.5;
+bar
+
+newscore
+
+1: [=c]c;[=g]g;[=e]2e;
+rom below 1: 1 "Manual curve statements";
+curve (c.x, c.n + 2) to (g.x, g.n+2) to (e.x, e.n+2)
+bar
+
+1: [=_cq]c;[=_gq]g;[=_eq]2e;
+wide curve (_cq.x, _cq.n + 2) to (_gq.x, _gq.n+2) to (_eq.x, _eq.n+2)
+bar
+
+1: [=_cz]c;[=_gz]g;[=_ez]2e;
+medium curve (_cz.x, _cz.n + 2) to (_gz.x, _gz.n+2) to (_ez.x, _ez.n+2)
+bar
+
+1: [=_c]c;[=_g]g;[=_e]2e;
+dotted curve (_c.x, _c.n + 2) to (_g.x, _g.n+2) to (_e.x, _e.n+2)
+bar
+
+1: [=_cv]c;[=_gv]g;[=_ev]2e;
+dashed curve (_cv.x, _cv.n + 2) to (_gv.x, _gv.n+2) to (_ev.x, _ev.n+2)
+bar
+
+newscore
+
+rom above 1: 1 "nested";
+1: e+~;e+<>;d+~;;
+phrase above 1: 1 til 4;
+bar
+
+1: c~;c<>;d~;;
+phrase below 1: 1 til 4;
+bar
+
+1: 2c~;c~;
+phrase below 1: 1 til 1m+3;
+bar
+
+1: 2c~;c;
+bar
+
+1: 2g+~;~;
+phrase above 1: 1 til 1m+3;
+bar
+
+1: 2g+~;g+;
+bar
+
+top
+	title (18) "Test automatic splitting of manual curves"
+
+music
+
+1: [=a]c ; d; [=b]g ; a;
+bar
+
+newscore
+
+1: g; [=c]e ; d; [=d]c;
+medium curve (a.e, a.n + 6) to (b.x, b.n + 6) to (c.x, c.n + 6) to (d.w, d.n + 6)
+bar
+
+1: [=a]c ; d; [=b]g ; a;
+bar
+
+newscore
+
+1: g;a;b;d;
+bar
+
+newscore
+
+1: g; [=c]e ; d; [=d]c;
+wide curve (a.e, a.n + 6) to (b.x, b.n + 6) to (c.x, c.n + 6) to (d.w, d.n + 6)
+bar
+
+1: [=a]c ; d; [=b]g ; a;
+bar
+
+newscore
+
+1: g; [=c]e ; d; [=d]c;
+medium curve (a.e, a.n + 6) to (b.x, b.n + 6) to (d.x, d.n + 6)
+bar
+
+score staffs=2
+
+music
+
+1: a =m; f;d =n; b-;
+2: mr;
+bar
+
+newscore
+
+1: mr;
+2: a =o; d =z; c; c =p;
+bar
+
+newscore
+
+1: a ; f; e =q; a =r;
+2: mr;
+medium curve (m.x, m.s - 2) to (n.x, n.s - 4) to (o.x, o.s - 2) \
+	 to (z.x, z.s - 2) to (p.x, p.s - 2) to (q.x, q.s - 5) to (r.x, r.s - 2)
+bar

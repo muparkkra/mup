@@ -1,0 +1,19 @@
+//!Mup-Arkkra
+
+header
+	title (18) "paper_a5.mup"
+	paragraph (14) "This file tests A5 paper size."
+footer
+	title (18) "Footer for A5 paper size"
+score
+	pagesize=a5
+music
+
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+newscore
+1: e;;;;
+bar

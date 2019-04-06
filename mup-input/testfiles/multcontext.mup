@@ -1,0 +1,44 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "multcontext.mup"
+	paragraph (14) "This file tests use of multiple staffs/voices on SSV contexts."
+score
+	staffs=7
+
+staff 1-2, 4
+	vscheme=3f
+
+staff 6-7,5,3
+	vscheme=2f
+
+voice 2 1-3
+	beamstyle=2,2
+	timeunit=8
+voice 2-3,5 1,2 & 1 1
+	stemlen=12
+voice 1 1 & 5 2
+	withfontfamily=avantgarde
+	withfont=boldital
+	withsize=16
+	release=150
+staff 2,4
+	noteheads="isostri diam rect pie righttri semicirc norm"
+
+staff 6-7
+	stafflines=1
+staff 3,6
+	ontheline=n
+	defoct=5
+music
+
+rom above all: 1 "All voices on staff 2 should be beamed by half note";
+rom above all: 1 "voices 2-3,5 1,2 & 1 1 should have extra long stems";
+rom above all: 1 "'with' list on 1 1 and 5 2 should be avantgarde boldital 16";
+rom above all: 1 "staffs 2 and 4 should have different notehead types";
+rom above all: 1 "staff 3 should be an octave higher than the others";
+1-5 1-2: 8c;d;c;b-;[with "foo"]2c;
+2 3: c++;;;;2s;
+6-7 1: d;;;;
+6-7 2: b;;;;
+bar

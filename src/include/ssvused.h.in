@@ -1,0 +1,182 @@
+/*
+ Copyright (c) 1995-2019  by Arkkra Enterprises.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms,
+ with or without modification, are permitted provided that
+ the following conditions are met:
+
+ 1. Redistributions of source code must retain
+ the above copyright notice, this list of conditions
+ and the following DISCLAIMER.
+
+ 2. Redistributions in binary form must reproduce the above
+ copyright notice, this list of conditions and
+ the following DISCLAIMER in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Any additions, deletions, or changes to the original files
+ must be clearly indicated in accompanying documentation,
+ including the reasons for the changes,
+ and the names of those who made the modifications.
+
+	DISCLAIMER
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS
+ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#ifndef _SSVUSED_H
+#define _SSVUSED_H
+
+/*
+ * This file contains the array subscript definitions for the used[] array
+ * of an SSV struct. An SSV contains parameters associated with a
+ * Score, Staff, or Voice.  The used[] array is a set of flags which say
+ * whether a given parameter is actually populated in the SSV instance.
+ * In the "score" SSV, all used flags are always set true.  In SSVs for
+ * a staff or voice, a "used" flag is only set to true if the user
+ * specified a value for the parameter in that staff or voice context.
+ *
+ * The actual values are machine-generated so they get automatically
+ * renumbered if parameters are added or deleted or rearranged.
+ *
+ * We try to put things that are logically similar close together in
+ * this list, but they could be in any order, other than that NUMFLDS
+ * _must_ be last.
+ */
+
+SCALE_FACTOR
+UNITS
+PAGEHEIGHT
+PAGEWIDTH
+PANELSPERPAGE
+MAXSCORES
+MAXMEASURES
+SLASHESBETWEEN
+TOPMARGIN
+BOTMARGIN
+LEFTMARGIN
+RIGHTMARGIN
+FLIPMARGINS
+INDENTRESTART
+RESTCOMBINE
+FIRSTPAGE
+NUMSTAFF
+MINSCSEP
+MAXSCSEP
+MINSCPAD
+MAXSCPAD
+BRACELIST
+BRACKLIST
+BARSTLIST
+SUBBARSTYLE
+TIME
+DIVISION
+ENDINGSTYLE
+GRIDSATEND
+MEASNUM
+MEASNUMFAMILY
+MEASNUMFONT
+MEASNUMSIZE
+MEASNUMSTYLE
+BRACKETREPEATS
+PACKFACT
+PACKEXP
+LEFTSPACE
+WARN
+PRINTKEYMAP
+A4FREQ
+TUNING
+ACCTABLE
+STAFFSCALE
+VISIBLE
+STAFFLINES
+GRIDSWHEREUSED
+GRIDSCALE
+GRIDFRET
+MINGRIDHEIGHT
+NUMBERMRPT
+PRINTMULTNUM
+RESTSYMMULT
+VSCHEME
+VCOMBINE
+SHARPS
+CANCELKEY
+TRANSPOSITION
+ADDTRANSPOSITION
+USEACCS
+CARRYACCS
+CLEF
+REHSTYLE
+REPEATDOTS
+FONTFAMILY
+FONT
+SIZE
+REHFAMILY
+REHFONT
+REHSIZE
+LYRICSFAMILY
+LYRICSFONT
+LYRICSSIZE
+LYRICSALIGN
+SYLPOSITION
+MINALIGNSCALE
+MINSTSEP
+STAFFPAD
+ABOVEORDER
+BELOWORDER
+BETWEENORDER
+PEDSTYLE
+ALIGNPED
+CHORDDIST
+DIST
+DYNDIST
+LYRICSDIST
+LABEL
+LABEL2
+LABELKEYMAP
+ENDINGKEYMAP
+REHEARSALKEYMAP
+DEFAULTKEYMAP
+WITHKEYMAP
+TEXTKEYMAP
+LYRICSKEYMAP
+BEAMSTLIST
+BEAMSLOPE
+PAD
+STEMLEN
+BEAMSHORT
+MAXPROSHORT
+BEGPROSHORT
+ENDPROSHORT
+DEFOCT
+NOTEINPUTDIR
+TIMEUNIT
+SWINGUNIT
+WITHFAMILY
+WITHFONT
+WITHSIZE
+ALIGNRESTS
+RELEASE
+ONTHELINE
+TABWHITEBOX
+NOTEHEADS
+EMPTYMEAS
+EXTENDLYRICS
+CUE
+NUMFLDS
+
+#endif

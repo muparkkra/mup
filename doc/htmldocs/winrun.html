@@ -1,0 +1,471 @@
+<HTML>
+<HEAD>
+<TITLE>
+Installing and running Mup on MS-DOS
+</TITLE>
+</HEAD>
+<BODY>
+<H1>Installing and running Mup on MS-DOS</H1>
+<P>
+The easiest way to use Mup on a Windows machine is to run Mupmate.
+However, this web page describes two ways you can run Mup without using
+Mupmate.
+Both of these ways involving using MS-DOS.
+</P>
+<H1>A little background</H1>
+<P>
+For those unfamiliar with MS-DOS, here are a couple things you may need
+to know.
+</P>
+<P>
+<A NAME="dosprompt">
+In Windows, there is a type of window you can open called
+an &quot;MS-DOS Prompt&quot;
+window or a &quot;Command Prompt&quot; window.</A>
+They are the same thing; what it is called depends on which version of
+Windows you have.
+We will refer to it as an &quot;MS-DOS Prompt&quot; window.
+</P>
+<P>
+Here is how to open an &quot;MS-DOS Prompt&quot; window.
+You may have a shortcut icon called &quot;MS-DOS Prompt&quot; or
+&quot;Command Prompt&quot;.
+Or, in the Start menu under Programs, you may have
+&quot;MS-DOS Prompt&quot; or &quot;Command Prompt&quot;.
+If you don't have it in those places, go to the Start menu, then to Run, and
+tell it to run this:
+<PRE>
+	c:\windows\command.com
+</PRE>
+In this window you can type commands.
+After typing a command you always have to hit the &quot;Enter&quot;
+or &quot;Return&quot; key
+to make the computer run the command.
+You can repeat a command by hitting the up arrow key and then &quot;Enter&quot;.
+</P>
+<P>
+&quot;Folder&quot; and &quot;directory&quot;
+are also two different words for the same thing.
+From Windows, you are more likely to be familiar with the
+term &quot;folder&quot;,
+so we will use that.
+In an <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>,
+you are always &quot;in&quot; some folder.
+In the lower left of the window, it shows you what folder you are now in.
+(That is called a &quot;prompt&quot;, because it is prompting you to
+type the next command you want it to do.)
+The folder name is followed by a &quot;&gt;&quot;, so if you are in a folder
+called c:\mup you will see
+<PRE>
+	C:\MUP&gt;
+</PRE>
+</P>
+<P>
+Some versions of MS-DOS restrict file names to eight characters plus an
+extension (which is a dot and up to three characters).
+Also, it may have problems with special characters, such as blanks and
+punctuation.
+So when you make file names for the music you write, you may find you
+need to follow these restrictions.
+</P>
+<H1>First method: running Mup directly from the command line</H1>
+If you don't want to use Mupmate, we recommend this method for using Mup.
+<H2>Installing</H2>
+<P>
+For this method, just as for the Mupmate method, you need to have program(s)
+such as GSview/Ghostscript for displaying the results of Mup.
+If you don't already have them, install them as described in Step 1 on
+<A HREF="obtain.html#windows">our web page called
+&quot;obtaining a copy of Mup&quot;</A>.
+And you also need to install Mup and Mupmate as described in Step 2 on
+that page, although you won't actually be using Mupmate.
+</P>
+<P>
+The Mupmate/Mup installer tells you what folder it will install them in,
+or you can tell it to use a different folder.
+The following examples assume the folder c:\mup, but you can choose a different
+name, or just let it use the default.
+You also need to decide what folder you want to use to hold the Mup input
+files of music that you will be writing.
+In our examples we'll call it c:\songs.
+You can create that folder by using Windows Explorer.
+Or you can do it from an
+<A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>,
+by typing the command
+<PRE>
+	mkdir c:\songs
+</PRE>
+</P>
+<H2>Running Mup for the first time</H2>
+<P>
+Open an <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>.
+In it, type these lines:
+<PRE>
+	cd c:\songs
+	copy \mup\mup.exe
+	copy \mup\sample.mup
+	mup sample
+</PRE>
+You are going to the songs folder, then copying the Mup program (mup.exe) and
+our sample Mup input file called sample.mup into the songs folder, and then
+running Mup on that file.
+(Note: If a folder name has spaces in it, you may have to put quotation marks
+around that path name.
+For example, if you are using c:\Program Files (x86)\mupmate instead of c:\mup,
+you may have to type
+<PRE>
+	copy "\Program Files (x86)\mupmate\mup.exe"
+</PRE>
+for the second line above.)
+When you run Mup on the sample file,
+you should see over a thousand lines of text fly by your screen.
+Or you can type this
+<PRE>
+	mup /F sample
+</PRE>
+Notice that is a capital F.
+This sends that output into the file
+c:\songs\sample.ps instead of letting it go to your screen.
+(A couple of copyright lines still will come to your screen.)
+The output that went into the file is PostScript code, and that is
+what will be used later to actually display the music.
+</P>
+<H2><A NAME="gsviewmethod">Running Mup from now on</A></H2>
+<P>
+You create the Mup input file for a piece of music (the .mup file) by using
+an editor such as Notepad (not a word processor like Microsoft Word).
+The file name doesn't have to end with &quot;.mup&quot;, but we suggest
+that you name it that way, to help keep straight what files are what.
+And when the name ends with &quot;.mup&quot;, you don't have to type that
+extension when running Mup.
+</P>
+<P>
+If you use Notepad, be aware that Notepad may add &quot;.txt&quot; to the
+end of the file name, resulting in a name ending in &quot;.mup.txt&quot;.
+To prevent that from happening, at the bottom of its &quot;Save&quot; or
+&quot;Save As&quot; box, set the file type to "All files".
+You also need to set "All files" to get it to list the .mup files when
+you want to open a file.
+</P>
+<P>
+The User's Guide has a section about Mup command line arguments.
+Those arguments can be stated on the Mup command line,
+right after the name of the command &quot;mup&quot;
+(separated by spaces between each argument).
+</P>
+<P>
+<STRONG>
+Displaying music on your screen:
+</STRONG>
+</P>
+<P>
+Since you have already copied sample.mup into your c:\songs folder,
+let's use that as an example.
+In an <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>,
+type these lines:
+<PRE>
+	cd c:\songs
+	mup /F sample
+</PRE>
+Notice that is a capital F.
+This puts the output of Mup into a file c:\songs\sample.ps.
+Now run GSview, and click File and Open, opening the file c:\songs\sample.ps.
+It will display the music.
+</P>
+<P>
+Now, in your editor (Notepad or whatever), make a Mup input file of your own,
+and save it in a file, say mysong.mup, in c:\songs.
+You could use a simple example from the User's Guide, such as the two-line file
+<PRE>
+	1: 4e; 4d; 2c;
+	bar
+</PRE>
+Then, in the <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>, type
+<PRE>
+	mup /F mysong
+</PRE>
+which puts the output into mysong.ps.
+In GSview, click File and Open, opening c:\songs\mysong.ps
+to see the music displayed.
+</P>
+<P>
+<STRONG>
+Printing music on your printer:
+</STRONG>
+</P>
+<P>
+To print music, if you have a PostScript printer (which you probably don't),
+you can send the output of Mup directly to your printer, or save it in a
+file called mysong.ps by typing
+<PRE>
+	mup /F mysong
+</PRE>
+and printing the file mysong.ps.
+But don't try that unless you are sure you have a PostScript printer.
+A non-PostScript printer would print that file literally, which will give
+you dozens of pages of PostScript commands instead of music graphics.
+</P>
+<P>
+If you don't have a PostScript printer, you can print the music from GSview.
+After you have displayed the music there, click File and Print.
+</P>
+<P>
+<STRONG>
+Playing music on your speakers:
+</STRONG>
+</P>
+<P>
+To play the music on your speakers via MIDI, in your
+<A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A> type
+<PRE>
+	mup /M mysong
+</PRE>
+Notice that is a capital M.
+This creates a file called mysong.mid, which is a MIDI file, in this folder.
+You play the &quot;.mid&quot; file with a program such as
+Windows' &quot;media player&quot;.
+You may have a shortcut icon for the media player, or you may find it under
+Programs&gt;Accessories&gt;Entertainment.
+Its file name is mplayer.exe or wmplayer.exe, and it is probably
+located somewhere like c:\Program Files\Windows Media Player.
+or c:\Program Files (x86)\Windows Media Player.
+</P>
+<H1>Second method: running Mup via Mupdisp</H1>
+We don't recommend using this method anymore.
+But it's still available, in case you want to use Ghostscript but not GSview.
+<H2>Installing</H2>
+<P>
+For this method, just as for the other methods,
+you need to install Mup and Mupmate as described in Step 2 on
+<A HREF="obtain.html#windows">our web page called
+&quot;obtaining a copy of Mup&quot;</A>,
+although you won't actually be using Mupmate.
+But you can't use the same Ghostscript as the other methods.
+You need the MS-DOS version of Ghostscript.
+</P>
+<P>
+The Mupmate/Mup installer tells you what folder it will install them in,
+or you can tell it to use a different folder.
+The following examples assume the folder c:\mup, but you choose a different
+name, or just let it use the default.
+You also need to decide what folder you want to use to hold the Mup input
+files of music that you will be writing.
+In our examples we'll call it c:\songs.
+</P>
+<P>
+<STRONG>
+Basic installation of the MS-DOS Ghostscript files:
+</STRONG>
+</P>
+<P>
+The latest MS-DOS version of Ghostscript is version 5.10, and one place you
+can get it from is
+<A HREF="http://www.cs.wisc.edu/~ghost/doc/AFPL/get510.htm">
+http://www.cs.wisc.edu/~ghost/doc/AFPL/get510.htm</A>.
+You will need the three files gs510ini.zip, gs510dos.zip, and gs510fn1.zip.
+We suggest you install this MS-DOS Ghostscript in a folder called c:\gs.
+(You can use a different name, but the following examples assume c:\gs.)
+Create the folder, and if the three files aren't already
+in c:\gs, copy them there.
+They are not self extracting zip files; they are normal zip files, so you
+will have to unzip them by using a Windows unzipping program,
+or by typing these lines in the MS-DOS Prompt window:
+<PRE>
+	cd c:\gs
+	pkunzip -d gs510ini.zip
+	pkunzip -d gs510dos.zip
+	pkunzip -d gs510fn1.zip
+</PRE>
+or similarly if you are using &quot;unzip&quot; or a form of
+&quot;pkzip&quot; instead of &quot;pkunzip&quot;.
+If you get a message saying &quot;bad command or file name&quot;,
+or &quot;not recognizable as an operable program or batch file&quot;,
+it means that your system can't find pkunzip (or whichever),
+so you'll have to do it a different way.
+</P>
+<P>
+Copy the file gs386.exe from c:\gs to c:\songs.
+</P>
+<P>
+<STRONG>
+Changes possibly needed for older versions of Windows:
+</STRONG>
+</P>
+<P>
+In older versions of Windows you may need to make changes to the files
+c:\autoexec.bat and/or c:\config.sys.
+We suggest you first try running without these changes, but if there
+is a problem, then your version apparently needs it,
+so you can then make the changes.
+One typical error you might see is
+&quot;ghostscript error 1&quot; when you try to view music.
+</P>
+<P>
+When changing or creating these files, you
+<STRONG>
+must
+</STRONG> use
+a text editor, such as Notepad,
+<STRONG>
+not
+</STRONG>
+a word processor such as Microsoft Word.
+You will probably find Notepad under Programs/Accessories.
+You need to reboot the computer for these changes to take effect.
+</P>
+<P>
+In either c:\gs or in a folder underneath it, you should see some file names
+ending with the extension &quot;.gsf&quot;, and file names starting
+with &quot;gs_&quot; and ending with the extension &quot;.ps&quot;.
+In c:\autoexec.bat there may need to be a line that sets the GS_LIB
+environment variable to the folder where those files are.
+What this means is, somewhere in the file (it doesn't matter where)
+you would need to put a line that says
+<PRE>
+	set gs_lib=c:\gs
+</PRE>
+if the files are right in c:\gs, or
+<PRE>
+	set gs_lib=c:\gs\XXXXX
+</PRE>
+if they are in folder c:\gs\XXXXX.
+If c:\autoexec.bat doesn't already exist, you would create it and put
+the line in it.
+</P>
+<P>
+Also, c:\config.sys may need to contain a line of the form
+<PRE>
+	files=N
+</PRE>
+where N is greater than or equal to 9.
+If c:\config.sys doesn't already exist, you would create it and put
+the line in it.
+</P>
+<P>
+<STRONG>
+Changes needed for printing music:
+</STRONG>
+</P>
+<P>
+If you have a PostScript printer, you can send the output of Mup
+directly to the printer, and you don't need to set up mupprnt.bat as
+described below; but most likely you don't have a PostScript printer.
+</P>
+<P>
+Edit the c:\mup\mupprnt.bat file to customize it for your printer type.
+Find the line starting with &quot;GS386&quot;, and find the place where it says
+<PRE>
+	-sDEVICE=printertype
+</PRE>
+Replace &quot;printertype&quot; with the name for your printer.
+Comments near the top of mupprnt.bat give the list
+of printer types that Ghostscript supports.
+(Different versions of Ghostscript may support more or fewer
+printers. If you have problems, consult your Ghostscript documentation.)
+Also edit the mupprnt.bat file so that it can find Mup and Ghostscript,
+as follows.  Find the line starting with &quot;MUP&quot;, and change
+&quot;MUP&quot; to &quot;c:\songs\MUP&quot;.
+Find the line starting with &quot;GS386&quot;, and change
+&quot;GS386&quot; to &quot;c:\songs\GS386&quot;.
+Finally, copy c:\mup\mupprnt.bat to c:\songs.
+</P>
+<H2>Running Mup for the first time</H2>
+<P>
+To run Mup for the first time, follow the instructions for doing this
+above, in the section for the first method.
+However, you need to copy two additional files:
+<PRE>
+	cd c:\songs
+	copy \mup\mupdisp.exe
+	copy \mup\mupprnt.bat
+</PRE>
+</P>
+<H2><A NAME="gsviewmethod">Running Mup from now on</A></H2>
+<P>
+Just as in the first method,
+you create the Mup input file for a piece of music by using
+an editor such as Notepad (not a word processor like Microsoft Word).
+See the explanation there.
+</P>
+
+<P>
+<STRONG>
+Displaying music on your screen:
+</STRONG>
+</P>
+
+<P>
+Since you have already copied sample.mup into your c:\songs folder,
+let's use that as an example.
+In an <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>, type these lines:
+<PRE>
+	cd c:\songs
+	mupdisp sample
+</PRE>
+The Mupdisp command runs Mup and Ghostscript for you.
+If there are errors in the file, it will show them on your screen, telling
+which lines of the file were incorrect.
+But if there were no errors, Mupdisp will temporarily take over your
+whole screen, showing you the first page of music.
+The User's Guide tells you how to move around in Mupdisp;
+or you can type h or ? to get a help screen.
+To get out of it, type the letter &quot;q&quot;.
+Your screen will return to normal.
+</P>
+<P>
+Now, in your editor (Notepad or whatever), make a Mup input file of your own,
+and save it in a file, say mysong.mup, in c:\songs.
+You could use a simple example from the User's Guide, such as the two-line file
+<PRE>
+	1: 4e; 4d; 2c;
+	bar
+</PRE>
+Then, in the <A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A>, type
+<PRE>
+	mupdisp mysong
+</PRE>
+again to see the music displayed.
+</P>
+<P>
+<STRONG>
+Printing music on your printer:
+</STRONG>
+</P>
+<P>
+To print music, if you have a PostScript printer (which you probably don't),
+you can send the output of Mup directly to your printer, or save it in a
+file called mysong.ps by typing
+<PRE>
+	mup /F mysong
+</PRE>
+and printing the file mysong.ps.
+But don't try that unless you are sure you have a PostScript printer.
+A non-PostScript printer would print that file literally, which will give
+you dozens of pages of PostScript commands instead of music graphics.
+</P>
+<P>
+If you don't have a PostScript printer, in your
+<A HREF="dosrun.html#dosprompt">MS-DOS Prompt window</A> type
+<PRE>
+	mupprnt mysong
+</PRE>
+</P>
+<P>
+<STRONG>
+Playing music on your speakers:
+</STRONG>
+</P>
+<P>
+This is the same as in the first method.
+</P>
+<HR>
+<P>
+If you have problems, you may contact us at
+<ADDRESS><A HREF="mailto:support@arkkra.com">support@arkkra.com</A></ADDRESS>
+</P>
+<HR>
+<P>
+<A HREF="http://www.arkkra.com">http://www.arkkra.com</A>
+</P>
+</BODY>
+</HTML>

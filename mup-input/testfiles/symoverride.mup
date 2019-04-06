@@ -1,0 +1,141 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "symoverride.mup"
+	title ""
+	paragraph (14) "This file redefines all the builtin music symbols as various arcs. and then uses them. The \"music\" part is,
+of course, nonsense, but demonstrates that the replacement symbols get used."
+	title ""
+	
+define USYM(NAME,ANGLE)
+symbol `NAME`
+	bbox= -500, -500, 500, 500
+	postscript="gsave
+		100 setlinewidth
+		0 0 425 0 " + `ANGLE` + " arc stroke
+		grestore"
+@
+USYM(gclef,360)
+USYM(fclef,357)
+USYM(cclef,354)
+USYM(dblwhole,351)
+USYM(1n,348)
+USYM(2n,345)
+USYM(4n,342)
+USYM(upflag,339)
+USYM(dnflag,336)
+USYM(qwhrest,333)
+USYM(dwhrest,330)
+USYM(1rest,327)
+USYM(2rest,324)
+USYM(4rest,321)
+USYM(8rest,318)
+USYM(16rest,315)
+USYM(32rest,312)
+USYM(64rest,309)
+USYM(128rest,306)
+USYM(256rest,303)
+USYM(ll1rest,300)
+USYM(ll2rest,297)
+USYM(dot,294)
+USYM(nat,291)
+USYM(sharp,288)
+USYM(flat,285)
+USYM(dblsharp,282)
+USYM(dblflat,279)
+USYM(xnote,276)
+USYM(dwhdiamond,273)
+USYM(diamond,270)
+USYM(filldiamond,267)
+USYM(up2n,264)
+USYM(dn2n,261)
+USYM(up4n,258)
+USYM(dn4n,255)
+USYM(com,252)
+USYM(cut,249)
+USYM(begped,246)
+USYM(pedal,243)
+USYM(endped,240)
+USYM(dnbow,237)
+USYM(upbow,233)
+USYM(wedge,230)
+USYM(uwedge,227)
+USYM(ferm,224)
+USYM(uferm,221)
+USYM(sign,218)
+USYM(coda,215)
+USYM(mor,212)
+USYM(invmor,209)
+USYM(turn,206)
+USYM(invturn,203)
+USYM(acc_gt,200)
+USYM(acc_hat,197)
+USYM(acc_uhat,194)
+USYM(tr,191)
+USYM(leg,188)
+USYM(rr,185)
+USYM(dim,182)
+USYM(halfdim,179)
+USYM(triangle,176)
+USYM(measrpt,173)
+USYM(copyright,170)
+USYM(up8n,167)
+USYM(dn8n,164)
+USYM(up16n,161)
+USYM(dn16n,158)
+USYM(up32n,155)
+USYM(dn32n,152)
+USYM(up64n,149)
+USYM(dn64n,146)
+USYM(up128n,143)
+USYM(dn128n,140)
+USYM(up256n,137)
+USYM(dn256n,134)
+USYM(dwhrighttriangle,131)
+USYM(righttriangle,128)
+USYM(fillrighttriangle,125)
+USYM(udwhrighttriangle,122)
+USYM(urighttriangle,119)
+USYM(ufillrighttriangle,116)
+USYM(dwhrectangle,113)
+USYM(rectangle,110)
+USYM(fillrectangle,107)
+USYM(dwhisostriangle,104)
+USYM(isostriangle,101)
+USYM(fillisostriangle,98)
+USYM(dwhpiewedge,95)
+USYM(piewedge,92)
+USYM(fillpiewedge,89)
+USYM(dwhsemicircle,86)
+USYM(semicircle,83)
+USYM(fillsemicircle,80)
+USYM(dwhslashhead,77)
+USYM(slashhead,74)
+USYM(fillslashhead,71)
+USYM(blankhead,68)
+
+block
+paragraph " \(gclef) \(fclef) \(cclef) \(dblwhole) \(1n) \(2n) \(4n) \(upflag)
+\(dnflag) \(qwhrest) \(dwhrest) \(1rest) \(2rest) \(4rest) \(8rest) \(16rest)
+\(32rest) \(64rest) \(128rest) \(256rest) \(ll1rest) \(ll2rest) \(dot) \(nat)
+\(sharp) \(flat) \(dblsharp) \(dblflat) \(xnote)
+\(dwhdiamond) \(diamond) \(filldiamond) \(up2n) \(dn2n) \(up4n) \(dn4n)
+\(com) \(cut) \(begped) \(pedal) \(endped) \(dnbow) \(upbow) \(wedge) \(uwedge)
+\(ferm) \(uferm) \(sign) \(coda) \(mor) \(invmor) \(turn) \(invturn) \(acc_gt)
+\(acc_hat) \(acc_uhat) \(tr) \(leg) \(rr) \(dim) \(halfdim) \(triangle)
+\(measrpt) \(copyright) \(up8n) \(dn8n) \(up16n) \(dn16n) \(up32n) \(dn32n)
+\(up64n) \(dn64n) \(up128n) \(dn128n) \(up256n) \(dn256n) \(dwhrighttriangle)
+\(righttriangle) \(fillrighttriangle) \(udwhrighttriangle) \(urighttriangle)
+\(ufillrighttriangle) \(dwhrectangle) \(rectangle) \(fillrectangle)
+\(dwhisostriangle) \(isostriangle) \(fillisostriangle) \(dwhpiewedge)
+\(piewedge) \(fillpiewedge) \(dwhsemicircle) \(semicircle) \(fillsemicircle)
+\(dwhslashhead) \(slashhead) \(fillslashhead) \(blankhead)"
+
+music
+
+1: r;cx+e+;4.r;[xnote]8g&&;
+bar
+
+1: c;d;e&;f#;
+repeatend
+

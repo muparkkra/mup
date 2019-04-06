@@ -1,0 +1,122 @@
+//!Mup-Arkkra
+
+header
+	title bold (20) "extchar.mup"
+	paragraph (15) "This file tests the extended (non-ASCII) characters, in all the fonts."
+
+score
+	leftmargin=0.1
+	scale=0.88
+	time=4/4n
+	stafflines=1n
+
+define SET1 "\(exclamdown) \(cent) \(sterling) \(yen) \(quotedblleft) \(quotedblright) \(quotedblbase) \(guillemotleft) \(guillemotright) \(guilsinglleft) \(guilsinglright) \(dagger) \(daggerdbl) \(bullet) \(questiondown) \(grave) \(acute) \(macron) \(breve) \(dotaccent) \(dieresis) \(ring)" @
+
+define SET2 "\(cedilla) \(hungarumlaut) \(ogonek) \(caron) \(emdash) \(AE) \(ae) \(ordfeminine) \(ordmasculine) \(Lslash) \(lslash) \(Oslash) \(oslash)" @
+
+define SET3 "\(OE) \(oe) \(dotlessi) \(germandbls) \(Aacute) \(aacute) \(Acircumflex) \(acircumflex) \(Adieresis) \(adieresis) \(Agrave) \(agrave) \(Aring) \(aring) \(Atilde) \(atilde)" @
+
+define SET4 "\(Ccedilla) \(ccedilla) \(Eacute) \(eacute) \(Ecircumflex) \(ecircumflex) \(Edieresis) \(edieresis) \(Egrave) \(egrave) \(Iacute) \(iacute) \(Icircumflex) \(icircumflex) \(Idieresis) \(idieresis) \(Igrave) \(igrave) \(Ntilde) \(ntilde) \(Oacute) \(oacute)" @
+
+define SET5 "\(Ocircumflex) \(ocircumflex) \(Odieresis) \(odieresis) \(Ograve) \(ograve) \(Otilde) \(otilde) \(Scaron) \(scaron) \(Uacute) \(uacute) \(Ucircumflex) \(ucircumflex) \(Udieresis) \(udieresis) \(Ugrave) \(ugrave) \(Ydieresis) \(ydieresis) \(Zcaron) \(zcaron)" @
+
+
+define TEST
+rom (16) below 1: 1 "Roman:";
+rom (24) below 1: 0 SET1;
+rom (24) below 1: 0 SET2;
+rom (24) below 1: 0 SET3;
+rom (24) below 1: 0 SET4;
+rom (24) below 1: 0 SET5;
+
+ital (16) below 1: 1 "Italics:";
+ital (24) below 1: 0 SET1;
+ital (24) below 1: 0 SET2;
+ital (24) below 1: 0 SET3;
+ital (24) below 1: 0 SET4;
+ital (24) below 1: 0 SET5;
+
+bold (16) below 1: 1 "Bold";
+bold (24) below 1: 0 SET1;
+bold (24) below 1: 0 SET2;
+bold (24) below 1: 0 SET3;
+bold (24) below 1: 0 SET4;
+bold (24) below 1: 0 SET5;
+
+bold (16) below 1: 1 "Bold-Italics:";
+boldital (24) below 1: 0 SET1;
+boldital (24) below 1: 0 SET2;
+boldital (24) below 1: 0 SET3;
+boldital (24) below 1: 0 SET4;
+boldital (24) below 1: 0 SET5;
+@
+
+music
+ 1: c;;;;
+rom (16) above 1: 2 "This page is in Times";
+TEST
+bar
+
+newpage
+score fontfamily=avantgarde
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in AvantGarde";
+TEST
+bar
+
+newpage
+score fontfamily=courier
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in Courier";
+TEST
+bar
+
+newpage
+score fontfamily=helvetica
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in Helvetica";
+TEST
+bar
+
+newpage
+score fontfamily=bookman
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in Bookman";
+TEST
+bar
+
+newpage
+score fontfamily=newcentury
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in NewCentury";
+TEST
+bar
+
+newpage
+score fontfamily=palatino
+music
+1: c;;;;
+rom (16) above 1: 2 "This page is in Palatino";
+TEST
+bar
+
+newpage
+
+score fontfamily=courier ; size=36
+music
+1: c;;;;
+rom below 1: 1 "Verify the shortcuts:";
+rom below 1: 1 "\(A') \(A`) \(A^) \(A:) \(A~) \(Ao) \(a') \(a`) \(a^) \(a:) \(a~) \(ao)";
+rom below 1: 1 "\(E') \(E`) \(E^) \(E:) \(e') \(e`) \(e^) \(e:)";
+rom below 1: 1 "\(I') \(I`) \(I^) \(I:) \(i') \(i`) \(i^) \(i:)";
+rom below 1: 1 "\(O') \(O`) \(O^) \(O:) \(O~) \(O/) \(o') \(o`) \(o^) \(o:) \(o~) \(o/)";
+rom below 1: 1 "\(U') \(U`) \(U^) \(U:) \(u') \(u`) \(u^) \(u:)";
+rom below 1: 1 "\(Y:) \(y:) \(N~) \(n~) \(L/) \(l/)";
+rom below 1: 1 "\(C,) \(c,) \(Sv) \(sv) \(Zv) \(zv) \(ss)";
+times rom below 1: 1 "\(``) \('') \(<<) \(>>)"; 
+endbar

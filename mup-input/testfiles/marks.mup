@@ -1,0 +1,88 @@
+//!Mup-Arkkra
+header
+	title bold (18) "marks.mup"
+	paragraph (14) "\
+Test various things related to marks, measure rests, and invisible staffs."
+music
+	rom(15) all: \
+		1 "Test interactions of multirests, measure rests, and stuff";
+	rom(12) all: 1 "All stuff, including fermatas, are at count 1";
+	1: mr;
+	rom 1: 1 "count 1";
+	mussym 1: 1 "ferm";
+	bar
+	1: 1r;
+	rom 1: 1 "hi";
+	bar
+	1: mr;
+	rom 1: 1 "hi";
+	bar
+	1: mr;
+	mussym above 1: 1 "ferm";
+	bar
+	1: 1r;
+	mussym above 1: 1 "ferm";
+	bar
+	1: mr;
+	mussym above 1: 1 "ferm";
+	bar
+score
+	staffs = 2
+	packfact = 2.5
+	size = 12
+staff 1
+	label = "staff 1"
+	label2 = "staff 1"
+staff 2
+	label = "staff 2"
+	label2 = "staff 2"
+music
+	rom(15) all: 1 "Test stuff interactions with invisible staffs";
+	1: d;;;;
+	octave above 2: 1 "8va" til 8m+2;
+	2: a;;;;
+	rom 1,2: 1 "1,2:1 til 1m+4" til 1m+4;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	rom 1,2: 2 "1,2:2 til 2m+2" til 2m+2;
+	rom below 2: 1 "below2:1 til 5m+3" til 5m+3;
+	bar
+staff 2
+	visible = n
+music
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	rom 1,2: 2 "1,2:2 til 2m+2" til 2m+2;
+	bar
+staff 2
+	visible = y
+music
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	rom 1: 3 "1:3 til 2m+2" til 2m+2;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar
+	1: d;;;;
+	2: a;;;;
+	bar

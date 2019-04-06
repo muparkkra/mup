@@ -1,0 +1,62 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "restc.mup"
+	paragraph (14) "This file is for testing the  file for the -c (combine rests) option.\n" + \
+	"When using -c2, the results should have multirest 3, 1 measure of C's,\n" + \
+	"multirest 2, dblbar, multirest 2, rehearsal mark, and multirest 2.\n" + \
+	"Otherwise, only the first multirest of 3 should appear."
+
+	title ""
+	paragraph (14) "The last two lines then test alternate restsymmulti style for 2 to 9 measures."
+
+score
+	restcombine=3
+
+music
+
+1: mr;
+bar
+1: mr;
+bar
+1: mr;
+bar
+1: c;;;;
+bar
+1: mr;
+bar
+1: mr;
+invisbar
+1: mr;
+dblbar
+1: mr;
+bar
+1: mr;
+bar reh mnum
+1: mr;
+bar
+1: mr;
+bar
+
+score restsymmult=y
+music
+
+newscore
+
+multirest 2
+bar
+multirest 3
+bar
+multirest 4
+bar
+multirest 5
+bar
+multirest 6
+bar
+multirest 7
+bar
+multirest 8
+bar
+multirest 9
+bar
+

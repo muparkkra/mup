@@ -1,0 +1,40 @@
+//!Mup-Arkkra
+header
+	title bold (18) "hasspace.mup"
+	paragraph (14) "\
+Test the 'hasspace' function, which tells whether or not a
+voice is all spaces during a given time interval.  The
+vscheme is set to 2f, so that you can tell by the stem
+directions chosen for the top voice whether hasspace decided
+that the other voice was all spaces.  Each group is labeled."
+score
+	vscheme = 2f
+	size = 9
+	packexp = 1
+	packfact = 3
+music
+	rom above 1: 1 "4b"; 2 "4b"; 3 "4b"; 4 "4b";
+	1 1: 4b; ; ; ;
+	1 2: 4s; 4f; 4s; 4f;
+	rom below 1: 1 "4s"; 2 "4f"; 3 "4s"; 4 "4f";
+	bar
+	rom above 1: 1 "4b"; 2 "4b"; 3 "4b"; 4 "4b";
+	1 1: 4b; ; ; ;
+	1 2: 8s; 8f; 4f; 8f; 8s; 4f;
+	rom below 1: 1 "8s"; 1.5 "8f"; 2 "4f"; 3 "8f"; 3.5 "8s"; 4 "4f";
+	bar
+	rom above 1: 1 "4b"; 2 "4b"; 3 "4b"; 4 "4b";
+	1 1: 4b; ; ; ;
+	1 2: 8s; 4f; 4s; 4f; 8s;
+	rom below 1: 1 "8s"; 1.5 "4f"; 2.5 "4s"; 3.5 "4f"; 4.5 "8s";
+	bar
+	rom above 1: 1 "4b"; 2 "4b"; 3 "4b"; 4 "4b";
+	1 1: 4b; ; ; ;
+	1 2: 8s; 8s; 8f; 2s; 8f;
+	rom below 1: 1 "8s"; 1.5 "8s"; 2 "8f"; 2.5 "2s"; 4.5 "8f";
+	bar
+	rom above 1: 1 "4b"; 2 "4b"; 3 "4b"; 4 "4b";
+	1 1: 4b; ; ; ;
+	1 2: 16s; 8f; 16s; 4s; 4.f; 8s;
+	rom below 1: 1 "16s"; 1.25 "8f"; 1.75 "16s"; 2 "4s"; 3 "4.f"; 4.5 "8s";
+	bar

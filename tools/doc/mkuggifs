@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# This script makes .gif files for all the examples on the Mup User's Guide.
+
+# Paths to tools are expected to be passed in (GREP, EXPR, CAT, ...)
+while [ -n "$1" ]
+do
+        eval $1
+        shift
+done
+
+suff=$$
+
+$CAT *.html | $EGREP "mugex[0-9]*.gif|ext_[1234].gif" | $SORT -u | while read name
+do
+	if echo $name | $GREP -q ext
+	then
+		name=`$EXPR "$name" : ".*\(ext_[0-9]*.gif\).*"` 
+	else
+		name=`$EXPR "$name" : ".*\(mugex[0-9]*.gif\).*"` 
+	fi
+	fname=`$EXPR $name : "\(.*\)\..*"`
+	echo converting $fname to GIF.... 
+	geom=$(../../tools/doc/addoffset ../../src/mup/prolog.ps ../$fname.ps $fname.$suff)
+	# Run Ghostscript and convert the output to gif
+	$GS -sDEVICE=ppmraw -sOutputFile=${fname}.ppm -dQUIET $geom -r108 - < ${fname}.$suff
+	$PPMTOGIF < ${fname}.ppm > ${fname}.gif
+	rm ${fname}.ppm ${fname}.$suff
+done
+
+# Do the chart showing all the special music characters
+echo '-50 -125 translate' | $CAT ../../src/mup/prolog.ps - ../muschar.ps | $GS -sOutputFile=muschar.ppm -sDEVICE=ppmraw -r108 -g735x975 -
+$PPMTOGIF < muschar.ppm > muschar.gif
+rm muschar.ppm

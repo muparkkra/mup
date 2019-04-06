@@ -1,0 +1,1561 @@
+%  Copyright (c) 1995-2019  by Arkkra Enterprises.
+%  All rights reserved.
+% 
+%  Redistribution and use in source and binary forms,
+%  with or without modification, are permitted provided that
+%  the following conditions are met:
+% 
+%  1. Redistributions of source code must retain
+%  the above copyright notice, this list of conditions
+%  and the following DISCLAIMER.
+% 
+%  2. Redistributions in binary form must reproduce the above
+%  copyright notice, this list of conditions and
+%  the following DISCLAIMER in the documentation and/or
+%  other materials provided with the distribution.
+% 
+%  3. Any additions, deletions, or changes to the original files
+%  must be clearly indicated in accompanying documentation,
+%  including the reasons for the changes,
+%  and the names of those who made the modifications.
+% 
+% 	DISCLAIMER
+% 
+%  THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS
+%  OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+%  THE IMPLIED WARRANTIES OF MERCHANTABILITY
+%  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+%  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT,
+%  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+%  OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO
+%  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+%  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+%  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+%  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+%  (INCLUDING NEGLIGENCE OR OTHERWISE)
+%  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+%  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+% This PostScript program generates C code, which tells Mup the metrics
+% (height, width, and ascent) for the standards PostScript fonts,
+% and for the "extended" fonts that are created from those.
+% The extended fonts are used to print non-ASCII characters.
+% This program writes to standard output and to two auxiliary files,
+% named charinfo and fontinfo. The makefile that runs this program
+% then concatenates those 3 outputs in the correct order into fontdata.c
+% which is then compiled into Mup.
+
+% general purpose string buffer
+/buff 50 string def
+
+1 setflat	% to get very accurate bounding boxes
+
+% Given a
+%	font char_name index
+% fill in the [index] element of height, width and ascent arrays,
+% and update maxheight and maxascent if this is the tallest so far.
+
+/do_element
+{
+	/index exch def
+	/char_name exch def
+	/font exch def
+	save
+	% Replace the character 'A' with the character of interest
+	myencoding 65 char_name put
+	font /Encoding myencoding put
+	% Define new font with this new funny looking A
+	/Myfont font definefont
+	12 scalefont setfont
+
+	% get its width
+	(A) stringwidth
+	pop conv2mils /width exch def
+
+	% place the "A" at (100, 100) and gets it pathbbox
+	newpath
+	100 100 moveto
+	(A) true charpath flattenpath pathbbox
+
+	% save the top and bottom y coordinates of the bbox
+	/top exch def pop
+	/bot exch def pop
+
+	% if bot is above the baseline, the height is (top - baseline)
+	% otherwise it is (top - bot)
+	bot 100 gt { top 100 sub } { top bot sub } ifelse
+
+	% add 2 point of padding, one for top and one for bottom white space,
+	% and convert to 1/1000ths of an inch
+	2 add conv2mils /height exch def
+
+	% ascent is top minus baseline
+	top 100 sub
+
+	% add 1 point of padding and convert to 1/1000ths of an inch
+	1 add conv2mils /ascent exch def
+
+	% save values on the stack, so we can get to them after the
+	% restore. The save/restore was basically to create the
+	% temporary font, because once you definefont, you can't change it.
+	width height ascent
+	4 3 roll
+	restore
+
+	% retrieve the things we left on the stack
+	/ascent exch def
+	/height exch def
+	/width exch def
+
+	% put values into appropriate arrays
+	ascent_array index ascent put
+	height_array index height put
+	width_array index width put
+	name_array index char_name put
+} def
+
+% covert arg to 1000ths of an inch rounded to an integer
+/conv2mils
+{
+	1000 mul 72 div round cvi
+} def
+
+% Given a font, leave a clone of that font on the stack
+% This is from the example in the PostScript book.
+/clonefont
+{
+ findfont
+ dup length dict /newdict exch def
+ { 1 index /FID ne
+   {newdict 3 1 roll put}
+   {pop pop}
+  ifelse
+ } forall
+ newdict
+} def
+
+% The startup code that is common to all fonts. Save the arguments, set up
+% a save context, set up arrays, and clone the font.
+% Usage:
+% PostScript_name abbreviated_name begin_font
+/begin_font
+{
+	/abbreviation exch def
+	/psname exch def
+
+	save
+
+	% create the metrics arrays for this font
+	/myencoding 256 array def
+	/width_array 256 array def
+	/height_array 256 array def
+	/ascent_array 256 array def
+	/name_array 256 array def
+
+	% make clone of font to change encoding
+	/fontcopy psname clonefont def
+
+	% declare codes to start at slot 32, and put the slot number
+	% onto stack as starting point
+	/firstch 32 def
+	firstch
+} def
+
+% The common code at end of all fonts. Prints the info and does restore
+% Usage:
+%	abbreviation first last end_font
+/end_font
+{
+	% stack contains code of last char in font + 1
+	/lastch exch 1 sub def
+
+	% call printinfo with its args
+	abbreviation firstch lastch printinfo
+
+	restore
+} def
+
+
+% Usage:
+%	idx chname do_sym
+% processes the given chname at index idx, then increments idx and
+% leaves the incremented value on the stack.
+/do_sym
+{
+	/chname exch def
+	/idx exch def
+	fontcopy chname idx do_element
+	idx 1 add
+} def
+
+
+% Do everything for a "standard" font, i.e., the 28 fonts with their
+% default ASCII encoding.
+/do_std_font
+{
+	begin_font
+
+	% space is special. We use height of 9 points plus usual 2 pt padding
+	% We use ascent of 6.8 points plus usual 1 pt padding
+	pop
+	fontcopy /space 32 do_element
+	height_array 32 9 2 add conv2mils put
+	ascent_array 32 6.8 1 add conv2mils put
+
+	% handle symbols in order, Each leaves its code on the stack
+	% for knowing where to put the next.
+	33 /exclam do_sym
+	/quotedbl do_sym
+	/numbersign do_sym
+	/dollar do_sym
+	/percent do_sym
+	/ampersand do_sym
+	/quoteright do_sym
+	/parenleft do_sym
+	/parenright do_sym
+	/asterisk do_sym
+	/plus do_sym
+	/comma do_sym
+	/hyphen do_sym
+	/period do_sym
+	/slash do_sym
+	/zero do_sym
+	/one do_sym
+	/two do_sym
+	/three do_sym
+	/four do_sym
+	/five do_sym
+	/six do_sym
+	/seven do_sym
+	/eight do_sym
+	/nine do_sym
+	/colon do_sym
+	/semicolon do_sym
+	/less do_sym
+	/equal do_sym
+	/greater do_sym
+	/question do_sym
+	/at do_sym
+	/A do_sym
+	/B do_sym
+	/C do_sym
+	/D do_sym
+	/E do_sym
+	/F do_sym
+	/G do_sym
+	/H do_sym
+	/I do_sym
+	/J do_sym
+	/K do_sym
+	/L do_sym
+	/M do_sym
+	/N do_sym
+	/O do_sym
+	/P do_sym
+	/Q do_sym
+	/R do_sym
+	/S do_sym
+	/T do_sym
+	/U do_sym
+	/V do_sym
+	/W do_sym
+	/X do_sym
+	/Y do_sym
+	/Z do_sym
+	/bracketleft do_sym
+	/backslash do_sym
+	/bracketright do_sym
+	/asciicircum do_sym
+	/underscore do_sym
+	/quoteleft do_sym
+	/a do_sym
+	/b do_sym
+	/c do_sym
+	/d do_sym
+	/e do_sym
+	/f do_sym
+	/g do_sym
+	/h do_sym
+	/i do_sym
+	/j do_sym
+	/k do_sym
+	/l do_sym
+	/m do_sym
+	/n do_sym
+	/o do_sym
+	/p do_sym
+	/q do_sym
+	/r do_sym
+	/s do_sym
+	/t do_sym
+	/u do_sym
+	/v do_sym
+	/w do_sym
+	/x do_sym
+	/y do_sym
+	/z do_sym
+	/braceleft do_sym
+	/bar do_sym
+	/braceright do_sym
+	/asciitilde do_sym
+
+	end_font
+} def
+
+
+% Handle the extended fonts.
+/do_ext1_font
+{
+	begin_font
+
+	/space do_sym
+	/emdash do_sym
+	/endash do_sym
+	/quotedblleft do_sym
+	/guillemotleft do_sym
+	/guillemotright do_sym
+	/guilsinglleft do_sym
+	/guilsinglright do_sym
+	/quotedblbase do_sym
+	/quotedblright do_sym
+	/questiondown do_sym
+	/grave do_sym
+	/acute do_sym
+	/macron do_sym
+	/breve do_sym
+	/commaaccent do_sym
+	/dotaccent do_sym
+	/dieresis do_sym
+	/ring do_sym
+	/cedilla do_sym
+	/hungarumlaut do_sym
+	/ogonek do_sym
+	/caron do_sym
+	/AE do_sym
+	/ae do_sym
+	/Lslash do_sym
+	/lslash do_sym
+	/Oslash do_sym
+	/oslash do_sym
+	/OE do_sym
+	/oe do_sym
+	/dotlessi do_sym
+	/germandbls do_sym
+	/Aacute do_sym
+	/aacute do_sym
+	/Abreve do_sym
+	/abreve do_sym
+	/Acircumflex do_sym
+	/acircumflex do_sym
+	/Adieresis do_sym
+	/adieresis do_sym
+	/Agrave do_sym
+	/agrave do_sym
+	/Amacron do_sym
+	/amacron do_sym
+	/Atilde do_sym
+	/atilde do_sym
+	/Aogonek do_sym
+	/Aring do_sym
+	/aring do_sym
+	/aogonek do_sym
+	/Ccedilla do_sym
+	/ccedilla do_sym
+	/Eacute do_sym
+	/eacute do_sym
+	/Ebreve do_sym
+	/ebreve do_sym
+	/Ecaron do_sym
+	/ecaron do_sym
+	/Ecircumflex do_sym
+	/ecircumflex do_sym
+	/Edieresis do_sym
+	/edieresis do_sym
+	/Edotaccent do_sym
+	/edotaccent do_sym
+	/Egrave do_sym
+	/egrave do_sym
+	/Emacron do_sym
+	/emacron do_sym
+	/Eogonek do_sym
+	/eogonek do_sym
+	/Eng do_sym
+	/eng do_sym
+	/Eth do_sym
+	/eth do_sym
+	/Hbar do_sym
+	/hbar do_sym
+	/Iacute do_sym
+	/iacute do_sym
+	/Ibreve do_sym
+	/ibreve do_sym
+	/Icircumflex do_sym
+	/icircumflex do_sym
+	/Idieresis do_sym
+	/idieresis do_sym
+	/Idotaccent do_sym
+	/Igrave do_sym
+	/igrave do_sym
+	/Imacron do_sym
+	/imacron do_sym
+	/Iogonek do_sym
+	/iogonek do_sym
+	/Itilde do_sym
+	/itilde do_sym
+	/IJ do_sym
+	/ij do_sym
+	/Ntilde do_sym
+	/ntilde do_sym
+	/Oacute do_sym
+	/oacute do_sym
+	/Obreve do_sym
+	/obreve do_sym
+	/Ocircumflex do_sym
+	/ocircumflex do_sym
+	/Odieresis do_sym
+	/odieresis do_sym
+	/Ograve do_sym
+	/ograve do_sym
+	/Ohungarumlaut do_sym
+	/ohungarumlaut do_sym
+	/Omacron do_sym
+	/omacron do_sym
+	/Otilde do_sym
+	/otilde do_sym
+	/Scaron do_sym
+	/scaron do_sym
+	/Tbar do_sym
+	/tbar do_sym
+	/Tcaron do_sym
+	/tcaron do_sym
+	/Tcommaaccent do_sym
+	/tcommaaccent do_sym
+	/Thorn do_sym
+	/thorn do_sym
+	/Uacute do_sym
+	/uacute do_sym
+	/Ubreve do_sym
+	/ubreve do_sym
+	/Ucircumflex do_sym
+	/ucircumflex do_sym
+	/Udieresis do_sym
+	/udieresis do_sym
+	/Ugrave do_sym
+	/ugrave do_sym
+	/Uhungarumlaut do_sym
+	/uhungarumlaut do_sym
+	/Umacron do_sym
+	/umacron do_sym
+	/Uogonek do_sym
+	/uogonek do_sym
+	/Uring do_sym
+	/uring do_sym
+	/Utilde do_sym
+	/utilde do_sym
+	/Wcircumflex do_sym
+	/wcircumflex do_sym
+	/Yacute do_sym
+	/yacute do_sym
+	/Ycircumflex do_sym
+	/ycircumflex do_sym
+	/Ydieresis do_sym
+	/ydieresis do_sym
+	/Zcaron do_sym
+	/zcaron do_sym
+	/exclamdown do_sym
+	/ellipsis do_sym
+
+	end_font
+} def
+
+/do_ext2_font
+{
+	begin_font
+
+	/afii10017 do_sym
+	/afii10018 do_sym
+	/afii10019 do_sym
+	/afii10020 do_sym
+	/afii10021 do_sym
+	/afii10022 do_sym
+	/afii10023 do_sym
+	/afii10024 do_sym
+	/afii10025 do_sym
+	/afii10026 do_sym
+	/afii10027 do_sym
+	/afii10028 do_sym
+	/afii10029 do_sym
+	/afii10030 do_sym
+	/afii10031 do_sym
+	/afii10032 do_sym
+	/afii10033 do_sym
+	/afii10034 do_sym
+	/afii10035 do_sym
+	/afii10036 do_sym
+	/afii10037 do_sym
+	/afii10038 do_sym
+	/afii10039 do_sym
+	/afii10040 do_sym
+	/afii10041 do_sym
+	/afii10042 do_sym
+	/afii10043 do_sym
+	/afii10044 do_sym
+	/afii10045 do_sym
+	/afii10046 do_sym
+	/afii10047 do_sym
+	/afii10048 do_sym
+	/afii10049 do_sym
+	/afii10050 do_sym
+	/afii10051 do_sym
+	/afii10052 do_sym
+	/afii10053 do_sym
+	/afii10054 do_sym
+	/afii10055 do_sym
+	/afii10056 do_sym
+	/afii10057 do_sym
+	/afii10058 do_sym
+	/afii10059 do_sym
+	/afii10060 do_sym
+	/afii10061 do_sym
+	/afii10062 do_sym
+	/afii10065 do_sym
+	/afii10066 do_sym
+	/afii10067 do_sym
+	/afii10068 do_sym
+	/afii10069 do_sym
+	/afii10070 do_sym
+	/afii10071 do_sym
+	/afii10072 do_sym
+	/afii10073 do_sym
+	/afii10074 do_sym
+	/afii10075 do_sym
+	/afii10076 do_sym
+	/afii10077 do_sym
+	/afii10078 do_sym
+	/afii10079 do_sym
+	/afii10080 do_sym
+	/afii10081 do_sym
+	/afii10082 do_sym
+	/afii10083 do_sym
+	/afii10084 do_sym
+	/afii10085 do_sym
+	/afii10086 do_sym
+	/afii10087 do_sym
+	/afii10088 do_sym
+	/afii10089 do_sym
+	/afii10090 do_sym
+	/afii10091 do_sym
+	/afii10092 do_sym
+	/afii10093 do_sym
+	/afii10094 do_sym
+	/afii10095 do_sym
+	/afii10096 do_sym
+	/afii10097 do_sym
+	/afii10098 do_sym
+	/afii10099 do_sym
+	/afii10100 do_sym
+	/afii10101 do_sym
+	/afii10102 do_sym
+	/afii10103 do_sym
+	/afii10104 do_sym
+	/afii10105 do_sym
+	/afii10106 do_sym
+	/afii10107 do_sym
+	/afii10108 do_sym
+	/afii10109 do_sym
+	/afii10110 do_sym
+	/afii10145 do_sym
+	/afii10193 do_sym
+	/afii10846 do_sym
+	/afii61352 do_sym
+	/Cacute do_sym
+	/cacute do_sym
+	/Ccaron do_sym
+	/ccaron do_sym
+	/Ccircumflex do_sym
+	/ccircumflex do_sym
+	/Cdotaccent do_sym
+	/cdotaccent do_sym
+	/Dcaron do_sym
+	/dcaron do_sym
+	/Dcroat do_sym
+	/dcroat do_sym
+	/Gbreve do_sym
+	/gbreve do_sym
+	/Gcircumflex do_sym
+	/gcircumflex do_sym
+	/Gcommaaccent do_sym
+	/gcommaaccent do_sym
+	/Gdotaccent do_sym
+	/gdotaccent do_sym
+	/Hcircumflex do_sym
+	/hcircumflex do_sym
+	/Jcircumflex do_sym
+	/jcircumflex do_sym
+	/Kcommaaccent do_sym
+	/kcommaaccent do_sym
+	/kgreenlandic do_sym
+	/Lacute do_sym
+	/lacute do_sym
+	/Lcaron do_sym
+	/lcaron do_sym
+	/Lcommaaccent do_sym
+	/lcommaaccent do_sym
+	/Ldot do_sym
+	/ldot do_sym
+	/Nacute do_sym
+	/nacute do_sym
+	/Ncaron do_sym
+	/ncaron do_sym
+	/Ncommaaccent do_sym
+	/ncommaaccent do_sym
+	/Racute do_sym
+	/racute do_sym
+	/Rcaron do_sym
+	/rcaron do_sym
+	/Rcommaaccent do_sym
+	/rcommaaccent do_sym
+	/Sacute do_sym
+	/sacute do_sym
+	/Scedilla do_sym
+	/scedilla do_sym
+	/Scircumflex do_sym
+	/scircumflex do_sym
+	/Scommaaccent do_sym
+	/scommaaccent do_sym
+	/Zacute do_sym
+	/zacute do_sym
+	/Zdotaccent do_sym
+	/zdotaccent do_sym
+
+	end_font
+} def
+
+/do_ext3_font
+{
+	begin_font
+
+	/uni0162 do_sym
+	/uni0163 do_sym
+	/uni0400 do_sym
+	/uni040D do_sym
+	/uni0450 do_sym
+	/uni045D do_sym
+	/uni048C do_sym
+	/uni048D do_sym
+	/uni048E do_sym
+	/uni048F do_sym
+	/uni0492 do_sym
+	/uni0493 do_sym
+	/uni0494 do_sym
+	/uni0495 do_sym
+	/uni0496 do_sym
+	/uni0497 do_sym
+	/uni0498 do_sym
+	/uni0499 do_sym
+	/uni049A do_sym
+	/uni049B do_sym
+	/uni049C do_sym
+	/uni049D do_sym
+	/uni049E do_sym
+	/uni049F do_sym
+	/uni04A0 do_sym
+	/uni04A1 do_sym
+	/uni04A2 do_sym
+	/uni04A3 do_sym
+	/uni04A4 do_sym
+	/uni04A5 do_sym
+	/uni04A6 do_sym
+	/uni04A7 do_sym
+	/uni04A8 do_sym
+	/uni04A9 do_sym
+	/uni04AA do_sym
+	/uni04AB do_sym
+	/uni04AC do_sym
+	/uni04AD do_sym
+	/uni04AE do_sym
+	/uni04AF do_sym
+	/uni04B0 do_sym
+	/uni04B1 do_sym
+	/uni04B2 do_sym
+	/uni04B3 do_sym
+	/uni04B4 do_sym
+	/uni04B5 do_sym
+	/uni04B6 do_sym
+	/uni04B7 do_sym
+	/uni04B8 do_sym
+	/uni04B9 do_sym
+	/uni04BA do_sym
+	/uni04BB do_sym
+	/uni04BC do_sym
+	/uni04BD do_sym
+	/uni04BE do_sym
+	/uni04BF do_sym
+	/uni04C0 do_sym
+	/uni04C1 do_sym
+	/uni04C2 do_sym
+	/uni04C3 do_sym
+	/uni04C4 do_sym
+	/uni04C7 do_sym
+	/uni04C8 do_sym
+	/uni04CB do_sym
+	/uni04CC do_sym
+	/uni04D0 do_sym
+	/uni04D1 do_sym
+	/uni04D2 do_sym
+	/uni04D3 do_sym
+	/uni04D4 do_sym
+	/uni04D5 do_sym
+	/uni04D6 do_sym
+	/uni04D7 do_sym
+	/uni04D8 do_sym
+	/uni04DA do_sym
+	/uni04DB do_sym
+	/uni04DC do_sym
+	/uni04DD do_sym
+	/uni04DE do_sym
+	/uni04DF do_sym
+	/uni04E0 do_sym
+	/uni04E1 do_sym
+	/uni04E2 do_sym
+	/uni04E3 do_sym
+	/uni04E4 do_sym
+	/uni04E5 do_sym
+	/uni04E6 do_sym
+	/uni04E7 do_sym
+	/uni04E8 do_sym
+	/uni04E9 do_sym
+	/uni04EA do_sym
+	/uni04EB do_sym
+	/uni04EC do_sym
+	/uni04ED do_sym
+	/uni04EE do_sym
+	/uni04EF do_sym
+	/uni04F0 do_sym
+	/uni04F1 do_sym
+	/uni04F2 do_sym
+	/uni04F3 do_sym
+	/uni04F4 do_sym
+	/uni04F5 do_sym
+	/uni04F8 do_sym
+	/uni04F9 do_sym
+	/degree do_sym
+	/divide do_sym
+	/fraction do_sym
+	/greaterequal do_sym
+	/infinity do_sym
+	/lessequal do_sym
+	/longs do_sym
+	/lozenge do_sym
+	/multiply do_sym
+	/notequal do_sym
+	/onehalf do_sym
+	/onequarter do_sym
+	/onesuperior do_sym
+	/partialdiff do_sym
+	/periodcentered do_sym
+	/perthousand do_sym
+	/minus do_sym
+	/plusminus do_sym
+	/radical do_sym
+	/summation do_sym
+	/threequarters do_sym
+	/threesuperior do_sym
+	/twosuperior do_sym
+	/registered do_sym
+	/trademark do_sym
+	/paragraph do_sym
+	/section do_sym
+	/currency do_sym
+	/ordfeminine do_sym
+	/ordmasculine do_sym
+	/bullet do_sym
+	/cent do_sym
+	/sterling do_sym
+	/yen do_sym
+	/Euro do_sym
+	/dagger do_sym
+	/daggerdbl do_sym
+	/brokenbar do_sym
+	/napostrophe do_sym
+	/fi do_sym
+	/fl do_sym
+	/florin do_sym
+	/circumflex do_sym
+	/quotesinglbase do_sym
+	/quotesingle do_sym
+	/tilde do_sym
+
+	end_font
+} def
+
+% Handle the symbol font
+/do_sym_font {
+	begin_font
+
+	/universal do_sym
+	/existential do_sym
+	/suchthat do_sym
+	/asteriskmath do_sym
+	/congruent do_sym
+	/Alpha do_sym
+	/Beta do_sym
+	/Chi do_sym
+	/Delta do_sym
+	/Epsilon do_sym
+	/Phi do_sym
+	/Gamma do_sym
+	/Eta do_sym
+	/Iota do_sym
+	/theta1 do_sym
+	/Kappa do_sym
+	/Lambda do_sym
+	/Mu do_sym
+	/Nu do_sym
+	/Omicron do_sym
+	/Pi do_sym
+	/Theta do_sym
+	/Rho do_sym
+	/Sigma do_sym
+	/Tau do_sym
+	/Upsilon do_sym
+	/sigma1 do_sym
+	/Omega do_sym
+	/Xi do_sym
+	/Psi do_sym
+	/Zeta do_sym
+	/therefore do_sym
+	/perpendicular do_sym
+	/radicalex do_sym
+	/alpha do_sym
+	/beta do_sym
+	/chi do_sym
+	/delta do_sym
+	/epsilon do_sym
+	/phi do_sym
+	/gamma do_sym
+	/eta do_sym
+	/iota do_sym
+	/phi1 do_sym
+	/kappa do_sym
+	/lambda do_sym
+	/mu do_sym
+	/nu do_sym
+	/omicron do_sym
+	/pi do_sym
+	/theta do_sym
+	/rho do_sym
+	/sigma do_sym
+	/tau do_sym
+	/upsilon do_sym
+	/omega1 do_sym
+	/omega do_sym
+	/xi do_sym
+	/psi do_sym
+	/zeta do_sym
+	/similar do_sym
+	/Upsilon1 do_sym
+	/minute do_sym
+	/heart do_sym
+	/arrowboth do_sym
+	/arrowleft do_sym
+	/arrowup do_sym
+	/arrowright do_sym
+	/arrowdown do_sym
+	/second do_sym
+	/proportional do_sym
+	/equivalence do_sym
+	/approxequal do_sym
+	/arrowvertex do_sym
+	/arrowhorizex do_sym
+	/carriagereturn do_sym
+	/aleph do_sym
+	/Ifraktur do_sym
+	/Rfraktur do_sym
+	/weierstrass do_sym
+	/circlemultiply do_sym
+	/circleplus do_sym
+	/emptyset do_sym
+	/intersection do_sym
+	/union do_sym
+	/propersuperset do_sym
+	/reflexsuperset do_sym
+	/notsubset do_sym
+	/propersubset do_sym
+	/reflexsubset do_sym
+	/element do_sym
+	/notelement do_sym
+	/angle do_sym
+	/gradient do_sym
+	/registerserif do_sym
+	/copyrightserif do_sym
+	/trademarkserif do_sym
+	/product do_sym
+	/dotmath do_sym
+	/logicaland do_sym
+	/logicalor do_sym
+	/logicalnot do_sym
+	/arrowdblboth do_sym
+	/arrowdblleft do_sym
+	/arrowdblup do_sym
+	/arrowdblright do_sym
+	/arrowdbldown do_sym
+	/angleleft do_sym
+	/registersans do_sym
+	/copyrightsans do_sym
+	/trademarksans do_sym
+	/parenlefttp do_sym
+	/parenleftex do_sym
+	/parenleftbt do_sym
+	/bracketlefttp do_sym
+	/bracketleftex do_sym
+	/bracketleftbt do_sym
+	/bracelefttp do_sym
+	/braceleftmid do_sym
+	/braceleftbt do_sym
+	/braceex do_sym
+	/angleright do_sym
+	/integral do_sym
+	/integraltp do_sym
+	/integralex do_sym
+	/integralbt do_sym
+	/parenrighttp do_sym
+	/parenrightex do_sym
+	/parenrightbt do_sym
+	/bracketrighttp do_sym
+	/bracketrightex do_sym
+	/bracketrightbt do_sym
+	/bracerighttp do_sym
+	/bracerightmid do_sym
+	/bracerightbt do_sym
+
+	end_font
+} def
+
+% Handle the Dingbats fonts
+/do_dingbats_font1 {
+	begin_font
+
+	% Note that we skip "space" here, so it won't
+	% get confused with the space in other fonts.
+	/a1 do_sym
+	/a2 do_sym
+	/a202 do_sym
+	/a3 do_sym
+	/a4 do_sym
+	/a5 do_sym
+	/a119 do_sym
+	/a118 do_sym
+	/a117 do_sym
+	/a11 do_sym
+	/a12 do_sym
+	/a13 do_sym
+	/a14 do_sym
+	/a15 do_sym
+	/a16 do_sym
+	/a105 do_sym
+	/a17 do_sym
+	/a18 do_sym
+	/a19 do_sym
+	/a20 do_sym
+	/a21 do_sym
+	/a22 do_sym
+	/a23 do_sym
+	/a24 do_sym
+	/a25 do_sym
+	/a26 do_sym
+	/a27 do_sym
+	/a28 do_sym
+	/a6 do_sym
+	/a7 do_sym
+	/a8 do_sym
+	/a9 do_sym
+	/a10 do_sym
+	/a29 do_sym
+	/a30 do_sym
+	/a31 do_sym
+	/a32 do_sym
+	/a33 do_sym
+	/a34 do_sym
+	/a35 do_sym
+	/a36 do_sym
+	/a37 do_sym
+	/a38 do_sym
+	/a39 do_sym
+	/a40 do_sym
+	/a41 do_sym
+	/a42 do_sym
+	/a43 do_sym
+	/a44 do_sym
+	/a45 do_sym
+	/a46 do_sym
+	/a47 do_sym
+	/a48 do_sym
+	/a49 do_sym
+	/a50 do_sym
+	/a51 do_sym
+	/a52 do_sym
+	/a53 do_sym
+	/a54 do_sym
+	/a55 do_sym
+	/a56 do_sym
+	/a57 do_sym
+	/a58 do_sym
+	/a59 do_sym
+	/a60 do_sym
+	/a61 do_sym
+	/a62 do_sym
+	/a63 do_sym
+	/a64 do_sym
+	/a65 do_sym
+	/a66 do_sym
+	/a67 do_sym
+	/a68 do_sym
+	/a69 do_sym
+	/a70 do_sym
+	/a71 do_sym
+	/a72 do_sym
+	/a73 do_sym
+	/a74 do_sym
+	/a203 do_sym
+	/a75 do_sym
+	/a204 do_sym
+	/a76 do_sym
+	/a77 do_sym
+	/a78 do_sym
+	/a79 do_sym
+	/a81 do_sym
+	/a82 do_sym
+	/a83 do_sym
+	/a84 do_sym
+	/a97 do_sym
+	/a98 do_sym
+	/a99 do_sym
+	/a100 do_sym
+
+	end_font
+} def
+
+/do_dingbats_font2 {
+	begin_font
+
+	/a101 do_sym
+	/a102 do_sym
+	/a103 do_sym
+	/a104 do_sym
+	/a106 do_sym
+	/a107 do_sym
+	/a108 do_sym
+	/a112 do_sym
+	/a111 do_sym
+	/a110 do_sym
+	/a109 do_sym
+	/a120 do_sym
+	/a121 do_sym
+	/a122 do_sym
+	/a123 do_sym
+	/a124 do_sym
+	/a125 do_sym
+	/a126 do_sym
+	/a127 do_sym
+	/a128 do_sym
+	/a129 do_sym
+	/a130 do_sym
+	/a131 do_sym
+	/a132 do_sym
+	/a133 do_sym
+	/a134 do_sym
+	/a135 do_sym
+	/a136 do_sym
+	/a137 do_sym
+	/a138 do_sym
+	/a139 do_sym
+	/a140 do_sym
+	/a141 do_sym
+	/a142 do_sym
+	/a143 do_sym
+	/a144 do_sym
+	/a145 do_sym
+	/a146 do_sym
+	/a147 do_sym
+	/a148 do_sym
+	/a149 do_sym
+	/a150 do_sym
+	/a151 do_sym
+	/a152 do_sym
+	/a153 do_sym
+	/a154 do_sym
+	/a155 do_sym
+	/a156 do_sym
+	/a157 do_sym
+	/a158 do_sym
+	/a159 do_sym
+	/a160 do_sym
+	/a161 do_sym
+	/a163 do_sym
+	/a164 do_sym
+	/a196 do_sym
+	/a165 do_sym
+	/a192 do_sym
+	/a166 do_sym
+	/a167 do_sym
+	/a168 do_sym
+	/a169 do_sym
+	/a170 do_sym
+	/a171 do_sym
+	/a172 do_sym
+	/a173 do_sym
+	/a162 do_sym
+	/a174 do_sym
+	/a175 do_sym
+	/a176 do_sym
+	/a177 do_sym
+	/a178 do_sym
+	/a179 do_sym
+	/a193 do_sym
+	/a180 do_sym
+	/a199 do_sym
+	/a181 do_sym
+	/a200 do_sym
+	/a182 do_sym
+	/a201 do_sym
+	/a183 do_sym
+	/a184 do_sym
+	/a197 do_sym
+	/a185 do_sym
+	/a194 do_sym
+	/a198 do_sym
+	/a186 do_sym
+	/a195 do_sym
+	/a187 do_sym
+	/a188 do_sym
+	/a189 do_sym
+	/a190 do_sym
+	/a191 do_sym
+	/a95 do_sym
+	/a88 do_sym
+	/a87 do_sym
+	/a86 do_sym
+	/a206 do_sym
+	/a85 do_sym
+	/a96 do_sym
+	/a91 do_sym
+	/a94 do_sym
+	/a93 do_sym
+	/a90 do_sym
+	/a89 do_sym
+	/a92 do_sym
+	/a205 do_sym
+
+	end_font
+} def
+
+
+% We create two temp files, one for character names, and one for
+% the Fontinfo[] initialization function.
+
+% Print argument to the character names file
+/prc
+{
+	/text exch def
+	namesfile text writestring
+} def 
+
+% Prints argument to the init file
+/pri
+{
+	/text exch def
+	initfile text writestring
+} def
+
+% how many things (widths, heights, ascents, names) to print per line
+/perline 4 def
+
+% generate C code for everything we need to know about a font
+% Usage:
+%  fontname first last printinfo
+% where fontname is like TR or NB, and first and last are the codes of
+% the first and last character defined, so for a plain ascii font they
+% would be 32 and 126 (del is usually nonprinting, as are control chars).
+/printinfo
+{
+	/last exch def
+	/first exch def
+	/fontname exch def
+
+	% Print out symbol names if requested
+	print_names length 0 gt {
+		% They are put in an array named FI_xx_names where xx is the
+		% font abbreviation
+		(char *FI_) prc print_names prc (_names[] = {\n ) prc
+		first 1 last {
+			/index exch def
+			% print name in double quotes
+			(") prc name_array index get buff cvs prc (") prc
+			% put comma on all but the last
+			index last lt { (, ) prc } if
+			% put newline after each "perline" items
+			index perline mod perline 1 sub eq { (\n ) prc } if
+		} for
+		( };\n) prc
+		% set FI_xx_numchars to the number of chars in the font
+		(int FI_) prc print_names prc (_numchars = ) prc
+		last first sub 1 add buff cvs prc (;\n\n) prc
+	} if
+
+	(\n\n /* ------ width, height, and ascent values for font ) print fontname print (------ */\n) print
+	% print FI_xx_widths array
+	(short FI_) print fontname print (_widths[] = {\n ) print
+	first 1 last {
+		/index exch def
+		width_array index get buff cvs print
+		index last lt { (, ) print } if
+		index perline mod perline 1 sub eq { (\n ) print } if
+	} for
+	( };\n) print
+
+	% print FI_xx_heights array
+	(short FI_) print fontname print (_heights[] = {\n ) print
+	first 1 last {
+		/index exch def
+		height_array index get buff cvs print
+		index last lt { (, ) print } if
+		index perline mod perline 1 sub eq { (\n ) print } if
+	} for
+	( };\n) print
+
+	% print FI_xx_ascents array
+	(short FI_) print fontname print (_ascents[] = {\n ) print
+	first 1 last {
+		/index exch def
+		ascent_array index get buff cvs print
+		index last lt { (, ) print } if
+		index perline mod perline 1 sub eq { (\n ) print } if
+	} for
+	( };\n) print
+
+	% find max values
+	/maxheight  -1000 def
+	/maxascent  -1000 def
+	first 1 last {
+		/index exch def
+		height_array index get maxheight gt {
+			/maxheight height_array index get def
+		} if
+		ascent_array index get maxascent gt {
+			/maxascent ascent_array index get def
+		} if
+	} for
+	(#define FI_) print fontname print (_H \(double\) )
+	print maxheight buff cvs print ( / \(double\) FONTFACTOR\n) print
+	(#define FI_) print fontname print (_A \(double\) )
+	print maxascent buff cvs print ( / \(double\) FONTFACTOR\n) print
+	(\n) print
+
+	% Now generate code for the fontinfo init function
+	(\tindex = FONT_) pri
+	fontname length 3 eq fontname (SYM) eq not and fontname 0 1 getinterval (Z) eq not and {
+		fontname 0 2 getinterval pri
+		( + ) pri fontname 2 1 getinterval pri (* NUM_STD_FONTS - 1;\n) pri
+	}
+	{
+		fontname pri ( - 1;\n) pri
+	} ifelse
+
+	% initialize the psname field
+	(\tFontinfo[index].ps_name = ") pri
+	fontname 0 2 getinterval (ZD) eq {
+		(ZapfDingbats) pri fontname 2 1 getinterval pri
+	}
+	{
+		psprefix pri psname pri
+	} ifelse
+	(";\n) pri
+
+	% initialize the numchars field
+	(\tFontinfo[index].numchars = FI_) pri
+	fontname length 3 eq {
+		fontname (SYM) eq fontname 0 1 getinterval (Z) eq or {
+			fontname
+		}
+		{
+			(ext) pri fontname 2 1 getinterval
+		} ifelse
+	}
+	{
+		(std)
+	} ifelse
+	pri (_numchars;\n) pri
+
+	% initialize the charnames field
+	(\tFontinfo[index].charnames = FI_) pri
+	fontname length 3 eq {
+		fontname (SYM) eq fontname 0 1 getinterval (Z) eq or {
+			fontname
+		}
+		{
+			(ext) pri fontname 2 1 getinterval
+		} ifelse
+	}
+	{
+		(std)
+	} ifelse
+	pri (_names;\n) pri
+
+	% intialize the metrics fields
+	(\tFontinfo[index].ch_width = FI_) pri fontname pri (_widths;\n) pri
+	(\tFontinfo[index].ch_height = FI_) pri fontname pri (_heights;\n) pri
+	(\tFontinfo[index].ch_ascent = FI_) pri fontname pri (_ascents;\n) pri
+	(\tFontinfo[index].maxheight = FI_) pri fontname pri (_H;\n) pri
+	(\tFontinfo[index].maxascent = FI_) pri fontname pri (_A;\n) pri
+
+	% Deduce if is an italic font (includes bold-italic) and init is_ital
+	/is_italic false def
+	/face fontname 1 1 getinterval def
+	face (I) search { pop pop /is_italic true def } if pop
+	face (X) search { pop pop /is_italic true def } if pop
+	(\tFontinfo[index].is_ital = ) pri is_italic {(YES)}{(NO)} ifelse pri (;\n) pri
+
+	% Similar for bold
+	/is_bold false def
+	/face fontname 1 1 getinterval def
+	face (B) search { pop pop /is_bold true def } if pop
+	face (X) search { pop pop /is_bold true def } if pop
+	(\tFontinfo[index].is_bold = ) pri is_bold {(YES)}{(NO)} ifelse pri (;\n) pri
+} def
+
+% We only need to print the names once for each set of 28 fonts,
+% so this function is called after printing the first time.
+/no_names
+{
+	/print_names () def
+} def
+
+% define all the font names
+/TRname (Times-Roman) def
+/TBname (Times-Bold) def
+/TIname (Times-Italic) def
+/TXname (Times-BoldItalic) def
+/ARname (AvantGarde-Book) def
+/AIname (AvantGarde-BookOblique) def
+/ABname (AvantGarde-Demi) def
+/AXname (AvantGarde-DemiOblique) def
+/CRname (Courier) def
+/CIname (Courier-Italic) def
+/CBname (Courier-Bold) def
+/CXname (Courier-BoldItalic) def
+/HRname (Helvetica) def
+/HIname (Helvetica-Oblique) def
+/HBname (Helvetica-Bold) def
+/HXname (Helvetica-BoldOblique) def
+/BRname (Bookman-Light) def
+/BIname (Bookman-LightItalic) def
+/BBname (Bookman-Demi) def
+/BXname (Bookman-DemiItalic) def
+/NRname (NewCenturySchlbk-Roman) def
+/NIname (NewCenturySchlbk-Italic) def
+/NBname (NewCenturySchlbk-Bold) def
+/NXname (NewCenturySchlbk-BoldItalic) def
+/PRname (Palatino-Roman) def
+/PIname (Palatino-Italic) def
+/PBname (Palatino-Bold) def
+/PXname (Palatino-BoldItalic) def
+/ZIname (ZapfChancery-MediumItalic) def
+/ZDname (ZapfDingbats) def
+/SYname (Symbol) def
+
+% create temp files
+/namesfile (charnames) (w) file def
+/initfile (fontinit) (w) file def
+
+% Do first few lines of initialization file
+(\nstruct FONTINFO Fontinfo[MAXFONTS];\n\n) pri
+(void\ninit_psfont_metrics()\n{\n\tint index;\n\n) pri
+
+% Generate heading
+(/* This file is machine generated. It gives the widths, heights, ascents\n) print
+( * and names of all the characters in all the supported PostScript fonts.\n) print
+( */\n\n) print
+(#include "defines.h"\n) print
+(#include "structs.h"\n) print
+(#include "globals.h"\n) print
+(\n) print
+
+% Do the standard fonts.
+% They have no "ext" prefix
+% We print the names only once
+/psprefix () def
+/print_names (std) def
+TRname (TR) do_std_font
+no_names
+TIname (TI) do_std_font
+TBname (TB) do_std_font
+TXname (TX) do_std_font
+
+ARname (AR) do_std_font
+AIname (AI) do_std_font
+ABname (AB) do_std_font
+AXname (AX) do_std_font
+
+CRname (CR) do_std_font
+CIname (CI) do_std_font
+CBname (CB) do_std_font
+CXname (CX) do_std_font
+
+HRname (HR) do_std_font
+HIname (HI) do_std_font
+HBname (HB) do_std_font
+HXname (HX) do_std_font
+
+BRname (BR) do_std_font
+BIname (BI) do_std_font
+BBname (BB) do_std_font
+BXname (BX) do_std_font
+
+NRname (NR) do_std_font
+NIname (NI) do_std_font
+NBname (NB) do_std_font
+NXname (NX) do_std_font
+
+PRname (PR) do_std_font
+PIname (PI) do_std_font
+PBname (PB) do_std_font
+PXname (PX) do_std_font
+
+% first extended font
+/psprefix (Ext1-) def
+/print_names (ext1) def
+TRname (TR1) do_ext1_font
+no_names
+TIname (TI1) do_ext1_font
+TBname (TB1) do_ext1_font
+TXname (TX1) do_ext1_font
+
+ARname (AR1) do_ext1_font
+AIname (AI1) do_ext1_font
+ABname (AB1) do_ext1_font
+AXname (AX1) do_ext1_font
+
+CRname (CR1) do_ext1_font
+CIname (CI1) do_ext1_font
+CBname (CB1) do_ext1_font
+CXname (CX1) do_ext1_font
+
+HRname (HR1) do_ext1_font
+HIname (HI1) do_ext1_font
+HBname (HB1) do_ext1_font
+HXname (HX1) do_ext1_font
+
+BRname (BR1) do_ext1_font
+BIname (BI1) do_ext1_font
+BBname (BB1) do_ext1_font
+BXname (BX1) do_ext1_font
+
+NRname (NR1) do_ext1_font
+NIname (NI1) do_ext1_font
+NBname (NB1) do_ext1_font
+NXname (NX1) do_ext1_font
+
+PRname (PR1) do_ext1_font
+PIname (PI1) do_ext1_font
+PBname (PB1) do_ext1_font
+PXname (PX1) do_ext1_font
+
+% second extended font
+/psprefix (Ext2-) def
+/print_names (ext2) def
+TRname (TR2) do_ext2_font
+no_names
+TIname (TI2) do_ext2_font
+TBname (TB2) do_ext2_font
+TXname (TX2) do_ext2_font
+
+ARname (AR2) do_ext2_font
+AIname (AI2) do_ext2_font
+ABname (AB2) do_ext2_font
+AXname (AX2) do_ext2_font
+
+CRname (CR2) do_ext2_font
+CIname (CI2) do_ext2_font
+CBname (CB2) do_ext2_font
+CXname (CX2) do_ext2_font
+
+HRname (HR2) do_ext2_font
+HIname (HI2) do_ext2_font
+HBname (HB2) do_ext2_font
+HXname (HX2) do_ext2_font
+
+BRname (BR2) do_ext2_font
+BIname (BI2) do_ext2_font
+BBname (BB2) do_ext2_font
+BXname (BX2) do_ext2_font
+
+NRname (NR2) do_ext2_font
+NIname (NI2) do_ext2_font
+NBname (NB2) do_ext2_font
+NXname (NX2) do_ext2_font
+
+PRname (PR2) do_ext2_font
+PIname (PI2) do_ext2_font
+PBname (PB2) do_ext2_font
+PXname (PX2) do_ext2_font
+
+% third extended font
+/psprefix (Ext3-) def
+/print_names (ext3) def
+TRname (TR3) do_ext3_font
+no_names
+TIname (TI3) do_ext3_font
+TBname (TB3) do_ext3_font
+TXname (TX3) do_ext3_font
+
+ARname (AR3) do_ext3_font
+AIname (AI3) do_ext3_font
+ABname (AB3) do_ext3_font
+AXname (AX3) do_ext3_font
+
+CRname (CR3) do_ext3_font
+CIname (CI3) do_ext3_font
+CBname (CB3) do_ext3_font
+CXname (CX3) do_ext3_font
+
+HRname (HR3) do_ext3_font
+HIname (HI3) do_ext3_font
+HBname (HB3) do_ext3_font
+HXname (HX3) do_ext3_font
+
+BRname (BR3) do_ext3_font
+BIname (BI3) do_ext3_font
+BBname (BB3) do_ext3_font
+BXname (BX3) do_ext3_font
+
+NRname (NR3) do_ext3_font
+NIname (NI3) do_ext3_font
+NBname (NB3) do_ext3_font
+NXname (NX3) do_ext3_font
+
+PRname (PR3) do_ext3_font
+PIname (PI3) do_ext3_font
+PBname (PB3) do_ext3_font
+PXname (PX3) do_ext3_font
+
+/psprefix () def
+/print_names (SYM) def
+SYname (SYM) do_sym_font
+no_names
+
+% Zapf fonts
+/psprefix () def
+ZIname (ZI) do_std_font
+/print_names (ZD1) def
+ZDname (ZD1) do_dingbats_font1
+/print_names (ZD2) def
+ZDname (ZD2) do_dingbats_font2
+no_names
+
+% close temp files
+namesfile closefile
+(}\n) pri
+initfile closefile
+
+quit

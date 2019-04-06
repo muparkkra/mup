@@ -1,0 +1,55 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "roll.mup"
+	paragraph (14) "This file tests rolls."
+	title ""
+
+score
+	topmargin=0.8
+	staffs=3
+	vscheme=2f
+	size=14
+	scoresep=10,40
+
+staff 1 label="staff 1" ; label2="staff 1"
+staff 2 label="staff 2" ; label2="staff 2"
+staff 3 label="staff 3" ; label2="staff 3"
+
+music
+1 1: egc+;;;;
+1 2: c;g-c;ge+;c;
+2: ce;;;;
+3: c;ce;;;
+3 2: s;;gc+;;
+roll 1: 1;
+roll 2: 1;
+roll up 1: 2;
+roll up 2 to 3: 2;
+roll down 1 1 to 2 1: 3;
+roll 2 1 to 3 2: 4;
+rom above 1: 1 "roll 1: 1;";
+rom above 1: 1 "roll 2: 1;";
+rom above 1: 1 "roll up 1: 2;";
+rom above 1: 1 "roll up 2 to 3: 2;";
+rom above 1: 1 "roll down 1 1 to 2 1: 3;";
+rom above 1: 1 "roll 2 1 to 3 2: 4;";
+bar
+
+// now test roll/visibility interactions
+
+staff 2 visible=n
+music
+1-3: ceg;;;;
+roll 1 to 2: 3;
+rom above 1: 1 "visibility interactions, staff 2 invisible";
+rom above 1: 1 "roll 1 to 2: 3;";
+bar
+1-3: ceg;;;;
+roll 2 to 3: 1;
+roll 1 to 3: 2;
+roll 2: 3;
+rom above 1: 1 "roll 2 to 3: 1;";
+rom above 1: 1 "roll 1 to 3: 2;";
+rom above 1: 1 "roll 2: 3;";
+bar

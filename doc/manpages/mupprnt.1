@@ -1,0 +1,29 @@
+.TH mupprnt 1 "November 22, 2012" "Arkkra Enterprises"
+.SH NAME
+.PP
+mupprnt \- print output from Mup music publisher
+.SH SYNOPSIS
+.PP
+mupprnt \fI[mup_options] file\fP
+.SH DESCRIPTION
+.PP
+mupprnt provides a way to print Mup output on your printer.
+The \fIfile\fP is Mup input. Any other Mup options can be given,
+except \-C, \-E, \-f, \-F, \-l, \-m, \-M, or \-v, which don't produce print output.
+.PP
+Under UNIX, if the environment variable COPIES is set to a number,
+that number of copies will be printed. Otherwise only 1 copy will be printed.
+.PP
+.PP
+The GS_DEVICE shell variable must be set to the proper value for your printer
+type.  Mupprnt is a shell script (under UNIX) or batch script (under MS\(hyDOS),
+so you can customize it if you wish.
+.SH "SEE ALSO"
+.PP
+gs(1), mup(1), mupdisp(1).
+.br
+Mup \(em Music Publisher User's Guide
+.SH "CAVEATS"
+.PP
+You must have mup in your PATH.
+You must have ghostscript (gs or gs386.exe) in your PATH.

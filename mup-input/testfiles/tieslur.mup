@@ -1,0 +1,210 @@
+//!Mup-Arkkra
+
+header
+	title bold (15) "tieslur.mup"
+	paragraph (11) "This file tests ties and slurs."
+score
+	topmargin=0.8
+	scale=1.2
+
+music
+1: c<e>c+~;eg<c+g->c+~;c+g-e;f;
+bar
+
+1: g;;;;
+bar
+
+1: c;;;e~c+~;
+bar ending "1."
+
+newscore
+
+1: ec+;;;;
+bar ending "2."
+
+1: ec+;;;;
+bar endending
+
+newscore
+
+1: c<>;d<>;f<>;b;
+bar
+
+1: b+<>;a+<>;f+<>;c+;
+bar
+
+1: 1a-<>;
+phrase above 1: 1 til 1m+1;
+bar
+
+1: 1a++;
+bar
+
+newscore
+
+1: gbc+e+g+ slur; ac+d+f+a+; gbc+e+g+ tie;;
+bar
+
+1: a-cdeb slur; g-dfac+;a-cdeb tie;;
+endbar
+
+newscore
+
+rom above 1: 1 "<>up then <>down";
+1: c<>up;d;c<>down;d;
+bar
+
+rom above 1: 1 "slur down, then slur up";
+1: ceg slur down; dfa; ceg slur up; dfa;
+bar
+
+newscore
+
+rom above 1: 1 "~up then ~down";
+1: c~up;;f~down;;
+bar
+
+rom above 1: 1 "tie up then tie down";
+1: df tie up;;gb tie down;;
+bar
+
+newscore
+
+rom above 1: 1 "direction combinations (some a bit silly)";
+1: b-<e>up fb~up slur down;ceb;e~up<cc+>down;cec+;
+bar
+
+1: c<e>up<b->down;eb-;g<bd+f+>down<ca->up;a-cbd+f+;
+bar 
+
+top
+	title bold (12) "Test adjustments to curve ends for better aesthetics"
+
+music
+
+1: d+e+ tie;4d+<>e+;2f+;
+bar
+
+1: cd tie;;c<d>a-;cd;
+bar
+
+1: 1eg tie;
+bar
+
+1: 1eg;
+bar
+
+1: 1e+g+ tie;
+bar
+
+1: 1e+g+;
+bar
+
+1: 1c+<b>e+<f+>;
+bar
+
+1: 1bf+;
+bar
+
+1: 1c<b->e<f>;
+bar
+
+1: 1b-f;
+bar
+
+newscore
+
+1: [with >]c~;;[with >]~;;
+bar
+
+1: [with >]e+~;;[with >]~;;
+bar
+
+1: 1ce tie;
+bar
+
+1: 1ce;
+bar
+
+1: [with >]1ce tie;
+bar
+
+1: 1ce;
+bar
+
+1: 1c+e+ tie;
+bar
+
+1: 1c+e+;
+bar
+
+1: [with >] 1c+e+ tie;
+bar
+
+1: 1c+e+;
+bar
+
+1: 4ce tie;;[with >] tie;;
+bar
+
+1: 4c+e+ tie;;[with >] tie;;
+bar
+
+1: 2ce tie; [with >];
+bar
+
+1: 2c+e+ tie; [with >];
+bar
+
+score
+	vscheme=2f
+music
+
+1: [with >]c~;;;;
+1 2: 1a-;
+bar
+
+1 1: 1a;
+1 2: [with >]c~;;;;
+bar
+
+1: 2ce tie; [with >];
+1 2: 1a-;
+bar
+
+1: 2c+e+ tie; [with >];
+bar
+
+1: 1g;
+1 2: 2c; tie;
+bar
+
+1: 1g;
+1 2: [with >]1c;
+bar
+
+1: 2c+; tie;
+bar
+
+1: [with >] 1c+;
+bar
+
+1: 2c+e+; tie;
+bar
+
+1: [with >] 1c+e+;
+bar
+
+newscore
+
+1: ceg tie; 2.a-ceg;
+bar
+
+1: c+e+ tie; 2.c+e+g+;
+bar
+
+1: ce~g;2.e;
+bar
+
+1: c+e+~g+;2.e+;
+bar

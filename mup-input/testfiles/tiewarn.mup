@@ -1,0 +1,28 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "tiewarn.mup"
+	paragraph (14) "This tests invalid input related to ties that can be handled easily enough that Mup treats them as just warnings. " + \
+	"If you use -DNOWARN the errors will be suppressed."
+
+ifdef NOWARN
+	score warn=n
+endif
+
+music
+1: c~;c#;;;
+bar
+1: 4c~;r tie;df tie;c~;
+bar
+1: c;;;ce tie;
+bar
+
+score transpose=up maj 2
+music
+1: ce;;;f~a~;
+bar
+
+staff 1 transpose= down min 3
+music
+1: fa;;;;
+bar

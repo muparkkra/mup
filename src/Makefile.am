@@ -1,0 +1,11 @@
+if BUILD_MUPDISP
+ MUPDISP_SUBDIR=mupdisp
+else
+ MUPDISP_SUBDIR=
+endif
+if BUILD_MUPMATE
+ MUPMATE_SUBDIR=mupmate
+else
+ MUPMATE_SUBDIR=
+endif
+SUBDIRS = include mup mkmupfnt $(MUPDISP_SUBDIR) $(MUPMATE_SUBDIR) mupprnt

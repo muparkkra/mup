@@ -1,0 +1,261 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "underscore.mup"
+	paragraph (14) "This file tests underscores in lyrics."
+	title ""
+
+score
+	topmargin=0.8
+	vscheme=2f
+	packfact=2.5
+	scoresep=15
+	staffs=2
+staff 2
+	visible=n
+music
+1: c;;;;
+lyrics 1: ;;;; [1] "x y z q"; [2] "a_ b-c_ d";
+lyrics above 1: 2;; "ff_ hh";
+bar
+1 1: c+;d+;r;;
+1 2: 2.f;4r;
+lyrics above 1: 1; "c_";
+lyrics 1: 1; "uu_";
+bar
+1: 2c;2r;
+lyrics above 1: 1; "xx_";
+bar
+1 1: 2c+;r;
+1 2: 2e;r;
+lyrics 1: 1; "t_";
+bar
+1 1: 1c+;
+1 2: 2e;r;
+lyrics above 1: 1; "y_";
+lyrics 1: 1; "p_";
+bar
+newscore
+1 1: 1c+;
+1 2: 2e;r;
+lyrics 1: 1; "q_";
+bar
+1 1: mr;
+1 2: 2d;;
+lyrics below 1: 2s;; "test_";
+bar
+1: c;;;;
+bar
+1 1: 2f;r;
+1 2: 1c;
+lyrics below 1: 1; "Ah_";
+bar
+newscore
+1: 1c;
+lyrics below 1: 1; "dash-";
+bar
+1: 2g;;
+bar
+newscore
+1: 2f;;
+bar
+1: 2c+;;
+bar
+newscore
+1: 1g;
+bar
+1: 2e;c;
+lyrics below 1: 2s;; "end";
+endbar
+
+// test for strange case that had caused infinite loop...
+score
+	packfact=0.8
+staff 2
+	visible=y
+music
+
+1 1-2: c;;;;
+lyrics 1: "x x x x_";
+bar
+
+1: [grace]8dx;8c#;2..;
+1 2: mr;
+2: [grace]8c;[]d;[]e;[]f#;[]g#;[];[]e&;[]d&;1c#d#e#f#g#a#b#;
+bar
+
+1: 2c;;
+1 2: mr;
+bar
+
+score 
+staffs=1
+vscheme=2f
+beamstyle=4,4,4,4
+music
+
+1: c;d;e;f;
+lyrics 1: 2;; "ab_ cd_";
+bar
+
+1: f;g;r;8g;a;
+lyrics 1: 2.;4; "efg_ hi_";
+bar
+
+newscore
+
+1: f;g;a;r;
+1 2: c;e;r;f;
+lyrics 1: 2.;4; "jkl_ mnop_";
+bar
+
+1: a;b;r;g;
+1 2: 1 e;
+lyrics above 1: 2.;4; "qrst_ uvwx";
+bar
+
+1: 1c;
+lyrics 1: 1; "kk_";
+bar
+
+1: 2d;;
+lyrics 1: 2s;; "end";
+bar
+
+1: c+;2d+;4e+;
+1 2: e;f;g;a;
+lyrics 1: 2.;4; "fgh_ zz";
+bar
+
+1: c+;2.d+;
+1 2: e;f;g;a;
+lyrics 1: 1; "fgh_";
+bar
+
+1: 1c+;
+1 2: 1g;
+lyrics 1: 1; "end";
+repeatstart
+
+newscore
+
+1: c;;;;
+lyrics 1: ;;;; "ab cd ef gh_";
+bar ending "1."
+
+1: d;;;;
+lyrics 1: s;;2; "mn op_";
+repeatend ending "2."
+
+1: e;;;;
+lyrics 1: "st uv wx yz";
+endbar endending
+
+score
+	label=""
+	scorepad=8
+music
+
+define EX1
+1: c<>;d;e;e~;
+ifdef WU
+  lyrics 1: "this_ is a_";
+else
+  lyrics 1: ifdef WT 2;4;4; endif "this is a";
+endif
+bar
+
+1: e;f~;;a<>;
+ifdef WU
+  lyrics 1: "test_ of_";
+else
+  lyrics 1: ifdef WT s;2;4; endif "test of";
+endif
+bar
+
+1: c;ce tie;;eg tie;
+ifdef WU
+  lyrics 1: "a_ thing._";
+else
+  lyrics 1: ifdef WT s;2;4; endif "a thing.";
+endif
+bar  
+
+1: 1eg;
+bar
+@
+
+newpage
+
+bold above 1: 1 "with extendlyrics=n, and no underscores given";
+EX1
+
+newscore
+define WU @
+bold above 1: 1 "with extendlyrics=n, with underscores given";
+EX1
+
+newscore
+score extendlyrics=y
+music
+bold above 1: 1 "with extendlyrics=y, and no underscores given";
+undef WU
+EX1
+
+newscore
+define WU @
+bold above 1: 1 "with extendlyrics=y, with underscores given";
+EX1
+
+newscore
+undef WU
+define WT @
+bold above 1: 1 "with extendlyrics=y, with no underscores given, time specified explicitly";
+EX1
+
+newscore
+bold above 1: 1 "make sure dashes are not affected by extendlyrics=y";
+1: c<>;d;e;e~;
+lyrics 1: "some-thing mul-";
+bar
+
+1: e;f~;;a<>;
+lyrics 1: "ti-syl-";
+bar
+
+1: c;ce tie;;eg tie;
+lyrics 1: "a-bles";
+bar  
+
+1: 1eg;
+bar
+
+score
+	vscheme=3f
+	extendlyrics=n
+	aboveorder=lyrics,othertext
+staff 1
+	extendlyrics=y
+voice 1 2
+	extendlyrics=n
+music
+
+newscore
+bold above 1: 1 "extendlyrics n in score, y in staff 1, n in voice 1 2";
+1: c+<>;d+;e+~;;
+1 2: c;d;e;;
+lyrics above 1: "test this";
+lyrics below 1: "test this and that";
+bar
+
+1: c+;d+;e+;;
+1 2: c<>;d;e~;;
+lyrics above 1: "test this and that";
+lyrics below 1: "test this";
+bar
+
+1: c+;d+;e+;;
+1 2: c;d;e;;
+1 3: g<>;a;ftie;;
+lyrics below 1 using 1 3: "using v3";
+bar

@@ -1,0 +1,53 @@
+//!Mup-Arkkra
+
+header
+	title bold (14) "chordtrans.mup"
+	paragraph (11) "This file tests character escapes in chord and figbass"
+
+score scale=1.3
+rightmargin=1
+music
+
+1: c;;;;
+rom  chord above 1: 1 "flat &"; 2 "escaped \\&"; 3 "sharp #"; 4 "escaped \\#";
+bar
+
+newscore
+
+1: c;;;;
+rom chord above 1: 1 "dblsharp x"; 2 " escaped \\x"; 3 "dblflat &&"; 4 "escaped \\&\\& or \\&& or &\\&";
+bar
+
+newscore
+
+1: c;;;;
+rom above 1: 1 "unescaped";
+rom chord above 1: 1 "C&"; 2 "C#"; 3 "Cx"; 4 "C&&";
+bar
+
+1: c;;;;
+rom above 1: 1 "escaped";
+rom chord above 1: 1 "C\\&"; 2 "C\\#"; 3 "C\\x"; 4 "C\\&\\&";
+bar
+
+newscore 
+
+1: c;;;;
+rom above 1: 1 "verify n not translated in chord";
+rom chord above 1: 1 "Cn"; 3 "n.c";
+bar
+
+newscore
+
+1: c;;;;
+rom above 1: 1 "analysis not escaped on 1, escaped on 3, newline at 4.5";
+rom analysis below 1: 1 "& # x && n"; 3 "\\& \\# \\x \\&\\& \\&& &\\& \\n"; \
+		4.5 "\\new\nli\\ne";
+bar
+
+newscore
+
+1: c;;;;
+rom above 1: 1 "figbass not escaped on 1, escaped on 3";
+rom (20) figbass below 1: 1 "& # x && n"; 3 "\\& \\# \\x \\&\\& \\&& &\\& \\n";
+bar

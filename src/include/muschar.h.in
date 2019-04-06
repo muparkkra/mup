@@ -1,0 +1,150 @@
+/*
+ Copyright (c) 1995-2019  by Arkkra Enterprises.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms,
+ with or without modification, are permitted provided that
+ the following conditions are met:
+
+ 1. Redistributions of source code must retain
+ the above copyright notice, this list of conditions
+ and the following DISCLAIMER.
+
+ 2. Redistributions in binary form must reproduce the above
+ copyright notice, this list of conditions and
+ the following DISCLAIMER in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Any additions, deletions, or changes to the original files
+ must be clearly indicated in accompanying documentation,
+ including the reasons for the changes,
+ and the names of those who made the modifications.
+
+	DISCLAIMER
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS
+ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/*
+ * Define the list of all the special music symbols.
+ */
+
+/* The following set of symbols is in font FONT_MUSIC.
+ * Mapping between name and number is done via Sym2code_table[0][].
+ */
+#define C_GCLEF		(%)	/* G clef (treble clef) */
+#define C_FCLEF		(%)	/* F clef (bass clef) */
+#define C_CCLEF		(%)	/* C clef (alto, tenor, etc. clef) */
+#define C_DBLWHOLE	(%)	/* double whole note */
+#define C_ALTDBLWHOLE	(%)	/* alternate form of double whole note */
+#define C_1N		(%)	/* whole note */
+#define C_2N		(%)	/* half note head */
+#define C_4N		(%)	/* quarter (and shorter) note head */
+#define C_UPFLAG	(%)	/* upward flag */
+#define C_DNFLAG	(%)	/* downward flag */
+#define C_QWHREST	(%)	/* quad rest */
+#define C_DWHREST	(%)	/* double whole rest */
+#define C_1REST		(%)	/* whole rest */
+#define C_2REST		(%)	/* half rest */
+#define C_4REST		(%)	/* quarter rest */
+#define C_8REST		(%)	/* eighth rest */
+#define C_16REST	(%)	/* sixteenth rest */
+#define C_32REST	(%)	/* thirty-second rest */
+#define C_64REST	(%)	/* sixty-fourth rest */
+#define C_128REST	(%)	/* 128th rest */
+#define C_256REST	(%)	/* 256th rest */
+#define C_LL1REST	(%)	/* legerline-less version of whole rest */
+#define C_LL2REST	(%)	/* legerline-less version of half rest */
+#define C_DOT		(%)	/* dot, as for after a note */
+#define C_NAT		(%)	/* natural sign (n) */
+#define C_SHARP		(%)	/* sharp sign (#) */
+#define C_FLAT		(%)	/* flat sign (&) */
+#define C_DBLSHARP	(%)	/* double sharp */
+#define C_DBLFLAT	(%)	/* double flat */
+#define C_XNOTE		(%)	/* X-shaped note head */
+#define C_DWHDIAMOND	(%)	/* double-whole diamond shaped note */
+#define C_DIAMOND	(%)	/* diamond-shaped note head */
+#define C_FILLDIAMOND	(%)	/* filled diamond note head */
+#define C_UP2N		(%)	/* half note with stem up */
+#define C_DN2N		(%)	/* half note with stem down */
+#define C_UP4N		(%)	/* quarter note with stem up */
+#define C_DN4N		(%)	/* quarter note with stem down */
+#define C_COM		(%)	/* common time */
+#define C_CUT		(%)	/* cut time */
+#define C_BEGPED	(%)	/* begin pedal */
+#define C_PEDAL		(%)	/* pedal up/down */
+#define C_ENDPED	(%)	/* end pedal */
+#define C_DNBOW		(%)	/* down bow */
+#define C_UPBOW		(%)	/* up bow */
+#define C_WEDGE		(%)	/* wedge mark */
+#define C_UWEDGE	(%)	/* upside-down wedge */
+#define C_FERM		(%)	/* fermata */
+#define C_UFERM		(%)	/* upside-down fermata */
+#define C_SIGN		(%)	/* for D.S. */
+#define C_CODA		(%)	/* the + over circle for jumping to coda */
+#define C_MOR		(%)	/* mordent */
+#define C_INVMOR	(%)	/* inverted mordent */
+#define C_TURN		(%)	/* "turn" ornament */
+#define C_INVTURN	(%)	/* inverted turn */
+#define C_ACC_GT	(%)	/* accent that looks like > */
+#define C_ACC_HAT	(%)	/* accent that looks like ^ */
+#define C_ACC_UHAT	(%)	/* upside down hat accent */
+#define C_TR		(%)	/* trill */
+#define C_LEG		(%)	/* legato mark */
+#define C_RR		(%)	/* railroad tracks */
+#define C_DIM		(%)	/* diminished (small circle) */
+#define C_HALFDIM	(%)	/* half diminished (small circle with slash) */
+#define C_TRIANGLE	(%)	/* triangle, as for a major 7th chord */
+#define C_MEASRPT	(%)	/* measure repeat */
+#define C_COPYRIGHT	(%)	/* c in circle */
+#define C_UP8N		(%)	/* 1/8 note with stem up */
+#define C_DN8N		(%)	/* 1/8 note with stem down */
+#define C_UP16N		(%)	/* 1/16 note with stem up */
+#define C_DN16N		(%)	/* 1/16 note with stem down */
+#define C_UP32N		(%)	/* 1/32 note with stem up */
+#define C_DN32N		(%)	/* 1/32 note with stem down */
+#define C_UP64N		(%)	/* 1/64 note with stem up */
+#define C_DN64N		(%)	/* 1/64 note with stem down */
+#define C_UP128N	(%)	/* 1/128 note with stem up */
+#define C_DN128N	(%)	/* 1/128 note with stem down */
+#define C_UP256N	(%)	/* 1/256 note with stem up */
+#define C_DN256N	(%)	/* 1/256 note with stem down */
+
+/* The following set of symbols is in font FONT_MUSIC2.
+ * Mapping between name and number is done via Sym2code_table[1][].
+ */
+#define C_DWHRIGHTTRIANGLE	(%)	/* double whole right triangle */
+#define C_RIGHTTRIANGLE		(%)	/* hollow right triangle */
+#define C_FILLRIGHTTRIANGLE	(%)	/* filled right triangle */
+#define C_UDWHRIGHTTRIANGLE	(%)	/* upside down double whole right tri*/
+#define C_URIGHTTRIANGLE	(%)	/* upside down hollow right triangle */
+#define C_UFILLRIGHTTRIANGLE	(%)	/* upside down filled right triangle */
+#define C_DWHRECTANGLE		(%)	/* double whole rectangle */
+#define C_RECTANGLE		(%)	/* hollow rectangle */
+#define C_FILLRECTANGLE		(%)	/* filled rectangle */
+#define C_DWHISOSTRIANGLE	(%)	/* double whole isosceles triangle */
+#define C_ISOSTRIANGLE		(%)	/* hollow isosceles triangle */
+#define C_FILLISOSTRIANGLE	(%)	/* filled isosceles triangle */
+#define C_DWHPIEWEDGE		(%)	/* double whole pie wedge */
+#define C_PIEWEDGE		(%)	/* hollow pie wedge */
+#define C_FILLPIEWEDGE		(%)	/* filled pie wedge */
+#define C_DWHSEMICIRCLE		(%)	/* double whole semicircle */
+#define C_SEMICIRCLE		(%)	/* hollow semicircle */
+#define C_FILLSEMICIRCLE	(%)	/* filled semicircle */
+#define C_DWHSLASHHEAD		(%)	/* double whole slash note head */
+#define C_SLASHHEAD		(%)	/* hollow slash note head */
+#define C_FILLSLASHHEAD		(%)	/* filled slash note head */
+#define C_BLANKHEAD		(%)	/* blank note head */

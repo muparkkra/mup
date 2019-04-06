@@ -1,0 +1,23 @@
+/* XPM */
+static char * mup16_xpm[] = {
+"16 16 4 1",
+" 	c None",
+".	c white",
+"X	c #ff2222",
+"o	c #ff9999",
+" ......         ",
+"..XXXo.         ",
+".XXXXX.   ......",
+".XXXXX.  ..XXXo.",
+".XoXX..  .XXXXX.",
+".X....   .XXXXX.",
+".X.      .XoXX..",
+".X.      .X.... ",
+".X.      .X.    ",
+".X.      .X.    ",
+".X....   .X.    ",
+".XXXo.....X.    ",
+".XXXXXXX..X.    ",
+".XXXXXXXXXX.    ",
+".....oXXXXX.    ",
+"    ........    "};

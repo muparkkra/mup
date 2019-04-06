@@ -1,0 +1,72 @@
+//!Mup-Arkkra
+
+header
+	title bold (7) "shaped.mup"
+	paragraph (6) "This file tests all the shaped notes, with both stem directions, and the variations for quater and shorter through double whole."
+
+score
+	time=8/4
+	beamstyle=2,2,2,2
+	scale=2.5
+
+define TEST1(B,H)
+score noteheads=H
+music
+rom above 1: 1 `B` + H;
+1: B 8c;d;c;d;c+;d+;c+;d+;4c;d;d+;c+;
+bar
+1: B 2c;d;d+;c+;
+bar
+1: B 1c;d;
+bar
+1: B 1c+;d+;
+bar
+1: B 1/2c;
+bar
+1: B 1/2d;
+bar
+1: B 1/2d+;
+bar
+1: B 1/2c+;
+bar
+newpage
+@
+
+TEST1(,"norm")
+TEST1(,"x")
+TEST1(,"allx")
+TEST1(,"diam")
+TEST1(,"blank")
+TEST1(,"righttri")
+TEST1(,"isostri")
+TEST1(,"rect")
+TEST1(,"pie")
+TEST1(,"semicirc")
+TEST1(,"slash")
+TEST1(,"allslash")
+
+TEST1([cue]...,"norm")
+TEST1([cue]...,"x")
+TEST1([cue]...,"allx")
+TEST1([cue]...,"diam")
+TEST1([cue]...,"blank")
+TEST1([cue]...,"righttri")
+TEST1([cue]...,"isostri")
+TEST1([cue]...,"rect")
+TEST1([cue]...,"pie")
+TEST1([cue]...,"semicirc")
+TEST1([cue]...,"slash")
+TEST1([cue]...,"allslash")
+
+score noteheads="righttri norm rect righttri norm rect diam"
+time=4/4
+music
+rom above 1: 1 "grace shaped notes";
+1: [grace]... 8c;d;e;f;g;a;b;[-]1c;
+bar
+
+score noteheads="isostri semicirc diam righttri norm rect pie"
+music
+1: [grace]... 8c;d;e;f;g;a;b;[-]1c;
+bar
+

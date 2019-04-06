@@ -1,0 +1,134 @@
+//!Mup-Arkkra-6.1
+
+//macros to insert chords, articulations (downbows & upbows), stems, beams & flags below tablature numbers created by michael.gregory@und.edu with much help and encouragement from the Arkkra boys (Bill & John)
+
+ 
+//ARTICULATIONS
+
+
+//D(location) prints a Downbow symbol above the tab staff directly above the located note
+
+//U(location) prints an Upbow symbol above the tab staff directly above the located note
+
+//TRIPLET(location) prints a "3" below the middle number (the location) of a TRIPLET in the tablature
+
+
+
+//CHORDS & STEMS
+
+
+//C(location,chord name) prints the Chord name at the location above the tabnote staff
+
+//S(location) prints a Stem below the tab number location
+
+//F(location) prints a wavy Flag at the bottom of the stem at the location (used only in the definition of FLAG)
+
+//FLAG(location) prints a stem at the location and a wavy Flag at the bottom of that stem
+
+//DS(location) prints a Dotted Stem below tab number location
+
+//DES(two locations) prints stems & beam & partial beam on a single Dotted Eighth note (TAG1) followed by a Sixteenth note (TAG2)
+
+//SLOPE(two notes) calculates the slope of the line passing through the two notes
+
+//S3(three locations) beams & Stems 3 consecutive 8th notes
+
+//B4(four locations) Beams & stems 4 consecutive 8th notes
+
+//B5(seven locations) prints stems of correct lengths along with Beam for the first five locations and prints a parallel beam for a pair of 16th notes at the last two locations
+
+//B2(two locations) beams & stems 2 consecutive 8th notes
+
+//SSE(three locations) beams & stems two Sixteenth notes followed by a single Eighth note
+
+//ESS(three locations) beams & stems an Eighth note followed by two Sixteenth notes
+
+//SSSS(four locations) prints stems & beams for four consecutive Sixteenth notes 
+
+
+
+
+
+
+
+
+
+	define D(TAG) mussym above 2: TAG "dnbow";
+	@
+
+	define U(TAG) mussym above 2: TAG "upbow";
+	@
+
+	define TRIPLET(TAG) print (TAG.w-1.8,TAG.s-10) "\f(BX) 3"
+	@
+
+
+
+
+
+	define C(TAG,CH) bold chord above all: TAG `CH`;
+	@
+
+	define S(TAG)    line (TAG.x,TAG.s) to (TAG.x,TAG.s-6)
+	@
+
+	define F(TAG)  medium curve (TAG.x+.1,TAG.s-6) to (TAG.e+0.17,TAG.s-0.6) bulge .2,-.7
+				 line (TAG.x+.01,TAG.s-5.9) to (TAG.x+.7,TAG.s-3.7)
+	@
+
+	define FLAG(TAG) S(TAG) F(TAG) 
+	@
+
+	define DS(TAG)    line (TAG.w +1, TAG.s) to (TAG.w +1, TAG.s -6)
+			  print (TAG.w+2, TAG.s -3.5) "\(dot)"
+	@
+
+	define DES(TAG1,TAG2)
+		wide line ((TAG1.x) + (.67)*(TAG2.x - TAG1.x),(TAG1.s - 4) + .67*(SLOPE(TAG1,TAG2))*(TAG2.x - TAG1.x)) to (TAG2.x,TAG2.s - 4) 
+		S3(TAG1,TAG1,TAG2)  
+		print (TAG1.x+1, TAG1.s -3.8) "\(dot)"
+	@
+
+	
+
+	define SLOPE(N1, N2)  ((N2.y - N1.y) / (N2.x - N1.x)) @
+
+
+
+	define S3(TAG1,TAG2,TAG3)
+			B4(TAG1,TAG1,TAG2,TAG3)
+	@
+	
+	define B4(TAG1,TAG2,TAG3,TAG4)
+		S(TAG1) S(TAG4)
+		wide line  (TAG1.x,TAG1.s-6) to (TAG4.x,TAG4.s-6)
+		line (TAG2.x,TAG2.s) to (TAG2.x,TAG1.s - 6 + SLOPE(TAG1,TAG4) * (TAG2.x - TAG1.x))
+		line (TAG3.x,TAG3.s) to (TAG3.x,TAG1.s - 6 + SLOPE(TAG1,TAG4) * (TAG3.x - TAG1.x))
+	@
+
+	define B5(TAG1,TAG2,TAG3,TAG4,TAG5,TAG6,TAG7)
+		S(TAG1) S(TAG5)
+		wide line  (TAG1.x,TAG1.s-6) to (TAG5.x,TAG5.s-6)
+		line (TAG2.x,TAG2.s) to (TAG2.x,TAG1.s - 6 + SLOPE(TAG1,TAG5) * (TAG2.x - TAG1.x))
+		line (TAG3.x,TAG3.s) to (TAG3.x,TAG1.s - 6 + SLOPE(TAG1,TAG5) * (TAG3.x - TAG1.x))
+		line (TAG4.x,TAG4.s) to (TAG4.x,TAG1.s - 6 + SLOPE(TAG1,TAG5) * (TAG4.x - TAG1.x))
+		wide line (TAG6.x,TAG1.s-4+SLOPE(TAG1,TAG5)*(TAG6.x - TAG1.x)) to (TAG7.x,TAG1.s-4+SLOPE(TAG1,TAG5)*(TAG7.x-TAG1.x))
+	@
+
+	define B2(TAG1,TAG2)
+			B4(TAG1,TAG1,TAG2,TAG2)
+	@
+
+	define SSE(TAG1,TAG2,TAG3)
+			B5(TAG1,TAG1,TAG2,TAG2,TAG3,TAG1,TAG2)
+	@
+
+	define ESS(TAG1,TAG2,TAG3)
+			B5(TAG1,TAG1,TAG2,TAG2,TAG3,TAG2,TAG3)
+	@
+
+	define SSSS(TAG1,TAG2,TAG3,TAG4)
+			B5(TAG1,TAG2,TAG3,TAG4,TAG4,TAG1,TAG4)
+	@
+
+

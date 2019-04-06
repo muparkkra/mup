@@ -1,0 +1,62 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "emptymeas.mup"
+	paragraph (14) "This file tests usage of the emptymeas parameter."
+score
+	packfact=4
+	staffs=2
+	vscheme=2f
+	emptymeas= "c;d;e;f;"
+
+staff 2
+	emptymeas= "g;f;;;"
+
+voice 2 2
+	emptymeas="a;b;c;d;"
+music
+
+rom above all: 1 "score  c;d;e;f   staff 2  g;f;;;  voice 2 2  a;b;c;d;";
+rom above all: 1 "all voices defaulted";
+bar
+
+rom above all: 1 "1 1: ex;;;;";
+1 1: ex;;;;
+bar
+
+rom above all: 1 "1 1-2: b;;;;";
+1 1-2: b;;;;
+bar
+
+rom above all: 1 "2: mr;";
+2: mr;
+bar
+
+rom above all: 1 "2 2: 2c+;;";
+2 2: 2c+;;
+bar
+
+voice 2 2 unset emptymeas
+
+music
+rom above all: 1 "unset in voice 2 2";
+bar
+
+staff 2 unset emptymeas
+
+music
+rom above all: 1 "unset in staff 2";
+bar
+
+score emptymeas= "mus;"
+
+music
+rom above all: 1 "score put to mus;";
+bar
+
+staff 2 vscheme=3f
+voice 2 3 emptymeas="1c;"
+
+music
+rom above 1: 1 "add voice 2 3: 1c";
+bar

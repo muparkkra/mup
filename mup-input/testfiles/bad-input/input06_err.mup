@@ -1,0 +1,21 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input1_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+score staffs=2
+music
+1: 4c;;;;
+octave above 1: 3 "8va" til 1;
+> above 1: 2 til 1m+7;
+bar
+mussym above 1: 17.8 "tr" til 1m+4;
+mussym between 1&2: 2(-3) "ferm";
+> above 1: 2(-2) til 3;
+< below 1: 1.2 "string";
+phrase 1: 3 "string" til 4;
+pedal 1: 3 "xx"; 4 * til 4.5;
+rom 1: 2.6;
+octave between 1&2: 1 "8va" til 2;
+bar

@@ -1,0 +1,19 @@
+//!Mup-Arkkra
+header
+	title bold (18) "paper_halfletter.mup"
+	paragraph (14) "This file tests halfletter paper size."
+footer
+	title (18) "Footer for halfletter paper size"
+score
+	pagesize=halfletter
+
+music
+
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+newscore
+1: e;;;;
+bar

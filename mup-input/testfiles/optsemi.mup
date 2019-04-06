@@ -1,0 +1,55 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "optsemi.mup"
+	paragraph (14) "This file tests that places where semicolons are optional work equally well with or without them."
+
+block
+	title "This title ends with a semicolon";
+	title "This title does not end with a semicolon"
+
+music
+
+1: c;;;;
+rom above 1: 2 "This bar does not have semicolon";
+bar
+1: d;;;;
+rom above 1: 2 "This bar does have semicolon";
+rom below 1: 1 "This newscore does not have semicolon";
+bar ;
+newscore
+multirest 4
+rom above 1: 2 "This multirest does not have semicolon";
+bar
+multirest 5 ;
+rom above 1: 2 "This multirest does have semicolon";
+rom below 1: 1 "This newscore does have semicolon";
+bar
+newscore ;
+1: e;;;;
+bar reh num pad 3 ;
+1: f;;;;
+rom below 1: 1 "This newpage does have semicolon";
+bar ;
+newpage ;
+1: g =g;;;;
+rom above 1: 1 "top (dotted) line has semicolon";
+rom above 1: 1 "second (dashed) line has no semicolon";
+rom above 1: 1 "top curve has semicolon";
+rom above 1: 1 "bottom curve has no semicolon";
+bar
+1: a =a;;;;
+print (a.x, a.y -10) "print with semi";
+print (a.x, a.y -15) "print without semi"
+left (a.x, a.y -20) "left with semi";
+left (a.x, a.y -25) "left without semi"
+right (a.x, a.y -30) "right with semi";
+right (a.x, a.y -35) "right without semi"
+center (a.x, a.y -40) "center with semi";
+center (a.x, a.y -45) "center without semi"
+dotted line (g.x, g.y - 7) to (a.x-5, a.y -15) ;
+dashed line (g.x, g.y - 11) to (a.x-5, a.y -22)
+curve (g.x, g.y - 20) to (g.x + 15, g.y - 24) to (g.x + 30, g.y - 20);
+curve (g.x, g.y - 30) to (g.x + 15, g.y - 34) to (g.x + 30, g.y - 30)
+
+endbar

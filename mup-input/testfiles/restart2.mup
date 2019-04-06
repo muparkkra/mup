@@ -1,0 +1,48 @@
+//!Mup-Arkkra
+
+header
+	title bold (12) "restart.mup"
+	paragraph (9) "This file tests restarts."
+
+score
+	staffs=4
+	scale=1.5
+	bracket=1,1-2
+	brace=3-4
+music
+
+1-4: c;;;;
+bar
+
+restart
+
+1-4: c;;;;
+bar
+
+newscore
+
+rom above 1: 1 "test num=42, reh num\non restart";
+1-4: c;;;;
+rom below 3: 3 "This spills into whitebox";
+bar
+
+restart mnum=42 reh mnum dist 4 =g
+
+print (g.x, g.y - 10) "This was printed\nstarting at restart x";
+1-4: c;;;;
+bar
+
+score
+	indentrestart=y
+	packfact=4
+music
+
+newscore
+1-4: e;;;;
+bar
+
+restart
+
+rom above all: 1 "with indentrestart=y";
+1-4: g;;;;
+bar

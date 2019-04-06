@@ -1,0 +1,129 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "addtimes.mup"
+	paragraph (14) "This file tests uses of added up time values."
+	title ""
+
+score
+	beamstyle=2+8,4.
+	swingunit=2+4
+	timeunit=4+2
+	packfact=3.5
+	size=14
+music
+
+rom above 1: 1 "beamstyle=2+8,4.";
+1: 8c;d;e;f;g;a;b;c;
+lyrics 1: 2+8;2-8; "a test";
+bar
+
+score
+	beamstyle=2-8,2+8
+music
+
+rom above 1: 1 "beamstyle=2-8,2+8";
+1: 8c;d;e;f;g;a;b;c;
+bar
+
+score 
+	beamstyle=2.-4.+8, 8+4+4-8;
+music
+
+rom above 1: 1 "beamstyle=2.-4.+8, 8+4+4-8";
+1: 8c;d;e;f;g;a;b;c;
+bar
+
+score
+	beamstyle=(2-16, 16+4, 4)
+music
+
+rom above 1: 1 "subbeams (2-16, 16+4, 4)";
+1: 16c;d;e;f;g;c;d;e;f;g;c;d;e;f;g;c;
+bar
+
+rom above 1: 1 "additive on first, copied to second";
+rom above 1: 1 "4+8c;;4d";
+1: 4+8c;;4d;
+bar
+
+rom above 1: 1 "additive on second, copied to last";
+rom above 1: 1 "4e;4+8c;;";
+1: 4e;4+8c;;
+bar
+
+rom above 1: 1 "tuplet duration 2+8";
+rom above 1: 1 "includes two groups with 8+32";
+1: {8c;d;e;8+32g;e;8f;c;}7,2+8;4.d;
+bar
+
+rom above 1: 1 "tuplet duration 2+8-16";
+1: {8c;d;e;g;e;f;c;}7,2+8-16;4..d;
+bar
+
+rom above 1: 1 "2+8c;8d;4e;";
+1: 2+8c;8d;4e;
+bar
+
+rom above 1: 1 "multiple additions";
+rom above 1: 1 "2+8+8c;4d;";
+1: 2+8+8c;4d;
+bar
+
+rom above 1: 1 "mixed add and subtract";
+rom above 1: 1 "2-4+16c;4+2-16d;";
+1: 2-4+16c;4+2-16d;
+bar
+
+rom above 1: 1 "2-4+16-32c;4+2-16+32d;";
+1: 2-4+16-32c;4+2-16+32d;
+bar
+
+rom above 1: 1 "timeunit 4+2 on first group";
+rom above 1: 1 "lyrics time explicit additive";
+1: c;4d;
+lyrics 1: 2+4;4; "test-ing";
+bar
+
+rom above 1: 1 "timeunit 4+2 on first group";
+rom above 1: 1 "lyrics time derived";
+1: c;4d;
+lyrics 1: 2+4;4; "test-ing";
+bar
+
+rom above 1: 1 "lyrics time 4+4;;";
+rom above 1: 1 "(copied to second group)";
+1: 2c;d;
+lyrics 1: 4+4;; "test-ing";
+bar
+
+rom above 1: 1 "additive time on rests";
+1: 4+8r;4-8r;4+8+8r;
+bar
+
+rom above 1: 1 "additive time on spaces";
+1: 4+8s;4-8;4+8+8us;
+bar
+
+score vscheme=2f
+music
+
+rom above 1: 1 "additive time on chord-at-a-time";
+[1; 1 2]: 4+8ec;8+4br;4af;
+bar
+
+score time=20/4
+music
+
+rom above 1: 1 "add/sub involving double whole";
+rom above 1: 1 "1/2+1/2-16+16c;1d;";
+1: 1/2+1/2-16+16c;1d;
+bar 
+
+rom above 1: 1 "add/sub involving quad whole rest";
+1: 1/4-16+8-16r;1d;
+bar
+
+rom above 1: 1 "accidentals on notes";
+1: 2.+8c#;4-8e&;1-4+8+8-16e&g&b&;16r;1/2+1/2-1-16d#ax;16r;
+bar

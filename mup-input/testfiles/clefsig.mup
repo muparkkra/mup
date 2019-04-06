@@ -1,0 +1,100 @@
+//!Mup-Arkkra
+header
+	title bold (18) "clefsig.mup"
+	paragraph (14) "\
+Test various combinations of changing key signatures, time signatures,
+and clefs.
+Changes stated \"between\" staffs are made in the score context.
+Things stated \"above 1\" are made in staff 1 context."
+score
+	key = 1#
+	staffs = 2
+	size = 15
+music
+	1: 1f;
+	2: 1f;
+	bar
+score time = 1/1
+music
+	rom between 1&2: 0 "1/1";
+	1: 1f;
+	2: 1f;
+	bar
+score key = 3#
+music
+	rom between 1&2: 0 "3#";
+	1: 1f;
+	2: 1f;
+	bar
+score clef = alto
+music
+	rom between 1&2: 0 "alto";
+	1: 1f;
+	2: 1f;
+	bar
+score time = 64/64; key = 0&
+music
+	rom between 1&2: 0 "0&;64/64";
+	1: 1f;
+	2: 1f;
+	bar
+score time = 32/32; clef = treble
+music
+	rom between 1&2: 0 "treble;32/32";
+	1: 1f;
+	2: 1f;
+	bar
+score key = 5&; clef = bass
+music
+	rom between 1&2: 0 "bass;5&";
+	1: 1f;
+	2: 1f;
+	bar
+score time = 8/8; key = 0#; clef = treble
+music
+	rom between 1&2: 0 "treble;0#;8/8";
+	1: 1f;
+	2: 1f;
+	bar
+staff 1 key = 3#
+music
+	rom 1: 1 "3#";
+	1: 1f;
+	2: 1f;
+	bar
+staff 1 clef = alto
+music
+	rom 1: 1 "alto";
+	1: 1f;
+	2: 1f;
+	bar
+staff 1 key = 2#; clef = bass
+music
+	rom 1: 1 "bass;2#";
+	1: 1f;
+	2: 1f;
+	bar
+score
+	key = 3&
+music
+	rom between 1&2: 1 "3&";
+	1-2: 1d;
+	bar
+score
+	staffs = 3
+	time = common
+	key = 0#
+	clef = bass
+music
+	rom between 1&2: 1 "common; 0#; bass";
+	1-3: 1d;
+	bar
+score
+	staffs = 1
+staff 1
+	key = 4#
+	clef = alto
+music
+	rom above 1: 1 "4#; alto";
+	1: 1f;
+	bar

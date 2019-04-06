@@ -1,0 +1,159 @@
+//!Mup_Arkkra
+
+header
+	title bold (18) "subbar.mup"
+	paragraph (14) "This file tests subbars."
+	title ""
+
+score
+	staffs=6
+	barstyle=between all
+	packfact=1.2
+
+music
+
+rom above all: 1 "barstyle=between all";
+1-6: c;;;;
+bar
+
+1-6: e;;;;
+bar
+
+score
+	barstyle=all
+music
+
+rom above all: 1 "barstyle=all";
+1-6: c;;;;
+bar
+
+1-6: e;;;;
+bar
+
+score barstyle=all
+staff 2 visible=n
+staff 4 visible=n
+music
+
+rom above all: 1 "barstyle=all with staffs 2 and 4 invisible";
+1-6: d;;;;
+bar
+
+1-6: g;;;;
+bar
+
+score barstyle=between all
+music
+
+rom above all: 1 "barstyle=between all with staffs 2 and 4 invisible";
+1-6: d;;;;
+bar
+
+1-6: g;;;;
+bar
+
+staff 2 visible=y
+staff 4 visible=y
+score
+	barstyle=1,2-5,6
+	subbarstyle=dotted bar between all time 3
+music
+
+rom above all: 1 "barstyle=1,2-5,6";
+rom above all: 1 "subbarstyle=dotted bar between all time 3";
+1-6: f;;;;
+bar
+
+1-6: g;;;;
+bar
+
+score
+	subbarstyle=dashed dblbar all time 2
+music
+
+rom above all: 1 "subbarstyle=dashed dblbar all time 2";
+1-6: f;;;;
+bar
+
+1-6: g;;;;
+bar
+
+score
+	subbarstyle=bar (top-2 to bottom+2) 1-2,3-4,6 time 2,4
+music
+
+rom above all: 1 "subbarstyle=bar (top-2 to bottom+2) 1-2,3-4,6 time 2,4";
+1-6: f;;;;
+bar
+
+1-6: g;;;;
+bar
+
+
+staff 2 stafflines=tab
+staff 4 stafflines=tab
+score
+	subbarstyle=bar (middle+3 to middle-3) 2-4 time 3
+music
+
+rom above all: 1 "tablature staffs";
+rom above all: 1 "subbarstyle=bar (middle+3 to middle-3) 2-4 time 3";
+2,4: e2;;;;
+bar
+
+2,4: a4;;;;
+bar
+
+staff 2 staffscale=1.4
+staff 4 staffscale=0.7
+music
+
+rom above all: 1 "with different staffscale values";
+2,4: e2;;;;
+bar
+
+2,4: a4;;;;
+bar
+
+score subbarstyle= dotted bar between 1-4 time 2
+music
+
+rom above all: 1 "dotted bar between 1-4 time 2";
+2,4: e2;;;;
+bar
+
+2,4: a4;;;;
+bar
+
+staff 2 stafflines=5
+staff 4 stafflines=5
+music
+
+score
+	subbarstyle=dblbar (top-1 to bottom+1) 1-6 time 3
+music
+
+rom above 1: 1 "tests of pr_subbar";
+rom above 1: 1 "subbarstyle=dblbar (top-1 to bottom+1) 1-6 time 3";
+1-2,4: e;;;;
+3,5-6: 2.g;4a;
+bar
+
+1,3,5: 8e;f;g;a;b;a;g;f;
+2,4,6: 1g;
+bar
+
+newscore
+
+score
+	subbarstyle=dotted bar between 1-6 time 3
+music
+
+rom above all: 1 "subbarstyle=dotted bar between 1-6 time 3";
+1-3: e;;;;
+4-6: 4c;2.;
+bar
+
+1,3-4: g;;;;
+2,5-6: 4e;2c;4r;
+bar

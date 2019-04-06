@@ -1,0 +1,113 @@
+//!Mup-Arkkra
+header
+	title bold (18) "multistuff.mup"
+	paragraph (14) "\
+Test the interactions of multirests with stuff that has
+\"til\" clauses."
+music
+	1: 1a;
+	rom 1: 3 "2m+3~" til 2m+3;
+	bar
+
+	1: 1a;
+	rom 1: 3 "1m+3-" til 1m+3;
+	rom 1: 3 "2m+3~" til 2m+3;
+	rom 1: 3 "3m+3_" til 3m+3;
+	rom 1: 3 "4m+3-" til 4m+3;
+	rom 1: 3 "5m+3~" til 5m+3;
+	rom 1: 3 "6m+3_" til 6m+3;
+	bar
+
+	multirest 3
+	bar
+
+	newscore
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	rom 1: 3 "1m+3" til 1m+3;
+	rom 1: 3 "2m+3_" til 2m+3;
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	newscore
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	rom 1: 3 "1m+3-" til 1m+3;
+	rom 1: 3 "2m+3~" til 2m+3;
+	rom 1: 3 "3m+3_" til 3m+3;
+	rom 1: 3 "4m+3-" til 4m+3;
+	rom 1: 3 "5m+3~" til 5m+3;
+	rom 1: 3 "6m+3_" til 6m+3;
+	bar
+
+	newscore
+
+	multirest 3
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	newscore
+
+	1: 1a;
+	bar
+
+	multirest 5
+	rom 1: 1 "3_" til 3;
+	rom 1: 1 "3m+3~" til 3m+3;
+	rom 1: 1 "4m+3-" til 4m+3;
+	rom 1: 1 "5m+3_" til 5m+3;
+	rom 1: 1 "6m+3_" til 6m+3;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	bar
+
+	1: 1a;
+	rom 1: 1 "4~" til 4;
+	rom 1: 2 "3~" til 3;
+	bar
+
+	newscore
+
+	1: 1a;
+	rom 1: 3 "1m+3~" til 1m+3;
+	rom 1: 3 "2m+3~" til 2m+3;
+	rom 1: 3 "3m+3~" til 3m+3;
+	bar
+
+	multirest 2
+	bar
+
+	1: 1a;
+	bar

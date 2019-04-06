@@ -1,0 +1,148 @@
+//!Mup-Arkkra
+header
+	title bold (18) "rests.mup"
+	paragraph (14) "\
+Test the vertical placements of rests.
+Also test some code related
+to placing marks at counts determined by rests."
+score
+	packfact = 2.0
+	time = 8/4
+	scoresep = 9, 9
+	scale = 0.98
+music
+	rom(15) all: 1 "vscheme 1";
+	rom 1: 1 "multirest";
+	mussym 1: 1 "ferm";
+	multirest 1000
+	rom below 1: 1 "all these fermatas are on 'count 1'";
+	rom below 1: 1 "these words start on count 1";
+	bar
+
+	rom 1: 1 "measure rest";
+	mussym 1: 1 "ferm";
+	1: mr;
+	rom below 1: 1 "these words start on count 1";
+	bar
+
+	newscore
+
+	rom 1: 1 "double whole rest";
+	mussym 1: 1 "ferm";
+	1: 1/2r;
+	bar
+
+	rom 1: 1 "other rests in order; 2 1/256 rests";
+	mussym 1: 1 "ferm";
+	1: 1r; 2; 4; 8; 16; 32; 64; 128; 256; ;
+	dblbar
+
+	newscore
+score
+	vscheme = 2o
+music
+	rom(15) all: 1 "vscheme 2o; voice 2 is spaces";
+	1 1: 1/2r;
+	bar
+
+	1 1: 1r; 2; 4; 8; 8;
+	bar
+
+	rom(15) all: 1 "vscheme 2o; voice 1 is spaces";
+	1 2: 1/2r;
+	bar
+
+	1 2: 1r; 2; 4; 8; 8;
+	bar
+
+	newscore
+
+	rom(15) all: 1 "vscheme 2o";
+	1 1: 1e+; r;
+	1 2: 1/2 f;
+	bar
+
+	1 1: 1/2 e+;
+	1 2: 1f; r;
+	bar
+score
+	vscheme = 2f
+music
+	rom(15) all: 1 "vscheme 2f; voice 2 is spaces";
+	1 1: 1/2r;
+	bar
+
+	1 1: 1r; 2; 4; 8; 8;
+	bar
+
+	newscore
+
+	rom(15) all: 1 "vscheme 2f; voice 1 is spaces";
+	1 2: 1/2r;
+	bar
+
+	1 2: 1r; 2; 4; 8; 8;
+	bar
+
+	rom(15) all: 1 "vscheme 2f";
+	1 1: 1e+; r;
+	1 2: 1/2 f;
+	bar
+
+	1 1: 1/2 e+;
+	1 2: 1f; r;
+	bar
+
+	newscore
+score
+	time = 4/4
+music
+	rom(15) all: 1 "vscheme 2f";
+	1 1: 4f+; d+; b; a;
+	1 2: 4r; ; ; ;
+	bar
+
+	1 1: 4d; c; b-; d;
+	1 2: 4r; ; ; ;
+	bar
+
+	1 1: 4r; ; ; ;
+	1 2: 4g+; b; c++; a;
+	bar
+
+	1 1: 4r; ; ; ;
+	1 2: 4g-; b-; c; a-;
+	bar
+
+	newscore
+
+	1 1: 4r; ; ; ;
+	1 2: 4s; g+; s; e+;
+	bar
+
+	1 1: 4s; d; s; f;
+	1 2: 4r; ; ; ;
+	bar
+score
+	vscheme = 2o
+music
+	rom(15) all: 1 "vscheme 2o";
+	1 1: 4r; ; ; ;
+	1 2: 4s; g+; s; e+;
+	bar
+
+	1 1: 4s; d; s; f;
+	1 2: 4r; ; ; ;
+	bar
+
+	newscore
+score
+	packfact = 0.2
+music
+	1 1: 2r; 4; 8; 16; 32; 64; 128; 256; ;
+	1 2: 2g+; 4; 8; 16; 32; 64; 128; 256; ;
+	bar
+
+	1 1: 2d; 4; 8; 16; 32; 64; 128; 256; ;
+	1 2: 2r; 4; 8; 16; 32; 64; 128; 256; ;
+	bar

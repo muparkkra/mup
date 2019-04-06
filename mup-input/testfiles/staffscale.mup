@@ -1,0 +1,62 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "staffscale.mup"
+	paragraph (14) "This file tests that things that should affected by the staffscale parameter are scaled appropriately."
+	title ""
+
+score staffs=4
+	key=2#
+	bracket=1-2,2
+	brace=3-4
+	time=common
+	measnum=y
+	cancelkey=y
+
+staff 1
+	staffscale=0.75
+	label="top"
+	stafflines=5 drum
+
+staff 2
+	staffscale=1.6
+	label="second"
+
+staff 3
+	key=2&
+	staffscale=1.2
+	label="tabnote"
+
+staff 4
+	staffscale=0.8
+	stafflines=tab
+	label="tab";
+
+music
+
+rom above 1: 0.5 "staffscale=0.75";
+rom above 2: 0.5 "staffscale=1.6";
+rom above 3: 0.5 "staffscale=1.2";
+rom above 4: 0.5 "staffscale=0.8";
+1-2: ce(&)g~e+g+;d dotted<e>g; [with "sfz"] 2(e(&&))g(c(x)+)?;
+lyrics below 1-2: 4;;2; "The ly-rics_";
+phrase above 1: 1 til 3;
+4: e4<\n>;e6;d5 "1/2"; d "full";
+roll 1: 1;
+roll down 2: 1;
+boldital above 1-4: 3 "a string\b\b\b\b\b\b_______";
+repeatend reh num
+
+score time=4/4
+staff 2 clef=alto ; key=6&
+music
+
+1: [grace]16d;[xnote]4g alt 2;b;2b&&-;8g;16ceg dashed slur;dfc+;
+2: 8c bm;d;[grace]32c&;[]d;16e;f;g;a ebm;[xnote]... 4c+; [slash 2] 8; [cue;slash 3]g;
+octave above 1-2: 2 "8va" til 3;
+pedal 1-2: 1;2;3*;
+4: d4g6 dotted<>e'8;g9;2r;
+> below 1-3: 1 til 3;
+mussym above 2: 1 "tr" til 2;
+ital (17) below 4: 3 "\[boxed text\]";
+bar

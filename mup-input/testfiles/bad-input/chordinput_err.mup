@@ -1,0 +1,52 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "chordinput_err.mup"
+	paragraph (14) "This file test various error cases in chord-at-a-time input."
+
+score
+	staffs=3
+
+staff 3
+	stafflines=tab
+
+music
+
+// illegal staff
+[1,4]: c;;;;
+bar
+
+// illegal voice
+[1-2 2]: c;;;;
+bar
+
+// mix of tab and not
+[1-3]: e;;;;
+bar
+
+// multiply defined
+[1]: c;;;;
+1: d;;;;
+2: d;;;;
+[2]: c;;;;
+bar
+
+// no mapping for number of notes
+[1][1;2;1]: ce;d;e;f;
+bar
+
+// timeunit mismatch
+staff 2 timeunit=8
+music
+[1-2]: c;;;;
+bar
+
+// bend mismatch
+[3;3]: e4 "1/2"e4;e2b3;;;
+bar
+
+// missing pitches on first chord
+[1]: ;c;;;
+bar
+
+

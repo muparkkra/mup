@@ -1,0 +1,252 @@
+// This file contains macro definitions for guitar chords.
+// It can be "include"d by Mup song files, so that you can just use
+// the names of a chords and have them expanded into the appropriate notes.
+// The notes are defined in the macros in tablature notation,
+// so you need to define some staff as tablature
+// (use stafflines=tab to get the standard 6-string guitar).
+//
+// For each of the twelve notes, 17 chord varieties are defined.  For
+// "black notes", both the sharp and flat versions are defined.  Macros
+// have to be capital letters, numbers, and underscores.  So "M" is used
+// for minor, "S" for sharp, and "F" for flat.  Most chords are defined
+// in low positions if possible, but bar chords are used when they are
+// possible and would give a fuller sound.
+//
+// You can have the tablature staff and/or the tabnote staff Mup generates
+// from it print out, but more likely you'll just want to use it to listen
+// to when generating MIDI.  You may want to define a macro that
+// specifies the rhythm to be used.
+//
+// For example, you may want three staffs:  staff 1 for melody, staff 2
+// for tabnote, and staff 3 for tablature.  You could do:
+//
+// score
+// 	staffs = 3
+// staff 2
+// 	ifndef MIDI visible = n endif
+// staff 3
+// 	stafflines = tab
+// 	ifndef MIDI visible = n endif
+// define FL(CHR) 3: 4 CHR; 8; 4; 8; ; ; @ //a full measure of chord
+// 
+// and in each measure call the FL macro like "FL(CMAJ7)".  You could also
+// define macros for partial measure rhythms.
+//
+// You'll probably also want to set the MIDI instrument to guitar, as in:
+//	midi 2: 0 "channel=2"; 0 "program=25";
+
+define	C	    a3 d2 g0 b1 e0	@
+define	CM	    a3 d5 g5 b4 e3	@
+define	C6	    a3 d2 g2 b1 e0	@
+define	CM6	       d5 g5 b4 e5	@
+define	C7	    a3 d2 g3 b1 e0	@
+define	CM7	    a3 d5 g3 b4 e3	@
+define	CMAJ7	    a3 d2 g0 b0 e0	@
+define	C9	    a3 d2 g0 b3 e0	@
+define	CMAJ9	    a3 d2 g0 b3 e0	@
+define	C11	    a3 d3 g3 b3 e3	@
+define	CSUS4	    a3 d3 g0 b1 e1	@
+define	C5	    a3    g0 b1 e3	@
+define	C7SUS4	    a3 d3 g3 b6 e3	@
+define	CDIM7	    a3 d4 g2 b4 e2	@
+define	CM7F5	    a3 d4 g3 b4   	@
+define	CAUG	       d2 g1 b1 e0	@
+define	CAUG7	    a3 d2 g3 b1 e0	@
+
+define	CS	    a4 d6 g6 b6 e4	@	define	DF	CS	@
+define	CSM	    a4 d6 g6 b5 e4	@	define	DFM	CSM	@
+define	CS6	    a4 d6 g6 b6 e6	@	define	DF6	CS6	@
+define	CSM6	       d6 g6 b5 e6	@	define	DFM6	CSM6	@
+define	CS7	    a4 d6 g4 b6 e4	@	define	DF7	CS7	@
+define	CSM7	    a4 d6 g4 b5 e4	@	define	DFM7	CSM7	@
+define	CSMAJ7	    a4 d6 g5 b6 e4	@	define	DFMAJ7	CSMAJ7	@
+define	CS9	    a4 d3 g1 b4 e1	@	define	DF9	CS9	@
+define	CSMAJ9	    a4 d6 g5 b4 e4	@	define	DFMAJ9	CSMAJ9	@
+define	CS11	    a4 d4 g4 b4 e4	@	define	DF11	CS11	@
+define	CSSUS4	    a4 d6 g6 b7 e4	@	define	DFSUS4	CSSUS4	@
+define	CS5	    a4 d6 g6    e4	@	define	DF5	CS5	@
+define	CS7SUS4	    a4 d6 g6 b7 e7	@	define	DF7SUS4	CS7SUS4	@
+define	CSDIM7	e'0 a1 d2 g0 b2 e0	@	define	DFDIM7	CSDIM7	@
+define	CSM7F5	    a4 d2 g0 b0 e0	@	define	DFM7F5	CSM7F5	@
+define	CSAUG	       d3 g2 b2 e1	@	define	DFAUG	CSAUG	@
+define	CSAUG7	       d3 g2 b2 e1	@	define	DFAUG7	CSAUG7	@
+
+define	D	       d0 g2 b3 e2	@
+define	DM	       d0 g2 b3 e1	@
+define	D6	       d0 g2 b0 e2	@
+define	DM6	       d0 g2 b0 e1	@
+define	D7	       d0 g2 b1 e2	@
+define	DM7	       d0 g2 b1 e1	@
+define	DMAJ7	       d0 g2 b2 e2	@
+define	D9	       d0 g2 b5 e2	@
+define	DMAJ9	       d0 g2 b5 e2	@
+define	D11	    a5 d5 g5 b5 e5	@
+define	DSUS4	       d0 g2 b3 e3	@
+define	D5	       d0 g2 b3 e5	@
+define	D7SUS4	       d0 g2 b1 e3	@
+define	DDIM7	e'1 a2 d3 g1 b3 e1	@
+define	DM7F5	       d0 g1 b1 e1	@
+define	DAUG	       d0 g3 b3 e2	@
+define	DAUG7	       d0 g3 b1 e2	@
+
+define	EF	    a6 d8 g8 b8 e6	@	define	DS	EF	@
+define	EFM	    a6 d8 g8 b7 e6	@	define	DSM	EFM	@
+define	EF6	    a6 d8 g8 b8 e8	@	define	DS6	EF6	@
+define	EFM6	       d1 g3 b1 e2	@	define	DSM6	EFM6	@
+define	EF7	    a6 d8 g6 b8 e6	@	define	DS7	EF7	@
+define	EFM7	    a6 d8 g6 b7 e6	@	define	DSM7	EFM7	@
+define	EFMAJ7	    a6 d8 g7 b8 e6	@	define	DSMAJ7	EFMAJ7	@
+define	EF9	       d1 g0 b2 e1	@	define	DS9	EF9	@
+define	EFMAJ9	    a6 d8 g7 b6 e6	@	define	DSMAJ9	EFMAJ9	@
+define	EF11	    a6 d6 g6 b6 e6	@	define	DS11	EF11	@
+define	EFSUS4	    a6 d8 g8 b9 e6	@	define	DSSUS4	EFSUS4	@
+define	EF5	    a6 d8 g8    e6	@	define	DS5	EF5	@
+define	EF7SUS4	    a6 d8 g8 b9 e9	@	define	DS7SUS4	EF7SUS4	@
+define	EFDIM7	e'2 a3 d4 g2 b4 e2	@	define	DSDIM7	EFDIM7	@
+define	EFM7F5	       d1 g2 b2 e2	@	define	DSM7F5	EFM7F5	@
+define	EFAUG	       d4 g3 b3 e2	@	define	DSAUG	EFAUG	@
+define	EFAUG7	       d4 g3 b3 e2	@	define	DSAUG7	EFAUG7	@
+
+define	E	e'0 a2 d2 g1 b0 e0	@
+define	EM	e'0 a2 d2 g0 b0 e0	@
+define	E6	e'0 a2 d2 g1 b2 e0	@
+define	EM6	e'0 a2 d2 g0 b2 e0	@
+define	E7	e'0 a2 d0 g1 b0 e0	@
+define	EM7	e'0 a2 d0 g0 b0 e0	@
+define	EMAJ7	e'0 a2 d1 g1 b0 e0	@
+define	E9	e'0 a2 d0 g1 b0 e2	@
+define	EMAJ9	e'0 a2 d1 g1 b0 e2	@
+define	E11	e'0 a2 d0 g2 b0 e2	@
+define	ESUS4	e'0 a2 d2 g2 b0 e0	@
+define	E5	e'0 a2 d2    b0 e0	@
+define	E7SUS4	e'0 a2 d0 g2 b0 e0	@
+define	EDIM7	e'0 a1 d2 g0 b2 e0	@
+define	EM7F5	e'0 a1 d2 g0 b3 e0	@
+define	EAUG	e'0 a3 d2 g1 b1 e0	@
+define	EAUG7	e'0 a3 d0 g1 b1 e0	@
+
+define	F	e'1 a3 d3 g2 b1 e1	@
+define	FM	e'1 a3 d3 g1 b1 e1	@
+define	F6	    a0 d0 g2 b1 e1	@
+define	FM6	e'1 a3 d3 g1 b3 e1	@
+define	F7	e'1 a3 d1 g2 b1 e1	@
+define	FM7	e'1 a3 d1 g1 b1 e1	@
+define	FMAJ7	       d3 g2 b1 e0	@
+define	F9	e'1 a3 d1 g2 b1 e3	@
+define	FMAJ9	       d3 g2 b1 e3	@
+define	F11	e'1 a3 d1 g3 b1 e3	@
+define	FSUS4	e'1 a3 d3 g3 b1 e1	@
+define	F5	e'1 a3 d3    b1 e1	@
+define	F7SUS4	e'1 a3 d1 g3 b1 e1	@
+define	FDIM7	e'1 a2 d3 g1 b3 e1	@
+define	FM7F5	e'1 a2 d3 g1 b4 e1	@
+define	FAUG	       d3 g2 b2 e1	@
+define	FAUG7	e'1 a0 d1 g2 b2 e1	@
+
+define	FS	e'2 a4 d4 g3 b2 e2	@	define	GF	FS	@
+define	FSM	e'2 a4 d4 g2 b2 e2	@	define	GFM	FSM	@
+define	FS6	    a1 d1 g3 b2 e2	@	define	GF6	FS6	@
+define	FSM6	e'2 a4 d4 g2 b4 e2	@	define	GFM6	FSM6	@
+define	FS7	e'2 a4 d2 g3 b2 e2	@	define	GF7	FS7	@
+define	FSM7	e'2 a4 d2 g2 b2 e2	@	define	GFM7	FSM7	@
+define	FSMAJ7	       d4 g3 b2 e1	@	define	GFMAJ7	FSMAJ7	@
+define	FS9	e'2 a4 d2 g3 b2 e4	@	define	GF9	FS9	@
+define	FSMAJ9	       d4 g3 b2 e4	@	define	GFMAJ9	FSMAJ9	@
+define	FS11	e'2 a4 d2 g4 b2 e4	@	define	GF11	FS11	@
+define	FSSUS4	e'2 a4 d4 g4 b2 e2	@	define	GFSUS4	FSSUS4	@
+define	FS5	e'2 a4 d4    b2 e2	@	define	GF5	FS5	@
+define	FS7SUS4	e'2 a4 d2 g4 b2 e2	@	define	GF7SUS4	FS7SUS4	@
+define	FSDIM7	e'2 a3 d4 g2 b4 e2	@	define	GFDIM7	FSDIM7	@
+define	FSM7F5	e'2 a3 d4 g2 b5 e2	@	define	GFM7F5	FSM7F5	@
+define	FSAUG	       d4 g3 b3 e2	@	define	GFAUG	FSAUG	@
+define	FSAUG7	e'2    d2 g3 b3 e2	@	define	GFAUG7	FSAUG7	@
+
+define	G	e'3    d0 g0 b0 e3	@
+define	GM	e'3 a5 d5 g3 b3 e3	@
+define	G6	e'3    d0 g0 b0 e0	@
+define	GM6	e'3    d0 g3 b3 e0	@
+define	G7	e'3    d0 g0 b0 e1	@
+define	GM7	e'3 a5 d3 g3 b3 e3	@
+define	GMAJ7	e'3    d0 g0 b0 e2	@
+define	G9	e'3    d0 g0 b0 e5	@
+define	GMAJ9	e'3    d0 g0 b0 e5	@
+define	G11	e'3    d0 g0 b1 e1	@
+define	GSUS4	e'3    d0 g0 b1 e3	@
+define	G5	e'3    d0 g0 b3 e3	@
+define	G7SUS4	e'3    d0 g0 b1 e1	@
+define	GDIM7	e'0 a1 d2 g0 b2 e0	@
+define	GM7F5	       d3 g3 b2 e3	@
+define	GAUG	       d1 g0 b0 e3	@
+define	GAUG7	       d1 g0 b0 e1	@
+
+define	AF	e'4 a6 d6 g5 b4 e4	@	define	GS	AF	@
+define	AFM	e'4 a6 d6 g4 b4 e4	@	define	GSM	AFM	@
+define	AF6	    a3 d3 g5 b4 e4	@	define	GS6	AF6	@
+define	AFM6	e'4 a6 d6 g4 b6 e4	@	define	GSM6	AFM6	@
+define	AF7	e'4 a6 d4 g5 b4 e4	@	define	GS7	AF7	@
+define	AFM7	e'4 a6 d4 g4 b4 e4	@	define	GSM7	AFM7	@
+define	AFMAJ7	       d6 g5 b4 e3	@	define	GSMAJ7	AFMAJ7	@
+define	AF9	e'4 a6 d4 g5 b4 e6	@	define	GS9	AF9	@
+define	AFMAJ9	       d6 g5 b4 e6	@	define	GSMAJ9	AFMAJ9	@
+define	AF11	e'4 a6 d4 g6 b4 e6	@	define	GS11	AF11	@
+define	AFSUS4	e'4 a6 d6 g6 b4 e4	@	define	GSSUS4	AFSUS4	@
+define	AF5	e'4 a6 d6    b4 e4	@	define	GS5	AF5	@
+define	AF7SUS4	e'4 a6 d4 g6 b4 e4	@	define	GS7SUS4	AF7SUS4	@
+define	AFDIM7	e'1 a2 d3 g1 b3 e1	@	define	GSDIM7	AFDIM7	@
+define	AFM7F5	e'4 a5 d6 g4 b7 e4	@	define	GSM7F5	AFM7F5	@
+define	AFAUG	       d2 g1 b1 e0	@	define	GSAUG	AFAUG	@
+define	AFAUG7	e'4    d4 g5 b5 e4	@	define	GSAUG7	AFAUG7	@
+
+define	A	    a0 d2 g2 b2 e0	@
+define	AM	    a0 d2 g2 b1 e0	@
+define	A6	    a0 d2 g2 b2 e2	@
+define	AM6	    a0 d2 g2 b1 e2	@
+define	A7	    a0 d2 g2 b2 e3	@
+define	AM7	    a0 d2 g0 b1 e0	@
+define	AMAJ7	    a0 d2 g2 b2 e4	@
+define	A9	    a0 d2 g4 b2 e3	@
+define	AMAJ9	    a0 d2 g4 b2 e4	@
+define	A11	    a0 d0 g0 b0 e0	@
+define	ASUS4	    a0 d2 g2 b3 e0	@
+define	A5	    a0 d2 g2    e0	@
+define	A7SUS4	    a0 d2 g2 b3 e3	@
+define	ADIM7	    a0 d1 g2 b1 e2	@
+define	AM7F5	    a0 d1 g2 b1 e3	@
+define	AAUG	    a0 d3 g2 b2 e1	@
+define	AAUG7	    a0 d3 g0 b2 e1	@
+
+define	BF	    a1 d3 g3 b3 e1	@	define	AS	BF	@
+define	BFM	    a1 d3 g3 b2 e1	@	define	ASM	BFM	@
+define	BF6	    a1 d3 g3 b3 e3	@	define	AS6	BF6	@
+define	BFM6	       d3 g3 b2 e3	@	define	ASM6	BFM6	@
+define	BF7	    a1 d3 g3 b3 e4	@	define	AS7	BF7	@
+define	BFM7	    a1 d3 g1 b2 e1	@	define	ASM7	BFM7	@
+define	BFMAJ7	    a1 d3 g2 b3 e1	@	define	ASMAJ7	BFMAJ7	@
+define	BF9	    a1 d0 g1 b1 e1	@	define	AS9	BF9	@
+define	BFMAJ9	    a1 d3 g2 b1 e1	@	define	ASMAJ9	BFMAJ9	@
+define	BF11	    a1 d1 g1 b1 e1	@	define	AS11	BF11	@
+define	BFSUS4	    a1 d3 g3 b4 e1	@	define	ASSUS4	BFSUS4	@
+define	BF5	    a1 d3 g3    e1	@	define	AS5	BF5	@
+define	BF7SUS4	    a1 d3 g3 b4 e4	@	define	AS7SUS4	BF7SUS4	@
+define	BFDIM7	    a1 d2 g0 b2 e0	@	define	ASDIM7	BFDIM7	@
+define	BFM7F5	    a1 d2 g1 b2 e0	@	define	ASM7F5	BFM7F5	@
+define	BFAUG	       d0 g3 b3 e2	@	define	ASAUG	BFAUG	@
+define	BFAUG7	       d0 g3 b3 e2	@	define	ASAUG7	BFAUG7	@
+
+define	B	    a2 d4 g4 b4 e2	@
+define	BM	    a2 d4 g4 b3 e2	@
+define	B6	    a2 d4 g4 b4 e4	@
+define	BM6	    a2 d0 g1 b0 e2	@
+define	B7	    a2 d1 g2 b0 e2	@
+define	BM7	    a2 d0 g2 b0 e2	@
+define	BMAJ7	    a2 d4 g3 b4 e2	@
+define	B9	    a2 d1 g2 b2 e2	@
+define	BMAJ9	    a2 d4 g3 b2 e2	@
+define	B11	    a2 d2 g2 b2 e2	@
+define	BSUS4	    a2 d4 g4 b5 e2	@
+define	B5	    a2 d4 g4    e2	@
+define	B7SUS4	    a2 d4 g4 b5 e5	@
+define	BDIM7	    a2 d3 g1 b3 e1	@
+define	BM7F5	    a2 d0 g2 b0 e1	@
+define	BAUG	    a2 d1 g0 b0 e3	@
+define	BAUG7	    a2 d1 g2 b0 e3	@

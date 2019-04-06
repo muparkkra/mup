@@ -1,0 +1,31 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input01_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+music
+1: c;;;;
+bar
+
+score
+	staffs=4
+	topmargin=0.8
+	leftmargin = 0.7
+	vscheme=2
+	key=17# aug
+	vscheme=1o
+	barstyle=1-3,3-4
+	brace=1-2,2
+	brace=1-2
+	bracket=1-3
+	beamstyle=4,8,8
+	packfact=378.7
+
+music
+1: d;;;
+lyrics 1: 4;; "\fQ";
+rom above 1: 1 "\f(ZZ"; 2 "\sV"; 3"\s(X"; 4 "";
+ital below 1: 3 "\z"; 3.6 "\(mistake)";
+bar
+beamstyle=3

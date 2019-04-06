@@ -1,0 +1,62 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "tuplets.mup"
+	paragraph (14) "This file test tuplets."
+	title ""
+
+score
+	packfact=2
+	scoresep=20
+
+music
+1: {4c;d;e;}3;4g;a;
+bar
+rom (16) below 1: 1 "{4c;;;}3;"; 3 "{4d;;;}3,2;";
+1: {4c;;;}3;{4d;;;}3,2;
+bar
+newscore
+rom (16) below 1: 1 "5 quarter note tuplet in space of whole";
+1: {b;c;a;f;b;}5,1;
+bar
+
+score time = 3/2
+music
+newscore
+
+rom (16) below 1: 1 "2 note dublet in space of dotted half";
+1: {2c;;}2,2.;2.a;
+bar
+
+score time=12/4
+music
+
+newscore
+
+rom (16) below 1: 1 "7-note quarter-note tuplet in the space of a dotted double whole";
+1: {a;b;c+;a;d;e;f;}7,1/2.;
+bar
+
+// tuplet without a number
+score time=4/4
+music
+rom (16) below 1: 1 "{8a;b;g;}3;"; 2 "{a;b;g;}3n;"; 3 "{a;b;g;}3n,4;";
+1: {8a;b;g;}3; {a;b;g;}3n; {a;b;g;}3n,4; 4c;
+bar
+
+
+newscore
+
+rom (16) below 1: 1 "{8a;b;g;}3y;"; 2 "{a;b;g;}3n;";  3 "{a;b;g;}3 num,4;";
+1: {8a;b;g;}3 y; {a;b;g;}3n; {a;b;g;}3 num,4; 4c;
+bar
+
+score beamstyle=4,4,4,4
+music
+
+
+newscore
+
+rom (16) below 1: 1 "{8a;b;g;}3y;"; 2 "{a;b;g;}3n;";  3 "{a;b;g;}3 num,4;";
+1: {8a;b;g;}3 y; {a;b;g;}3n; {a;b;g;}3 num,4; 4c;
+endbar

@@ -1,0 +1,76 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// This file contains user defined symbols for use as accidentals.  They are
+// designed for quarter step and three quarter step offsets, but they can be
+// used for any purpose.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+symbol "qsharp"
+	bbox = -340, -1005, 340, 1005
+	postscript = "gsave
+		% fill crossbars so that we can do parallelograms
+		-240 -480 moveto -240 -280 lineto
+		240 -120 lineto 240 -320 lineto fill
+		-240 120 moveto -240 320 lineto
+		240 480 lineto 240 280 lineto fill
+		% vertical stroke
+		lwid setlinewidth
+		0 -905 moveto 0 905 lineto stroke
+	grestore"
+
+symbol "tqsharp"
+	bbox = -500, -1050, 500, 1050
+	postscript = "gsave
+		% fill crossbars so that we can do parallelograms
+		-400 -480 moveto -400 -280 lineto
+		400 -120 lineto 400 -320 lineto fill
+		-400 120 moveto -400 320 lineto
+		400 480 lineto 400 280 lineto fill
+		% vertical strokes
+		lwid setlinewidth
+		-250 -950 moveto -250 860 lineto stroke
+		0 -905 moveto 0 905 lineto stroke
+		250 -860 moveto 250 950 lineto stroke
+	grestore"
+
+symbol "qflat"
+	bbox = -294, -500, 323, 1200
+	postscript = "gsave
+		lwid setlinewidth	%stem
+		187.5 1100 moveto 187.5 -400 lineto stroke
+		-0.75 1 scale
+		-250 -400 moveto	%outer edge of loop
+		500 0 350 650 -250 160 curveto
+		-250 160 lwid sub lineto %inner edge of loop
+		100 400 300 0 -250 -400 lwid add curveto
+		fill
+	grestore"
+
+symbol "tqflat"
+	bbox = -481, -500, 608, 1200
+	postscript = "gsave
+		250 0 translate
+		-250 -400 moveto        %outer edge of loop
+		500 0 350 650 -250 160 curveto
+		-250 160 lwid sub lineto %inner edge of loop
+		100 400 300 0 -250 -400 lwid add curveto fill
+		lwid setlinewidth       %stem
+		-250 1100 moveto -250 -400 lineto stroke
+		-440 0 translate
+		-0.75 1 scale
+		-250 -400 moveto        %outer edge of loop
+		500 0 350 650 -250 160 curveto
+		-250 160 lwid sub lineto %inner edge of loop
+		100 400 300 0 -250 -400 lwid add curveto fill
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+// This table defines the recommended offsets for the accidentals defined
+// in this file.
+
+accidentals "quarterstep"
+	"qsharp"	all +50 cents
+	"tqsharp"	all +150 cents
+	"qflat"		all -50 cents
+	"tqflat"	all -150 cents

@@ -1,0 +1,68 @@
+//!Mup-Arkkra
+header
+	title bold (18) "packexp.mup"
+	paragraph (14) "\
+Test various \"packexp\" values."
+score
+	label = ""
+	scoresep = 9, 9
+	time = 4/4n
+	beamstyle = 1
+	size = 9
+	packexp = 1
+music
+	rom 1: 1 "packexp = 1";
+	1: 1f;
+	bar
+	1: 2f; ;
+	bar
+	1: 4f; ; ; ;
+	bar
+	1: 8f; ; ; ; ; ; ; ;
+	bar
+	newscore
+score
+	packexp = 0.8
+music
+	rom 1: 1 "packexp = 0.8 (default value)";
+	1: 1f;
+	bar
+	1: 2f; ;
+	bar
+	1: 4f; ; ; ;
+	bar
+	1: 8f; ; ; ; ; ; ; ;
+	bar
+	newscore
+score
+	packexp = 0.4
+music
+	rom 1: 1 "packexp = 0.4";
+	1: 1f;
+	bar
+	1: 2f; ;
+	bar
+	1: 4f; ; ; ;
+	bar
+	1: 8f; ; ; ; ; ; ; ;
+	bar
+	newscore
+score
+	packexp = 0
+music
+	rom 1: 1 "packexp = 0";
+	1: 1f;
+	bar
+	1: 2f; ;
+	bar
+	1: 4f; ; ; ;
+	bar
+	1: 8f; ; ; ; ; ; ; ;
+	bar
+	newscore
+	1: 16f; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+	bar
+	1: 1f;
+	bar
+	1: 16f; ; ; ; ; ; ; ; ; ; ; ; ; ; ; ;
+	bar

@@ -1,0 +1,214 @@
+//!Mup-Arkkra
+header
+	title bold (13) "cancelkey.mup"
+	paragraph (10) "\
+On the first page, print all music characters,
+in order, separated by vertical bars.
+On the second page, print them in 'with' lists,
+with 'X' between each, to test vertical boundaries.
+Page 3 and 4 repeat this with italics.
+Page 5 and 6 repeat this with bold.
+Page 7 and 8 repeat this with bold italics."
+
+header2
+	title rom (12) "" "page \%"
+
+score
+	scale = 1.4
+music
+1: [=k] 1d;
+bar
+print (k.x - 29, k.y - 20) "|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|\(2n)|\(4n)|\(upflag)|\(dnflag)|\(dwhrest)|\(1rest)|\(2rest)|\(4rest)|\(8rest)|\(16rest)|\(32rest)|\(64rest)|"
+
+print (k.x - 29, k.y - 35) "|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
+
+print (k.x - 29, k.y - 50) "|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+
+print (k.x - 29, k.y - 65) "|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)|"
+
+print (k.x - 29, k.y - 80) "|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+newpage
+
+1: [with "\(gclef)","X","\(fclef)","X","\(cclef)","X","\(dblwhole)","X", \
+"\(1n)","X","\(2n)","X","\(4n)","X","\(upflag)","X","\(dnflag)","X", \
+"\(dwhrest)","X","\(1rest)","X","\(2rest)","X","\(4rest)","X","\(8rest)","X", \
+"\(16rest)","X", "\(32rest)","X" ] 4f; \
+[with "\(64rest)","X","\(128rest)","X","\(256rest)","X", "\(dot)","X", \
+"\(nat)","X", "\(sharp)","X", "\(flat)","X", "\(dblsharp)","X", \
+"\(dblflat)","X", "\(xnote)","X", "\(dwhdiamond)","X", "\(diamond)","X", \
+"\(filldiamond)","X", "\(up2n)","X", "\(dn2n)","X" ] 4f; \
+[with "\(up4n)","X", "\(dn4n)","X", "\(up8n)","X", "\(dn8n)","X", \
+"\(up16n)","X", "\(dn16n)","X", "\(up32n)","X", "\(dn32n)","X", \
+"\(up64n)","X", "\(dn64n)","X" ] 4f; \
+[with "\(up128n)","X", "\(dn128n)","X", "\(up256n)","X", "\(dn256n)","X", \
+"\(dnbow)","X", "\(upbow)","X", "\(wedge)","X", "\(uwedge)","X", \
+"\(ferm)","X", "\(uferm)","X", "\(sign)","X", "\(coda)","X" ] 4f;
+bar
+1: [with "\(mor)","X", "\(invmor)","X", "\(turn)","X", "\(invturn)","X", \
+"\(acc_gt)","X", "\(acc_hat)","X", "\(acc_uhat)","X", "\(tr)","X", \
+"\(leg)","X", "\(rr)","X", "\(measrpt)","X", "\(copyright)","X", \
+"\(triangle)","X", "\(dim)","X", "\(halfdim)","X", "\(qwhrest)","X", \
+"\(ll1rest)","X", "\(ll2rest)","X", "\(altdblwhole)","X"] 2f; \
+[with "\(dwhrighttriangle)","X", "\(righttriangle)","X", \
+"\(fillrighttriangle)","X", "\(udwhrighttriangle)","X", \
+"\(urighttriangle)","X", "\(ufillrighttriangle)","X", \
+"\(dwhrectangle)","X", "\(rectangle)","X", \
+"\(fillrectangle)","X", "\(dwhisostriangle)","X", \
+"\(isostriangle)","X", "\(fillisostriangle)","X", \
+"\(dwhpiewedge)","X", "\(piewedge)","X", \
+"\(fillpiewedge)","X", "\(dwhsemicircle)","X", \
+"\(semicircle)","X", "\(fillsemicircle)","X", \
+"\(dwhslashhead)","X", "\(slashhead)","X", \
+"\(fillslashhead)","X", "\(blankhead)","X"] 2f;
+bar
+
+newpage
+
+1: [=k] 1d;
+bar
+print (k.x - 15, k.y - 20) "\f(TI)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|\(2n)|\(4n)|\(upflag)|\(dnflag)|\(dwhrest)|\(1rest)|\(2rest)|\(4rest)|\(8rest)|\(16rest)|\(32rest)|\(64rest)|"
+
+print (k.x - 15, k.y - 35) "\f(TI)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
+
+print (k.x - 15, k.y - 50) "\f(TI)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+
+print (k.x - 15, k.y - 65) "\f(TI)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
+
+print (k.x - 15, k.y - 80) "\f(TI)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+newpage
+
+1: [with "\f(TI)\(gclef)","X","\f(TI)\(fclef)","X","\f(TI)\(cclef)","X","\f(TI)\(dblwhole)","X", \
+"\f(TI)\(1n)","X","\f(TI)\(2n)","X","\f(TI)\(4n)","X","\f(TI)\(upflag)","X","\f(TI)\(dnflag)","X", \
+"\f(TI)\(dwhrest)","X","\f(TI)\(1rest)","X","\f(TI)\(2rest)","X","\f(TI)\(4rest)","X","\f(TI)\(8rest)","X", \
+"\f(TI)\(16rest)","X", "\f(TI)\(32rest)","X" ] 4f; \
+[with "\f(TI)\(64rest)","X","\f(TI)\(128rest)","X","\f(TI)\(256rest)","X", "\f(TI)\(dot)","X", \
+"\f(TI)\(nat)","X", "\f(TI)\(sharp)","X", "\f(TI)\(flat)","X", "\f(TI)\(dblsharp)","X", \
+"\f(TI)\(dblflat)","X", "\f(TI)\(xnote)","X", "\f(TI)\(dwhdiamond)","X", "\f(TI)\(diamond)","X", \
+"\f(TI)\(filldiamond)","X", "\f(TI)\(up2n)","X", "\f(TI)\(dn2n)","X" ] 4f; \
+[with "\f(TI)\(up4n)","X", "\f(TI)\(dn4n)","X", "\f(TI)\(up8n)","X", "\f(TI)\(dn8n)","X", \
+"\f(TI)\(up16n)","X", "\f(TI)\(dn16n)","X", "\f(TI)\(up32n)","X", "\f(TI)\(dn32n)","X", \
+"\f(TI)\(up64n)","X", "\f(TI)\(dn64n)","X" ] 4f; \
+[with "\f(TI)\(up128n)","X", "\f(TI)\(dn128n)","X", "\f(TI)\(up256n)","X", "\f(TI)\(dn256n)","X", \
+"\f(TI)\(dnbow)","X", "\f(TI)\(upbow)","X", "\f(TI)\(wedge)","X", "\f(TI)\(uwedge)","X", \
+"\f(TI)\(ferm)","X", "\f(TI)\(uferm)","X", "\f(TI)\(sign)","X", "\f(TI)\(coda)","X" ] 4f;
+bar
+1: [with "\f(TI)\(mor)","X", "\f(TI)\(invmor)","X", "\f(TI)\(turn)","X", "\f(TI)\(invturn)","X", \
+"\f(TI)\(acc_gt)","X", "\f(TI)\(acc_hat)","X", "\f(TI)\(acc_uhat)","X", "\f(TI)\(tr)","X", \
+"\f(TI)\(leg)","X", "\f(TI)\(rr)","X", "\f(TI)\(measrpt)","X", "\f(TI)\(copyright)","X", \
+"\f(TI)\(triangle)","X", "\f(TI)\(dim)","X", "\f(TI)\(halfdim)","X", "\f(TI)\(qwhrest)","X", \
+"\f(TI)\(ll1rest)","X", "\f(TI)\(ll2rest)","X", "\f(TI)\(altdblwhole)"] 2f; \
+[with "\f(TI)\(dwhrighttriangle)","X", "\f(TI)\(righttriangle)","X", \
+"\f(TI)\(fillrighttriangle)","X", "\f(TI)\(udwhrighttriangle)","X", \
+"\f(TI)\(urighttriangle)","X", "\f(TI)\(ufillrighttriangle)","X", \
+"\f(TI)\(dwhrectangle)","X", "\f(TI)\(rectangle)","X", \
+"\f(TI)\(fillrectangle)","X", "\f(TI)\(dwhisostriangle)","X", \
+"\f(TI)\(isostriangle)","X", "\f(TI)\(fillisostriangle)","X", \
+"\f(TI)\(dwhpiewedge)","X", "\f(TI)\(piewedge)","X", \
+"\f(TI)\(fillpiewedge)","X", "\f(TI)\(dwhsemicircle)","X", \
+"\f(TI)\(semicircle)","X", "\f(TI)\(fillsemicircle)","X", \
+"\f(TI)\(dwhslashhead)","X", "\f(TI)\(slashhead)","X", \
+"\f(TI)\(fillslashhead)","X", "\f(TI)\(blankhead)","X"] 2f;
+bar
+
+newpage
+
+1: [=k] 1d;
+bar
+print (k.x - 15, k.y - 20) "\f(TB)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|\(2n)|\(4n)|\(upflag)|\(dnflag)|\(dwhrest)|\(1rest)|\(2rest)|\(4rest)|\(8rest)|\(16rest)|\(32rest)|\(64rest)|"
+
+print (k.x - 15, k.y - 35) "\f(TB)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
+
+print (k.x - 15, k.y - 50) "\f(TB)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+
+print (k.x - 15, k.y - 65) "\f(TB)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
+
+print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+newpage
+
+1: [with "\f(TB)\(gclef)","X","\f(TB)\(fclef)","X","\f(TB)\(cclef)","X","\f(TB)\(dblwhole)","X", \
+"\f(TB)\(1n)","X","\f(TB)\(2n)","X","\f(TB)\(4n)","X","\f(TB)\(upflag)","X","\f(TB)\(dnflag)","X", \
+"\f(TB)\(dwhrest)","X","\f(TB)\(1rest)","X","\f(TB)\(2rest)","X","\f(TB)\(4rest)","X","\f(TB)\(8rest)","X", \
+"\f(TB)\(16rest)","X", "\f(TB)\(32rest)","X" ] 4f; \
+[with "\f(TB)\(64rest)","X","\f(TB)\(128rest)","X","\f(TB)\(256rest)","X", "\f(TB)\(dot)","X", \
+"\f(TB)\(nat)","X", "\f(TB)\(sharp)","X", "\f(TB)\(flat)","X", "\f(TB)\(dblsharp)","X", \
+"\f(TB)\(dblflat)","X", "\f(TB)\(xnote)","X", "\f(TB)\(dwhdiamond)","X", "\f(TB)\(diamond)","X", \
+"\f(TB)\(filldiamond)","X", "\f(TB)\(up2n)","X", "\f(TB)\(dn2n)","X" ] 4f; \
+[with "\f(TB)\(up4n)","X", "\f(TB)\(dn4n)","X", "\f(TB)\(up8n)","X", "\f(TB)\(dn8n)","X", \
+"\f(TB)\(up16n)","X", "\f(TB)\(dn16n)","X", "\f(TB)\(up32n)","X", "\f(TB)\(dn32n)","X", \
+"\f(TB)\(up64n)","X", "\f(TB)\(dn64n)","X" ] 4f; \
+[with "\f(TB)\(up128n)","X", "\f(TB)\(dn128n)","X", "\f(TB)\(up256n)","X", "\f(TB)\(dn256n)","X", \
+"\f(TB)\(dnbow)","X", "\f(TB)\(upbow)","X", "\f(TB)\(wedge)","X", "\f(TB)\(uwedge)","X", \
+"\f(TB)\(ferm)","X", "\f(TB)\(uferm)","X", "\f(TB)\(sign)","X", "\f(TB)\(coda)","X" ] 4f;
+bar
+1: [with "\f(TB)\(mor)","X", "\f(TB)\(invmor)","X", "\f(TB)\(turn)","X", "\f(TB)\(invturn)","X", \
+"\f(TB)\(acc_gt)","X", "\f(TB)\(acc_hat)","X", "\f(TB)\(acc_uhat)","X", "\f(TB)\(tr)","X", \
+"\f(TB)\(leg)","X", "\f(TB)\(rr)","X", "\f(TB)\(measrpt)","X", "\f(TB)\(copyright)","X", \
+"\f(TB)\(triangle)","X", "\f(TB)\(dim)","X", "\f(TB)\(halfdim)","X", "\f(TB)\(qwhrest)","X", \
+"\f(TB)\(ll1rest)","X", "\f(TB)\(ll2rest)","X", "\f(TB)\(altdblwhole)"] 2f; \
+[with "\f(TB)\(dwhrighttriangle)","X", "\f(TB)\(righttriangle)","X", \
+"\f(TB)\(fillrighttriangle)","X", "\f(TB)\(udwhrighttriangle)","X", \
+"\f(TB)\(urighttriangle)","X", "\f(TB)\(ufillrighttriangle)","X", \
+"\f(TB)\(dwhrectangle)","X", "\f(TB)\(rectangle)","X", \
+"\f(TB)\(fillrectangle)","X", "\f(TB)\(dwhisostriangle)","X", \
+"\f(TB)\(isostriangle)","X", "\f(TB)\(fillisostriangle)","X", \
+"\f(TB)\(dwhpiewedge)","X", "\f(TB)\(piewedge)","X", \
+"\f(TB)\(fillpiewedge)","X", "\f(TB)\(dwhsemicircle)","X", \
+"\f(TB)\(semicircle)","X", "\f(TB)\(fillsemicircle)","X", \
+"\f(TB)\(dwhslashhead)","X", "\f(TB)\(slashhead)","X", \
+"\f(TB)\(fillslashhead)","X", "\f(TB)\(blankhead)","X"] 2f;
+bar
+
+newpage
+
+1: [=k] 1d;
+bar
+print (k.x - 15, k.y - 20) "\f(TX)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|\(2n)|\(4n)|\(upflag)|\(dnflag)|\(dwhrest)|\(1rest)|\(2rest)|\(4rest)|\(8rest)|\(16rest)|\(32rest)|\(64rest)|"
+
+print (k.x - 15, k.y - 35) "\f(TX)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
+
+print (k.x - 15, k.y - 50) "\f(TX)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+
+print (k.x - 15, k.y - 65) "\f(TX)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
+
+print (k.x - 15, k.y - 80) "\f(TX)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+newpage
+
+1: [with "\f(TX)\(gclef)","X","\f(TX)\(fclef)","X","\f(TX)\(cclef)","X","\f(TX)\(dblwhole)","X", \
+"\f(TX)\(1n)","X","\f(TX)\(2n)","X","\f(TX)\(4n)","X","\f(TX)\(upflag)","X","\f(TX)\(dnflag)","X", \
+"\f(TX)\(dwhrest)","X","\f(TX)\(1rest)","X","\f(TX)\(2rest)","X","\f(TX)\(4rest)","X","\f(TX)\(8rest)","X", \
+"\f(TX)\(16rest)","X", "\f(TX)\(32rest)","X" ] 4f; \
+[with "\f(TX)\(64rest)","X","\f(TX)\(128rest)","X","\f(TX)\(256rest)","X", "\f(TX)\(dot)","X", \
+"\f(TX)\(nat)","X", "\f(TX)\(sharp)","X", "\f(TX)\(flat)","X", "\f(TX)\(dblsharp)","X", \
+"\f(TX)\(dblflat)","X", "\f(TX)\(xnote)","X", "\f(TX)\(dwhdiamond)","X", "\f(TX)\(diamond)","X", \
+"\f(TX)\(filldiamond)","X", "\f(TX)\(up2n)","X", "\f(TX)\(dn2n)","X" ] 4f; \
+[with "\f(TX)\(up4n)","X", "\f(TX)\(dn4n)","X", "\f(TX)\(up8n)","X", "\f(TX)\(dn8n)","X", \
+"\f(TX)\(up16n)","X", "\f(TX)\(dn16n)","X", "\f(TX)\(up32n)","X", "\f(TX)\(dn32n)","X", \
+"\f(TX)\(up64n)","X", "\f(TX)\(dn64n)","X" ] 4f; \
+[with "\f(TX)\(up128n)","X", "\f(TX)\(dn128n)","X", "\f(TX)\(up256n)","X", "\f(TX)\(dn256n)","X", \
+"\f(TX)\(dnbow)","X", "\f(TX)\(upbow)","X", "\f(TX)\(wedge)","X", "\f(TX)\(uwedge)","X", \
+"\f(TX)\(ferm)","X", "\f(TX)\(uferm)","X", "\f(TX)\(sign)","X", "\f(TX)\(coda)","X" ] 4f;
+bar
+1: [with "\f(TX)\(mor)","X", "\f(TX)\(invmor)","X", "\f(TX)\(turn)","X", "\f(TX)\(invturn)","X", \
+"\f(TX)\(acc_gt)","X", "\f(TX)\(acc_hat)","X", "\f(TX)\(acc_uhat)","X", "\f(TX)\(tr)","X", \
+"\f(TX)\(leg)","X", "\f(TX)\(rr)","X", "\f(TX)\(measrpt)","X", "\f(TX)\(copyright)","X", \
+"\f(TX)\(triangle)","X", "\f(TX)\(dim)","X", "\f(TX)\(halfdim)","X", "\f(TX)\(qwhrest)","X", \
+"\f(TX)\(ll1rest)","X", "\f(TX)\(ll2rest)","X", "\f(TX)\(altdblwhole)"] 2f; \
+[with "\f(TX)\(dwhrighttriangle)","X", "\f(TX)\(righttriangle)","X", \
+"\f(TX)\(fillrighttriangle)","X", "\f(TX)\(udwhrighttriangle)","X", \
+"\f(TX)\(urighttriangle)","X", "\f(TX)\(ufillrighttriangle)","X", \
+"\f(TX)\(dwhrectangle)","X", "\f(TX)\(rectangle)","X", \
+"\f(TX)\(fillrectangle)","X", "\f(TX)\(dwhisostriangle)","X", \
+"\f(TX)\(isostriangle)","X", "\f(TX)\(fillisostriangle)","X", \
+"\f(TX)\(dwhpiewedge)","X", "\f(TX)\(piewedge)","X", \
+"\f(TX)\(fillpiewedge)","X", "\f(TX)\(dwhsemicircle)","X", \
+"\f(TX)\(semicircle)","X", "\f(TX)\(fillsemicircle)","X", \
+"\f(TX)\(dwhslashhead)","X", "\f(TX)\(slashhead)","X", \
+"\f(TX)\(fillslashhead)","X", "\f(TX)\(blankhead)","X"] 2f;
+bar
+

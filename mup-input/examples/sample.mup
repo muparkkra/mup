@@ -1,0 +1,623 @@
+
+
+//**********************************************************************
+// NOTE:
+//
+// This is a sample Mup input file. This file is intended to demonstrate
+// lots of the features of Mup, including advanced features.
+// In most cases, you'll probably only need to use a few basic features,
+// so your input file will usually be a lot simpler.
+//
+//**********************************************************************
+
+
+// header to go on first page
+header
+	title (18) "Sample Song to Show What Mup Can Do"
+	title palatino ital (12) "This is a subtitle"
+	title "Text: Ann Onymous"  "Tune: Arthur Unknown"
+	title ""  "(1995)"
+
+// header for subsequent pages
+header2
+	title "Sample Songs" "This is the title" "page \% of \#"
+
+// footer for first page
+footer
+	// use a printing command other than "title" to show how others work
+	center nl "This is a sample of a Mup footer"
+	// leave a blank line
+	title (12) " "
+
+	title (11) "Published by Arkkra Enterprises" \
+		"http://www.arkkra.com"
+
+// footer for subsequent pages
+footer2
+	print nl "This is a sample remark at the bottom of the page"
+
+// top/top2/bottom/bottom2 are like header/header2/footer/footer2 except
+// they can be changed later; for example, you could use header/header2 for
+// the whole song, but have a new top/top2 for each section of the song.
+
+// to be printed right below the header on this page (the first page)
+top
+	title (13) "First Movement"
+// to be printed right below the header2 on later pages
+top2
+	title "First movement"
+
+// set some score-wide parameters
+score
+	staffs = 9
+	key = c minor
+	time = 9/8
+
+	// beam things a dotted quarter at a time, and beam across rests
+	// have the main beams group together notes a dotted quarter at a
+	// time, but have subgroupings an 8th note at a time; also, beam
+	// across rests
+	beamstyle = (8,8,8), (8,8,8), (8,8,8) r
+
+	// put bracket to left of top 2 staffs, and bottom 2, with labels
+	bracket = 1-2 ("Choir", "Ch"), 7-8 ("Guitar", "Gtr")
+
+	// put brace on keyboard's staffs
+	brace = 5-6 ("keyboard", "Kbd")
+
+	// bar the staffs 5 and 6 together, and 7 and 8 together
+	barstyle = 5-6, 7-8
+
+	// put rehearsal marks in circles, instead of the default rectangles
+	rehstyle = circled
+
+	// make a little smaller than normal
+	scale = 0.77
+
+	// pack notes together
+	packexp = 0.7
+	packfact = 0.75
+
+	// set the margins, allowing choice depending on whether -DBIGMARGINS
+	// is used on the command line or not
+	ifdef BIGMARGINS
+		topmargin = 1.0
+		bottommargin = 1.1
+		leftmargin = 1
+		rightmargin = 1
+	else
+		topmargin = 0.8
+		bottommargin = 0.8
+		leftmargin = 0.7
+		rightmargin = 0.6
+	endif
+
+	// make sure chord marks are a ways away from staffs
+	chorddist = 4
+
+	// make sure other things are a ways away too
+	dist = 3
+
+	// spread scores and staffs apart more than normal
+	scoresep = 14, 24
+	scorepad = 5
+	staffsep = 14
+	staffpad = 2
+
+	// label endings above staffs that are grouped by brace or bracket
+	endingstyle = grouped
+
+	// use palatino fonts by default, in 14 point
+	fontfamily = palatino
+	font = rom
+	size = 14
+
+	// put lyrics in helvetica italics, 11 point
+	lyricsfontfamily = helvetica
+	lyricsfont = ital
+	lyricssize = 11
+
+	// for words printed by the "with" option, use these settings
+	withfontfamily = bookman
+	withfont = bold
+	withsize = 13
+
+	// print measure numbers at the beginning of each score
+	// in Helvetica italics
+	measnumfontfamily = helvetica
+	measnumfont = ital
+	measnumsize = 9
+	measnum = y
+
+	// When there are chords, print guitar grids with them.  To put them
+	// at the end of the song we would use gridsatend.  If we wanted
+	// to make them bigger or smaller, we could set "gridscale".
+	gridswhereused = y
+
+	// If the lowest fret used is 3 or more, use "N fr" notation instead
+	// of showing the whole guitar neck up to that point in the grid.
+	// The default value of this is 4, and it can be turned off.
+	gridfret = 3
+
+
+//set some things for particular staffs
+staff 2
+	clef = bass
+
+staff 3
+	label = "foghorn\nin G\(smflat)"
+	staffscale = 0.8	// make this staff a little smaller
+	clef = baritone
+	transpose = down dim 5
+	// make staff 3 visible only when there is something on it
+	visible = whereused
+
+	// set different default octave
+	defoct = 4
+
+staff 4
+	// make staff 4 a 1-line staff, with a "drum clef"
+	stafflines = 1 drum
+
+staff 5
+	// Use three voices on staff 5.  Allow the stems of the top and bottom
+	// voices (1 and 2) to float to whichever way is appropriate.  (We
+	// could use 2o to force their stems to be in opposite directions.)
+	// Voice 3 is an extra voice, typically in the middle, whose stems can
+	// go either way.
+	vscheme = 3f
+
+staff 6
+	clef = bass
+
+	// use dotted quarter for default time unit instead of
+	// the normal time signature denominator
+	timeunit = 4.
+
+staff 7
+	vscheme = 2f
+
+staff 8
+	// Make staff 8 a tablature staff for standard guitar.  This
+	// automatically makes the preceding staff (7) a "tabnote" staff,
+	// meaning its notes will be derived from staff 8 automatically,
+	// unless overriden.
+	stafflines = tab
+
+	// make fret numbers more readable by putting a white background there
+	tabwhitebox = y
+
+	vscheme = 2f	// allow two voices on this tab staff
+
+staff 9
+	// On staff 9, use "shaped notes".  Each scale degree uses a different
+	// shape of note head.
+	label = "Soprano"
+	noteheads = "isostri semicirc diam righttri norm rect pie"
+
+// define a macro to allow saying "DRUM" instead of "4:" for the 4th staff
+define DRUM 4:  @
+
+grids
+	// define grids to be printed with guitar chords
+	"Cm"	"- (3 5 5 4 3)"
+	"G:9 7"	"3 x o o o 5"
+	"Go7"	"o 1 2 o 2 o"
+	"G"	"3 x o o o 3"
+
+// now do musical data
+music
+
+// put a tempo mark above staffs 1 and 6, and set MIDI tempo to 92
+// quarter notes per minute
+	rom above 1,6 : 1 "Andante";
+	midi all: 0 "tempo = 92";
+// set the instruments to use for MIDI
+	midi 1-2: 0 "channel=5"; 0 "program=52"; 0 "onvelocity=92";
+	midi 3: 0 "channel=6"; 0 "program=109"; 0 "onvelocity=61";
+	midi 4: 0 "channel=10";		// percussion channel
+// set onvelocity to accent the top note
+	midi 5-6: 0 "channel=11"; 0 "program=1"; 0 "onvelocity=104,88";
+	midi 5 2: 0 "channel=11";
+	midi 7: 0 "channel=14"; 0 "program=25"; 0 "onvelocity=83";
+
+// Note that lines of input within a given measure can be entered in any order.
+// It is usually a good idea to enter music data a staff at a time from top
+// to bottom, just to make it easy to keep track of, although Mup makes no
+// such requirement. You may choose to intersperse other things like lyrics
+// and phrase marks, or do them all at once before or after the music data,
+// or in whatever order you choose. 
+
+// Also note that you can indent things any way you want in your Mup
+// input file, and can put extra blank spaces almost anywhere
+// except in the middle of a word.
+
+// For MIDI purposes, the first two measures get played an extra time
+// before the Coda, so put them inside a macro.
+define FIRST2MEASURES
+
+// staff 1, three dotted quarter notes, second chord same as the first
+	1 1: 4.ceg;;dfb;
+
+// staff 2, dotted quarter, two eighths with a rest between, dotted quarter
+// and start a phrase mark at the first chord
+	2: 4.c ph; 8c;r;e;4.f;
+
+// two verses of lyrics between top two staffs
+// use "|" to align the first syllables 8 points left of the notes' centers
+	lyrics between 1&2: 4.;;; "-8|These are the"; "-8|This is verse";
+
+// a grace note and an accent on staff 3
+	3: [grace; slash 1]c#; [with >] 2.f#;4.r;
+
+// measure rest for staff 4
+	DRUM mr;
+
+// staff 5, voice 1, begins with duplet, also has a tied note
+	5 1:  {4c+;g;}2,4.; 4.c+;4f+~;16;;
+
+// second voice for staff 5
+	5 2: 2.c;4.d;
+
+// third voice for staff 5 starts with a "space", nothing printed; force
+// horizontal offsets (ho) on two of the notes to fine tune their spacing
+	5 3: 4.s; [ho 3.5]8e;f;g; [ho 3]an; 4;
+
+// staff 6, some notes an octave or two away from the default octave
+	6: 4.c-c--;;d-d--;
+
+// put piano pedal mark at the bottom
+	pedal below 6: 1;6;
+
+// show the fret numbers on guitar strings on the tablature staff
+	8: 4. a3d1g0; 8 a3; e'3; a3; 4. d0g2b3e1;
+
+// Print music theory analysis symbols at counts 1 and 7.  The ":" makes the
+// following space-separated items be stacked on top of each other.
+	rom analysis above 5: 1 "i"; 7 "VII:6 #5";
+
+// print figured bass numbers below count 7; the slash goes through the "5"
+	rom figbass below 6: 7 "6 5/";
+
+	9: 4.c+; 8e+; c+; e+; 4.f+;
+	lyrics 9: 2.+4.; "ah_";
+
+// ordinary bar line, with a reherasal letter
+	bar reh let
+
+
+
+// next measure
+	1: 2.c+gc;4.r;
+	// end the phrase mark at the first chord
+	2: 2.ce eph;4.r;
+
+// lyrics with an underscore
+	// This time, since the time values of the lyrics match those
+	// of the music, we'll let Mup derive the time values,
+	// rather than specifying them.  Notice that we are chanting multiple
+	// syllables on the last word, so we show that they are to be treated
+	// as one syllable by separating them by a special \(space) character
+	// instead of simple space.
+	lyrics between 1&2: [1] "words!_"; [2] "two\(space)oh\(space)yes.";
+
+// Include a note with a double flat.  Also print a word "with" the rest,
+// though it may be preferable to use a statement like this:
+//    bookman bold(13) above 3: 7 "inhale";
+// to make it be a distance from the staff determined by the "dist" parameter.
+	3: 2.f&&; [with "inhale"]4.r;
+
+// you can specify a pitch for a 1-line staff, even though all notes will be
+// placed on the line. The pitch will be used for MIDI output, if you use
+// the -m option to Mup to get a MIDI file instead of printed output.
+	DRUM 4.f&;2.r;
+
+// because of the beamstyle setting, the 16th notes here are joined in pairs
+// by both beams, but only one beam joins all six
+	5 1: 2.c++;4.r;
+	5 2: 8e;g;e; 16g;e;g;e;g;e; 4.r;
+	6: 2.c- alt 2;c;4.r;
+	pedal below 6: 1;6*;
+
+// print 3 tremelo slashes on this chord
+	8: [slash 3] 2. d1g0b1e3; 4.r;
+
+	9: 2.e+; 4.r;
+
+// at count 9.9 (almost the dblbar), back up 19 stepsizes and print this coda
+// indication, including the actual coda symbol; do this in italics of font
+// size 13 (but turn off the italics for the symbol), and above all the staffs
+	ital(13) all: 9.9[-19] "To coda \f(TR)\(coda)";
+
+	// double bar
+	dblbar
+@	// end the macro definition of the first measures
+// Now call the macro for the first measures
+	FIRST2MEASURES
+
+
+
+// start a new score. Normally, Mup will place things
+// as best it can, but you can force things if you like.
+newscore
+
+// now more music data
+music
+
+
+	// set location tags on the two notes, then draw a wavy line between
+	// them saying that it is a glissando
+	1: 2.c =h; 4.g =k;
+		wavy line (h.e+3, h.y) to (k.w-3, k.y) with ital (11) "gliss."
+	2: 4.e; 8..; 32f;8g;4.c;
+
+// The underscore after the lyric syllable causes Mup to draw a line an
+// appropriate distance.  The second time value is marked as a space ("s")
+// because no syllable is given for it.
+	lyrics between 1&2: 2.; 4.s; "zoom_";
+
+// a crescendo mark
+	< below 2: 3 til 7.5;
+
+// trill the foghorn from count 1 to 7; put a "turn" symbol above the note
+// at count 8. For MIDI, specify exactly how to play it.
+	ifndef MIDI
+		3: 2..d&; 4d;
+		mussym 3: 1 "tr" til 7; 8 "turn";
+	else
+		3: 16d&;e;d;e;d;e;d;e;d;e;d;e;d;e; {d;e;d;c;d;}5;
+	endif
+
+	4: [slash 2] 2.c; [with .]4.c-;
+	5: 4.ceg;;;
+
+// a dynamic mark
+	times boldital between 5&6: 7 "ff";
+
+// roll up on first chord, down on second, default (up) on third
+	roll up   5: 1;
+	roll down 5: 4;
+	roll      5: 7;
+
+// the <> indicates a slur
+	6: 2.c e?;8e<>;4c;
+
+// For the second note, "bend" the previous note up 1/2 step by stretching
+// the E string.  Then bend to a full step, and release back to normal.
+	8 1: 4.e5; e "1/2"; 8e "full"; 4e "";
+
+// Put some notes in the second tab voice.  These will be translated to the
+// the second voice of the tabnote staff above.
+	8 2: 4.g0; 4; 8; 4.;
+
+	9: 8c+; b; an; g; c; d; 4.e;
+
+// chord symbols will be transposed if the music is transposed.
+// In this particular example, transposition is not in effect
+	bold chord above all: 1 "Cm";
+
+	bar ending "1."
+
+
+
+// two measures of rest
+	multirest 2
+	repeatend ending "2."
+
+
+// Define a smiley face symbol for later use.
+symbol "Smiley"
+	bbox=-700, -700, 700, 700
+	postscript="gsave
+	  100 setlinewidth
+	  % the face
+	  0 0 600 0 360 arc stroke
+	  % the mouth
+	  0 0 300 -160 -20 arc stroke
+	  % the eyes
+	  -200 200 100 0 360 arc fill
+	  200 200 100 0 360 arc fill
+	  grestore"
+	ystemoffset = 0, 0
+
+staff 4
+// From now on, staff 4 (the one-line staff) will have two voices with stems
+// that are always opposing.  Set it so that the notes will not be on the line
+// but rather above and below it.
+	vscheme = 2o
+	ontheline = n
+music
+	midi 4 2: 0 "channel=10";
+
+// Define a macro with parameters for printing a chord name at a given count.
+// Note that the chord name is passed in and then the ` ` cause it to be
+// put in quotes.
+define K(COUNT, NAME) bold chord all: COUNT `NAME`; @
+
+// Define a "map" for chord-at-a-time input.  (By "chord" here we mean a group
+// of notes, not the symbolic chord name as above.)  Since all the voices in
+// the choir have the same rhythm from now on, it's convenient to use this
+// method of input instead of the usual voice-at-a-time method.  Set it up
+// to enter bass and tenor on staff 2, then alto and soprano on staff 1.
+define M [ 2; 2; 1; 1 ] @
+
+
+	K(1,Cm)		// print a C minor chord at count 1
+
+// assign all the notes for staffs 1 and 2, using the map.  Each goes to its
+// proper octave according to defoct.
+	M: 4.cgce; ceeg; cgce;
+
+// Put phrase marks on each staff, from count 1 until count 7 of the next
+// measure.  We didn't specify "above" or "below", so Mup chooses the side.
+	phrase 1,2: 1 til 1m+7;
+
+// Increase the size of the lyrics by 3 points.  This will carry forward to
+// the end of the song unless changed again.  Also, use the non-ASCII
+// character n-tilde, indicated by \(n~).  If you can type non-ASCII characters
+// directly on your keyboard, you can do that instead of using this notation.
+	lyrics between 1&2: "\s(+3)Ma-\(n~)a-na";
+
+// put the last note's accidental in parentheses, since it is just a
+// reminder to the player that this accidental is still in force
+	3: 4.an; b; a(n);
+
+// Use X-shaped notes on the top voice.  Use the "..." to show that this
+// applies for the rest of this measure, not just the first chord.
+	4 1: [xnote]... 4.; ; 8;;;
+	4 2: 4.; ; ;
+
+// Beam notes together across both staffs.  Set a location tag (=h) on the
+// first note, for later use.
+	5: 4.s bm with staff below; ; 8c; e; g ebm;
+	6: 8c- =h bm with staff above; e-; g-; c; e; g; 4.s ebm;
+
+	8: 2. a3 d5 g5 b4 e3; 4. tie;
+
+	// For the last two notes, override the head shape to be a slash, to
+	// indicate repeating the first part of the measure.
+	9: 8g; e; ; [hs "slash"]... 4.b; ;
+	bar endending
+
+
+
+	ital all: 1 "\[A special note, on\ntwo lines, in a box.\]";
+	1: 4.ce; eg; ;
+	lyrics between 1&2: "am gr\(o:)\(ss)t-en,";	// non-ACSII chars
+	2: 4.cg; ce; ;
+
+// draw a measure repeat sign
+	3: mrpt;
+
+	// put a text string in an ellipse
+	ital 4: 1 "\{mute\}";
+	4 1: [xnote]... 4.; ; 8;;;
+	4 2: 2.; 4.;
+
+	6: 8 with e+c++ above; c+ with g+ above; g with e+ above; ec+; g; e; \
+			4.c =k; // set loc tag "k"
+// draw a smiley face above staff 7 at count 7
+	rom above 7: 7 "\s(+5)\(Smiley)";
+	8: 4. a3 d5 g5 b4 e3; 2.;
+	9: mrpt;
+	bar
+
+// Draw a curve, with endpoints based on the "=h" and "=k" location tags with
+// vertical offsets of 11 and 8 stepsizes upwards.  The curve bulges upwards
+// 20 and 23 stepsizes 1/3 and 2/3 of the way through it.
+	medium curve (h.x, h.y + 11) to (k.x, k.y + 8) bulge 20, 23;
+
+
+// print the chord G97, with the 9 above the 7
+	K(1,G:9 7)
+
+	ital(15) all: 9.9[-20] "D.C. al Coda";
+
+// use a C double sharp (cx) and B natural
+	1: 4.cxbn; 2.;
+	lyrics between 1&2: "tr\(e`)s bien!";	// another non-ASCII character
+	2: 4.g-f; 2.;
+	4 1: 4.r; c; ;	// the pitch is arbitrary except for MIDI on one-line
+	4 2: 4.; r; ;
+	5: 4.dfgbn; ; dfan;
+
+// force first note stem to point upwards, which would by default have
+// pointed down; change clef in the middle of the measure
+	6: [up] 4.d; c; <<staff clef = treble>> d+;
+
+// The first note is a "prebend" (stretch the string before plucking).  On the
+// last note, do a slide upwards after it that doesn't end at any specific note.
+	8: 4. a10 "full" b8 "full"; 4. a10 "" b8 ""; [grace] 16 e0; 4.e1 <n/>;
+	9: 2.+4.g;
+	lyrics 9: "oo_";
+	dblbar
+
+// For MIDI, insert the D.C. al Coda fragment
+	ifdef MIDI
+		FIRST2MEASURES
+	endif
+
+// leave a gap and start all the staffs anew, showing clefs and key signatures
+	restart
+
+staff 6
+	clef = bass	// change the clef back to bass
+
+// From here on, let's write the lyrics in Russian.  Define and use a keymap,
+// so that we can type single Roman letters in the lyrics instead of the
+// character names.  Actually we would do this for the whole alphabet,
+// capital and small, but here we are defining only the letters that we
+// will actually use.
+keymap "cyrillic"
+	"e"	"\(afii10070)"
+	"i"	"\(afii10074)"
+	"k"	"\(afii10076)"
+	"n"	"\(afii10079)"
+	"o"	"\(afii10080)"
+	"p"	"\(afii10081)"
+	"s"	"\(afii10083)"
+	"c"	"\(afii10088)"
+score
+	lyricskeymap = "cyrillic"
+
+music
+// override the "dist" parameter, and specify a minimum distance of 5 stepsizes
+// from the staff for this coda sign
+	mussym(13) all dist 5: 0.5 "coda";
+	ital(15) all: 1 "Coda";
+
+// at count 1 print G diminished 7 (the "o" is translated to a diminished
+// symbol), and at count 7 print G
+	K(1,Go7)
+	K(7,G)
+
+// Another duplet.  If we put "n" after the first number it would prevent the
+// bracket from being printed.
+	1: 2.d&g; { 4gbn; ; }2,4.;
+	lyrics between 1&2: "ko-nec pes-";
+
+// Draw parentheses around the one D natural.  Force this duplet's bracket to
+// be below; this one would have defaulted to above.
+	2: 2.b&f&; { 4d-n(dn)g; dbn; } below 2,4.;
+
+// Print both keyboard hands on its top staff, using two voices.  Since the
+// top notes are so high, set their stems to extend only 5 stepsizes instead
+// of the usual 7 (octave).  Slur and tie the notes, using dashed or dotted
+// rather than solid curves.
+	5 1: [len 5]... 2.g++b++d&+++f&+++ dashed slur; 4.g++bn++d+++g+++;
+	5 2: 2.gg+ dotted tie; 4.;
+
+// leave staff 6 unspecified, so that it will default to a space
+
+	8: [slash 1] 2. e'0 a1 d2 g0 b2 e0; 4. e'3 d0 g0 b0 e3;
+
+	9: 2.g; 4.bn;
+	lyrics 9: "At the";
+	bar
+
+
+
+score
+// set a time signature that combines two simple time signatures
+	time = 2/4 + 3/8
+
+music
+// use shorthand to enter the same data for two staffs at once
+	1,2:  2egc+ tie; 4.;
+	lyrics between 1&2: "ni";
+
+	4 1,2: mr;	// measure rest on both voices of staff 4
+	5-6: 2c tie; 4.;
+
+// mark notes an octave lower than normal
+	octave below 6: 1 "8va" til 7.5;
+
+// put a fermata above staffs 1, 2, and 4 to 6
+	mussym above 1,2,4-6: 5 "ferm";
+// for MIDI, slow the tempo, to produce the fermata
+	midi all: 3 "tempo=50";
+	8: 2 e20~; 4.;
+	9: 2+4.c+;
+	lyrics 9: "end.";
+	K(1,Cm)
+	endbar

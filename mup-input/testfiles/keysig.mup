@@ -1,0 +1,464 @@
+//!Mup-Arkkra
+header
+	title bold (18) "keysig.mup"
+	paragraph (14) "\
+Test every possible key signature in every clef.
+All the notes are middle C."
+define DATA music
+		1: 1c4;
+		bar
+@
+define ID(CLEF)
+	music
+		rom 1: 0 `CLEF`;
+		1: 1s;
+		invisbar
+@
+score
+	label = ""
+	time = 4/4n
+	scoresep = 9, 9
+	scorepad = 0
+	packfact = 0.5
+score clef = 8treble;
+ID(8treble)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = frenchviolin;
+ID(frenchviolin)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = treble8;
+ID(treble8)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = treble;
+ID(treble)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = soprano;
+ID(soprano)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = mezzosoprano;
+ID(mezzosoprano)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = alto;
+ID(alto)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = tenor;
+ID(tenor)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = baritone;
+ID(baritone)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = bass;
+ID(bass)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = subbass;
+ID(subbass)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = bass8;
+ID(bass8)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA
+score clef = 8bass;
+ID(8bass)
+score key = 0#;
+DATA
+score key = 1#;
+DATA
+score key = 2#;
+DATA
+score key = 3#;
+DATA
+score key = 4#;
+DATA
+score key = 5#;
+DATA
+score key = 6#;
+DATA
+score key = 7#;
+DATA
+score key = 0&;
+DATA
+score key = 1&;
+DATA
+score key = 2&;
+DATA
+score key = 3&;
+DATA
+score key = 4&;
+DATA
+score key = 5&;
+DATA
+score key = 6&;
+DATA
+score key = 7&;
+DATA

@@ -1,0 +1,47 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "tab_err.mup"
+	paragraph (14) "This file tests various user errors on tablature input."
+
+score
+	stafflines=tab
+	stafflines=tab(e)
+	staffs=32
+
+staff 1
+	stafflines=tab
+
+staff 30
+	stafflines=tab(abc&& dn ex)
+staff 31
+	stafflines=tab
+
+staff 20
+	stafflines=1
+staff 21
+	stafflines=tab(c c)
+
+staff 10
+	stafflines=tab(cdefga'b'c'd'e'''f')
+staff 9
+	stafflines=1
+
+staff 6
+	stafflines=tab
+staff 5
+	stafflines=tab
+
+staff 15
+	stafflines=tab(a b c'' d# e&)
+	clef=soprano
+
+music
+5: b "1/2"; b4;;;
+bar
+
+15: a115;f;b&;a;
+bar
+
+5: a5; b "full"; e'8;a2;
+bar

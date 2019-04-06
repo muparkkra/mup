@@ -1,0 +1,36 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "til.mup"
+	paragraph (14) "This tests the 'til' clause on text, using extenders of wavy line, dashed line, or underscore, crossing measures and scores."
+	title ""
+
+score
+	scoresep=16,40
+
+music
+
+1: c;;;;
+rom above 1: 1 "wavy 2.5~" til 2.5;
+rom below 1: 1 "underscore 3_" til 3;
+mussym above 1: 4 "tr" til 4.6;
+bar
+
+1: e;;;;
+boldital above 1: 1 "wavy 1m+2~" til 1m+2;
+rom above 1: 1 "plain 1m+2.7" til 1m+2.7;
+bold above 1: 1 "underscore 1m+3.2_" til 1m+3.2;
+rom above 1: 1 "dashed 1m+3.5-" til 1m+3.5;
+ital below 1: 1 "underscore 1m+3_" til 1m+3;
+rom below 1: 1 "dash 1m+2-" til 1m+2;
+rom below 1: 1 "plain 2m+1.5" til 2m+1.5;
+bar
+
+newscore
+
+1: d;;;;
+rom above 1: 1 "xyz 1m+3.5" til 1m+3.5;
+bar
+
+1: f;;;;
+bar

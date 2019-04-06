@@ -1,0 +1,217 @@
+//!Mup-Arkkra
+
+header
+	title bold (9) "extch.mup"
+	paragraph (7)  "This file tests Latin-1 characters that can be entered either " + \
+	"directly or via their name or shortcut."
+
+score
+	scale=1.8
+	packfact=1.5
+
+music
+
+1: c;;;;
+rom 1: 1 "¡" + " and " + "\(exclamdown)";
+bar
+1: c;;;;
+rom 1: 1 "£" + " and " + "\(sterling)";
+bar
+1: c;;;;
+rom 1: 1 "¥" + " and " + "\(yen)";
+bar
+1: c;;;;
+rom 1: 1 "¨" + " and " + "\(dieresis)";
+bar
+1: c;;;;
+rom 1: 1 "©" + " and " + "\(copyright)";
+bar
+1: c;;;;
+rom 1: 1 "ª" + " and " + "\(ordfeminine)";
+bar
+1: c;;;;
+rom 1: 1 "«" + " and " + "\(guillemotleft)";
+bar
+1: c;;;;
+rom 1: 1 "­" + " and " + "\(emdash)";
+bar
+1: c;;;;
+rom 1: 1 "¯" + " and " + "\(macron)";
+bar
+1: c;;;;
+rom 1: 1 "°" + " and " + "\(ring)";
+bar
+1: c;;;;
+rom 1: 1 "´" + " and " + "\(acute)";
+bar
+1: c;;;;
+rom 1: 1 "¸" + " and " + "\(cedilla)";
+bar
+1: c;;;;
+rom 1: 1 "»" + " and " + "\(guillemotright)";
+bar
+1: c;;;;
+rom 1: 1 "¿" + " and " + "\(questiondown)";
+bar
+1: c;;;;
+rom 1: 1 "À" + " and " + "\(A`)";
+bar
+1: c;;;;
+rom 1: 1 "Á" + " and " + "\(A')";
+bar
+1: c;;;;
+rom 1: 1 "Â" + " and " + "\(A^)";
+bar
+1: c;;;;
+rom 1: 1 "Ã" + " and " + "\(A~)";
+bar
+1: c;;;;
+rom 1: 1 "Ä" + " and " + "\(A:)";
+bar
+1: c;;;;
+rom 1: 1 "Å" + " and " + "\(Ao)";
+bar
+1: c;;;;
+rom 1: 1 "Æ" + " and " + "\(AE)";
+bar
+1: c;;;;
+rom 1: 1 "Ç" + " and " + "\(C,)";
+bar
+1: c;;;;
+rom 1: 1 "È" + " and " + "\(E`)";
+bar
+1: c;;;;
+rom 1: 1 "É" + " and " + "\(E')";
+bar
+1: c;;;;
+rom 1: 1 "Ê" + " and " + "\(E^)";
+bar
+1: c;;;;
+rom 1: 1 "Ë" + " and " + "\(E:)";
+bar
+1: c;;;;
+rom 1: 1 "Ì" + " and " + "\(I`)";
+bar
+1: c;;;;
+rom 1: 1 "Í" + " and " + "\(I')";
+bar
+1: c;;;;
+rom 1: 1 "Î" + " and " + "\(I^)";
+bar
+1: c;;;;
+rom 1: 1 "Ï" + " and " + "\(I:)";
+bar
+1: c;;;;
+rom 1: 1 "Ò" + " and " + "\(N~)";
+bar
+1: c;;;;
+rom 1: 1 "Ó" + " and " + "\(O`)";
+bar
+1: c;;;;
+rom 1: 1 "Ô" + " and " + "\(O')";
+bar
+1: c;;;;
+rom 1: 1 "Õ" + " and " + "\(O^)";
+bar
+1: c;;;;
+rom 1: 1 "Ö" + " and " + "\(O~)";
+bar
+1: c;;;;
+rom 1: 1 "×" + " and " + "\(O:)";
+bar
+1: c;;;;
+rom 1: 1 "Ø" + " and " + "\(U`)";
+bar
+1: c;;;;
+rom 1: 1 "Ù" + " and " + "\(U')";
+bar
+1: c;;;;
+rom 1: 1 "Ú" + " and " + "\(U^)";
+bar
+1: c;;;;
+rom 1: 1 "Û" + " and " + "\(U:)";
+bar
+1: c;;;;
+rom 1: 1 "à" + " and " + "\(a`)";
+bar
+1: c;;;;
+rom 1: 1 "á" + " and " + "\(a')";
+bar
+1: c;;;;
+rom 1: 1 "â" + " and " + "\(a^)";
+bar
+1: c;;;;
+rom 1: 1 "ã" + " and " + "\(a~)";
+bar
+1: c;;;;
+rom 1: 1 "ä" + " and " + "\(a:)";
+bar
+1: c;;;;
+rom 1: 1 "å" + " and " + "\(ao)";
+bar
+1: c;;;;
+rom 1: 1 "æ" + " and " + "\(ae)";
+bar
+1: c;;;;
+rom 1: 1 "ç" + " and " + "\(c,)";
+bar
+1: c;;;;
+rom 1: 1 "è" + " and " + "\(e`)";
+bar
+1: c;;;;
+rom 1: 1 "é" + " and " + "\(e')";
+bar
+1: c;;;;
+rom 1: 1 "ê" + " and " + "\(e^)";
+bar
+1: c;;;;
+rom 1: 1 "ë" + " and " + "\(e:)";
+bar
+1: c;;;;
+rom 1: 1 "ì" + " and " + "\(i`)";
+bar
+1: c;;;;
+rom 1: 1 "í" + " and " + "\(i')";
+bar
+1: c;;;;
+rom 1: 1 "î" + " and " + "\(i^)";
+bar
+1: c;;;;
+rom 1: 1 "ï" + " and " + "\(i:)";
+bar
+1: c;;;;
+rom 1: 1 "ñ" + " and " + "\(n~)";
+bar
+1: c;;;;
+rom 1: 1 "ò" + " and " + "\(o`)";
+bar
+1: c;;;;
+rom 1: 1 "ó" + " and " + "\(o')";
+bar
+1: c;;;;
+rom 1: 1 "ô" + " and " + "\(o^)";
+bar
+1: c;;;;
+rom 1: 1 "õ" + " and " + "\(o~)";
+bar
+1: c;;;;
+rom 1: 1 "ö" + " and " + "\(o:)";
+bar
+1: c;;;;
+rom 1: 1 "ø" + " and " + "\(o/)";
+bar
+1: c;;;;
+rom 1: 1 "ù" + " and " + "\(u`)";
+bar
+1: c;;;;
+rom 1: 1 "ú" + " and " + "\(u')";
+bar
+1: c;;;;
+rom 1: 1 "û" + " and " + "\(u^)";
+bar
+1: c;;;;
+rom 1: 1 "ü" + " and " + "\(u:)";
+bar
+1: c;;;;
+rom 1: 1 "ÿ" + " and " + "\(y:)";
+bar

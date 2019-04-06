@@ -1,0 +1,71 @@
+//!Mup-Arkkra
+header
+	title bold (14) "useaccs.mup"
+	paragraph (11) "\
+Test the values of the useaccs parameter.
+The key throughout is 4 sharps.
+Every line has the same input notes."
+score
+	beamstyle = 1
+	scale = 1.3
+	label = ""
+	key = 4#
+define MUSIC
+	1: 2d#; d;
+	bar
+	1: 2d#; d#;
+	bar
+	1: 2bn; ;
+	bar
+	1: 2bn; bn;
+	bar
+	1: 2d; ;
+	bar
+@
+score
+	useaccs = n
+music
+	rom 1: 1 "n";
+	MUSIC
+score
+	useaccs = y none
+music
+	newscore
+	rom 1: 1 "y none";
+	MUSIC
+score
+	useaccs = y noneremuser
+music
+	newscore
+	rom 1: 1 "y noneremuser";
+	MUSIC
+score
+	useaccs = y nonnat
+music
+	newscore
+	rom 1: 1 "y nonnat";
+	MUSIC
+score
+	useaccs = y nonnatremuser
+music
+	newscore
+	rom 1: 1 "y nonnatremuser";
+	MUSIC
+score
+	useaccs = y all
+music
+	newscore
+	rom 1: 1 "y all";
+	MUSIC
+score
+	useaccs = y noneremuser
+music
+	newscore
+	rom 1: 1 "y noneremuser";
+	MUSIC
+score
+	useaccs = y nonnatremuser
+music
+	newscore
+	rom 1: 1 "y nonnatremuser";
+	MUSIC

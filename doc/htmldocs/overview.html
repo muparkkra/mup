@@ -1,0 +1,155 @@
+<HTML>
+<HEAD>
+<TITLE>
+MUP Overview
+</TITLE>
+</HEAD>
+<BODY>
+<H1>
+OVERVIEW OF THE MUP MUSIC PUBLICATION PROGRAM
+</H1>
+<P>
+Mup is a program for printing music. It takes an input file
+containing ordinary (ASCII) text
+describing music, and produces PostScript output for printing
+the musical score described by the input.
+</P>
+<P>
+A Mup input file can contains several kinds of sections or contexts.
+The description of musical notes is given in the "music" context.
+There are contexts for defining page headers and footers.
+There are also several contexts used for setting various parameters.
+For example, there is a "score" context in which global aspects are listed,
+such as the number of staffs, the time signature, page margins, etc. It is also
+possible to set parameters for individual staffs and even individual
+voices. (Each staff can have up to three independent voices.)
+Any parameter that can be set for an individual voice can also be set for
+a staff, and any parameter that can be set for a staff can be set for the score
+as a whole. The actual value used for a given parameter is obtained by
+searching from the most specific (i.e., voice), to the most general (i.e.,
+score) until a value is found. All values are given a default at the
+score level, so that everything will always resolve to some value.
+Parameters include items such as:
+<UL>
+<LI>
+Number of staffs
+<LI>
+Number of voices per staff
+<LI>
+Time signature
+<LI>
+Key signature
+<LI>
+Clef
+<LI>
+Transposition amount
+<LI>
+Whether to use beams or flags on notes of 8th note duration or shorter
+<LI>
+Margins
+<LI>
+Which staffs to group with braces or brackets, and what labels to use
+<LI>
+How tightly to pack output together, both horizontally and vertically.
+<LI>
+Whether to print measure numbers
+</UL>
+</P>
+<P>
+Mup can handle up to 40 parallel staffs. Each staff can have a different
+key signature, clef, and transposition value.
+Staffs can be 5-line, 1-line, or tablature (1 to 9 lines).
+It is possible to print a subset of staffs or voices.
+Guitar grids are supported.
+</P>
+<P>
+Music data is organized into measures. Each measure consists of
+data for one or more voices followed by a bar line.
+Data for each voice consists of one or more chords. Each chord
+consists of a time value and one or more notes, and possibly additional
+items associated with the chord. To minimize input, an omitted time value
+defaults to being the same as the previous time value, and if the notes
+are omitted, the notes of the previous chord are used.
+There are also two special kinds of "notes": rests and space.
+Time values from double whole through 256th are supported,
+as well as tuplets, and any number of dots.
+Notes are specified by a letter 'a' to 'g', which may be followed
+by up to 4 accidentals (#, &amp;, x, &amp;&amp;, or n for sharp, flat, double sharp,
+double flat, and natural respectively, or user defined accidentals),
+and an optional octave. The octave
+can be an absolute number 0 to 9 or one or more + or - signs to indicate
+one or more octaves above or below the default octave.
+It is also possible to specify that octave marks are to be printed.
+</P>
+<P>
+Individual notes or entire chords can be tied or slurred
+to notes in the following chord.
+Slides, bends, and phrase marks can also be specified.
+Mup takes care of all details of drawing appropriate curves
+and splitting the curves across scores or pages if necessary.
+</P>
+<P>
+Grace notes can be specified before any chord. It is also possible to
+specify that notes are to be printed in &quot;cue&quot; (small) size rather than
+regular size, or that &quot;X&quot; or diamond shaped notes are to be used.
+Shaped note used in &quot;Sacred Harp&quot; music are also supported.
+</P>
+<P>
+Each measure ends with a bar line. There are several types of bars: an ordinary
+bar, a double bar, a heavy bar to end the song, and bars with repeat signs.
+There is also an &quot;invisible bar&quot; which allows for organizing the
+input into bars without having the bar lines printed on the output.
+</P>
+<P>
+First and subsequent endings can be specified at bar lines. Rehearsal marks
+can be requested at any bar line.
+</P>
+<P>
+Macros can be defined to minimize input or improve readability.
+There is a generalized  &quot;if&quot; clause that lets you produce
+different outputs based on macro values.
+It is also possible to &quot;include&quot; one file in another.
+</P>
+<P>
+Lyrics can be specified for zero or more verses, above, below
+or between staffs. You can control the font and size used for the lyrics.
+</P>
+<P>
+Music symbols or words can be placed relative to staffs and notes.
+This may include musical marks such as fermatas and accents, as well
+as words to indicate tempo or dynamics, etc.
+</P>
+<P>
+Since both the input and output of Mup are ASCII text files, it is easy to
+write programs to do various transformations. For example, a
+program could be written to move voices from one staff to another, or
+any sort of PostScript filter program could be used on the output.
+</P>
+<P>
+Mup will optionally provide output in standard
+Musical Instrument Digital Interface (MIDI) format,
+for performance rather than PostScript output for printing.
+Custom accidentals and alternate tuning systems are supported.
+You can specify gradual changes in things like tempo and volume.
+</P>
+<P>
+While Mup itself bucks the trend of graphical, mouse-driven input, it has
+proven to be a very useful and powerful method of capturing the complexities
+of musical notation, and there is a companion program, called Mupmate,
+that provides a graphical interface on top of Mup for those who are more
+comfortable with that kind of interface. The use of ordinary text input
+and PostScript output make it
+largely device independent. Mup was designed and written by people who
+are both musicians and computer programmers.
+The result is a program that provides the capability to produce full-featured,
+very high quality musical scores with a minimum of effort. It is available
+ready-to-run for selected computer operating systems, and source code is
+also available so that it can be run on most platforms that have a C compiler.
+You are welcome to <A HREF="obtain.html">download Mup</A> and use it for free.
+</P>
+<HR>
+<P>
+<A HREF="http://www.arkkra.com">http://www.arkkra.com</A>
+</P>
+</BODY>
+</HTML>

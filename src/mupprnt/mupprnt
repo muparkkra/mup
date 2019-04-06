@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# UNIX shell script for printing Mup output
+
+# **** NOTE: The GS_DEVICE shell variable needs to be set to the
+#		proper value for your printer type.
+#	Different versions of ghostscript may support different
+#	printer types, so execute ghostscript with the -h option
+#	to see what your version supports, and set GS_DEVICE
+#	as appropriate for your printer.
+
+echo "Mupprnt - Version 6.7" >&2
+
+# if environment variable COPIES is set, use that as number of copies to print
+if [ "$COPIES" != "" ]
+then
+	_Mup_copies=-n$COPIES
+fi
+
+muptmp=/usr/tmp/mtmp$$
+trap 'rm -f $muptmp' 0 1 2 15
+mup $* | gs -dNOPAUSE -sOutputFile=$muptmp -
+
+
+if [ $? -eq 0 -a -s "$muptmp" ]
+then
+	# use -c option to copy file to spool area, so we can remove tmp file
+	lp -c $_Mup_copies $muptmp
+fi

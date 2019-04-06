@@ -1,0 +1,58 @@
+header
+	title (20) "cancelkey2.mup"
+	paragraph (15) "Page 1 tests cancelkey=y, with change at a feed."
+	paragraph (15) "Page 2 tests cancelkey=y, with change not at a feed."
+	paragraph (15) "Page 3 tests canelkey=n, with change at a feed."
+	paragraph (15) "Page 4 tests cancelkey=n, with change not at a feed."
+
+score
+	scale=0.9
+	cancelkey=y
+music
+
+define TEST(DESC, NEWKEY)
+
+rom 1: 1 DESC ;
+1: c;;;;
+bar
+score key=NEWKEY
+music
+ifdef NOTATFEED
+1: d;;;;
+bar
+endif
+newscore
+@
+
+define TEST_ALL
+TEST("no sharps to sharps", 3#)
+TEST("sharps to flats", 1&) 
+TEST("flats to sharps", 6#)
+TEST("increase in number of sharps", 7#)
+TEST("decrease in number of sharps", 4#)
+TEST("sharps to no sharps", 0#)
+TEST("no flats to flats", 2&)
+TEST("increase in number of flats", 6&)
+TEST("decrease in number of flats", 3&)
+TEST("flats to no flats", 0&)
+
+1: c;;;;
+bar
+
+@
+
+TEST_ALL
+
+define NOTATFEED @
+newpage
+TEST_ALL
+
+score cancelkey=n
+music
+undef NOTATFEED
+newpage
+TEST_ALL
+
+define NOTATFEED @
+newpage
+TEST_ALL

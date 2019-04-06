@@ -1,0 +1,212 @@
+// This is a sample keymap for Cyrillic.
+// It tries to map based on phonetics as much as possible,
+// but needs more than the 26 letters A-Z, so uses
+// multi-characters for a few, but again trying to be mnemonic.
+
+// Normally you would "include" this file in a Mup file.
+// But if you run mup with -DSHOW_MAP, it will generate a file
+// that shows you the mapping of keyboard input to Cyrillic letters.
+// Or if you run mup with -DRUSSIAN_ORDER, it will generate a file
+// that shows you the mapping in Russian alphabetical order.
+
+keymap "cyrillic"
+	"=o"	"\(afii10071)"
+	"=O"	"\(afii10023)"
+	"=h"	"\(afii10092)"	// hard
+	"=H"	"\(afii10044)"
+	"=e"	"\(afii10095)"
+	"=E"	"\(afii10047)"
+	"q"	"\(afii10097)"
+	"Q"	"\(afii10049)"
+	"w"	"\(afii10090)"
+	"W"	"\(afii10042)"
+	"e"	"\(afii10070)"
+	"E"	"\(afii10022)"
+	"r"	"\(afii10082)"
+	"R"	"\(afii10034)"
+	"t"	"\(afii10084)"
+	"T"	"\(afii10036)"
+	"y"	"\(afii10093)"
+	"Y"	"\(afii10045)"
+	"u"	"\(afii10085)"
+	"U"	"\(afii10037)"
+	"i"	"\(afii10074)"
+	"I"	"\(afii10026)"
+	"o"	"\(afii10080)"
+	"O"	"\(afii10032)"
+	"p"	"\(afii10081)"
+	"P"	"\(afii10033)"
+	"=U"	"\(afii10048)"
+	"=u"	"\(afii10096)"
+	"=SHCH"	"\(afii10043)"
+	"=shch"	"\(afii10091)"
+	"a"	"\(afii10065)"
+	"A"	"\(afii10017)"
+	"s"	"\(afii10083)"
+	"S"	"\(afii10035)"
+	"d"	"\(afii10069)"
+	"D"	"\(afii10021)"
+	"f"	"\(afii10086)"
+	"F"	"\(afii10038)"
+	"g"	"\(afii10068)"
+	"G"	"\(afii10020)"
+	"h"	"\(afii10089)"
+	"H"	"\(afii10041)"
+	"j"	"\(afii10075)"
+	"J"	"\(afii10027)"
+	"k"	"\(afii10076)"
+	"K"	"\(afii10028)"
+	"l"	"\(afii10077)"
+	"L"	"\(afii10029)"
+	"=s"	"\(afii10094)"	// soft
+	"=S"	"\(afii10046)"
+	"=zh"	"\(afii10072)"
+	"=ZH"	"\(afii10024)"
+	"z"	"\(afii10073)"
+	"Z"	"\(afii10025)"
+	"x"	"\(afii10087)"
+	"X"	"\(afii10039)"
+	"c"	"\(afii10088)"
+	"C"	"\(afii10040)"
+	"v"	"\(afii10067)"
+	"V"	"\(afii10019)"
+	"b"	"\(afii10066)"
+	"B"	"\(afii10018)"
+	"n"	"\(afii10079)"
+	"N"	"\(afii10031)"
+	"m"	"\(afii10078)"
+	"M"	"\(afii10030)"
+
+ifdef  SHOW_MAP
+
+score
+	fontfamily=courier
+	font=bold
+	size=16
+
+define M(S)  paragraph S + " on keyboard yields \m(cyrillic)" + S @
+block
+	M("a")
+	M("b")
+	M("c")
+	M("d")
+	M("e")
+	M("f")
+	M("g")
+	M("h")
+	M("i")
+	M("j")
+	M("k")
+	M("l")
+	M("m")
+	M("n")
+	M("o")
+	M("p")
+	M("q")
+	M("r")
+	M("s")
+	M("t")
+	M("u")
+	M("v")
+	M("w")
+	M("x")
+	M("y")
+	M("z")
+	M("=o")
+	M("=O")
+	M("=h")
+	M("=H")
+	M("=e")
+	M("=E")
+	M("=u")
+	M("=U")
+	M("=shch")
+	M("=SHCH")
+	M("=s")
+	M("=S")
+	M("=zh")
+	M("=ZH")
+block
+	M("A")
+	M("B")
+	M("C")
+	M("D")
+	M("E")
+	M("F")
+	M("G")
+	M("H")
+	M("I")
+	M("J")
+	M("K")
+	M("L")
+	M("M")
+	M("N")
+	M("O")
+	M("P")
+	M("Q")
+	M("R")
+	M("S")
+	M("T")
+	M("U")
+	M("V")
+	M("W")
+	M("X")
+	M("Y")
+	M("Z")
+endif
+
+ifdef RUSSIAN_ORDER
+
+score
+	fontfamily=courier
+	font=bold
+	size=16
+define RP(C,C2,PAD,COMMENT)  paragraph "\m(cyrillic)" + C + "  \m()\"" + C + "\"" +  PAD + "                         \m(cyrillic)" + C2 + "  \m()\"" + C2 + "\"" + COMMENT
+ paragraph (3) ""
+@
+
+define RP1(C)  paragraph "\m(cyrillic)" + C + "  \m()\"" + C + "\"" @
+define R(C,C2) RP(C,C2,"  ","") @
+define RC(C,C2,COMMENT) RP(C,C2,"  ",COMMENT) @
+define R2(C,C2) RP(C,C2," ","") @
+define R3(C,C2) RP(C,C2,"","") @
+
+header
+	center "Mup keymap for cyrillic (Russian order)"
+block
+	paragraph " "
+	R("a","r")
+	R("A","R")
+	R("b","s")
+	R("B","S")
+	R("v","t")
+	R("V","T")
+	R("g","u")
+	R("G","U")
+	R("d","f")
+	R("D","F")
+	R("e","x")
+	R("E","X")
+	R2("=o","c")
+	R2("=O","C")
+	R3("=zh","h")
+	R3("=ZH","H")
+	R("z","w")
+	R("Z","W")
+	R("i","=SHCH")
+	R("I","=shch")
+	RC("j","=h","    // hard")
+	R("J","=H")
+	R("k","y")
+	R("K","Y")
+	RC("l","=s","    // soft")
+	R("L","=S")
+	R("m","=e")
+	R("M","=E")
+	R("n","=U")
+	R("N","=u")
+	R("o","q")
+	R("O","Q")
+	RP1("p")
+	RP1("P")
+endif

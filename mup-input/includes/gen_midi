@@ -1,0 +1,167 @@
+
+// This file defines Mup macro names for General MIDI instruments.
+// Each macro name starts with GM_ to try to
+// avoid clashing with any other user macros.
+// Instrument names are fully spelled out,
+// with underscores where spaces would be in normal English.
+
+// Piano
+define GM_ACOUSTIC_GRAND "program=0" @
+define GM_BRIGHT_ACOUSTIC "program=1" @
+define GM_ELECTRIC_GRAND "program=2" @
+define GM_HONKY_TONK "program=3" @
+define GM_ELECTRIC_PIANO_1 "program=4" @
+define GM_ELECTRIC_PIANO_2 "program=5" @
+define GM_HARPSICHORD "program=6" @
+define GM_CLAVINET "program=7" @
+
+// Chromatic Percussion
+define GM_CELESTA "program=8" @
+define GM_GLOCKENSPIEL "program=9" @
+define GM_MUSIC_BOX "program=10" @
+define GM_VIBRAPHONE "program=11" @
+define GM_MARIMBA "program=12" @
+define GM_XYLOPHONE "program=13" @
+define GM_TUBULAR_BELLS "program=14" @
+define GM_DULCIMER "program=15" @
+
+// Organ
+define GM_DRAWBAR_ORGAN "program=16" @
+define GM_PERCUSSIVE_ORGAN "program=17" @
+define GM_ROCK_ORGAN "program=18" @
+define GM_CHURCH_ORGAN "program=19" @
+define GM_REED_ORGAN "program=20" @
+define GM_ACCORDIAN "program=21" @
+define GM_HARMONICA "program=22" @
+define GM_TANGO_ACCORDIAN "program=23" @
+
+// Guitar
+define GM_NYLON_STRING_GUITAR "program=24" @
+define GM_STEEL_STRING_GUITAR "program=25" @
+define GM_ELECTRIC_JAZZ_GUITAR "program=26" @
+define GM_ELECTRIC_CLEAN_GUITAR "program=27" @
+define GM_ELECTRIC_MUTED_GUITAR "program=28" @
+define GM_OVERDRIVEN_GUITAR "program=29" @
+define GM_DISTORTION_GUITAR "program=30" @
+define GM_GUITAR_HARMONICS "program=31" @
+
+// Bass
+define GM_ACOUSTIC_BASS "program=32" @
+define GM_ELECTRIC_BASS_FINGER "program=33" @
+define GM_ELECTRIC_BASS_PICK "program=34" @
+define GM_FRETLESS_BASS "program=35" @
+define GM_SLAP_BASS_1 "program=36" @
+define GM_SLAP_BASS_2 "program=37" @
+define GM_SYNTH_BASS_1 "program=38" @
+define GM_SYNTH_BASS_2 "program=39" @
+
+// Solo Strings
+define GM_VIOLIN "program=40" @
+define GM_VIOLA "program=41" @
+define GM_CELLO "program=42" @
+define GM_CONTRABASS "program=43" @
+define GM_TREMOLO_STRINGS "program=44" @
+define GM_PIZZICATO_STRINGS "program=45" @
+define GM_ORCHESTRAL_STRINGS "program=46" @
+define GM_TIMPANI "program=47" @
+
+// Ensemble
+define GM_STRING_ENSEMBLE_1 "program=48" @
+define GM_STRING_ENSEMBLE_2 "program=49" @
+define GM_SYNTHSTRINGS_1 "program=50" @
+define GM_SYNTHSTRINGS_2 "program=51" @
+define GM_CHOIR_AAHS "program=52" @
+define GM_VOICE_OOHS "program=53" @
+define GM_SYNTH_VOICE "program=54" @
+define GM_ORCHESTRA_HIT "program=55" @
+
+// Brass
+define GM_TRUMPET "program=56" @
+define GM_TROMBONE "program=57" @
+define GM_TUBA "program=58" @
+define GM_MUTED_TRUMPET "program=59" @
+define GM_FRENCH_HORN "program=60" @
+define GM_BRASS_SECTION "program=61" @
+define GM_SYNTHBRASS_1 "program=62" @
+define GM_SYNTHBRASS_2 "program=63" @
+
+// Reed
+define GM_SOPRANO_SAX "program=64" @
+define GM_ALTO_SAX "program=65" @
+define GM_TENOR_SAX "program=66" @
+define GM_BARITONE_SAX "program=67" @
+define GM_OBOE "program=68" @
+define GM_ENGLISH_HORN "program=69" @
+define GM_BASSOON "program=70" @
+define GM_CLARINET "program=71" @
+
+// Pipe
+define GM_PICCOLO "program=72" @
+define GM_FLUTE "program=73" @
+define GM_RECORDER "program=74" @
+define GM_PAN_FLUTE "program=75" @
+define GM_BLOWN_BOTTLE "program=76" @
+define GM_SHAKUHACHI "program=77" @
+define GM_WHISTLE "program=78" @
+define GM_OCARINA "program=79" @
+
+// Synth Lead
+define GM_LEAD_1_SQUARE "program=80" @
+define GM_LEAD_2_SAWTOOTH "program=81" @
+define GM_LEAD_3_CALLIOPE "program=82" @
+define GM_LEAD_3_CHIFF "program=83" @
+define GM_LEAD_5_CHARANG "program=84" @
+define GM_LEAD_6_VOICE "program=85" @
+define GM_LEAD_7_FIFTHS "program=86" @
+define GM_LEAD_8_BASS_N_LEAD "program=87" @
+
+// Synth Pad
+define GM_PAD_1_NEW_AGE "program=88" @
+define GM_PAD_2_WARM "program=89" @
+define GM_PAD_3_POLYSYNTH "program=90" @
+define GM_PAD_4_CHOIR "program=91" @
+define GM_PAD_5_BOWED "program=92" @
+define GM_PAD_6_METALLIC "program=93" @
+define GM_PAD_7_HALO "program=94" @
+define GM_PAD_8_SWEEP "program=95" @
+
+// Synth Effects
+define GM_FX_1_RAIN "program=96" @
+define GM_FX_2_SOUNDTRACK "program=97" @
+define GM_FX_3_CRYSTAL "program=98" @
+define GM_FX_4_ATMOSPHERE "program=99" @
+define GM_FX_5_BRIGHTNESS "program=100" @
+define GM_FX_6_GOBLINS "program=101" @
+define GM_FX_7_ECHOES "program=102" @
+define GM_FX_8_SCI_FI "program=103" @
+
+// Ethnic
+define GM_SITAR "program=104" @
+define GM_BANJO "program=105" @
+define GM_SHAMISEN "program=106" @
+define GM_KOTO "program=107" @
+define GM_KALIMBA "program=108" @
+define GM_BAGPIPE "program=109" @
+define GM_FIDDLE "program=110" @
+define GM_SHANAI "program=111" @
+
+// Precussive
+define GM_TINKLE_BELL "program=112" @
+define GM_AGOGO "program=113" @
+define GM_STEEL_DRUMS "program=114" @
+define GM_WOODBLOCK "program=115" @
+define GM_TAIKO_DRUM "program=116" @
+define GM_MELODIC_TOM "program=117" @
+define GM_SYNTH_DRUM "program=118" @
+define GM_REVERSE_CYMBAL "program=119" @
+
+// Sound Effects
+define GM_GUITAR_FRET_NOISE "program=120" @
+define GM_BREATH_NOISE "program=121" @
+define GM_SEASHORE "program=122" @
+define GM_BIRD_TWEET "program=123" @
+define GM_TELEPHONE_RING "program=124" @
+define GM_HELICOPTER "program=125" @
+define GM_APPLAUSE "program=126" @
+define GM_GUNSHOT "program=127" @
+

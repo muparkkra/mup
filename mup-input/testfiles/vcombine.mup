@@ -1,0 +1,301 @@
+//!Mup-Arkkra
+header
+	title bold (15) "vcombine.mup"
+	paragraph (12) "\
+Test the vcombine parameter.
+Staffs 1 and 2 have the same contents, but the
+parameter is not set on staff 2, and is set to various
+values on staff 1, as shown.  vscheme is 3o."
+score
+	vscheme = 3o
+	packfact = 1.5
+	staffs = 2
+	beamstyle = 2, 2
+	scale = 1.2
+	label = ""
+	size = 8
+staff 1
+	vcombine = 1,2,3
+music
+	rom(12) all: 1 "vcombine=1,2,3";
+	1,2 1: 4b; 4f; 2a;
+	1,2 2: 4c; 2d; 4e;
+	bar
+
+	1,2 1: 4f; 4b; 2a;
+	1,2 2: 4c; 4e; 2e;
+	lyrics 1,2: "try words here";
+	bar
+
+	1,2 1: 4bd+;	a;	gb;	r;
+	1,2 3: 4b-f;	eb;	e;	r;
+	1,2 2: 4a-c;	d;	c;	r;
+	bar
+staff 1
+	vcombine = 1,3,2
+music
+	rom(12) all: 1 "vcombine=1,3,2";
+	1,2 1: 4bd+;	a;	gb;	r;
+	1,2 3: 4b-f;	eb;	e;	r;
+	1,2 2: 4a-c;	d;	c;	r;
+	bar
+
+	rom all: 1 "tupcont 3 vs. 6";
+	rom all: 3 "fulltime prevents comb";
+	1,2 1: { 4.b; 8; 4; }3; { 4.b; 8; 4; }3;
+	1,2 2: { 4.e; ; }6,2;   { 4.e; 4.; }3,4..; 16;
+	bar
+
+	rom all: 1 "printtup 'n' overrides default";
+	rom all: 3 "printtup 'y' vs. 'n'";
+	1,2 1: { 4.b; 8; 4; }3;  { 4.b; 8; 4; }3n;
+	1,2 2: { 4.e; 8; 4; }3n; { 4.e; 8; 4; }3y;
+	bar
+
+	rom all: 1 "mr vs. 1r";
+	1,2 1: mr;
+	1,2 2: 1r;
+	bar
+
+	rom all: 1 "spaces combine";
+	rom all: 3 "rests conflict";
+	1,2 1: 4b; s; r; b;
+	1,2 2: 4s; r; f; r;
+	bar
+
+	rom all: 1 "grpsize conflict";
+	rom all: 2 "headshape conflict";
+	rom all: 3 "beamloc conflict";
+	1,2 1: 4b;                      b; 8b; ; 4;
+	1,2 2: [cue]4f; [hs "righttri"] f; 8f; ; ; ;
+	bar
+
+	rom all: 1 "breakbeam conflict";
+	rom all: 3 "beamslope overrides default";
+	1,2 1: 16b bm; esbm; ; ebm; 4; 8 bm, slope 10; ebm; 8 bm;            8 ebm;
+	1,2 2: 16f bm;     ; ; ebm; 4; 8 bm          ; ebm; 8 bm, slope -10; 8 ebm;
+	bar
+
+	rom all: 1 "beamslope conflict";
+	rom all: 2 "stemlen override";
+	rom all: 3 "stemlen conflict";
+	1,2 1: 8b bm, slope  10; 8 ebm;        4; [len 9]4; 4;
+	1,2 2: 8f bm, slope -10; 8 ebm; [len 9]4; [len 5]4; 4;
+	bar
+
+	rom all: 1 "stemdir override";
+	rom all: 2 "stemdir conflict";
+	rom all: 3 "tie conflict";
+	1,2 1:     4b;   [up]4; 4 tie; 4;
+	1,2 2: [up]4f; [down]4; 4    ; 4;
+	bar
+
+	rom all: 1 "slash conflict";
+	rom all: 2 "alt conflict";
+	rom all: 4 "ho conflict (even though it's 0)";
+	1,2 1: [slash 2]4b; 2 alt 2; ; [ho 0]4;
+	1,2 2:          4e;       2;         4;
+	bar
+
+	rom all: 1 "2nd alt conflict";
+	1,2 1: 2gb alt 2; 2fd+; 2gb alt 2; 2bd+;
+	1,2 2: 2b-d alt 2; 2cg; 2b-d alt 2; 2ce;
+	bar
+
+	rom all: 1 "'with' conflict";
+	rom all: 2 "'with' conflict";
+	1,2 1: [with "X"]4b;         ; 2;
+	1,2 2: [with "Y"]4e; [with >]; 2;
+	bar
+define G [grace] @
+
+	1,2 1:       8b; G; ; G; ; ; G 8a;       4b; G 8a; G 8c+; 4;
+	1,2 2: G 8e; 8e;    ; G; ; ; G 8d; G 8f; 4e;       G 8 g; 4;
+	bar
+
+	rom all: 2(-2) "first grace conflicts";
+	1,2 1: G 8a; G 8c+; 4b;  G 8a; G 8c+; 4b;  2;
+	1,2 2: G 8d; G 8f ; 4e;  G 8a; G 8f ; 4e;  2;
+	bar
+staff 1
+	vcombine = 1,2,3 shareone
+music
+	rom(12) all: 1 "vcombine=1,3,2 shareone";
+	1,2 1: 4b; be+; ad+; a;
+	1,2 2: 4f; eb; eb; a;
+	bar
+
+	rom all: 1 "acc conflict";
+	rom all: 3 "slur vs. none";
+	1,2 1: 4b&e+; ; a<b>d+; be+;
+	1,2 2: 4eb  ; ; da    ;   ;
+	bar
+
+	rom all: 3 "slurstyle conflict";
+	1,2 1: 4a<b>d+; be+; a<b>d+; be+;
+	1,2 2: 4ca<b> ; db;  ca dashed<b> ; db;
+	bar
+
+	rom all: 1 "slur letter conflict";
+	rom all: 3 "slurdir conflict";
+	1,2 1: 4a<e+>d+; be+; a<b>d+; be+;
+	1,2 2: 4ca<b> ; db;  ca<b>up ; db;
+	bar
+
+	rom all: 1 "slur octave conflict";
+	rom all: 3 "headshape conflict";
+	rom all: 4 "note parens tossed";
+	1,2 1: 4a<b+>d+; b+e+; ad+;             (b)e+;
+	1,2 2: 4ca<b>;   db;   ca hs "righttri"; db;
+	bar
+
+	rom all: 1 "tie conflict";
+	1,2 1: 4a~d+; ae+; a~d+; ae+;
+	1,2 2: 4ca;   dg;  ca~;   da;
+	bar
+
+	rom all: 1 "acc parens tossed";
+	rom all: 3.5 "slur not shared note";
+	1,2 1: 4a(#)d+; (a)d+; 8bf+; ;      ; ;
+	1,2 2: 4ca#;    ca;    8db;  d<d>b; ; ;
+	bar
+
+	rom all: 3 "beam/tie prevents";
+	1,2 1: 8bf+; ; ; ; ; ; ; tie;
+	1,2 2: 8db;  ; ; ; ; ; ; ;
+	bar
+
+	rom all: 1 "count 2.5 prevents";
+	rom all: 3 "count 3 prevents";
+	1,2 1: 8bf+; ; ; ;    ;   ; ;    ;
+	1,2 2: 8db;  ; ; dd+; ; db; ; slur;
+	bar
+
+	rom all: 1 "beam/slur prevents";
+	1,2 1: 8bf+; ; ; ; ; ; ; ;
+	1,2 2: 8db;  ; ; ; ; ; ; ;
+	bar
+staff 1
+	vcombine = 1,2 nooverlap
+music
+	rom(12) all: 1 "vcombine=1,2 nooverlap";
+	1,2 1: 4be+; ae+; fe+; dfac+;
+	1,2 2: 4da; ; ; cegb;
+	bar
+staff 1
+	vcombine = 1,2 shareone
+music
+	rom(12) all: 1 "vcombine=1,2 shareone";
+	1,2 1: 4be+; ae+; fe+; dfac+;
+	1,2 2: 4da; ; ; cegb;
+	bar
+staff 1
+	vcombine = 1,2 overlap
+music
+	rom(12) all: 1 "vcombine=1,2 overlap";
+	1,2 1: 4be+; ae+; fe+; dfac+;
+	1,2 2: 4da; ; ; cegb;
+	bar
+
+	rom(12) all: 1 "vcombine=1,2 overlap";
+	1,2 1,2: 4be+; ae+; fe+; dfac+;
+	bar
+
+	rom all: 1 "dest all spaces";
+	1,2 1: 4s; s; s; s;
+	1,2 2: 4us; r; be+; ;
+	bar
+
+	rom all: 1 "src all spaces";
+	1,2 1: 4us; r; be+; ;
+	1,2 2: 4s; s; s; s;
+	bar
+
+	rom all: 1 "dest all rests";
+	1,2 1: 4r; ; ; ;
+	1,2 2: 4us; r; be+; ;
+	bar
+
+	rom all: 1 "src all rests";
+	1,2 1: 4us; r; be+; ;
+	1,2 2: 4r; ; ; ;
+	bar
+
+	rom all: 1 "dest all notes";
+	1,2 1: 4be+; ; ; ;
+	1,2 2: 4us; r; cg; ;
+	bar
+
+	rom all: 1 "src all notes";
+	1,2 1: 4us; r; be+; ;
+	1,2 2: 4cg; ; ; ;
+	bar
+staff 1
+	vcombine = 1,2,3
+music
+	rom(12) all: 1 "vcombine=1,2,3";
+	rom all: 2 "roll prevents counts 2,3,4";
+	1,2 1: 4f+b+; ; ; ;
+	1,2 2: 4a-e;  ; ; ;
+	roll 1 1 to 1 2: 1;
+	roll 2 1 to 2 2: 1;
+	roll 1 1: 2;
+	roll 2 1: 2;
+	roll 1 2: 3;
+	roll 2 2: 3;
+	roll 1 1: 4;
+	roll 2 1: 4;
+	roll 1 2: 4;
+	roll 2 2: 4;
+	bar
+
+	rom all: 1 "same but with v3";
+	1,2 1: 4f+b+; ; ; ;
+	1,2 3: 4b;    ; ; ;
+	1,2 2: 4a-e;  ; ; ;
+	roll 1 1 to 1 2: 1;
+	roll 2 1 to 2 2: 1;
+	roll 1 1: 2;
+	roll 2 1: 2;
+	roll 1 2: 3;
+	roll 2 2: 3;
+	roll 1 1: 4;
+	roll 2 1: 4;
+	roll 1 2: 4;
+	roll 2 2: 4;
+	bar
+
+	rom all: 1 "note tags";
+	rom all: 2 "group 2 tag";
+	rom all: 3 "group 1 tag";
+	1 1: 4g+ =a; ; [=d]2;
+	1 2: 4d  =b; [=c]; 2;
+	2 1: 4g+ =e; ; [=h]2;
+	2 2: 4d  =f; [=g]; 2;
+	print (a.x+2, a.y) "\s(13)A"
+	print (b.x+2, b.y) "\s(13)B"
+	print (c.x+2, c.y) "\s(13)C"
+	print (d.x+2, d.y) "\s(13)D"
+	print (e.x+2, e.y) "\s(13)A"
+	print (f.x+2, f.y) "\s(13)B"
+	print (g.x+2, g.y) "\s(13)C"
+	print (h.x+2, h.y) "\s(13)D"
+	bar
+
+	rom all: 1 "group 1 space tag";
+	rom all: 2 "group 1 grace tag";
+	rom all: 3 "group 2 main tag";
+	rom all: 4 "group 2 grace tag";
+	1 1: [=a]4us; [grace;=d]8a; 4b; ;     ;
+	1 2:     4us;               4d; [=b]; [grace;=c]8c; 4;
+	2 1: [=e]4us; [grace;=h]8a; 4b; ;     ;
+	2 2:     4us;               4d; [=f]; [grace;=g]8c; 4;
+	bar
+	print (a.x+0, a.y) "\s(13)A"
+	print (b.x+2, b.y) "\s(13)B"
+	print (c.x-2, c.y) "\s(13)C"
+	print (d.x-4, d.y) "\s(13)D"
+	print (e.x+0, e.y) "\s(13)A"
+	print (f.x+2, f.y) "\s(13)B"
+	print (g.x-2, g.y) "\s(13)C"
+	print (h.x-4, h.y) "\s(13)D"

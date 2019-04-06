@@ -1,0 +1,69 @@
+Name "Mupmate"
+OutFile "mup67ins.exe"
+
+LicenseText "You must agree to this license before installing."
+LicenseData "license.txt"
+
+InstallDir "$PROGRAMFILES\mupmate"
+; InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Arkkra\Mupmate" ""
+
+Page license
+Page directory
+Page instfiles
+UninstPage uninstConfirm
+UninstPage instfiles
+
+Section "" ; (default section)
+SetOutPath "$INSTDIR"
+; install the files
+INSTALLFILES
+
+; registry keys that Windows needs
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Arkkra\Mupmate" "" "$INSTDIR"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Mupmate" "DisplayName" "Mupmate"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Mupmate" "UninstallString" '"$INSTDIR\unmupmate.exe"'
+
+; set up the ability to double click .mup files to start Mupmate
+WriteRegStr HKEY_CLASSES_ROOT ".mup" "" "Mup.Input"
+WriteRegStr HKEY_CLASSES_ROOT "Mup.Input" "" "Mup Input File"
+WriteRegStr HKEY_CLASSES_ROOT "Mup.Input\DefaultIcon" "" "$INSTDIR\mupmate.exe,0"
+WriteRegStr HKEY_CLASSES_ROOT "Mup.Input\shell" "" "open"
+WriteRegStr HKEY_CLASSES_ROOT "Mup.Input\shell\open" "" ""
+WriteRegStr HKEY_CLASSES_ROOT "Mup.Input\shell\open\command" "" "$INSTDIR\mupmate.exe %1"
+
+; under the start/programs menu, put Arkkra, and under there, Mupmate and
+; Uninstall Mupmate
+CreateDirectory "$SMPROGRAMS\Arkkra"
+CreateShortCut "$SMPROGRAMS\Arkkra\Mupmate.lnk" "$INSTDIR\mupmate.exe"
+CreateShortCut "$SMPROGRAMS\Arkkra\Uninstall Mupmate.lnk" "$INSTDIR\unmupmate.exe"
+
+; write out the uninstaller
+WriteUninstaller "$INSTDIR\unmupmate.exe"
+SectionEnd ; end of default section
+
+; begin uninstall settings/section
+UninstallText "This will uninstall Mupmate from your system"
+
+Section Uninstall
+; We uninstall the files one by one instead of using wild cards, because we
+; want to avoid deleting any files the user might have manually put there.
+UNINSTALLFILES
+
+; delete other files that probably got created later, and directories
+Delete "$INSTDIR\mup.ok"
+Delete "$INSTDIR\uguide\Thumbs.db"
+RMDir  "$INSTDIR\uguide"
+Delete "$INSTDIR\unmupmate.exe"
+Delete "$APPDATA\arkkra.com\mupmate.prefs"
+RMDir  "$APPDATA\arkkra.com"
+RMDir  "$INSTDIR"
+Delete "$SMPROGRAMS\Arkkra\Mupmate.lnk"
+Delete "$SMPROGRAMS\Arkkra\Uninstall Mupmate.lnk"
+RMDir  "$SMPROGRAMS\Arkkra"
+
+; delete registry keys
+DeleteRegKey HKEY_CLASSES_ROOT ".mup"
+DeleteRegKey HKEY_CLASSES_ROOT "Mup.Input"
+DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Arkkra\Mupmate"
+DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Mupmate"
+SectionEnd ; end of uninstall section

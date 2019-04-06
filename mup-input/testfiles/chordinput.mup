@@ -1,0 +1,132 @@
+//!Mup-Arkrka
+
+header
+	title bold (18) "chordinput.mup"
+	paragraph (14) "This file test chord-at-a-time input style."
+	title ""
+
+score
+	staffs=8
+staff 3
+	clef=treble8
+staff 4
+	clef=bass
+staff 5
+	visible=n
+staff 6
+	visible=n
+	stafflines=tab
+staff 7
+	visible=n
+staff 8
+	visible=n
+	stafflines=tab
+music
+
+rom (14) above 1: 1 "test single map, 4 notes to 4 staffs, note tie, small, xnote, len, dir, beaming";
+[4; 3; 2; 1]: [down]ce&gc+~;cf?ac+;8dgbd+ bm; ebm;[xnote; len16] 4cegc+;
+bar
+
+newscore
+
+rom (14) above 1: 1 "test multiple maps, grace, group slur";
+[1] [4; 3; 2; 1] [4;4;3;3;2;2;1;1]: [grace;slash 1] 8d+;4cegc+egc+e+;fafc+ slur;;;
+bar
+
+newscore
+
+rom (14) above 1: 1 "test some voices voice-at-a-time and some chord-at-a-time; with duplicate notes";
+[1-2; 1]: fc+;gg;gb;cc+;
+3-4: f;g;;cc+;
+bar
+
+newscore
+
+staff 4 visible=n
+music
+
+rom (14) above 1: 1 "test merging rules: staff 1 is merge of 2 and 3";
+[1 & 2;1 & 3]: cc~;c~c;c~c dashed~;c dashed~ c~;
+bar
+
+[1 & 2;1 & 3]: (c)~c dotted~;c dotted~ (c)~;c dashed~ c dotted~;c dotted~ c dashed~;
+bar
+
+newscore 
+
+[1 & 2;1 & 3]: c dotted~ c dotted~;;8c(#)c#;e&e(&);ff;f(#)f(#);
+bar
+
+[1 & 2; 1 & 3]: cc;cc?;c?c;c?c?;
+bar
+
+newscore
+
+rom (14) above 1: 1 "test slur merging rules";
+[1 & 2; 1 & 3]: c<e>c;ec<d>;f<a>d<e>;ae;
+bar
+
+[1 & 2; 1 & 3]: cdashed<e>c<e>;ee;cdotted<e>c<e>;ee;
+bar
+
+rom 1: 1 "test multiple rest/space/rpt merging";
+[1 & 2; 1 & 3]: rr;ss;r?r;rr?;
+bar
+
+[1 & 2; 1 & 3]: r?r?;s us; us s; us us;
+bar
+
+[1 & 2; 1 & 3]: m rpt rpt;
+bar
+
+newscore
+
+[1 & 2; 1 & 3]: c<e>cdashed<e>;ee;c<e>cdotted<e>;ee;
+bar
+
+[1 & 2; 1 & 3]: cdotted<e>cdashed<e>;edotted<c>edotted<c>;cdashed<e>cdotted<e>;ee;
+bar
+
+newscore
+rom 1: 1 "test rests/notes mixture";
+[3;2;1]: ccr;crc;crr;rcc;
+bar
+
+[3;2;1]: rcr;rrc;rrr;ccc;
+bar
+
+newscore
+
+rom 1: 1 "test space/notes mixture";
+[3;2;1]: ssr;csc;css;scc;
+bar
+
+[3;2;1]: rsr;ssc;ususus;ccc;
+bar
+
+rom 1: 1 "meas things";
+[3;2;1]: mr s rpt;
+bar
+
+newscore
+staff 1
+	visible=n
+staff 2
+	visible=n
+staff 3
+	visible=n
+staff 4
+	visible=n
+staff 5
+	visible=y
+staff 6
+	visible=y
+staff 7
+	visible=y
+staff 8
+	visible=y
+music
+
+rom (14) above all: 1 "test tablature";
+[6;8]: e4e6;g2g4;g"1/2"g"full";a0a2;
+bar

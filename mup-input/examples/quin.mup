@@ -1,0 +1,54 @@
+//!Mup-Arkkra
+top
+	title (24) "Quin"
+	title (12) "" "William J. Krauss"
+top2
+	title(12) "\(copyright) Copyright 1995 William J. Krauss"
+	title(11)	"Published by Arkkra Enterprises" \
+			"http://www.arkkra.com"
+score
+	staffs = 2
+	time = 25/16
+	barstyle = 1-2
+	beamstyle = 4+16, 4+16, 4+16, 4+16, 4+16
+	brace = 1-2
+	scale = 0.9
+	beamslope = 0.7, 20
+	packfact = 1.2
+	scoresep = 12, 22
+staff 2
+	clef = bass
+music
+	midi all: 0 "tempo=75";
+	midi 1-2: 0 "program=0";        // piano
+
+	1: 8.e; 8f; 8g; e+; 16a; 8b; 16d+; 8c+; \
+		16g; a; b; e; f; 8g#; c+; 16 f;
+	2: 4c-c; 16r; 4cegb tie; 16 tie; 4 tie; 16 tie; \
+		4; 16r; 4c#-c# tie; 16;
+	bar
+
+	1: 16a; 8.d; 16e; 8.f; 16c+; b; 8a; 16d+; f; d+; \
+		16e+; 8f+; 16a+; c+; 8a#; d#+; 16a;
+	2: 4d-d; 16r; 4dfac+ tie; 16 tie; 4 tie; 16 tie; \
+		4; 16r; 4d#-d# tie; 16;
+	bar
+
+	1: 4b; 16d+; 8g+; 16f#+; 8e+; 8.e++; 16b+; d++; \
+		8.g; 16e+; d+; 8b&; d+; 16g;
+	2: 4e-e; 16r; 4egbd+ tie; 16 tie; 4 tie; 16 tie; \
+		4; 16r; 4e&-e& tie; 16;
+	bar
+
+	1: 16f; 8c+; 16b; c+; 8a; 16f; e; d; 8.a; 8d+; \
+		8e+; 16d+; e+; a; 8b; dn+; 16c+;
+	2: 4d-d; 16r; 4dfac+ tie; 16 tie; 4 tie; 16 tie; \
+		4; 16r; 4d&-d& tie; 16;
+	bar
+
+	octave above 1: 16 "8va" til 26;
+	1: 4b tie; 16 tie;; c; e; g; c+; 8b; 16e+; g+; c++; \
+		8b; 16e+; 8g+; 4b+ tie; 16;
+	2: 4c-c; 16r; 4cegb tie; 16 tie; 4 tie; 16 tie; \
+		4 tie; 16 tie; 4 tie; 16;
+	endbar

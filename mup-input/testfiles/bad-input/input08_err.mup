@@ -1,0 +1,38 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input08_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+score
+	staffs=2
+	key=4
+	vscheme=2d
+	visible=z
+	brace=1-0
+	pageheight=2
+	topmargin=0.9
+	botmargin=0.9
+	pagewidth=2
+	leftmargin=0.9
+	rightmargin=0.9
+music
+1,2: 1c =a;
+bar
+1: 1.c;
+bar
+1 1-3: 1d;
+bar
+1-0: 1e;
+lyrics 1-0: 1; "hi";
+bar
+1: mc;
+bar
+1: [grace] 8s; 1c;
+bar
+1: [cue] 1s;
+bar
+
+score
+	pageheight=19
+	pagewidth=420

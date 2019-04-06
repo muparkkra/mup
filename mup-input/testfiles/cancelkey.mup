@@ -1,0 +1,234 @@
+//!Mup-Arkkra
+header
+	title bold (18) "cancelkey.mup"
+	paragraph (14) "\
+Try key signature changes with cancelkey=y.
+All the notes are middle C."
+define DATA music
+		1: 1c4;
+		bar
+@
+score
+	label = ""
+	time = 4/4n
+	scoresep = 9, 9
+	scorepad = 0
+	packfact = 0.5
+	cancelkey = y
+
+//	by 1
+score key = 7#;
+DATA
+score key = 6#;
+DATA
+score key = 5#;
+DATA
+score key = 4#;
+DATA
+score key = 3#;
+DATA
+score key = 2#;
+DATA
+score key = 1#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 6&;
+DATA
+score key = 5&;
+DATA
+score key = 4&;
+DATA
+score key = 3&;
+DATA
+score key = 2&;
+DATA
+score key = 1&;
+DATA
+score key = 0&;
+DATA
+//	by 2
+score key = 7#;
+DATA
+score key = 5#;
+DATA
+score key = 3#;
+DATA
+score key = 1#;
+DATA
+score key = 6#;
+DATA
+score key = 4#;
+DATA
+score key = 2#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 5&;
+DATA
+score key = 3&;
+DATA
+score key = 1&;
+DATA
+score key = 6&;
+DATA
+score key = 4&;
+DATA
+score key = 2&;
+DATA
+score key = 0&;
+DATA
+//	by 3
+score key = 7#;
+DATA
+score key = 4#;
+DATA
+score key = 1#;
+DATA
+score key = 6#;
+DATA
+score key = 3#;
+DATA
+score key = 0#;
+DATA
+score key = 5#;
+DATA
+score key = 2#;
+DATA
+score key = 7&;
+DATA
+score key = 4&;
+DATA
+score key = 1&;
+DATA
+score key = 6&;
+DATA
+score key = 3&;
+DATA
+score key = 0&;
+DATA
+score key = 5&;
+DATA
+score key = 2&;
+DATA
+//	by 3
+score key = 7#;
+DATA
+score key = 4#;
+DATA
+score key = 1#;
+DATA
+score key = 6#;
+DATA
+score key = 3#;
+DATA
+score key = 0#;
+DATA
+score key = 5#;
+DATA
+score key = 2#;
+DATA
+score key = 7&;
+DATA
+score key = 4&;
+DATA
+score key = 1&;
+DATA
+score key = 6&;
+DATA
+score key = 3&;
+DATA
+score key = 0&;
+DATA
+score key = 5&;
+DATA
+score key = 2&;
+DATA
+//	by 4
+score key = 7#;
+DATA
+score key = 3#;
+DATA
+score key = 6#;
+DATA
+score key = 2#;
+DATA
+score key = 5#;
+DATA
+score key = 1#;
+DATA
+score key = 4#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 3&;
+DATA
+score key = 6&;
+DATA
+score key = 2&;
+DATA
+score key = 5&;
+DATA
+score key = 1&;
+DATA
+score key = 4&;
+DATA
+score key = 0&;
+DATA
+//	by 5
+score key = 7#;
+DATA
+score key = 2#;
+DATA
+score key = 6#;
+DATA
+score key = 1#;
+DATA
+score key = 5#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 2&;
+DATA
+score key = 6&;
+DATA
+score key = 1&;
+DATA
+score key = 5&;
+DATA
+score key = 0&;
+DATA
+//	by 6
+score key = 7#;
+DATA
+score key = 1#;
+DATA
+score key = 6#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 1&;
+DATA
+score key = 6&;
+DATA
+score key = 0&;
+DATA
+//	by 7
+score key = 7#;
+DATA
+score key = 0#;
+DATA
+score key = 7&;
+DATA
+score key = 0&;
+DATA

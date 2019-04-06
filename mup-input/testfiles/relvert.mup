@@ -1,0 +1,258 @@
+//!Mup-Arkkra
+header
+	title bold (18) "relvert.mup"
+	paragraph (14) "\
+Test vertical placement of marks, relative to staffs."
+score
+	staffs = 2
+	scorepad = 5
+staff 2
+	clef = bass
+music
+define CHUNK
+	lyrics above 1: 4; ; {; ; ;}3;	"These are words a-bove";
+	rom above 1: 4.333 "roman";
+	mussym above 1: 4.333 "coda";
+	octave above 1: 2 "8va" til 2m+4;
+	1: b+; tie; {; ; ;}3;
+	phrase 1-2: 4.333 til 1m+4;
+	lyrics between 1&2: 4; ; {; ; ;}3; "These are words be-tween";
+	mussym between 1&2: 2 "measrpt";
+	ital between 1&2: 2 "Here is a measure repeat for no good reason";
+	2: d-; tie; {; ; ;}3;
+	octave below 2: 2 "8va" til 2m+4;
+	mussym below 2: 4.333 "coda";
+	rom below 2: 4.333 "roman";
+	lyrics below 2: 4; ; {; ; ;}3;	"These are words be-low";
+	bold chord above 1: 4.5 "Em7";
+	< above 1: 3 til 5;
+	bold chord below 2: 4.5 "Em7";
+	< below 2: 2 til 5;
+	bold chord between 1&2: 4.5 "Em7";
+	< between 1&2: 2 til 5;
+	bar ending "1." reh "FRED"
+
+	lyrics above 1: 2; ;		"staff 1";
+	1: b+; ; ; ;
+	lyrics between 1&2: 2; ;	"the staffs";
+	2: d-; ; ; ;
+	lyrics below 2: 2; ;		"staff 2";
+	pedal 2: 3;
+	bar
+
+	1: b+; ; ; ;
+	2: d-; ; ; ;
+	bar endending
+
+	1: b+; ; ; ;
+	2: d-; ; ; ;
+	pedal 2: 2*;
+	bar =h
+@
+CHUNK
+	print (h.x - 70, h.y - 20) "\f(BI)\s(18)Default order";
+score
+aboveorder = reh, ending, lyrics, chord, othertext, dyn, octave, mussym
+beloworder = pedal, lyrics, chord, othertext, dyn, octave, mussym
+betweenorder = lyrics, chord, othertext, dyn, mussym
+
+music
+CHUNK
+	print (h.x - 70, h.y - 20) "\f(BI)\s(18)Reverse order";
+	newpage
+score
+aboveorder = mussym, octave, dyn & othertext & chord, lyrics, ending, reh
+beloworder = mussym, octave, dyn & othertext & chord, lyrics, pedal
+betweenorder = mussym, dyn & othertext & chord, lyrics
+score
+	staffs = 1
+music
+	1: 1d;
+	bar ending "1." reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar endending reh num
+	1: 1d;
+	bar
+	newscore
+	1: 1d;
+	rom above 1: 1 "the quick brown fox jumps over the lazy dog";
+	bar ending "1." reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar endending reh num
+	1: 1d;
+	bar
+	newscore
+	1: 1d;
+	bar
+	1: 1d;
+	rom 1: 5 "fred";
+	bar reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar reh num
+	1: 1d;
+	bar
+
+	newscore
+score
+	vscheme = 2o
+	time = 1/4
+	beamstyle = 4
+music
+	1 2: 8b; g-;
+	rom below 1: 1.00 "O";
+	rom below 1: 1.05 "O";
+	rom below 1: 1.10 "O";
+	rom below 1: 1.15 "O";
+	rom below 1: 1.20 "O";
+	rom below 1: 1.25 "O";
+	rom below 1: 1.30 "O";
+	rom below 1: 1.35 "O";
+	rom below 1: 1.40 "O";
+	rom below 1: 1.45 "O";
+	rom below 1: 1.50 "O";
+	rom below 1: 1.55 "O";
+	rom below 1: 1.60 "O";
+	rom below 1: 1.65 "O";
+	bar
+
+	newscore
+
+	1 2: 8g-; b;
+	rom below 1: 1.00 "O";
+	rom below 1: 1.05 "O";
+	rom below 1: 1.10 "O";
+	rom below 1: 1.15 "O";
+	rom below 1: 1.20 "O";
+	rom below 1: 1.25 "O";
+	rom below 1: 1.30 "O";
+	rom below 1: 1.35 "O";
+	rom below 1: 1.40 "O";
+	rom below 1: 1.45 "O";
+	rom below 1: 1.50 "O";
+	rom below 1: 1.55 "O";
+	rom below 1: 1.60 "O";
+	rom below 1: 1.65 "O";
+	bar
+
+	newscore
+
+	1 1: 8d++; b;
+	rom above 1: 1.00 "O";
+	rom above 1: 1.05 "O";
+	rom above 1: 1.10 "O";
+	rom above 1: 1.15 "O";
+	rom above 1: 1.20 "O";
+	rom above 1: 1.25 "O";
+	rom above 1: 1.30 "O";
+	rom above 1: 1.35 "O";
+	rom above 1: 1.40 "O";
+	rom above 1: 1.45 "O";
+	rom above 1: 1.50 "O";
+	rom above 1: 1.55 "O";
+	rom above 1: 1.60 "O";
+	rom above 1: 1.65 "O";
+	bar
+
+	newscore
+
+	1 1: 8b; d++;
+	rom above 1: 1.00 "O";
+	rom above 1: 1.05 "O";
+	rom above 1: 1.10 "O";
+	rom above 1: 1.15 "O";
+	rom above 1: 1.20 "O";
+	rom above 1: 1.25 "O";
+	rom above 1: 1.30 "O";
+	rom above 1: 1.35 "O";
+	rom above 1: 1.40 "O";
+	rom above 1: 1.45 "O";
+	rom above 1: 1.50 "O";
+	rom above 1: 1.55 "O";
+	rom above 1: 1.60 "O";
+	rom above 1: 1.65 "O";
+	bar
+
+	newscore
+
+	1 1: 16r; d+; d+; r;
+	rom above 1: 1.00 "O";
+	rom above 1: 1.05 "O";
+	rom above 1: 1.10 "O";
+	rom above 1: 1.15 "O";
+	rom above 1: 1.20 "O";
+	rom above 1: 1.25 "O";
+	rom above 1: 1.30 "O";
+	rom above 1: 1.35 "O";
+	rom above 1: 1.40 "O";
+	rom above 1: 1.45 "O";
+	rom above 1: 1.50 "O";
+	rom above 1: 1.55 "O";
+	rom above 1: 1.60 "O";
+	rom above 1: 1.65 "O";
+	bar
+
+	newscore
+
+	1 2: 16r; b-; b-; r;
+	rom below 1: 1.00 "O";
+	rom below 1: 1.05 "O";
+	rom below 1: 1.10 "O";
+	rom below 1: 1.15 "O";
+	rom below 1: 1.20 "O";
+	rom below 1: 1.25 "O";
+	rom below 1: 1.30 "O";
+	rom below 1: 1.35 "O";
+	rom below 1: 1.40 "O";
+	rom below 1: 1.45 "O";
+	rom below 1: 1.50 "O";
+	rom below 1: 1.55 "O";
+	rom below 1: 1.60 "O";
+	rom below 1: 1.65 "O";
+	bar
+
+	newpage
+score
+	vscheme = 1
+	time = 4/4
+	dist = 5
+	chorddist = 5
+	dyndist = 5
+music
+	rom above all: 0 "We've set dist = chorddist = dyndist = 5";
+	rom above all: 0 "'def' means we are defaulting to that value";
+	rom above all: 0 "A number means we are using the 'dist' option with that number.";
+	rom above all: 0 "If there is a '!' it means we are forcing that distance with a '!'.";
+	rom above 1: 1 "def";
+	ital above 1 dist 9: 2 "9";
+	bold above 1 dist 0: 3 "0";
+	boldital above 1 dist -3!: 4 "-3!";
+	< below 1: 1 til 2;
+	> below 1 dist 9: 3 til 4;
+	1: 1f;
+	bar reh "def"
+
+	> below 1 dist -4!: 3 til 4;
+	mussym above 1 dist -2!: 4.5 "rr";
+	octave below 1: 1 "8va def" til 4;
+	1: 1f;
+	bar reh "0" dist 0
+
+	octave above 1 dist 8: 1 "8va dist 8" til 4;
+	rom below 1: 2 "def";
+	rom below 1 dist 6!: 2 "------6!";
+	1: 1f;
+	bar reh "9" dist 9
+
+	octave below 1 dist 8: 1 "8va dist 8" til 4;
+	1: 1f;
+	bar reh "-4!" dist -4! 

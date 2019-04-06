@@ -1,0 +1,33 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "sizes.mup"
+	paragraph (14) "This file tests the range of font sizes."
+
+music
+1: c;;;;
+rom below 1: 1 "\s(14)point size changes  \s(18)18 point, \s(-4)4 smaller, \s(+6)6 bigger";
+rom below 1: 1 "\s(1)1 point  \s(2)2 point  \s(3)3 point  \s(4)4 point";
+rom below 1: 1 "\s(5)5 point  \s(6)6 point  \s(7)7 point  \s(8)8 point";
+rom below 1: 1 "\s(9)9 point  \s(10)10 point  \s(11)11 point  \s(12)12 point";
+rom below 1: 1 "\s(13)13 point  \s(14)14 point  \s(15)15 point  \s(16)16 point";
+rom below 1: 1 "\s(17)17 point  \s(18)18 point  \s(19)19 point";
+rom below 1: 1 "\s(20)20 point  \s(21)21 point  \s(22)22 point";
+rom below 1: 1 "\s(23)23 point  \s(24)24 point  \s(25)25 point";
+rom below 1: 1 "\s(26)26 point  \s(27)27 point  \s(28)28 point";
+rom below 1: 1 "\s(29)29 point  \s(30)30 point  \s(31)31 point";
+rom below 1: 1 "\s(32)32 point  \s(33)33 point  \s(34)34 point";
+rom below 1: 1 "\s(35)35 point  \s(36)36 point";
+rom below 1: 1 "\s(37)37 point  \s(38)38 point";
+rom below 1: 1 "\s(39)39 point  \s(40)40 point";
+bar
+newpage
+1: c;;;;
+rom below 1: 1 "\s(44)44 point  \s(48)48 point";
+rom below 1: 1 "\s(56)56 point  \s(64)64 point";
+rom below 1: 1 "\s(75)75 point";
+rom below 1: 1 "\s(99)99 point";
+rom below 1: 1 "\s(100)100 point";
+boldital (18) 1: 1 "backspaced\b\b\b\b\b\b\b\b\b\b_________";
+bar
+

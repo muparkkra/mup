@@ -1,0 +1,716 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// This file contains user defined symbols for use as accidentals.  They are
+// designed for use in the Extended Helmholtz-Ellis Just Intonation Pitch
+// Notation, but they can be used for any purpose.
+//
+// In the Extended Helmholtz-Ellis JI Pitch Notation, the pitches of the 7
+// natural notes are set by going around the circle of fifths (fcgdaeb) using
+// the ratio 3/2 for each fifth.  The pitch offset caused by each of the 5
+// standard accidentals is found by continuing around the circle.  You get the
+// same answer results by starting at any of the 7 notes.
+//
+// To get from f to f#, go up 7 fifths and down 4 octaves:
+//	ratio for "#"  =  (3/2)^7 / 2^4  =  2187/2048 (about +114 cents)
+//
+// To get from b to b&, go up 4 octaves and down 7 fifths:
+//	ratio for "&"  =  2^4 / (3/2)^7  =  2048/2187 (about -114 cents)
+//
+// To get from f to fx, go up 14 fifths and down 8 octaves:
+//	ratio for "x"  =  (3/2)^14 / 2^8  =  4782969/4194304 (about +227 cents)
+//
+// To get from b to b&&, go up 8 octaves and down 14 fifths:
+//	ratio for "&&"  =  2^8 / (3/2)^14  =  4194304/4782969 (about -227 cents)
+//
+// The ratio for a natural is of course 1/1.  The ratio for each accidental
+// defined below is stated by that accidental.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Define up and down arrowheads, for use in defining the accidentals below.
+
+define POSTSCRIPT_UPARROW "
+	translate
+	0 0 moveto -250 -465 lineto -230 -465 lineto
+	0 -180 lineto 230 -465 lineto 250 -465 lineto fill
+" @
+
+define POSTSCRIPT_DNARROW "
+	translate
+	0 0 moveto -250 465 lineto -230 465 lineto
+	0 180 lineto 230 465 lineto 250 465 lineto fill
+" @
+
+
+///////////////////////////////////////////////////////////////////////////////
+// The following are taken from Mup's built-in definitions for accidentals.
+
+define POSTSCRIPT_SHARP "
+	% fill crossbars so that we can do parallelograms
+	-325 -480 moveto -325 -280 lineto
+	325 -120 lineto 325 -320 lineto fill
+	-325 120 moveto -325 320 lineto
+	325 480 lineto 325 280 lineto fill
+	% vertical strokes
+	lwid setlinewidth
+	-150 -930 moveto -150 880 lineto stroke
+	150 -880 moveto 150 930 lineto stroke
+" @
+
+define POSTSCRIPT_NAT "
+	% fill crossbars so that we can do parallelograms
+	-235 -470 moveto -235 -270 lineto
+	235 -130 lineto 235 -330 lineto fill
+	-235 130 moveto -235 330 lineto
+	235 470 lineto 235 270 lineto fill
+	% vertical strokes
+	lwid setlinewidth
+	-200 -380 moveto -200 850 lineto stroke
+	200 -850 moveto 200 380 lineto stroke
+" @
+
+define POSTSCRIPT_FLAT "
+	-250 -400 moveto        %outer edge of loop
+	500 0 350 650 -250 160 curveto
+	-250 160 lwid sub lineto %inner edge of loop
+	100 400 300 0 -250 -400 lwid add curveto fill
+	lwid setlinewidth       %stem
+	-250 1100 moveto -250 -400 lineto stroke
+" @
+
+define POSTSCRIPT_DBLSHARP "
+	0 1 3 {		%loop once for each of 4 sticks
+		pop	%we don't need the loop variable
+		0 70 neg moveto
+		170 100 lineto
+		315 135 lineto
+		335 335 lineto
+		135 315 lineto
+		100 170 lineto
+		70 neg 0 lineto
+		fill
+		-90 rotate
+	} for
+	lwid setlinewidth
+" @
+
+define POSTSCRIPT_DBLFLAT "
+	-290 0 translate
+	" + POSTSCRIPT_FLAT + "
+	580 0 translate
+	" + POSTSCRIPT_FLAT + "
+" @
+
+
+///////////////////////////////////////////////////////////////////////////////
+// The following definitions are of the five standard accidentals with 1 to 3
+// attached arrows pointing up or down.  In the Helmholtz-Ellis system, each
+// arrow indicates raising (up) or lowering (down) the pitch by one syntonic
+// comma, a pitch ratio of 81/80.
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  natural + comma =
+// 1/1 * 81/80 = 81/80 = about +22 cents
+symbol "natup"
+	bbox = -550, -950, 335, 1550
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		-200 0 moveto -200 1350 lineto stroke
+		-200 1450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  natural + 2 * comma =
+// 1/1 * (81/80)^2 = 6561/6400 = about +43 cents
+symbol "natup2"
+	bbox = -550, -950, 335, 2000
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		-200 0 moveto -200 1800 lineto stroke
+		-200 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  natural + 3 * comma =
+// 1/1 * (81/80)^3 = 531441/512000 = about +65 cents
+symbol "natup3"
+	bbox = -550, -950, 335, 2450
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		-200 0 moveto -200 2250 lineto stroke
+		-200 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  natural - comma =
+// 1/1 / 81/80 = 80/81 = about -22 cents
+symbol "natdn"
+	bbox = -335, -1550, 550, 950
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		200 0 moveto 200 -1350 lineto stroke
+		200 -1450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  natural - 2 * comma =
+// 1/1 / (81/80)^2 = 6400/6561 = about -43 cents
+symbol "natdn2"
+	bbox = -335, -2000, 550, 950
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		200 0 moveto 200 -1800 lineto stroke
+		200 -1450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  natural - 3 * comma =
+// 1/1 / (81/80)^3 = 512000/531441 = about -65 cents
+symbol "natdn3"
+	bbox = -335, -2450, 550, 950
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		200 0 moveto 200 -2250 lineto stroke
+		200 -1450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  sharp + comma =
+// 2187/2048 * 81/80 = 177147/163840 = about +135 cents
+symbol "sharpup"
+	bbox = -500, -1030, 425, 1550
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		-150 0 moveto -150 1350 lineto stroke
+		-150 1450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  sharp + 2 * comma =
+// 2187/2048 * (81/80)^2 = 14348907/13107200 = about +157 cents
+symbol "sharpup2"
+	bbox = -500, -1030, 425, 2000
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		-150 0 moveto -150 1800 lineto stroke
+		-150 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  sharp + 3 * comma =
+// 2187/2048 * (81/80)^3 = 1162261467/1048576000 = about +178 cents
+symbol "sharpup3"
+	bbox = -500, -1030, 425, 2450
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		-150 0 moveto -150 2250 lineto stroke
+		-150 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  sharp - comma =
+// 2187/2048 / 81/80 = 135/128 = about +92 cents
+symbol "sharpdn"
+	bbox = -425, -1550, 500, 1030
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		150 0 moveto 150 -1350 lineto stroke
+		150 -1450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  sharp - 2 * comma =
+// 2187/2048 / (81/80)^2 = 25/24 = about +71 cents
+symbol "sharpdn2"
+	bbox = -425, -2000, 500, 1030
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		150 0 moveto 150 -1800 lineto stroke
+		150 -1450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  sharp - 3 * comma =
+// 2187/2048 / (81/80)^3 = 250/243 = about +49 cents
+symbol "sharpdn3"
+	bbox = -425, -2450, 500, 1030
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		150 0 moveto 150 -2250 lineto stroke
+		150 -1450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  flat + comma =
+// 2048/2187 * 81/80 = 128/135  = about -92 cents
+symbol "flatup"
+	bbox = -600, -500, 358, 1550
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 1350 lineto stroke
+		-250 1450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  flat + 2 * comma =
+// 2048/2187 * (81/80)^2 = 24/25 = about -71 cents
+symbol "flatup2"
+	bbox = -600, -500, 358, 2000
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 1800 lineto stroke
+		-250 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  flat + 3 * comma =
+// 2048/2187 * (81/80)^3 = 243/250 = about -49 cents
+symbol "flatup3"
+	bbox = -600, -500, 358, 2450
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 2250 lineto stroke
+		-250 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  flat - comma =
+// 2048/2187 / 81/80 = 163840/177147  = about -135 cents
+symbol "flatdn"
+	bbox = -600, -1100, 358, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 -900 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  flat - 2 * comma =
+// 2048/2187 / (81/80)^2 = 13107200/14348907  = about -157 cents
+symbol "flatdn2"
+	bbox = -600, -1550, 358, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 -1350 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  flat - 3 * comma =
+// 2048/2187 / (81/80)^3 = 1048576000/1162261467  = about -178 cents
+symbol "flatdn3"
+	bbox = -600, -2000, 358, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 0 moveto -250 -1800 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  2 * sharp + comma =
+// (2187/2048)^2 * 81/80 = 387420489/335544320 = about +249 cents
+symbol "dblsharpup"
+	bbox = -435, -435, 435, 1100
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 350 moveto 0 900 lineto stroke
+		0 1000
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * sharp + 2 * comma =
+// (2187/2048)^2 * (81/80)^2 = 31381059609/26843545600 = about +270 cents
+symbol "dblsharpup2"
+	bbox = -435, -435, 435, 1550
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 350 moveto 0 1350 lineto stroke
+		0 1000
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * sharp + 3 * comma =
+// (2187/2048)^2 * (81/80)^3 = 2541865828329/2147483648000 = about +292 cents
+symbol "dblsharpup3"
+	bbox = -435, -435, 435, 2000
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 350 moveto 0 1800 lineto stroke
+		0 1000
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * sharp - comma =
+// (2187/2048)^2 / 81/80 = 295245/262144 = about +206 cents
+symbol "dblsharpdn"
+	bbox = -435, -1100, 435, 435
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 -350 moveto 0 -900 lineto stroke
+		0 -1000
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  2 * sharp - 2 * comma =
+// (2187/2048)^2 / (81/80)^2 = 18225/16384 = about +184 cents
+symbol "dblsharpdn2"
+	bbox = -435, -1550, 435, 435
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 -350 moveto 0 -1350 lineto stroke
+		0 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  2 * sharp - 3 * comma =
+// (2187/2048)^2 / (81/80)^3 = 1125/1024 = about +163 cents
+symbol "dblsharpdn3"
+	bbox = -435, -2000, 435, 435
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 -350 moveto 0 -1800 lineto stroke
+		0 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  2 * flat + comma =
+// (2048/2187)^2 * 81/80 = 262144/295245 = about -206 cents
+symbol "dblflatup"
+	bbox = -890, -500, 648, 1550
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-830 0 moveto -830 1350 lineto stroke
+		-830 1450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * flat + 2 * comma =
+// (2048/2187)^2 * (81/80)^2 = 16384/18225 = about -184 cents
+symbol "dblflatup2"
+	bbox = -890, -500, 648, 2000
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-830 0 moveto -830 1800 lineto stroke
+		-830 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * flat + 3 * comma =
+// (2048/2187)^2 * (81/80)^3 = 1024/1125 = about -163 cents
+symbol "dblflatup3"
+	bbox = -890, -500, 648, 2450
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-830 0 moveto -830 2250 lineto stroke
+		-830 1450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+		0 450
+		" + POSTSCRIPT_UPARROW + "
+	grestore"
+
+// Pitch offset:  2 * flat - comma =
+// (2048/2187)^2 / 81/80 = 335544320/387420489 = about -249 cents
+symbol "dblflatdn"
+	bbox = -675, -1100, 648, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-250 0 moveto -250 -900 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  2 * flat + 2 * comma =
+// (2048/2187)^2 * (81/80)^2 = 26843545600/31381059609 = about -270 cents
+symbol "dblflatdn2"
+	bbox = -675, -1550, 648, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-250 0 moveto -250 -1350 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+// Pitch offset:  2 * flat - 3 * comma =
+// (2048/2187)^2 * (81/80)^3 = 2147483648000/2541865828329 = about -292 cents
+symbol "dblflatdn3"
+	bbox = -675, -2000, 648, 1200
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-250 0 moveto -250 -1800 lineto stroke
+		-250 -1000
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+		0 -450
+		" + POSTSCRIPT_DNARROW + "
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  septimal comma up = minor 7th - 7th partial =
+// 16/9 / 7/4 = 64/63 = about +27 cents
+symbol "septimalup"
+	bbox = -335, -1100, 335, 350
+	postscript = "gsave
+		-235 0 moveto -235 250 lineto
+		235 50 lineto 235 -200 lineto fill
+		lwid setlinewidth
+		-200 0 moveto -200 -1000 lineto stroke
+	grestore"
+
+// Pitch offset:  two septimal commas up =
+// (64/63)^2 = 4096/3969 = about +55 cents
+symbol "septimalup2"
+	bbox = -335, -1350, 335, 550
+	postscript = "gsave
+		-235 200 moveto -235 450 lineto
+		235 250 lineto 235 0 lineto fill
+		-235 -250 moveto -235 0 lineto
+		235 -200 lineto 235 -450 lineto fill
+		lwid setlinewidth
+		-200 200 moveto -200 -1250 lineto stroke
+	grestore"
+
+// Pitch offset:  septimal comma down = 7th partial - minor 7th =
+// 7/4 / 16/9 = 63/64 = about -27 cents
+symbol "septimaldn"
+	bbox = -335, -350, 335, 1100
+	postscript = "gsave
+		-235 0 moveto -235 -250 lineto
+		235 -50 lineto 235 200 lineto fill
+		lwid setlinewidth
+		-200 0 moveto -200 1000 lineto stroke
+	grestore"
+
+// Pitch offset:  two septimal commas down =
+// (63/64)^2 = 3969/4096 = about -55 cents
+symbol "septimaldn2"
+	bbox = -335, -550, 335, 1350
+	postscript = "gsave
+		-235 -200 moveto -235 -450 lineto
+		235 -250 lineto 235 0 lineto fill
+		-235 250 moveto -235 0 lineto
+		235 200 lineto 235 450 lineto fill
+		lwid setlinewidth
+		-200 -200 moveto -200 1250 lineto stroke
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  undecimal quartone up = 11th partial - perfect 4th =
+// 11/8 / 4/3 = 33/32 = about +53 cents
+symbol "undecimalup"
+	bbox = -380, -1005, 380, 1005
+	postscript = "gsave
+		% fill crossbars so that we can do parallelograms
+		-280 -200 moveto -280 0 lineto
+		280 200 lineto 280 0 lineto fill
+		% vertical stroke
+		lwid setlinewidth
+		0 -905 moveto 0 905 lineto stroke
+	grestore"
+
+// Pitch offset:  undecimal quartone down = perfect 4th - 11th partial =
+// 4/3 / 11/8 = 32/33 = about -53 cents
+symbol "undecimaldn"
+	bbox = -358, -500, 385, 1200
+	postscript = "gsave
+		-1 1 scale
+		" + POSTSCRIPT_FLAT + "
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Pitch offset:  tridecimal thirdtone up =
+// 27/26 = about +65 cents
+symbol "tridecimalup"
+	bbox = -425, -1030, 425, 1030
+	postscript = "gsave
+		% fill crossbars so that we can do parallelograms
+		-325 -180 moveto -325 20 lineto
+		325 180 lineto 325 -20 lineto fill
+		% vertical strokes
+		lwid setlinewidth
+		-150 -930 moveto -150 880 lineto stroke
+		150 -880 moveto 150 930 lineto stroke
+	grestore"
+
+// Pitch offset:  tridecimal thirdtone down =
+// 26/27 = about -65 cents
+symbol "tridecimaldn"
+	bbox = -460, -500, 490, 1320
+	postscript = "gsave
+		-1.4 1 scale
+		-250 -400 moveto        %outer edge of loop
+		500 0 350 650 -250 160 curveto
+		-250 160 lwid sub lineto %inner edge of loop
+		170 400 370 0 -250 -400 lwid add curveto
+		fill
+		lwid 1.4 div setlinewidth       %stem
+		-250 1100 moveto -250 -400 lineto stroke
+		-50 1220 moveto -50 -280 lineto stroke
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Equal temperment natural
+symbol "natet"
+	bbox = -600, -950, 335, 1485
+	postscript = "gsave
+		" + POSTSCRIPT_NAT + "
+		-200 850 moveto -200 1350 lineto stroke
+		-500 1350 moveto 100 1350 lineto stroke
+	grestore"
+
+// Equal temperment sharp
+symbol "sharpet"
+	bbox = -550, -1030, 425, 1485
+	postscript = "gsave
+		" + POSTSCRIPT_SHARP + "
+		-150 850 moveto -150 1350 lineto stroke
+		-450 1350 moveto 150 1350 lineto stroke
+	grestore"
+
+// Equal temperment flat
+symbol "flatet"
+	bbox = -650, -500, 358, 1485
+	postscript = "gsave
+		" + POSTSCRIPT_FLAT + "
+		-250 1100 moveto -250 1350 lineto stroke
+		-550 1350 moveto 50 1350 lineto stroke
+	grestore"
+
+// Equal temperment double sharp
+symbol "dblsharpet"
+	bbox = -435, -435, 435, 1185
+	postscript = "gsave
+		" + POSTSCRIPT_DBLSHARP + "
+		0 400 moveto 0 1050 lineto stroke
+		-300 1050 moveto 300 1050 lineto stroke
+	grestore"
+
+// Equal temperment double flat
+symbol "dblflatet"
+	bbox = -940, -500, 648, 1485
+	postscript = "gsave
+		" + POSTSCRIPT_DBLFLAT + "
+		-830 1100 moveto -830 1350 lineto stroke
+		-1130 1350 moveto -530 1350 lineto stroke
+	grestore"
+
+///////////////////////////////////////////////////////////////////////////////
+// This table defines the recommended offsets for the accidentals defined
+// in this file.  How each offset was derived is shown in a comment above its
+// symbol definition.  A few of these had to be divided out because the
+// actual numbers would overflow the maximum integer, 2,147,483,647.
+
+accidentals "helmholtz"
+	"natup"		all 81/80
+	"natup2"	all 6561/6400
+	"natup3"	all 531441/512000
+	"natdn"		all 80/81
+	"natdn2"	all 6400/6561
+	"natdn3"	all 512000/531441
+	"sharpup"	all 177147/163840
+	"sharpup2"	all 14348907/13107200
+	"sharpup3"	all 1162261467/1048576000
+	"sharpdn"	all 135/128
+	"sharpdn2"	all 25/24
+	"sharpdn3"	all 250/243
+	"flatup"	all 128/135
+	"flatup2"	all 24/25
+	"flatup3"	all 243/250
+	"flatdn"	all 163840/177147
+	"flatdn2"	all 13107200/14348907
+	"flatdn3"	all 1048576000/1162261467
+	"dblsharpup"	all 387420489/335544320
+	"dblsharpup2"	all 1.169035569 // actually 31381059609/26843545600
+	"dblsharpup3"	all 1.183648514 // actually 2541865828329/2147483648000
+	"dblsharpdn"	all 295245/262144
+	"dblsharpdn2"	all 18225/16384
+	"dblsharpdn3"	all 1125/1024
+	"dblflatup"	all 262144/295245
+	"dblflatup2"	all 16384/18225
+	"dblflatup3"	all 1024/1125
+	"dblflatdn"	all 335544320/387420489
+	"dblflatdn2"	all 0.855405966 // actually 26843545600/31381059609
+	"dblflatdn3"	all 0.844845398 // actually 2147483648000/2541865828329
+	"septimalup"	all 64/63
+	"septimalup2"	all 4096/3969
+	"septimaldn"	all 63/64
+	"septimaldn2"	all 3969/4096
+	"undecimalup"	all 33/32
+	"undecimaldn"	all 32/33
+	"tridecimalup"	all 27/26
+	"tridecimaldn"	all 26/27
+	"natet"		all +0 cents
+	"sharpet"	all +100 cents
+	"flatet"	all -100 cents
+	"dblsharpet"	all +200 cents
+	"dblflatet"	all -200 cents

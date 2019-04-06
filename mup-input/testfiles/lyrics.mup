@@ -1,0 +1,92 @@
+//!Mup-Arkkra
+
+header
+	title bold (15) "lyrics.mup"
+	paragraph (12) "This file test lyrics."
+	title ""
+
+score
+	topmargin = 1
+	staffs =2
+	scale=1.2
+
+music
+1: c;;;;
+2: c;;;;
+lyrics above 1: 4;;;; "\s(12)a-bove in ro-";
+lyrics 1: 4;;;; [1] "now change to \f(TI)ital-"; [2] "this part \s(12)\f(TB)in bold";
+lyrics 2: 4;;;; "this one nor-mal.";
+bar
+
+1: d;;;;
+2: g;;;;
+lyrics above 1: 4;4;2; "man twelve point.";
+lyrics 1: 4;;;; [1] "ics for a while."; [2] "for some time too.";
+lyrics 2: 4;;;; "more sil-ly stuff.";
+bar
+
+// now change SSV for staff 1
+staff 1 lyricsfont=rom ; lyricssize=9
+music
+
+1: e;;;;
+2: g;;;;
+lyrics 1: 4;;2; [1] "Now try this"; [2] "test some more";
+bar
+
+newscore
+// test the <...> things
+1: c;;;;
+lyrics 1: ;;;; "<\f(BX)ff\f(PV) >Test<!> of angle bracks.";
+2: e;;;;
+lyrics2: ;;;; "Now<^!> is the time";
+bar
+
+1: f;;;;
+lyrics 1: ;;;; "<\f(TI)\s(6)strange\f(PV)\s(12)>lyr-ics<^\(smup4n)> fa~la~la la";
+2: g;;;;
+lyrics 2:  ;;;; "<\%>more <____\b\b\b\b>sill-y things<=\b/>";
+bar
+
+newscore
+
+rom (15) above all: 1 "Tests of deriving lyrics time from music time values";
+
+1: c;d;e;f;
+lyrics 1: "one two three four";
+2: 4.c;8;;4. tie;
+lyrics 2: "try an-oth-er";
+bar
+
+1: 8c<>;d;4e~;;f;
+lyrics 1: "test-ing more";
+2: 2c;g;
+lyrics 2: "thing"; 
+bar
+
+1: {c;d;e;}3;2f;
+lyrics 1: "test-ing tup-lets";
+2: {c;d;e;c;e;}5,2.;4g;
+lyrics 2: "un-us-u-al tup-lets";
+bar
+
+newscore
+
+staff 1
+	aboveorder=lyrics,othertext
+music
+
+bold above 1: 1 "\s(+2)test auto verse numbering";
+bold above 1: 1 "\s(+2)below & between skip verse 2";
+1-2: c;;;;
+lyrics above 1: "one two three four"; "a b c d"; "hi ho hi ho";
+lyrics 1: "one two three four"; [3] "a b c d"; "hi ho hi ho";
+lyrics between 1&2: "be-tween the staff"; [3] "this is verse 3";
+bar
+
+bold above 1: 1 "\s(+2)above skips verse 2";
+1-2: c;;;;
+lyrics above 1: "one two three four"; [3] "a b c d"; "hi ho hi ho";
+lyrics 1: "one two three four"; "a b c d"; "hi ho hi ho";
+lyrics between 1&2: "be-tween the staff"; "this is verse 2";
+bar

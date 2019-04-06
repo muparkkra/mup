@@ -1,0 +1,33 @@
+//!Mup-Arkkra
+
+header
+	title bold (12) "gtc.mup"
+	paragraph (9) "This file tests \"good til canceled,\" the ... after []."
+
+score
+	staffs=2
+	scale=1.6
+music
+
+1: [with >]... c;d;e;f;
+rom above 1: 1 "> on all notes";
+2: [xnote; cue; with .,-]... c;d;e;f;
+rom below 2: 1 "all notes xnote and cue with . and -";
+bar
+
+newscore
+
+1: c; [with "sfz"]... d;e;[-]f;
+rom above 1: 1 "sfz on middle 2 notes";
+2: c; [with "sfz"]... d;e; [with "xxx"]f;
+rom below 2: 1 "sfz on 2nd and 3rd note, xxx on last";
+bar
+
+staff 2 visible=n
+music
+
+newscore
+
+1: [grace]...8c;d;e;f;g;[-]2c;[slash 2]...4e;g;
+rom above 1: 1 "5 grace at beginning, slash 2 on last 2";
+bar

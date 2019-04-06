@@ -1,0 +1,229 @@
+//!Mup-Arkkra
+header
+	title bold (18) "restart.mup"
+	paragraph (14) "\
+Test restarts."
+score
+        size = 12
+music
+rom all: 1 "In the following lines, every bar has a restart.";
+rom all: 1 "Before each restart, change to 1#, 2/2, bass";
+rom all: 1 "After each restart, change to 1&, 8/8, treble";
+1: 1f;
+bar
+score key = 1#; time = 2/2; clef = bass
+music
+restart
+score key = 1&; time = 8/8; clef = treble
+music
+1: 1g;
+bar
+score key = 1#; time = 2/2; clef = bass
+music
+restart
+score key = 1&; time = 8/8; clef = treble
+music
+1: 1a;
+bar
+newscore
+score key = 1#; time = 2/2; clef = bass
+music
+restart
+score key = 1&; time = 8/8; clef = treble
+music
+1: 16f;;;;;;;;;; 32;;;;;;;;;;;;
+bar
+score key = 1#; time = 2/2; clef = bass
+music
+restart
+score key = 1&; time = 8/8; clef = treble
+music
+1: 16f;;;;;;;;;; 32;;;;;;;;;;;;
+bar
+score key = 1#; time = 2/2; clef = bass
+music
+restart
+score key = 1&; time = 8/8; clef = treble
+music
+1: 16f;;;;;;;;;; 32;;;;;;;;;;;;
+bar
+
+newscore
+
+score packfact = 2.5
+score key = 4&
+music
+rom all dist 9: 0 "Between each pair of measures with a G note, there is a restart.";
+rom all: 1 "Last bar on score is restart; change clef to bass, key to 3#, and time to 2/2 after restart";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+restart
+score key = 3#
+time = 2/2
+clef = bass
+music
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+score key = 4&
+music
+rom all: 1 "Last bar on score is restart; change clef to treble, key to 3#, and time to 2/2 after restart";
+rom all: 1 "Change clef to alto, key to 2&, and time to 1/1 before restart.";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+score time = 1/1; label2 = "xxxxxxxxxxx"
+key = 2&
+clef = alto
+music
+restart
+score key = 3#
+time = 2/2
+clef = treble
+music
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+score key = 4&; label2 = ""
+music
+rom all: 1 "First bar on score is restart; change clef to bass, key to 3#, and time to 4/4 after restart";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+restart
+score clef = bass; label2 = ""; key = 3#; time = 4/4
+music
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+score key = 4&; label2 = ""
+music
+rom all: 1 "First bar on score is restart; change clef to bass, key to 3#, and time to 4/4 after restart";
+rom all: 1 "Change clef to alto, key to 2&, and time to 1/1 before restart.";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+score time = 1/1; label2 = "xxxxxxxxxxx"
+key = 2&
+clef = alto
+music
+restart
+score clef = bass; label2 = ""; key = 3#; time = 4/4
+music
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+rom all: 1 "Last bar on score is restart; change nothing";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+restart
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+rom all: 1 "First bar on score is restart; change nothing";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+restart
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+rom all: 1 "Last bar on score is restart; change key to 1#, clef to alto, time to 8/8 before the restart";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+score key = 1#; clef = alto; time = 8/8
+music
+restart
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+
+newscore
+
+rom all: 1 "First bar on score is restart; change key to 1&, clef to baritone, time to 4/4 before the restart";
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1f;
+bar
+1: 1g;
+bar
+score key = 1&; clef = baritone; time = 4/4
+music
+restart
+1: 1g;
+bar
+1: 1f;
+bar
+1: 1f;
+bar

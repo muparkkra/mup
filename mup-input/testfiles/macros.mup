@@ -1,0 +1,52 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "macros.mup"
+	paragraph (14) "This file tests the usage of macros."
+
+
+define PP 1 1: 4c;;;; @
+define X "this is a test\@" @
+define STUFF
+score
+	vscheme=1
+	beamstyle=2,2
+@
+
+score scale=1.25
+
+STUFF
+score transpose=up per 4
+music
+PP
+bar
+PP
+bar
+PP
+bar
+
+define AMAC(FONT, STAFFS, COUNT, TEXT) FONT above STAFFS: COUNT TEXT; 
+@
+
+define BMAC(FONT, STAFFS, COUNT, TEXT) FONT below STAFFS: COUNT TEXT; 
+@
+newscore
+1: c;;;;
+AMAC(rom,1,1,"rom above at 1")
+AMAC(ital,1,4,"ital above at 4")
+BMAC(bold,1,2,"bold below at 2")
+BMAC(boldital,1,3,"boldital below at 3")
+bar
+
+
+newscore
+
+define QUOTE(X, N, SIDE) rom SIDE 1: N `X`; @
+
+1: c;;;;
+QUOTE(quote this, 1, above)
+QUOTE(embedded "string" to quote, 3, above)
+QUOTE(with \\nnewline, 1, below)
+QUOTE(backslash in "\\string", 3, below)
+bar
+

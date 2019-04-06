@@ -1,0 +1,92 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "bulge.mup"
+	paragraph (14) "This file tests curve drawn using the bulge keyword."
+
+score
+	topmargin=1
+	staffs=2
+	scoresep=18,32
+music
+
+rom above 1: 1 "bulge curves--same staff/score";
+rom above 1: 1 "                   ";
+1: c =_c1;d;e;f =_f1;
+curve (_c1.x, _c1.y + 10) to (_f1.x, _f1.y + 10) bulge 3
+bar
+
+1: c =_c2;d;e;f =_f2;
+curve (_c2.x, _c2.y - 3) to (_f2.x, _f2.y - 3) bulge -3
+bar
+
+1: c =_c3;d;e;f =_f3;
+curve (_c3.x, _c3.y + 10) to (_f3.x, _f3.y + 10) bulge 9
+bar
+
+1: c =_c4;d;e;f =_f4;
+curve (_c4.x, _c4.y - 3) to (_f4.x, _f4.y - 3) bulge -9
+bar
+
+newscore
+
+rom above 1: 1 "bulge curves--between staffs, same score";
+rom above 1: 1 "                                        ";
+1: c =_c5;d;e;f;
+2: c;d;e;f =_f5;
+curve (_c5.x, _c5.y - 3) to (_f5.x, _f5.y + 10) bulge 4
+bar
+
+1: c =_c6;d;e;f;
+2: c;d;e;f =_f6;
+curve (_c6.x, _c6.y - 3) to (_f6.x, _f6.y + 10) bulge -4
+bar
+
+newscore
+
+rom above 1: 1[-10] "multiple bulge values";
+1: c =_c7;d;e;f =_f7;
+2: c = _c8;d;e;f =_f8;
+curve (_c7.x, _c7.y + 10) to (_f7.x, _f7.y + 10) bulge 2, 7
+curve (_c8.x, _c8.y - 2) to (_f8.x, _f8.y - 2) bulge -2, -5
+bar
+
+1: c =_c9;d;e;f;
+2: c;d;e;f =_f9;
+curve (_c9.x, _c9.y - 3) to (_f9.x, _f9.y + 10) bulge 2, -2
+bar
+
+newscore
+rom above 1: 1[-10] "crossing score boundary";
+1: c =z;d;e;f;
+2: c =c;d;e;f;
+bar
+
+newscore
+
+1: f;e;d;e = e;
+2: f;e;d;c;
+curve (c.x, c.y + 3) to (e.x, e.y + 5) bulge 20, 28
+curve (z.x, z.y + 10) to (e.x, e.y + 10) bulge 5
+bar
+
+newscore
+rom above 1: 1 "crossing more than one score boundary";
+rom above 1: 1 "                       ";
+1: c =_z11;d;e;f;
+2: c =_c11;d;e;f;
+bar
+
+newscore
+
+1: c;d;e;f;
+2: c;d;e;f;
+bar
+
+newscore
+
+1: f;e;d;e =_e11;
+2: f;e;d;c;
+curve (_c11.x, _c11.y + 5) to (_e11.x, _e11.y + 5) bulge 18,24
+curve (_z11.x, _z11.y + 10) to (_e11.x, _e11.y + 10) bulge 5
+bar

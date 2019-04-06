@@ -1,0 +1,142 @@
+//!Mup-Arkkra
+// This is a Mup input file template.
+// Lines starting with // are "comments" that are here for your benefit.
+// You can remove them without affecting the output.
+
+/////////////////////////////////////////////////////////////////////////
+//		things to go on the top of the first page
+top
+
+	//		 centered title.
+	// The number in parentheses is the text point size.
+	// Make it bigger if you want a bigger title or smaller if you
+	// want a smaller title
+	title (18) "Replace this with the title of your song"
+
+	//		subtitle
+	// If you want a subtitle, remove the // from the beginning
+	// of the next line and fill in the appropriate subtitle text
+	// title (14) "Replace this with the subtitle"
+
+	//		composer info
+	// The first pair of double quotes enclose what to left justify,
+	// the second encloses what to right justify.
+	// If you want more than one line, add similar lines of input
+	title   ""   "Replace this with composer info"
+
+
+/////////////////////////////////////////////////////////////////////////
+//		things to go on the bottom on the first page
+bottom
+	// If you want a copyright notice, remove the //
+	// from the next line and edit in the appropriate information
+	// title "\(copyright) Copyright  Replace this with year and name"
+
+
+/////////////////////////////////////////////////////////////////////////
+//		things to go on the top of pages other than the first
+top2
+	// This example will give a centered page number between dashes.
+	// You can customize as you wish.
+	title "- \% -"
+
+
+/////////////////////////////////////////////////////////////////////////
+//		things to go at the bottom of pages other than the first
+bottom2
+	// if you want things printed at the bottom of pages of than
+	// the first page, place them here
+
+
+/////////////////////////////////////////////////////////////////////////
+//		score-wide parameters
+//
+// You may or may not need to change some items in this section
+//
+// The values given as examples are the default values that Mup uses
+// if you don't specify anything for them
+score
+	//	time signature. Can be cut, com,
+	//	or two numbers with a /	between them
+	time = 4/4
+
+	//	key signature. Value is a number from 0 to 7
+	//	followed by # or & for number of sharps or flats.
+	key = 0#
+
+	//	how many staffs. Can be a number from 1 to 40
+	staffs = 1
+
+	//	clef. Can be treble, treble8, 8treble, frenchviolin,
+	//	soprano, mezzosoprano, alto, tenor, baritone, or bass
+	clef = treble
+
+	// Note: there are many more parameters that can be set,
+	// but they are not included in this simple template.
+	// There are parameters to set margins, control how things
+	// are laid out on the page, transpositions value, font and size
+	// for text and lyrics, etc
+
+
+/////////////////////////////////////////////////////////////////////////
+//	You can set some parameters for specific staffs,
+//	to override the score-wide parameters. For example,
+//	if you specify staffs = 2 in the score-wide parameters above,
+//	and want to use bass clef on staff 2, even though the score-wide
+//	clef parameter is set to treble, you can do
+//		staff 2
+//			clef = bass
+
+
+/////////////////////////////////////////////////////////////////////////
+//		music input starts here
+music
+
+
+// For each measure, you enter one line of input for each staff,
+// then indicate what kind of barline to print.
+// The following specifies that staff 1 contains a measure of rest
+// and that an ordinary bar line is to be used at the end of the measure.
+
+1: mr;
+bar
+
+// Usually, a measure of input for one staff consists of one or more chords
+// Each chord is specified by
+//	time_value notes ;
+// where time_value is something like
+//	4	for a quarter note
+//	8	for an eighth note
+//	4.	for a dotted-quarter note
+// etc and notes is a list of one or more notes, specified as a pitch from
+// a to g, optionally followed by an accidental (#, &, x, &&, or n for sharp,
+// flat, double sharp, double flat, or natural respectively).
+// Examples:
+//	4c;
+//	2. ceg;
+//	16 f#;
+//	1 d b&;
+// (Spaces are optional, you can put them in if you want, but don't have to)
+//
+// So a complete measure might look something like:
+//	1: 4e; 4d; 2c;
+//	bar
+//
+// If you want a note in a different octave than the default octave
+// (the octave from middle-C up for treble clef,
+// or the octave below middle-C for bass clef),
+// you can add a + for each octave to go up or - for each octave to go down.
+// For example:
+//	1: c+; gc+e+; a&-; f#---;
+//
+// There are many other things you can specify, such as ties, slurs, grace
+// notes, etc, and there are also many shortcuts you can use to save typing.
+// Consult the Mup documentation for more details.
+
+// Other bar types you may want to use are
+//	repeatstart
+//	repeatend
+//	repeatboth
+//	dblbar
+//	endbar
+//	invisbar

@@ -1,0 +1,22 @@
+.nf
+.na
+.ta 2.6i
+.ps 18
+.vs 18
+
+\f(NIN\f(NR <Enter>	go to page \f(NIN\f(NR
+n	next page
+p	previous page
+r	redraw current page
+
+m	toggle to and from full page mode
+
+     scrolling commands (partial page mode only)
++ or <space>	forward about 1/8 inch
+\(em or <backspace>	backward about 1/8 inch
+f or <Enter>	forward about 1 inch
+b	backward about 1 inch
+
+q or ZZ	quit
+
+h or ?	help

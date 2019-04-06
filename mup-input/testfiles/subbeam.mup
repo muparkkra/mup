@@ -1,0 +1,90 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "subbeam.mup"
+	paragraph (13) "This file tests subbeams."
+
+score
+	beamstyle=(4,4,4),4
+	size=15
+	packfact=1.4
+	scale=1.1
+music
+
+define SAMPLE
+1:16c;d;e;f;g;a;b;c+;c;d;e;f;g;a;b;c+;
+bar
+
+1:16c;d;e;r;g;a;b;c+;r;d;e;r;a;r;b;c+;
+bar
+
+
+1: 16e;f;g;8a;16a;g;4a;16b;8e;f;
+bar
+@
+
+rom above 1: 1 "beamstyle=(4,4,4),4";
+SAMPLE
+
+score
+	beamstyle=(4,4,4),4 r
+music
+
+rom above 1: 1 "beamstyle=(4,4,4),4 r";
+SAMPLE
+
+score
+	beamstyle=(4,4),(4,4)
+music
+
+rom above 1: 1 "beamstyle=(4,4),(4,4)";
+1: 32c;d;e;f;g;f;e;d; e;f;16e;f;32f;g; 16e;32c;d;e;f;16g; 32e;f;g;a;b;a;g;f;
+bar
+
+rom above 1: 1 "partial beams";
+1: 32c;16d;e;d;32f; [grace]8c;[]d;32d;e;16c;f;g; 16c;32d;16e;32f;16g; [grace]8e;[]d;32c;16d;32e;16f;32g;c;
+bar
+
+rom above 1: 1 "custom beaming with esbm";
+1: 16c bm;d;e;f esbm;g;a;b;c+ ebm;2g;
+bar
+
+1: 16c bm;r;e;r esbm;r;a;r;c+ ebm;2g;
+bar
+
+score
+	time=9/8
+	beamstyle=(8,8,8),(8,8,8,4.)
+music
+
+newscore
+
+rom above 1: 1 "beamstyle=(8,8,8),(8,8,8,4.)";
+1: 16c;d;e;f;g;a; c;d;e;f;g;a; c;d;e;f;g;a;
+bar
+
+1: 16c;d;e;8f;16g; 16c;8d;16e;f;g; c;d;4e;
+bar
+
+score
+time=4/8
+beamstyle=(8,8,8,8)
+music
+
+newscore
+
+rom above all: 1 "(8,8,8,8)";
+1: 16e;c;d;f;g;a;b;c+;
+bar
+
+1: 16e;8c;16d;f;g;a;b;
+bar
+
+1: 16e;c;8d;16g;a;b;c+;
+bar
+
+1: 16e;c;d;g;a;8b;16c+;
+bar
+
+1: 16e;c;d;g;a;b;8c+;
+bar

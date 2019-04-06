@@ -1,0 +1,111 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "stacking.mup"
+	paragraph (14) "This file tests the stacking order of 'all' and non-'all' items relative to each other."
+	title ""
+
+score
+	staffs=2
+	scoresep=10,62
+
+music
+rom all: 1 "above all top";
+rom all: 1 "above all bottom";
+rom 1: 1 "above 1 top";
+rom 1: 1 "above 1 bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below all: 1 "below all top";
+rom below all: 1 "below all bottom";
+rom below 2: 1 "below 2 top";
+rom below 2: 1 "below 2 bottom";
+1: 1f;
+bar
+rom 1: 1 "above 1 top";
+rom 1: 1 "above 1 bottom";
+rom all: 1 "above all top";
+rom all: 1 "above all bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below 2: 1 "below 2 top";
+rom below 2: 1 "below 2 bottom";
+rom below all: 1 "below all top";
+rom below all: 1 "below all bottom";
+1: 1f;
+bar
+rom 1: 1 "above 1 top";
+rom all: 1 "above all top";
+rom 1: 1 "above 1 bottom";
+rom all: 1 "above all bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below 2: 1 "below 2 top";
+rom below all: 1 "below all top";
+rom below 2: 1 "below 2 bottom";
+rom below all: 1 "below all bottom";
+1: 1f;
+bar
+rom all: 1 "above all top";
+rom 1: 1 "above 1 top";
+rom all: 1 "above all bottom";
+rom 1: 1 "above 1 bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below all: 1 "below all top";
+rom below 2: 1 "below 2 top";
+rom below all: 1 "below all bottom";
+rom below 2: 1 "below 2 bottom";
+1: 1f;
+bar
+
+newscore
+
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below all: 1 "below all top";
+rom below all: 1 "below all bottom";
+rom below 2: 1 "below 2 top";
+rom below 2: 1 "below 2 bottom";
+rom all: 1 "above all top";
+rom all: 1 "above all bottom";
+rom 1: 1 "above 1 top";
+rom 1: 1 "above 1 bottom";
+1: 1f;
+bar
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+rom below 2: 1 "below 2 top";
+rom below 2: 1 "below 2 bottom";
+rom below all: 1 "below all top";
+rom below all: 1 "below all bottom";
+rom 1: 1 "above 1 top";
+rom 1: 1 "above 1 bottom";
+rom all: 1 "above all top";
+rom all: 1 "above all bottom";
+1: 1f;
+bar
+rom below 2: 1 "below 2 top";
+rom below all: 1 "below all top";
+rom below 2: 1 "below 2 bottom";
+rom below all: 1 "below all bottom";
+rom 1: 1 "above 1 top";
+rom all: 1 "above all top";
+rom 1: 1 "above 1 bottom";
+rom all: 1 "above all bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+1: 1f;
+bar
+rom below all: 1 "below all top";
+rom below 2: 1 "below 2 top";
+rom below all: 1 "below all bottom";
+rom below 2: 1 "below 2 bottom";
+rom all: 1 "above all top";
+rom 1: 1 "above 1 top";
+rom all: 1 "above all bottom";
+rom 1: 1 "above 1 bottom";
+rom between 1&2: 1 "between top";
+rom between 1&2: 1 "between bottom";
+1: 1f;
+bar

@@ -1,0 +1,171 @@
+//!Mup-Arkkra
+header
+	title bold (18) "interfere.mup"
+	paragraph (14) "\
+Test notes that have to placed in special ways to avoid interfering with
+each other.
+Try groups that have lots of notes on the \"wrong\" side of
+the stems, and lots of accidentals and dots.  It also tests
+whether voices 1 and 2 will be allowed to share note heads,
+will be totally separate, or will line up with collinear stems."
+staff 1
+	vscheme = 2f
+music
+	1 1: g; a; 8g; gn; a; an;
+	1 2: f; ; 8fn; fn; fn; fn;
+	bar
+	1 1: 4fg; fa; f+g+; f+a+;
+	bar
+score
+	time = 6/4
+music
+	1 1: 2.f#g#a#b#c#+; f#g#;
+	1 2: 2.e#d#c#; e#d#;
+	bar
+	1 1: 2.f#; e#f#;
+	1 2: 2.e#; e#d#;
+	bar
+	1 1: 2.f&c&+g&+; 2b&; 4b&c&+;
+	1 2: 2.f&c&+; 2g&b&; 4b&;
+	bar
+	1 1: 2.c&+b&; d&+e&+;
+	1 2: 2.b&a&; c&+;
+	bar
+	1 1: 1.c&+d&+;
+	1 2: 1.a&b&;
+	bar
+	1 1: 2fa; 4; 2gb; 4;
+	1 2: 2.ce; df;
+	bar
+	1 1: 2.fa; gb;
+	1 2: 2ce; 4; 2df; 4;
+	bar
+	1 1: 2fga; 4; 2gab; 4;
+	1 2: 2.cde; def;
+	bar
+	1 1: 2.fga; gab;
+	1 2: 2cde; 4; 2def; 4;
+	bar
+score
+	time = 4/4
+music
+	1 1: [cue] g; [cue] a; [cue] 8g; [cue] gn; [cue] a; [cue] an;
+	1 2: [cue] f; [cue] ; [cue] 8fn; [cue] fn; [cue] fn; [cue] fn;
+	bar
+	1 1: [cue] 4fg; [cue] fa; [cue] f+g+; [cue] f+a+;
+	bar
+score
+	time = 6/4
+music
+	1 1: [cue] 2.f#g#a#b#c#+; [cue] f#g#;
+	1 2: [cue] 2.e#d#c#; [cue] e#d#;
+	bar
+	1 1: [cue] 2.f#; [cue] e#f#;
+	1 2: [cue] 2.e#; [cue] e#d#;
+	bar
+	1 1: [cue] 2.f&c&+g&+; [cue] 2b&; [cue] 4b&c&+;
+	1 2: [cue] 2.f&c&+; [cue] 2g&b&; [cue] 4b&;
+	bar
+	1 1: [cue] 2.c&+b&; d&+e&+;
+	1 2: [cue] 2.b&a&; [cue] c&+;
+	bar
+	1 1: [cue] 1.c&+d&+;
+	1 2: [cue] 1.a&b&;
+	bar
+	1 1: [cue] 2fa; [cue] 4; [cue] 2gb; [cue] 4;
+	1 2: 2.ce; [cue] df;
+	bar
+	1 1: 2.fa; [cue] gb;
+	1 2: [cue] 2ce; 4; [cue] 2df; [cue] 4;
+	bar
+	1 1: [cue] 2fga; [cue] 4; [cue] 2gab; [cue] 4;
+	1 2: [cue] 2.cde; def;
+	bar
+	1 1: [cue] 2.fga; [cue] gab;
+	1 2: [cue] 2cde; [cue] 4; [cue] 2def; [cue] 4;
+	bar
+score
+	time = 8/4
+	beamstyle = 2, 2, 2, 2
+music
+	1 1: 4eb; fc+; 2dae+; 1;
+	1 2: 4gd+; ae+; 2b-fc+; 1;
+	bar
+
+	1 1: 1/2 cba+;
+	1 2: 1/2 g-fe+;
+	bar
+
+	1 1: 4dfa; e; 2g-; 8d; e; f; g; 2;
+	1 2: 4c+e+g+; b; 2c; 8f; g; a; b; 2;
+	bar
+
+	1 1: 1/2 d;
+	1 2: 4b; ; 1.;
+	bar
+
+	newscore
+score
+	time = 4/4
+music
+	1 1: 4g; [slash 1] d; ; [grace] 8e; 4d;
+	1 2: 4a; a; [slash 2] ; ;
+	bar
+
+	1 1: 4d;              4; 8;  4.;
+	1 2: [grace] 8a; 4b;  4.;    4; 8;
+	bar
+
+	1 1: 4bg+; ; ; ;
+	1 2: 4de+; ; ; ;
+	roll 1 1: 1;
+	roll 1 2: 2;
+	roll 1 1 to 1 2: 3;
+	bar
+
+	1 1: 8d; bm; 16 ebm; 8.; 4; ;
+	1 2: b; ; 16 bm; 8. ebm; 4;
+	bar
+
+	newscore
+
+score
+	packfact = 1.5
+music
+	rom 1: 1 "Test collinear stems when the two candidate notes are on the same step.";
+	rom 1: 1 "The first four measures allow it; the rest block it for various reasons.";
+	1 1: 2b; ;
+	1 2: 4b; 2; 4;
+	bar
+	1 1: 2b; ;
+	1 2: 4.b; 2; 8;
+	bar
+	1 1: 2b&; ;
+	1 2: 4b; 2; 4;
+	bar
+	1 1: 2b; ;
+	1 2: 4b; 2; 4;
+	roll 1 1: 1;
+	bar
+	1 1: 2b; ;
+	1 2: 4b; 2; 4;
+	roll 1 2: 1;
+	bar
+	1 1: 2(b); b;
+	1 2: 4b; 2; 4;
+	bar
+	1 1: 2b; ;
+	1 2: 4(b); 2b; 4;
+	bar
+	1 1: 2.b; 4;
+	1 2: 4b; 2; 4;
+	bar
+	1 1: 2b; ;
+	1 2: 4ba; 2; 4;
+	bar
+	1 1: 2bc+; ;
+	1 2: 4b; 2; 4;
+	bar
+	1 1: 2b; ;
+	1 2: 4b&; 2; 4;
+	bar

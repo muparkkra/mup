@@ -1,0 +1,102 @@
+//!Mup-Arkkra
+
+header
+	title bold (13) "withadjust.mup"
+	paragraph (10) "This file tests the adjustments that are made on certain \"with list\" items,
+to ensure they don't get swallowed up by staff lines."
+ 
+score scale=1.3
+music
+1: [with .,-]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with.,-]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with.,-]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+1: [with -,.]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with-,.]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with-,.]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+1: [with>, -,.]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with>,-,.]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [with>,-,.]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+// cue
+1: [cue;with .,-]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with.,-]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with.,-]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+1: [cue;with -,.]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with-,.]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with-,.]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+1: [cue;with>, -,.]g;[]f;[]e;[]d;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with>,-,.]a;[]b;[]c+;[]d+;
+rom below 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+1: [cue;with>,-,.]e+;[]f+;[]g+;[]a+;
+rom above 1: 1 "x"; 2 "x"; 3 "x"; 4 "x";
+bar
+
+score
+	beamstyle=2,2
+	vscheme=2o
+music
+1: 2e+;;
+1 2: [with .]... 8g;a;b;c+;a;;;;
+bar
+
+1: [with .]... 8c;d;e;f;c;;;;
+1 2: 2a-;;
+bar
+
+score
+	withfont=boldital
+	withfontfamily=courier
+	withsize=20
+voice 1 2
+	withfont=ital
+	withfontfamily=avantgarde
+	withsize=15
+music
+newscore
+rom above all: 1 "test with{font|fontfamily|size}";
+1: [with "sfz"]c+;;;;
+1 2: [with "ppp"]c;;;;
+bar

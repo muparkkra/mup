@@ -1,0 +1,253 @@
+//!Mup-Arkkra
+header
+	title bold (18) "grace.mup"
+	paragraph (14) "\
+Test grace notes, single and multiple.  Try all the placement
+possibilities for stem direction.  Embed some inside beamed
+normal groups to make sure the grace notes don't collide with
+the normal things.
+When both main groups have grace notes, make sure that the graces line up
+according to their \"time values\"."
+score
+	packfact = 2.0
+	scorepad = 0
+	scoresep = 9, 20
+	beamstyle=4,4,4,4
+	size = 9
+	vscheme=2o
+music
+	rom 1: 1.5 "vscheme = 2o";
+	1 1: 2g+; 8f; [grace]8g; []; 8f; 8f; 8f;
+	1 2: 8e+; [grace]8d+; []; 8e+; 8e+; 8e+; 2d;
+	bar
+	1 1: 8f; [grace]8g; []; 8f-; [grace]8g+; []; 8f; [grace]8b; []; \
+		8f-; 16f-; [grace]16e; []; 16f; 16f; 16f+; 4g+;
+	1 2: 2.d; 16e+; [grace]8b; []; 16c+; 16a; 16f;
+	bar
+	1 1: 16a; [grace]16c+; []; 16a; 16a; [grace]16a; []; 16a; \
+		64a; [grace]8c+; []; 64a; 64a; 64a; 8.a; 2g+;
+	1 2: 2d; 32b; 32b; 32b; [grace]a; []; 32b; [grace]e; []; \
+		8b; [grace]f; []; 8b; 8b;
+	bar
+	1 1: [grace]8f; []f+; []d+; 4e+; [grace]16g-; []16b; 4c+; \
+		[grace]8f-; []8e-; 4d-; [grace]32da+; []d+; []g+; []b+; 4c++;
+	1 2: 1d;
+	bar
+	1 1: 1g+;
+	1 2: [grace]8d; []e; 4f; [grace]16c++; []; 4b+; \
+		[grace]8f+; []d; 4e; [grace]64a; []g; 4f;
+	bar
+music
+	1: [grace]8d; 4e; [grace]8d+; 4e+; 4f; [grace]16g+; 4f+;
+	bar
+	1 1: [grace]8g; 4a; [grace]8b; 4c+; [grace]8d+; 4e+; [grace]8f+; 4g+;
+	1 2: [grace]8c; 4d; [grace]8e; 4f; [grace]8g; 4a; [grace]8b; 4c+;
+	bar
+score
+	vscheme = 2f
+music
+	rom 1: 1 "vscheme = 2f";
+	1 1: [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a;
+	1 2: [grace]8d; 4e; 4s; [grace]8d; 4e; 4s;
+	bar
+	1 1: [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a;
+	1 2: 4s; [grace]8d; 4e; 4s; [grace]8d; 4e;
+	bar
+score
+	defoct = 5
+music
+	1 1: [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a;
+	1 2: [grace]8d; 4e; 4s; [grace]8d; 4e; 4s;
+	bar
+	1 1: [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a; [grace]8g; 4a;
+	1 2: 4s; [grace]8d; 4e; 4s; [grace]8d; 4e;
+	bar
+score
+	defoct = 4
+music
+	1 1: [grace]8g; 4a; 4s; [grace]8g; 4a; 4s;
+	1 2: [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e;
+	bar
+	1 1: 4s; [grace]8g; 4a; 4s; [grace]8g; 4a;
+	1 2: [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e;
+	bar
+score
+	defoct = 5
+music
+	1 1: [grace]8g; 4a; 4s; [grace]8g; 4a; 4s;
+	1 2: [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e;
+	bar
+	1 1: 4s; [grace]8g; 4a; 4s; [grace]8g; 4a;
+	1 2: [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e; [grace]8d; 4e;
+	bar
+score
+	defoct = 4
+	vscheme = 1
+music
+	rom 1: 1 "vscheme = 1";
+	1: [grace]8f+; 2g+; 8f; [grace]8g; []; 8f; 8f; 8f;
+	bar
+	1: 8f; [grace]8g; []; 8f-; [grace]8g+; []; 8f; [grace]8b; []; \
+		8f-; 16f-; [grace]16e; []; 16f; 16f; 16f+; 4g+;
+	bar
+	1: 16a; [grace]16c+; []; 16a; 16a; [grace]16a; []; 16a; \
+		64a; [grace]8c+; []; 64a; 64a; 64a; 8.a; 2g+;
+	bar
+	1: [grace]8f; []f+; []d+; 4e+; [grace]16g-; []16b; 4c+; \
+		[grace]8f-; []8e-; 4d-; [grace]32da+; []d+; []g+; []b+; 4c++;
+	bar
+	1: 8b; [grace]8e; 8b; 8d+; [grace]8a-; 8a; \
+		8b; [grace]8f-; []8a-; 8b; 8...b; [grace]8a-; 64b;
+	bar
+	1: 16b; [grace]16e; 16b; 16b; [grace]16g-; []16b-; 16b; \
+		16b; [grace]16f-; 16b; 16b; [grace]16a-; []d-; 16b; 2b;
+	bar
+score
+	vscheme = 3f
+music
+	rom 1: 1 "vscheme = 3f";
+	1 2: [grace]8c;[]d;1b-e;
+	roll 1 2: 1;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g+;
+	roll 1 1: 1;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g+;
+	1 3: [grace]8b; 1b;
+	1 2: [grace]8c;[]d;1b-e;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g+;
+	1 2: [grace]8c;[]d;1b-e;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g+;
+	1 2: [grace]8c;[]d;1b-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g#+;
+	1 2: [grace]8c;[]d;1b&&-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1g#+;
+	1 2: [grace]8c;[]d;1b&&-e;
+	bar
+
+	1 1: [grace]8a;[grace]b;[]g;[]f;1f#c#+g#+;
+	1 2: [grace]8c;[grace; ho 4]d;[grace]d;1b&&-e&a&;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1f#c#+g#+;
+	1 2: [grace]8c;[]d;1b&&-e&a&;
+	bar
+
+	1 1: [grace]8a;[]b;[]g;[]f;1f#c#+g#+;
+	1 2: [grace]8c;[]d;1b&&-e&a&;
+	bar
+
+	//I had to use the orig_rw only with grace and the group AW in other cases,
+	//otherwise things looked a lot worse in many more cases.
+
+	1 2: 1b-e;
+	roll 1 2: 1;
+	bar
+
+	1 1: 1g+;
+	roll 1 1: 1;
+	bar
+
+	1 1: 1g+;
+	1 2: 1b-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: 1g+;
+	1 2: 1b-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: 1g#+;
+	1 2: 1b&&-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: 1g#+;
+	1 2: 1b&&-e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: 1f#c#+g#+;
+	1 2: 1b&&-e&a&;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: 1f#c#+g#+;
+	1 2: 1b&&-e&a&;
+	roll 1 1: 1;
+	bar
+
+	1 1: 1f#c#+g#+;
+	1 2: 1b&&-e&a&;
+	roll 1 2: 1;
+	bar
+
+	1 1: [grace] 8b&; [grace]8f#c#+g#+; [grace]8f#c#+g#+; 1b;
+	1 2: [grace] 8d; [grace]8g-e&a&;[grace]8g-e&a&; 1d;
+	bar
+
+	1 1: [grace]8d; 1g;
+	1 2: [grace]8f; 1e;
+	bar
+
+	1 1: [grace]8f; [grace]8d; [grace]16d; 1g;
+	1 2: [grace]8d; [grace]16d; [grace]8d; 1e;
+	bar
+
+define G	[grace] @
+	1 1: G 8g; G en; 2e; ;
+	1 2: G 16c; G 8e; 2d; ;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: G 8a; G 16a; G 8g; 2f; 			2g;
+	1 2: G 32 c; G 16d; G 8e; 2g; 		2e;
+	bar
+
+	1 1: G 8f; 1b;
+	1 2: G 4f; 1f;
+	roll 1: 1;
+	bar
+
+	1 1: G 8a; G 16a; G 8g; 2b&; 			2g;
+	1 2: G 32 c; G 16d; G 8e; 2e; 		2e;
+	roll 1 1 to 1 2: 1;
+	bar
+
+	1 1: G 8a; G 16a; G 8g; 2b&&; 			2g;
+	1 2: G 32 c; G 16d; G 8e; 2e; 		2e;
+	roll 1 1: 1;
+	bar
+
+	1 1: G 8a; G 16a; G 8g; 2b; 			2g;
+	1 2: G 32 c; G 16d; G 8e&; 2e; 		2e;
+	roll 1 2: 1;
+	bar
+
+	1: [grace] 1/2f; 4e; [grace] 1f; 4e; [grace] 2f; 4e; [grace] 4f; 4e;
+	bar
+	newscore
+
+	rom 1: 1 "Grace notes on cue notes in voice 1";
+	1 1: [grace]8f; [cue]4g; \
+		[grace]...8e;f#;g; [cue] 4f; \
+		[grace]...8e;16cg; df; 8f; [cue] 4egb; \
+		[grace]...8e;16cf#ab&; df; 8f; [cue] 4egb;
+	1 2: [grace]8b-; 4c; \
+		[grace]...8c;; [-]4d; \
+		[grace]...8a-;b-; [-]4c; \
+		b-;
+	bar

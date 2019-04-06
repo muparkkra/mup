@@ -1,0 +1,328 @@
+#!/bin/bash
+
+# This script creates a Windows or DOS package.
+# It is to be run on a Linux machine which
+# has the OpenWatcom cross-compiler, plus the mingw compiler if building
+# for Windows or the djgpp compiler if building for DOS.
+# The OpenWatcom compiler is only used for compiling mupdisp,
+# so this script can be run with --no-mupdisp if you don't have that
+# cross-compiler and you are okay with not building mupdisp.
+# Otherwise, you can use --openwatcom option to give the path to
+# where that compiler is located. This should point to the top level
+# directory, that contains owsetenv.sh and the binl directory.
+# Similarly, you can use the --mingw otpion to give the path to the
+# the mingw compiler, which is used to compile mup, mupmate, and mkmupfnt.
+# That should point to the top level directory that contains the
+# i386-mingw32msvc directory.
+# Or for DOS, --djgpp can be used to point to where the djgpp compiler is.
+# The default directories if not specified are /usr/local/openwatcom,
+# /usr/local/mingw, and /usr/local/djgpp.
+# The fltk headers and libraries are assumed to be under the mingw
+# include and lib directories. If not, you can use --fltk to point to
+# where they are.
+
+name="$0"
+function usage
+{
+	echo  "usage: $name [--no-mupdisp] [--openwatcom path] [--mingw path] [ --fltk path] [--dos]"
+	exit 1
+}
+
+# Set defaults for command line arguments
+build_mupdisp=yes
+build_dos=no
+OPENWATCOM=/usr/local/openwatcom
+MINGW=/usr/local/mingw
+DJGPP=/usr/local/djgpp
+FLTK_INCLUDE=
+FLTK_LIBS=
+
+# Process the command line arguments
+OPTS=$(getopt --name "$name" --options "h" --longoptions "help,dos,no-mupdisp,openwatcom:,mingw:,fltk:,djgpp:" -- "$@") || usage
+eval set -- "$OPTS"
+
+while true
+do
+	case "$1" in
+	-h|--help) usage ;;
+	--dos) build_dos=yes ; shift ;;
+	--djgpp) DJGPP=$2 ; shift 2 ;;
+	--no-mupdisp)  build_mupdisp=no ; shift ;;
+	--openwatcom) OPENWATCOM=$2 ; shift 2 ;;
+	--mingw) MINGW=$2 ; shift 2 ;;
+	--fltk)
+		FLTK_INCLUDE=-I$2/include
+		FLTK_LIBS=-L$2/lib
+		shift 2 ;;
+	--) shift ; break ;;
+	*) echo "invalid argument" ; exit 1 ;;
+	esac
+done
+
+if [ "$build_dos" == yes ]
+then
+	CFLAGS=-I$DJGPP/include
+	LDFLAGS=-L$DJGPP/lib
+else
+	LDFLAGS="-L$MINGW/lib $FLTK_LIBS"
+	CFLAGS="-I$MINGW/include -I$MINGW/i386-mingw32msvc/include $FLTK_INCLUDE -D__DOS__"
+fi
+
+set -e
+
+function find_watcom_file
+{
+	# Try to find the Watcom compiler file given as $1, first in PATH,
+	# then in $OPENWATCOM/binl, then give up.
+	LOCATION=$(which "$1" 2>/dev/null)
+	if [ -z "$LOCATION" ]
+	then
+		LOCATION=$OPENWATCOM/binl/$1
+		if [ ! -x "$LOCATION" ]
+		then
+			echo "Could not find OpenWatcom file $1" >&2
+			echo 'You can set $OPENWATCOM to the directory where it is located,' >&2
+			echo "or can use --no-mupdisp to skip building mupdisp" >&2
+			exit 1
+		fi
+	fi
+	echo $LOCATION
+}
+
+# Check for --no-mupdisp option on command line
+build_mupdisp=yes
+[ "$1" == "--no-mupdisp" ] && build_mupdisp=no
+
+if [ "$build_mupdisp" == yes ]
+then
+	WCC386=$(find_watcom_file wcc386)
+	WLINK=$(find_watcom_file wlink)
+	OWSETENV=$OPENWATCOM/owsetenv.sh
+	if [ ! -f $OWSETENV ]
+	then
+		echo cannot find owsetenv.sh
+		exit 1
+	fi
+fi
+
+# Make sure the makensis tool is available, which is used to make
+# the final installer package.
+MAKENSIS=$(which makensis 2>/dev/null)
+if [ "$build_dos" == no ] && [ -z "$MAKENSIS" ]
+then
+	echo cannot file makensis tool in PATH
+	exit 1
+fi
+
+if [ ! -x ../src/mup/mup ]
+then
+	echo First build mup for this build machine
+	exit 1
+fi
+
+VERSION=6.7
+VERSION_NO_DOT=67
+
+if [ "$build_dos" == yes ]
+then
+	BUILD_DIR=mup-$VERSION.dos
+	PATH=$DJGPP/bin:$PATH
+	CC=i386-msdosdjgpp-gcc
+else
+	BUILD_DIR=mup-$VERSION.windows
+	PATH=$MINGW/i386-mingw32msvc/bin:$PATH
+	CC=gcc
+fi
+rm -rf $BUILD_DIR
+mkdir -p $BUILD_DIR
+
+# Build mup itself
+$CC $CFLAGS $LDFLAGS -I ../src/include -o $BUILD_DIR/mup.exe ../src/mup/*.c ../lib/rational.c -lm
+
+# Build mupdisp if OpenWatcom compiler is available,
+# and user has not told us not to build it.
+if [ "$build_mupdisp" == yes ]
+then
+	# Build in a temporary sub-directory
+	MUPDISP_DIR=$BUILD_DIR/mupdisp
+	mkdir -p $MUPDISP_DIR
+
+	# Copy the source files into sub-directory
+	for f in dispttyp.h do_cmd.c dos.c genfile.c help.bm init.c mupdisp.c mupdisp.h waitmsg.bm
+	do
+		cp ../src/mupdisp/$f $MUPDISP_DIR/
+	done
+
+	# Set up the environment to run OpenWatcom compiler
+	. $OWSETENV
+
+	# Do the build
+	cd $MUPDISP_DIR
+	for f in *.c
+	do
+		$WCC386 $f -dDEBUG -on -4r
+	done
+	echo NAME mupdisp > mupdisp.lnk
+	for f in *.o
+	do
+		echo FIL $f >> mupdisp.lnk
+	done
+	$WLINK sys dos4g op st=32k @mupdisp.lnk
+
+	# Move the product up from the temporary directory
+	mv mupdisp.exe ..
+
+	# Clean up
+	cd - > /dev/null
+	rm -rf $MUPDISP_DIR
+
+	cp $OPENWATCOM/binw/dos4gw.exe $BUILD_DIR/dos4gw.exe
+	MUPDISP="mupdisp.exe dos4gw.exe"
+fi
+
+# The mupprint script can just be copied in
+unix2dos < ../src/mupprnt/mupprnt.bat > $BUILD_DIR/mupprnt.bat
+
+if [ "$build_dos" == no ]
+then
+	if which pamtowinicon > /dev/null 2>&1
+	then
+		xpmtoppm ../src/mupmate/mup16.xpm > mup16.ppm
+		sed -e "s/const //" ../src/mupmate/mup32.xpm | xpmtoppm > mup32.ppm
+		xpmtoppm ../src/mupmate/mup48.xpm > mup48.ppm
+		cat mup16.ppm mup32.ppm mup48.ppm | pamtowinicon > mupicons.ico
+	elif which ppmtowinicon > /dev/null 2>&1
+	then
+		xpmtoppm ../src/mupmate/mup16.xpm > mup16.ppm
+		echo "3s/255/16/\nwq" | ed - mup16.ppm
+		ppmtopgm mup16.ppm > mup16.pgm 2> /dev/null
+		sed -e "s/const //" ../src/mupmate/mup32.xpm | xpmtoppm > mup32.ppm
+		echo "3s/255/16/\nwq" | ed - mup32.ppm
+		ppmtopgm mup32.ppm > mup32.pgm 2> /dev/null
+		xpmtoppm ../src/mupmate/mup48.xpm > mup48.ppm
+		echo "3s/255/16/\nwq" | ed - mup48.ppm
+		ppmtopgm mup48.ppm > mup48.pgm 2> /dev/null
+		ppmtowinicon -andpgms mup16.ppm mup16.pgm mup32.ppm mup32.pgm mup48.ppm mup48.pgm > mupicons.ico 
+	else
+		echo need either pamtowicon or ppmtowinicon
+		exit 1
+	fi
+	$MINGW/bin/i386-mingw32msvc-windres -i ../src/mupmate/mupmate.rc -o $BUILD_DIR/icon.o
+	rm -f mup16.ppm mup32.ppm mup48.ppm mup16.pgm mup32.pgm mup48.pgm mupicons.ico 
+
+	# Deduce whether to define FLTK_1_1, which has a different signature
+	# for the highlight_position function
+	FLTK1_1=
+	cat >detect1_1.C <<EOF
+	#include <FL/Fl_Text_Buffer.H>
+	int main()
+	{
+		Fl_Text_Buffer b;
+		int x;
+		(void) b.highlight_position(&x, &x, &x, &x, &x);
+	}
+EOF
+	g++ $WIN_CFLAGS -c detect1_1.C >/dev/null 2>&1 && FLTK1_1=-DFLTK_1_1
+	rm -f detect1_1.C detect1_1.o
+
+	MUPMATE_SRC="../src/mupmate/Config.C ../src/mupmate/Edit.C ../src/mupmate/File.C ../src/mupmate/Help.C ../src/mupmate/Main.C ../src/mupmate/Preferences.C ../src/mupmate/Run.C ../src/mupmate/template.C ../src/mupmate/utils.C"
+	# Compile mupmate
+	g++ $WIN_CFLAGS $FLTK1_1 -I../src/include $LDFLAGS -Wl,--subsystem,windows -o $BUILD_DIR/mupmate.exe $MUPMATE_SRC $BUILD_DIR/icon.o -lfltk -lfltk_images -lfltk_jpeg -lfltk_png -lfltk_z -lcomdlg32 -lgdi32 -luuid -lole32 -lws2_32
+fi
+
+# Build mkmupfnt
+$CC $CFLAGS $LDFLAGS -o $BUILD_DIR/mkmupfnt.exe ../src/mkmupfnt/mkmupfnt.c
+
+# Process documentation files, examples, and include files.
+unix2dos < ../doc/quickref.ps > $BUILD_DIR/mupqref.ps
+unix2dos < ../doc/uguide.ps > $BUILD_DIR/uguide.ps
+
+unix2dos < ../mup-input/examples/template.mup > $BUILD_DIR/template.mup
+unix2dos < ../mup-input/examples/sample.mup > $BUILD_DIR/sample.mup
+../src/mup/mup $BUILD_DIR/sample.mup | unix2dos > $BUILD_DIR/sample.ps
+
+unix2dos < ../LICENSE > $BUILD_DIR/license.txt
+for f in overview.html mupfeat.html whatsnew.html faq.html usercomm.html winrun.html
+do
+	unix2dos < ../doc/htmldocs/$f > $BUILD_DIR/$f
+done
+
+# PostScript versions of manual pages
+MUPDISP_MAN=
+[ "$build_mupdisp" == yes ] && MUPDISP_MAN=mupdisp
+for f in mup $MUPDISP_MAN mupprnt mkmupfnt mupmate
+do
+	groff -Tps -man ../doc/manpages/${f}.1 | unix2dos > $BUILD_DIR/${f}.ps
+done
+
+# The HTML version of uguide
+mkdir -p $BUILD_DIR/uguide
+for f in ../doc/uguide/*.html
+do
+	base=$(basename $f)
+	unix2dos < $f > $BUILD_DIR/uguide/$base
+	chmod 644 $BUILD_DIR/uguide/$base
+done
+
+for f in ../doc/uguide/*.gif
+do
+	base=$(basename $f)
+	cp $f $BUILD_DIR/uguide/$base
+done
+
+# Copy in the "include" files
+for f in cyrillic gen_midi grids guitar helmholtz_accs quarterstep_accs tabstems ukelele
+do
+	unix2dos < ../mup-input/includes/$f  > $BUILD_DIR/$f
+done
+unix2dos < ../tools/mup.vim  > $BUILD_DIR/mup.vim
+
+PRODUCT_FILES="mup.exe $MUPDISP mkmupfnt.exe mupprnt.bat \
+	winrun.html license.txt faq.html overview.html \
+	mupfeat.html whatsnew.html uguide.ps mupqref.ps \
+	mup.ps mupdisp.ps mupprnt.ps mkmupfnt.ps \
+	sample.mup sample.ps template.mup \
+	tabstems cyrillic grids guitar \
+	quarterstep_accs helmholtz_accs gen_midi \
+	mup.vim ukelele usercomm.html"
+
+if [ "$build_dos" == yes ]
+then
+	cd $BUILD_DIR
+	zip ../mup${VERSION_NO_DOT}dos.zip $PRODUCT_FILES uguide/*
+else
+	# Create install.nsi file for giving to NSIS tool for packaging
+	INSTALL_NSI=install.nsi
+	# Make files that will replace the INSTALLFILE and UNINSTALLFILES
+	# lines in the install.nsi.in template file
+	INSTALL_TMP=$BUILD_DIR/install.tmp
+	UNINSTALL_TMP=$BUILD_DIR/uninstall.tmp
+	> $INSTALL_TMP
+	> $UNINSTALL_TMP
+	for f in $PRODUCT_FILES mupmate.exe mupmate.ps
+	do
+		echo 'File "'$f'"' >> $INSTALL_TMP
+	done
+	echo 'File /r "uguide"' >>$INSTALL_TMP
+	for f in $(ls ../doc/uguide)
+	do
+		echo -E 'Delete "$INSTDIR\uguide'"\\$f"'"' >> $UNINSTALL_TMP
+	done
+
+	# Edit the lists into the install.nsi template file
+	sed -e "/^INSTALLFILES/r $INSTALL_TMP" -e "/^UNINSTALLFILES/r $UNINSTALL_TMP" -e "/INSTALLFILES/d" install.nsi.in | unix2dos > $BUILD_DIR/$INSTALL_NSI
+
+	# Clean up the temporary lists
+	rm $INSTALL_TMP $UNINSTALL_TMP
+
+	# Now make the installer package
+	cd $BUILD_DIR
+	$MAKENSIS $INSTALL_NSI
+
+	# Copy the product up
+	cp mup${VERSION_NO_DOT}ins.exe ..
+fi
+
+# Clean up
+cd ..
+rm -rf $BUILD_DIR

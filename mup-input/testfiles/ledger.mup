@@ -1,0 +1,26 @@
+//!Mup-Arkkra
+
+header
+	title bold (9) "ledger.mup"
+	paragraph (7) "This file tests ledger lines."
+	title (20) ""
+
+score
+	beamstyle=2,2
+	scale=2.1
+	scoresep=20,40
+	fontfamily=helvetica
+
+music
+
+rom above 1: 0 "Shortened ledger lines for tightly packed notes";
+1: 16g-;a-;;g-;f-;;;;f-;g-;a-;b-;b-;a-;g-;f-;
+bar
+
+newscore
+rom above 1: 1 "Ledger lines for \"wrong side\" notes";
+1: f-g-;g-a-;e-f-g-;e-f-a-b-;
+bar
+
+1: c++d++;b+c++;a+b+c++;a+b+e++f++;
+bar

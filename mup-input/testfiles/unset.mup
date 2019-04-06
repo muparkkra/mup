@@ -1,0 +1,131 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "unset.mup"
+	paragraph (14) "This file verifies that all parameters can be explicitly unset."
+	title ""
+
+define UNSET
+unset a4freq
+unset aboveorder
+unset acctable
+unset addtranspose
+unset alignped
+unset alignrests
+unset barstyle
+unset beamslope
+unset beamstyle
+unset beloworder
+unset betweenorder
+unset bottommargin
+unset brace
+unset bracket
+unset bracketrepeats
+unset cancelkey
+unset carryaccs
+unset chorddist
+unset clef
+unset cue
+unset defaultkeymap
+unset defoct
+unset dist
+unset division
+unset dyndist
+unset emptymeas
+unset endingkeymap
+unset endingstyle
+unset extendlyrics
+unset firstpage
+unset flipmargins
+unset font
+unset fontfamily
+unset gridfret
+unset gridsatend
+unset gridscale
+unset gridswhereused
+unset indentrestart
+unset key
+unset label
+unset label2
+unset labelkeymap
+unset leftmargin
+unset leftspace
+unset lyricsalign
+unset lyricsdist
+unset lyricsfont
+unset lyricsfontfamily
+unset lyricskeymap
+unset lyricssize
+unset maxmeasures
+unset maxscores
+unset measnum
+unset measnumfont
+unset measnumfontfamily
+unset measnumsize
+unset measnumstyle
+unset minalignscale
+unset mingridheight
+unset noteheads
+unset noteinputdir
+unset numbermrpt
+unset ontheline
+unset packexp
+unset packfact
+unset pad
+unset pageheight
+unset panelsperpage
+unset pagewidth
+unset pedstyle
+unset printkeymap
+unset printmultnum
+unset rehearsalkeymap
+unset rehstyle
+unset release
+unset repeatdots
+unset restcombine
+unset restsymmult
+unset rightmargin
+unset scale
+unset scorepad
+unset scoresep
+unset size
+unset slashesbetween
+unset stafflines
+unset staffpad
+unset staffs
+unset staffscale
+unset staffsep
+unset stemlen
+unset stemshorten
+unset subbarstyle
+unset swingunit
+unset sylposition
+unset tabwhitebox
+unset textkeymap
+unset time
+unset timeunit
+unset topmargin
+unset transpose
+unset tuning
+unset units
+unset useaccs
+unset vcombine
+unset visible
+unset vscheme
+unset warn
+unset withfont
+unset withfontfamily
+unset withkeymap
+unset withsize
+@
+
+staff 1
+UNSET
+
+voice 1 1
+UNSET
+
+music
+rom (24) above all: 1 "If no errors are reported, then all parameters were unset successfully,";
+1: mr;
+bar

@@ -1,0 +1,128 @@
+* Mon Apr  1 2019 ArkkraEnterprises <support@arkkra.com> 6.7
+- Source code available on Github at https://github.com/muparkkra/mup
+- Can be built using either simple.makefile or autoconf/automake
+- new "stepsapart" value for vcombine parameter
+- concatenate operator for macro names
+- mupdisp will rotate landscape and 2-panel output to display correctly
+- new -q (quiet) option
+- "include" file search expanded to relative to the including file
+- cyrillic include file can print mapping table in Russian alphabet order
+- new include file of chords for ukelele, baritone ukelele, guitar, mandolin, and banjo.
+- miscellaneous improvements in the User's Guide
+* Sat Dec 16 2017 Arkkra Enterprises <support@arkrka.com> 6.6
+- Ability to force "with" items to be above or below
+- Mupmate Run option to convert PostScript to PDF via external converter
+- Mupmate main window size changes are remembered
+- MIDI file generation changes to better handle grace notes in endings
+- Tags passed to user postscript are evaluated to their current value, not last
+* Sat Dec  3 2016 Arkkra Enterprises <support@arkkra.com> 6.5
+- Additional useaccs values: nonermuser and nonnatrmuser
+- Abilty to force printing clef or time signature, even if they didn't change
+- Transposition can be limited to just notes or just chords
+- Grace notes allowed to have any non-dotted time value
+- Barstyle options of all and between
+- New subbarstyle parameter
+- newscore can include scoresep
+- Improved note spacing
+- Alignment markers can be included in rom, bold, ital, boldital, and center
+- Alternate double whole symbol
+- gridsatend can be set in staff context
+* Thu Jan 14 2016 Arkkra Enterprises <support@arkkra.com> 6.4.1
+- Corrected size information of accented characters
+- Allow multiple aliases
+* Sat Nov 14 2015 Arkkra Enterprises <support@arkkra.com> 6.4
+- new builtin tags, _score and _staff
+- PostScript code can be in a separate file
+- PostScript hooks at beginning and end of file, pages, and scores
+- adjust measure number relative to current value
+- add implicit suffix on include file if necesssary
+- bold and boldital music characters
+- SMuFL translation files
+* Fri Nov 7 2014 Arkkra Enterprises <support@arkkra.com> 6.3
+- improved error messages for unclosed if, ifndef or ifndef
+- 8bass, bass8, and subbass clefs
+- new extendlyrics parameter
+- new cue parameter
+- ho works on grace
+- grace collisions are avoided
+- new alignped parameter
+- enhanced -o option
+- grace before cue are made smaller
+- optionally print TAB on every tab score
+- tabstems user-donated macros
+* Tue Oct 22 2013 Arkkra Enterprises <support@arkkra.com> 6.2
+- new parameters: leftspace, inputdir
+- ability to explicitly specify voice from which to derive lyrics time
+- unary plus and minus for coordinate arithmetic
+- ability to save and restore parameter and macro states
+- phrase marks begin and end beside stem when appropriate
+- user's guide describes when each parameter type takes effect
+- lower case a-g are transposed when first letter of chords
+* Tue Oct 2 2012 Arkkra Enterprises <support@arkkra.com> 6.1
+- Free, registration fee no longer required
+- Gradual MIDI changes can be specified
+* Tue Jun 5 2012 Arkkra Enterprises <support@arkkra.com> 6.0
+- custom accidentals and alternate tunings
+- keyboard mapping
+- left/right pages (headers, footers, top, bottom)
+- new indentrestart parameter
+- new flipmargins parameter
+- new minalignscale parameter
+- margin overrides on newscore can be relative
+- additional macros files
+* Mon Mar 7 2011 Arkkra Enterprises <support@arkkra.com> 5.8
+- Coordinates can include full arithmetic expressions
+- Ties and slur can be to a different voice on the same staff
+- An "auto" option on rightmargin override
+- New "restsonly" value for vcombine parameter
+- New mingridheight parameter
+- Location tags can be set on lyric syllables
+- Font and size can be changed before circled or boxed text
+* Tue Mar 2 2010 Arkkra Enterprioses <support@arkkra.com> 5.7
+- Support for all the standard non-ASCII PostScript characters
+- New shortcuts for changing to a different font within the same family
+- Alternate way of specifying phrase marks, using ph and eph
+- Grace backup at the end of items
+- New maxmeasure parameter
+- Enhanced measnum parameter, to put a measure number on every Nth bar line
+- New MupMate button to leave Run Parameters window visible
+- Improved MupMate error messages for errors in macro expansions
+* Mon Mar 30 2009 Arkkra Enterprises <support@arkkra.com> 5.6
+- Full support for Apple Mac OS X
+- Mupmate highlights error lines and jumps to the first error line
+- Mupmate expansion of environment variables and add MUPPATH to include path
+- New parameters: slashesbetween, bracketrepeats, repeatdots, alignrests
+- til clause can have optional stepsize offset
+- More lenient acceptance of tuplets that are not mathematically correct
+- Good-til-canceled "with" list items don't apply to rests
+- MIDI channel prefix meta events are generated
+* Fri May 16 2008 Arkkra Enterprises <support@arkkra.com> 5.5
+- new parameters: emptymeas, withsize, withfont, withfontfamily
+- staff and voice contexts can apply to a list
+- new optional values to stemshorten parameter
+- possible to force stem direction on grace notes
+- possible to put "with" items on rests
+- MIDI processes legato marks
+* Wed Jun 20 2007 Arkkra Enterprises <support@arkkra.com> 5.4
+- User defined symbols and override of builtin symbols
+- Index for HTML User's Guide
+- New parameters: lyrdist, useaccs, carryaccs, measnumstyle, maxscores
+- Some errors relaxed to warnings
+- Alignment tags
+* Tue Oct 24 2006 Arkkra Enterprises <support@arkkra.com> 5.3
+- Mupmate front end program. New pagesize and vcombine parameters.
+Optional maximum for scorepad parameter. Enhanced error messages.
+* Sat Jan 14 2006 Arkkra Enterprises <support@arkkra.com> 5.2
+- generalized 'if' clauses, beamstyle parameter is remembered,
+support for complicated time signatures, ability to force stem direction,
+beam angle improvements.
+* Fri Apr 29 2005 Arkkra Enterprises <support@arkkra.com> 5.1
+- cross-staff stems, number-of-pages string, additive time values,
+beaming across spaces, alternate multirest notation, upward roll arrow,
+alternate tuplet numbering style, voice 3 placement improvements,
+miscellaneous bug fixes.
+* Mon May 17 2004 Arkkra Enterprises <support@arkkra.com> 5.0
+- shaped notes, stemlen parameter, mid-measure clef changes,
+raw PostScript, swingunit parameter, etc.
+* Fri Sep 26 2003 Arkkra Enterprises <support@arkkra.com> 4.6
+- new contexts for top/bottom/top2/bottom2/block, paragraphs, etc

@@ -1,0 +1,1159 @@
+//!Mup-Arkkra
+header
+	title bold (14) "tunedemo.mup"
+	print "\n"
+	paragraph (11) "\
+This demonstrates the difference in sound between different tunings.
+Note: This does NOT work with Windows Media Player.
+The \"concertina\" timbre is used, because it has strong harmonics and so
+makes it easier to hear the differences."
+	print "\n"
+	paragraph (11) "\
+You can play it all, or you can play just one section by defining the
+macro \f(CB)XYZ\f(PV) where \f(CB)XYZ\f(PV) is the demo you want to hear.
+On the command line that would be
+\f(CB)mup -DMAJ3 -m tunedemo.mid tunedemo.mup\f(PV)
+to generate the MIDI file for playing the demo \"MAJ3\", for example.
+You can specify more than one, by using multiple \f(CB)-D\f(PV) options.
+You can change the tempo from the default of 90 by adding
+the option \f(CB)'-DTEMPO=\"120\"'\f(PV) for example."
+	print "\n"
+	paragraph (11) "\
+In all the demos, middle C is the same frequency all the time, 264 Hz.
+\"Just\" tuning is set up by having tuning = pythagorean, a4freq = 445.5
+(= 264 * (3/2)^3 / 2),
+which allows for key of C Just with A4 being 440 (= 264 * 5/3).
+We use acctable = \"helmholtz\", to provide the needed accidentals.
+For \"Equal\" temperment, a4freq is set to 443.9933 (= 264 * (2^(9/12))),
+which results in the same C as Just.
+For quarter and three quarter step accidentals, we use
+acctable = \"quarterstep\".
+For \"Meantone\", a4freq is set to 441.3686 (= 264 * (5^(1/4))^3 / 2),
+which results in the same C as Just."
+	print "\n"
+	print "\n"
+
+if ! defined JUSTMAJ
+&& ! defined JUSTMIN
+&& ! defined SYNMAJ
+&& ! defined SYNMIN
+&& ! defined MAJ3
+&& ! defined MAJ3OCT
+&& ! defined MAJ3OCT2
+&& ! defined MIN3
+&& ! defined MIN3OCT
+&& ! defined MIN3OCT2
+&& ! defined PER5
+&& ! defined PER5OCT
+&& ! defined CHORD
+&& ! defined CMAJ
+&& ! defined HARM
+&& ! defined QUARTER
+then
+	define ALL @
+endif
+
+include "helmholtz_accs"
+define ND {"natdn"} @
+define NU {"natup"} @
+define NU2 {"natup2"} @
+define FU {"flatup"} @
+define SD {"sharpdn"} @
+define SEPD {"septimaldn"} @
+define UNDU {"undecimalup"} @
+define TRDD {"tridecimaldn"} @
+
+include "quarterstep_accs"
+define QS {"qsharp"} @
+define TS {"tqsharp"} @
+define QF {"qflat"} @
+define TF {"tqflat"} @
+
+define JUST
+	score
+		a4freq = 445.5
+		tuning = pythagorean
+		acctable = "helmholtz"
+	music
+@
+define EQUAL
+	score
+		a4freq = 443.9933
+		tuning = equal
+		acctable =
+	music
+@
+define MEANTONE
+	score
+		a4freq = 441.3686
+		tuning = meantone
+		acctable =
+	music
+@
+ifdef TEMPO
+	define TEM TEMPO @
+else
+	define TEM "90" @
+endif
+define SETMIDI
+	midi 1,2: 0 "channel=2"; 0 "program=23";
+	midi all: 0 "tempo=" + TEM;
+@
+
+score
+	staffs = 2
+	time = 4/4n
+        scale = 1.3
+	barstyle = 1-2
+	staffsep = 8
+	scorepad = 2, 8
+	label = ""
+staff 2
+	clef = bass
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined JUSTMAJ then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo JUSTMAJ: Just scale with major intervals";
+	SETMIDI
+
+	rom(9) above all: 0.5 "1/1";
+	rom(9) above all: 0.5 "1.0000";
+	rom(9) above all: 0.5 "0 cents";
+	1: 1c;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "9/8";
+	rom(9) above all: 0.5 "1.1250";
+	rom(9) above all: 0.5 "204 cents";
+	1: 1d;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "5/4";
+	rom(9) above all: 0.5 "1.2500";
+	rom(9) above all: 0.5 "386 cents";
+	1: 1eND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "4/3";
+	rom(9) above all: 0.5 "1.3333";
+	rom(9) above all: 0.5 "498 cents";
+	1: 1f;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "3/2";
+	rom(9) above all: 0.5 "1.5000";
+	rom(9) above all: 0.5 "702 cents";
+	1: 1g;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "5/3";
+	rom(9) above all: 0.5 "1.6667";
+	rom(9) above all: 0.5 "884 cents";
+	1: 1aND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "15/8";
+	rom(9) above all: 0.5 "1.8750";
+	rom(9) above all: 0.5 "1088 cents";
+	1: 1bND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "2/1";
+	rom(9) above all: 0.5 "2.0000";
+	rom(9) above all: 0.5 "1200 cents";
+	1: 1c+;
+	2: 1c+;
+	bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined JUSTMIN then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo JUSTMIN: Just scale with minor intervals";
+	SETMIDI
+
+	rom(9) above all: 0.5 "1/1";
+	rom(9) above all: 0.5 "1.0000";
+	rom(9) above all: 0.5 "0 cents";
+	1: 1c;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "16/15";
+	rom(9) above all: 0.5 "1.0667";
+	rom(9) above all: 0.5 "112 cents";
+	1: 1dFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "6/5";
+	rom(9) above all: 0.5 "1.2000";
+	rom(9) above all: 0.5 "316 cents";
+	1: 1eFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "4/3";
+	rom(9) above all: 0.5 "1.3333";
+	rom(9) above all: 0.5 "498 cents";
+	1: 1f;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "3/2";
+	rom(9) above all: 0.5 "1.5000";
+	rom(9) above all: 0.5 "702 cents";
+	1: 1g;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "8/5";
+	rom(9) above all: 0.5 "1.6000";
+	rom(9) above all: 0.5 "814 cents";
+	1: 1aFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "16/9";
+	rom(9) above all: 0.5 "1.7778";
+	rom(9) above all: 0.5 "996 cents";
+	1: 1b&;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "2/1";
+	rom(9) above all: 0.5 "2.0000";
+	rom(9) above all: 0.5 "1200 cents";
+	1: 1c+;
+	2: 1c+;
+	bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined SYNMAJ then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo SYNMAJ: Syntonic comma differences in major intervals";
+	SETMIDI
+
+	rom(9) above all: 0.5 "9/8";
+	rom(9) above all: 0.5 "1.1250";
+	rom(9) above all: 0.5 "204 cents";
+	1: 1d;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "10/9";
+	rom(9) above all: 0.5 "1.1111";
+	rom(9) above all: 0.5 "182 cents";
+	1: 1dND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "81/64";
+	rom(9) above all: 0.5 "1.2656";
+	rom(9) above all: 0.5 "408 cents";
+	1: 1e;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "5/4";
+	rom(9) above all: 0.5 "1.2500";
+	rom(9) above all: 0.5 "386 cents";
+	1: 1eND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "27/16";
+	rom(9) above all: 0.5 "1.6875";
+	rom(9) above all: 0.5 "906 cents";
+	1: 1a;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "5/3";
+	rom(9) above all: 0.5 "1.6667";
+	rom(9) above all: 0.5 "884 cents";
+	1: 1aND;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "243/128";
+	rom(9) above all: 0.5 "1.8984";
+	rom(9) above all: 0.5 "1110 cents";
+	1: 1b;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "15/8";
+	rom(9) above all: 0.5 "1.8750";
+	rom(9) above all: 0.5 "1088 cents";
+	1: 1bND;
+	2: 1c+;
+	bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined SYNMIN then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo SYNMIN: Syntonic comma differences in minor intervals";
+	SETMIDI
+
+	rom(9) above all: 0.5 "256/243";
+	rom(9) above all: 0.5 "1.0535";
+	rom(9) above all: 0.5 "90 cents";
+	1: 1d&;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "16/15";
+	rom(9) above all: 0.5 "1.0667";
+	rom(9) above all: 0.5 "112 cents";
+	1: 1dFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "32/27";
+	rom(9) above all: 0.5 "1.1852";
+	rom(9) above all: 0.5 "294 cents";
+	1: 1e&;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "6/5";
+	rom(9) above all: 0.5 "1.2000";
+	rom(9) above all: 0.5 "316 cents";
+	1: 1eFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "128/81";
+	rom(9) above all: 0.5 "1.5802";
+	rom(9) above all: 0.5 "792 cents";
+	1: 1a&;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "8/5";
+	rom(9) above all: 0.5 "1.6000";
+	rom(9) above all: 0.5 "814 cents";
+	1: 1aFU;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "16/9";
+	rom(9) above all: 0.5 "1.7778";
+	rom(9) above all: 0.5 "996 cents";
+	1: 1b&;
+	2: 1c+;
+	bar
+
+	rom(9) above all: 0.5 "9/5";
+	rom(9) above all: 0.5 "1.8000";
+	rom(9) above all: 0.5 "1018 cents";
+	1: 1bFU;
+	2: 1c+;
+	bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MAJ3 then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo MAJ3: Major thirds";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "5/4 = 1.2500";
+	rom(9) above all: 0.5 "386 cents";
+        1: 1eND;
+        2: 1c+;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+	rom(9) above all: 0.5 "1.2599";
+	rom(9) above all: 0.5 "400 cents";
+        1: 1e;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "5/4 = 1.2500";
+	rom(9) above all: 0.5 "386 cents";
+        1: 1eND;
+        2: 1c+;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+	rom(9) above all: 0.5 "1.2500";
+	rom(9) above all: 0.5 "386 cents";
+        1: 1e;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "5/4 = 1.2500";
+	rom(9) above all: 0.5 "386 cents";
+        1: 1eND;
+        2: 1c+;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MAJ3OCT then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo MAJ3OCT: Major thirds plus an octave";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1e;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1e;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MAJ3OCT2 then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo MAJ3OCT2: Major thirds plus two octaves";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND+;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1e+;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND+;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1e+;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eND+;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MIN3 then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo MIN3: Minor thirds";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "6/5 = 1.2000";
+	rom(9) above all: 0.5 "316 cents";
+        1: 1eFU;
+        2: 1c+;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+	rom(9) above all: 0.5 "1.1892";
+	rom(9) above all: 0.5 "300 cents";
+        1: 1e&;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "6/5 = 1.2000";
+	rom(9) above all: 0.5 "316 cents";
+        1: 1eFU;
+        2: 1c+;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+	rom(9) above all: 0.5 "1.1963";
+	rom(9) above all: 0.5 "310 cents";
+        1: 1e&;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "6/5 = 1.2000";
+	rom(9) above all: 0.5 "316 cents";
+        1: 1eFU;
+        2: 1c+;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MIN3OCT then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo MIN3OCT: Minor thirds plus an octave";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1e&;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1e&;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined MIN3OCT2 then
+	JUST
+
+	rom all dist 9: 0[-10] "Demo MIN3OCT2: Minor thirds plus two octaves";
+	midi 1,2:  0 "channel=2"; 0 "program=23";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU+;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1e&+;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU+;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1e&+;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1eFU+;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined PER5 then
+	JUST
+
+	rom all dist 13: 0[-10] "Demo PER5: Perfect fifths";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "3/2 = 1.5000";
+	rom(9) above all: 0.5 "702 cents";
+        1: 1g;
+        2: 1c+;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+	rom(9) above all: 0.5 "1.4983";
+	rom(9) above all: 0.5 "700 cents";
+        1: 1g;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "3/2 = 1.5000";
+	rom(9) above all: 0.5 "702 cents";
+        1: 1g;
+        2: 1c+;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+	rom(9) above all: 0.5 "1.4953";
+	rom(9) above all: 0.5 "697 cents";
+        1: 1g;
+        2: 1c+;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+	rom(9) above all: 0.5 "3/2 = 1.5000";
+	rom(9) above all: 0.5 "702 cents";
+        1: 1g;
+        2: 1c+;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined PER5OCT then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo PER5OCT: Perfect fifths plus an octave";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1g;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1g;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1g;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1g;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1g;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined CHORD then
+	EQUAL
+
+	rom all dist 7: 0[-10] "Demo CHORD: Chord progressions";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1ceg;
+        2: 1c;
+        bar
+
+        1: 1cfa;
+        2: 1f;
+        bar
+
+        1: 1b-dg;
+        2: 1g;
+        bar
+
+        1: 1ceg;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1 c eND g;
+        2: 1 c;
+        bar
+
+        1: 1 c f aND;
+        2: 1 f;
+        bar
+
+        1: 1 b-ND d g;
+        2: 1g;
+        bar
+
+        1: 1 c eND g;
+        2: 1c;
+        bar
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1ceg;
+        2: 1c;
+        bar
+
+        1: 1cfa;
+        2: 1f;
+        bar
+
+        1: 1dfa;
+        2: 1d;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1 c eND g;
+        2: 1 c;
+        bar
+
+        1: 1 c f aND;
+        2: 1 f;
+        bar
+
+        1: 1 d f aND;
+        2: 1d;
+        bar
+
+        1: 1 d f a;
+        2: 1d;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined CMAJ then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo CMAJ: C major chords";
+	SETMIDI
+
+	rom above all align 5: 0.5 "Just";
+        1: 1 c eND+ g;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1 c e+ g;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1 c eND+ g;
+        2: 1c;
+        bar
+
+	MEANTONE
+
+	rom above all align 5: 0.5 "Meantone";
+        1: 1 c e+ g;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 1.0 "Just";
+        1: 1 c eND+ g;
+        2: 1c;
+        bar
+
+
+	rom above all align 5: 0.5 "Pythag";
+        1: 1 c e+ g;
+        2: 1c;
+        bar
+
+	EQUAL
+
+	rom above all align 5: 0.5 "Equal";
+        1: 1 c e+ g;
+        2: 1c;
+        bar
+
+	JUST
+
+	rom above all align 5: 0.5 "Just";
+        1: 1 c eND+ g;
+        2: 1c;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined HARM then
+	JUST
+
+	rom all dist 7: 0[-10] "Demo HARM: The harmonic series";
+	SETMIDI
+
+	rom above all align 5: 1 "1";
+	1: mr;
+	2: 1c-;
+	bar
+
+	rom above all align 5: 1 "2";
+	1: mr;
+	2: 1c-c;
+	bar
+
+	rom above all align 5: 1 "3";
+	1: mr;
+	2: 1c-g;
+	bar
+
+	rom above all align 5: 1 "4";
+	1: 1c;
+	2: 1c-;
+	bar
+
+	rom above all align 5: 1 "5";
+        1: 1 eND;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "6";
+        1: 1g;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "7";
+        1: 1b SEPD &;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "8";
+        1: 1c+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "9";
+        1: 1d+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "10";
+        1: 1eND+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "11";
+        1: 1f UNDU+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "12";
+        1: 1g+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "13";
+        1: 1a TRDD+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "14";
+        1: 1b SEPD &+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "15";
+        1: 1b ND+;
+        2: 1c-;
+        bar
+
+	rom above all align 5: 1 "16";
+        1: 1c++;
+        2: 1c-;
+        bar
+	newscore
+endif
+//////////////////////////////////////////////////////////////////////////////
+if defined ALL || defined QUARTER then
+score
+        a4freq = 443.9933
+	tuning = equal
+	acctable = "quarterstep"
+music
+	rom all dist 7: 0[-10] "Demo QUARTER: Quarterstep intervals";
+	SETMIDI
+
+	1: 1c;
+	2: 1c+;
+	bar
+
+	1: 1c QS;
+	2: 1c+;
+	bar
+
+	1: 1c#;
+	2: 1c+;
+	bar
+
+	1: 1c TS;
+	2: 1c+;
+	bar
+
+	1: 1d;
+	2: 1c+;
+	bar
+
+	1: 1d QS;
+	2: 1c+;
+	bar
+
+	1: 1d#;
+	2: 1c+;
+	bar
+
+	1: 1d TS;
+	2: 1c+;
+	bar
+
+	1: 1e;
+	2: 1c+;
+	bar
+
+	1: 1e QS;
+	2: 1c+;
+	bar
+
+	1: 1f;
+	2: 1c+;
+	bar
+
+	1: 1f QS;
+	2: 1c+;
+	bar
+
+	1: 1f#;
+	2: 1c+;
+	bar
+
+	1: 1f TS;
+	2: 1c+;
+	bar
+
+	1: 1g;
+	2: 1c+;
+	bar
+
+	1: 1g QS;
+	2: 1c+;
+	bar
+
+	1: 1g#;
+	2: 1c+;
+	bar
+
+	1: 1g TS;
+	2: 1c+;
+	bar
+
+	1: 1a;
+	2: 1c+;
+	bar
+
+	1: 1a QS;
+	2: 1c+;
+	bar
+
+	1: 1a#;
+	2: 1c+;
+	bar
+
+	1: 1a TS;
+	2: 1c+;
+	bar
+
+	1: 1b;
+	2: 1c+;
+	bar
+
+	1: 1b QS;
+	2: 1c+;
+	bar
+
+	1: 1c+;
+	2: 1c+;
+	bar
+
+	1: 1c QF+;
+	2: 1c+;
+	bar
+
+	1: 1b;
+	2: 1c+;
+	bar
+
+	1: 1b QF;
+	2: 1c+;
+	bar
+
+	1: 1b&;
+	2: 1c+;
+	bar
+
+	1: 1b TF;
+	2: 1c+;
+	bar
+
+	1: 1a;
+	2: 1c+;
+	bar
+
+	1: 1a QF;
+	2: 1c+;
+	bar
+
+	1: 1a&;
+	2: 1c+;
+	bar
+
+	1: 1a TF;
+	2: 1c+;
+	bar
+
+	1: 1g;
+	2: 1c+;
+	bar
+
+	1: 1g QF;
+	2: 1c+;
+	bar
+
+	1: 1g&;
+	2: 1c+;
+	bar
+
+	1: 1g TF;
+	2: 1c+;
+	bar
+
+	1: 1f;
+	2: 1c+;
+	bar
+
+	1: 1f QF;
+	2: 1c+;
+	bar
+
+	1: 1e;
+	2: 1c+;
+	bar
+
+	1: 1e QF;
+	2: 1c+;
+	bar
+
+	1: 1e&;
+	2: 1c+;
+	bar
+
+	1: 1e TF;
+	2: 1c+;
+	bar
+
+	1: 1d;
+	2: 1c+;
+	bar
+
+	1: 1d QF;
+	2: 1c+;
+	bar
+
+	1: 1d&;
+	2: 1c+;
+	bar
+
+	1: 1d TF;
+	2: 1c+;
+	bar
+
+	1: 1c;
+	2: 1c+;
+	bar
+	newscore
+endif

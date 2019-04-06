@@ -1,0 +1,120 @@
+<HTML>
+<HEAD>
+  <TITLE>Mup for Mac OS X 10.4 (or later)</TITLE>
+</HEAD>
+<BODY>
+<H1>Mup 6.7 for Mac OS X 10.4 (or later)</H1>
+<H2>Overview</H2>
+<P>
+<I>Mup</I> is a music publication program by
+<A HREF="http://www.arkkra.com">Arkkra Enterprises.</A>
+Music is described by a text file that you can create using
+your favorite editor or the included <i>Mupmate</i> program.
+<I>Mup</I> then determines how to lay out the music,
+and generates PostScript output for displaying or printing it,
+or a MIDI file for playing it.
+</P>
+<P>
+See the included documents
+<A HREF="overview.html">overview.html</A>,
+<A HREF="mupfeat.html">mupfeat.html</A>,
+and the <A HREF="http://www.arkkra.com">Arkkra website</A> for details.
+</P>
+<H2>Installation</H2>
+<p>
+<I>Mup</I> has been built as universal binaries
+for PowerPC-based and Intel-based Macs.
+It has been built and tested on Mac OS X 10.5.6.
+</P>
+<P>
+To install, the MupMate-67.dmg disk image should
+mount as a volume automatically. If not, double click it to get it mounted.
+Then drag and drop the MupMate folder to a convenient place on your hard disk.
+The global folder /Applications or your personal folder ~/Applications
+would be a good place. If you are upgrading, be careful
+not to overwrite any files you might have stored
+in the folders MupIncludes or MupMusic.
+</P>
+<H2>Contents of the folder MupMate</H2>
+<P>
+<UL>
+<LI>
+<I>MupMate.app</I>
+The double-clickable graphical user interface application for
+using <i>Mup</i> without the Unix command line.
+This application is self-contained.
+It contains its own copy of the mup command line tool
+and a copy of the <I>Mup</I> online documentation
+(accessible in the &quot;Help&quot; menu).
+<I>MupMate</I> is built on the cross-platform <B>FLTK</B> library.
+It runs in the native Mac OS X graphical environment,
+but does not look and behave like a real Mac OS X application;
+see the section on
+<A HREF="#issues">known issues</A> below.
+<BR>
+<i>MupMate</i> relies on an external viewer application
+to display the generated Postscript files.
+Similarly, an external application is needed to play back
+generated MIDI files. The default configuration uses the Mac OS X command
+/usr/bin/open for both tasks, which, in turn,
+invokes the default applications for Postscript and MIDI files, respectively.
+On a stock Mac OS X installation these are the <b>Preview</b> application
+for Postscript files and the <b>QuickTime Player</b>
+application for MIDI files. Use the &quot;Change All&quot; button in
+the <B>Finder</B>'s &quot;Get Info&quot; dialog to choose different
+default applications. Or you can enter different commands in the dialog
+Config --&gt; File Locations&quot; of the <I>MupMate</I> application.
+<LI>
+<I>MupMusic</I>
+This folder contains a couple of example text files
+in <B>Mup</B> music input format. The <I>MupMate</I> application is
+preconfigured to open files in this folder,
+but you are free to store your <I>Mup</I> input files wherever you like.
+<LI>
+<I>MupIncludes</I>
+This folder could be used to store <I>Mup</I> include files
+intended for use in multiple songs.
+The <I>MupMate</I> application is preconfigured to look into this folder,
+if a file mentioned in a include statement cannot be found next
+to the including song file.
+</UL>
+</P>
+<H2>Installation of Command Line Tools</H2>
+<P>
+(This is an optional step. It is not required to use the MupMate application.)
+If you want to invoke <I>Mup</I> directly from a Unix command line
+(e.g. the Terminal application), you can copy the commands from the folder optional_CmdLineTools/bin to /usr/local/bin or some other folder
+on your Unix command search path. The associated manual pages are available
+in optional_CmdLineTools/man/man1.
+</P>
+<H2><A NAME="issues">Known Issues</A></H2>
+<P>
+<I>MupMate</I> is a cross-platform application based on the
+<B>FLTK</B> library. It looks and behaves like <B>FLTK</B> applications
+on Linux and Windows platforms, not like a true Mac OS X application.
+For example, menus, keyboard shortcuts, and file dialogs are different.
+</P>
+<P>
+If there are international characters in the path
+to the <I>MupMate</I> application, there may be cosmetic glitches with
+displaying and editing file paths in dialogs.
+Despite their garbled appearance, the paths should still work correctly.
+</p>
+<P>
+If the <b>Preview</b> application fails to convert and display
+a generated Postscript file of typeset music,
+only a generic error message is shown.
+</P>
+<H2>Acknowledgements</H2>
+<P>
+For many years, the port to Mac was provided by
+<A HREF="mailto:mthies@uni-paderborn.de">Michael Thies</A> at
+<A HREF="http://www.mthies.de/mup">http://www.mthies.de/mup</A>
+Additional hints were provided by Christoph Dalitz.
+</P>
+<HR>
+<P>
+<A HREF="http://www.arkkra.com">http://www.arkkra.com</A>
+</P>
+</BODY>
+</HTML>

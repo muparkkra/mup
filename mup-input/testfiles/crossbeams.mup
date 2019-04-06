@@ -1,0 +1,262 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "crossbeams.mup"
+paragraph (14) "This file tests cross-staff beaming."
+
+score
+	time=2/4
+	staffs=2
+music
+
+1: 4s bm with staff below;8e;8c ebm;
+2: 8d bm with staff above;e;4s ebm;
+bar
+
+1: 8d bm with staff below;e;4s ebm;
+2: 4s bm with staff above;8e;8c ebm;
+bar
+
+1: 8s bm with staff below;d;e;s ebm;
+2: 8d bm with staff above;4s;8c ebm;
+bar
+
+1: 8d bm with staff below;4s;8c ebm;
+2: 8s bm with staff above;d;e;s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;[up]8e;8c ebm;
+2: 8d bm with staff above;e;4s ebm;
+bar
+
+1: [up] 8d bm with staff below;e;4s ebm;
+2: 4s bm with staff above;8e;8c ebm;
+bar
+
+1: 8s bm with staff below;[up]d;e;s ebm;
+2: 8d bm with staff above;4s;8c ebm;
+bar
+
+1: [up]8d bm with staff below;4s;8c ebm;
+2: 8s bm with staff above;d;e;s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;8e;8c ebm;
+2: [down] 8d bm with staff above;e;4s ebm;
+bar
+
+1: 8d bm with staff below;e;4s ebm;
+2: 4s bm with staff above;[down] 8e;8c ebm;
+bar
+
+1: 8s bm with staff below;d;e;s ebm;
+2: [down]8d bm with staff above;4s;8c ebm;
+bar
+
+1: 8d bm with staff below;4s;8c ebm;
+2: 8s bm with staff above;[down]d;e;s ebm;
+bar
+
+newscore
+
+1: 32c bm with staff below;s;c++;s ebm;4.b;
+2: 32s bm with staff above;d;s;f- ebm;4.c;
+bar
+
+1: 8.d bm with staff below;16c;4s ebm;
+2: 4s bm with staff above;8.d;16e ebm;
+bar
+
+1: 8..d bm with staff below;32c;4s ebm;
+2: 4s bm with staff above;8..d;32e ebm;
+bar
+
+1: 8..d bm with staff below;32s;8s;f ebm;
+2: 8..s bm with staff above;32g;8d+;s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;8e;[grace]16f;[]g;8c ebm;
+2: 8d bm with staff above;[grace]16c;[]d;8e;4s ebm;
+bar
+
+1: [len 8]8d bm with staff below;[grace]8g;8e;4s ebm;
+2: 4s bm with staff above;8e;[grace]32g;[]f;[]e;[len 12]8c ebm;
+bar
+
+1: 8s bm with staff below;d;[grace]16d;[]e;8e;s ebm;
+2: [grace]16c;[]d;8d bm with staff above;4s;8c ebm;
+bar
+
+1: 8d bm with staff below;4s;[grace]f;[]e;8c ebm;
+2: 8s bm with staff above;[grace]c;[]d;d;e;s ebm;
+bar
+
+// same things with cue notes
+newpage
+1: 4s bm with staff below;[cue]...8e;8c ebm;
+2: [cue]...8d bm with staff above;e;4s ebm;
+bar
+
+1: [cue]...8d bm with staff below;e;4s ebm;
+2: 4s bm with staff above;[cue]...8e;8c ebm;
+bar
+
+1: 8s bm with staff below;[cue]...d;e;s ebm;
+2: [cue]...8d bm with staff above;4s;[cue]...8c ebm;
+bar
+
+1: [cue]8d bm with staff below;4s;[cue]...8c ebm;
+2: 8s bm with staff above;[cue]d;[]e;s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;[up;cue]8e;[]8c ebm;
+2: [cue]...8d bm with staff above;e;[-]4s ebm;
+bar
+
+1: [up;cue]... 8d bm with staff below;e;[-]4s ebm;
+2: 4s bm with staff above;[cue]...8e;8c ebm;
+bar
+
+1: 8s bm with staff below;[up;cue]...d;e;[-]s ebm;
+2: [cue]8d bm with staff above;4s;[cue]8c ebm;
+bar
+
+1: [up;cue]8d bm with staff below;4s;[cue]8c ebm;
+2: 8s bm with staff above;[cue]...d;e;[-]s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;[cue]...8e;8c ebm;
+2: [down;cue] 8d bm with staff above;[]e;4s ebm;
+bar
+
+1: [cue]...8d bm with staff below;e;[-]4s ebm;
+2: 4s bm with staff above;[down;cue]... 8e;8c ebm;
+bar
+
+1: 8s bm with staff below;[cue]d;[]e;s ebm;
+2: [down;cue]8d bm with staff above;4s;[cue]8c ebm;
+bar
+
+1: [cue]8d bm with staff below;4s;[cue]8c ebm;
+2: 8s bm with staff above;[down;cue]d;[cue]e;s ebm;
+bar
+
+newscore
+
+1: [cue]32c bm with staff below;s;[cue]c++;s ebm;4.b;
+2: 32s bm with staff above;[cue]d;s;[cue]f- ebm;4.c;
+bar
+
+1: [cue]8.d bm with staff below;[]16c;4s ebm;
+2: 4s bm with staff above;[cue]...8.d;16e ebm;
+bar
+
+1: [cue]...8..d bm with staff below;32c;[-]4s ebm;
+2: 4s bm with staff above;[cue]... 8..d;32e ebm;
+bar
+
+1: [cue]8..d bm with staff below;32s;8s;[cue]f ebm;
+2: 8..s bm with staff above;[cue]32g;[]8d+;s ebm;
+bar
+
+newscore
+
+1: 4s bm with staff below;[cue]8e;[grace]16f;[]g;[cue]8c ebm;
+2: [cue]8d bm with staff above;[grace]16c;[]d;[cue]8e;4s ebm;
+bar
+
+1: [cue; len 8]8d bm with staff below;[grace]8g;[cue]8e;4s ebm;
+2: 4s bm with staff above;[cue]8e;[grace]32g;[]f;[]e;[cue; len 12]8c ebm;
+bar
+
+1: 8s bm with staff below;[cue]d;[grace]16d;[]e;[cue]8e;s ebm;
+2: [grace]16c;[]d;[cue]8d bm with staff above;4s;[cue]8c ebm;
+bar
+
+1: [cue]8d bm with staff below;4s;[grace]f;[]e;[cue]8c ebm;
+2: 8s bm with staff above;[grace]c;[]d;[cue]d;[]e;s ebm;
+bar
+
+newpage
+
+1: [len 18]8a-c+ bm with staff below;db;8fa+;16...e;128s ebm;
+2: 4s bm with staff above;8....s;[len 14]128e+g ebm;
+rom between 1&2: 1 "  ";	//make staffs farther apart
+bar
+
+1: 4s bm with staff below;8....s;[len 14]128e+g ebm;
+2: [len 18]8a-c+ bm with staff above;db;8fa+;16...e;128s ebm;
+bar
+
+1: [xnote]8eb bm with staff below;[]16fa;s ebm;4g;
+2: 8.s bm with staff above;[diam]16fc ebm;4e;
+bar
+
+1: 8.s bm with staff below;[diam]16fc ebm;4e;
+2: [xnote]8eb bm with staff above;[]16fa;s ebm;4g;
+bar
+
+1: 32egb bm with staff below;64f;128g;128s ebm;8.g;4r;
+2: 32s bm with staff above;64;128;f ebm;8.gc;4r;
+bar
+
+1: 32s bm with staff below;64;128;f ebm;8.gc;4r;
+2: 32egb bm with staff above;64f;128g;128s ebm;8.g;4r;
+bar
+
+score time=3/4
+music
+
+1: c;8a- bm with staff below;d;4s ebm;
+2: c;4s bm with staff above;8..a;32e+ ebm;
+bar
+
+1: c;4s bm with staff below;8..a;32e+ ebm;
+2: c;8a- bm with staff above;d;4s ebm;
+bar
+
+1: c;8a- bm with staff below;d;8f;16..e;64s ebm;
+2: c;4s bm with staff above;8...s;64e+ ebm;
+bar
+
+1: c;4s bm with staff below;8...s;64e+ ebm;
+2: c;8a- bm with staff above;d;8f;16..e;64s ebm;
+bar
+
+1: 8c bm with staff below;c;e;4.s ebm;
+2: 4.s bm with staff above;8g;a;b ebm;
+phrase above 1: 1 til 2;
+phrase below 1: 1 til 2;
+phrase above 2: 2.5 til 3.5;
+phrase below 2: 2.5 til 3.5;
+bar
+
+1: [with .]8c bm with staff below;[]c;[]e;4.s ebm;
+2: 4.s bm with staff above;[with .]8g;[]a;[]b ebm;
+bar
+
+1: [with .]8c bm with staff below;[]c;[]e;4.s ebm;
+2: 4.s bm with staff above;[with .]8g;[]a;[]b ebm;
+phrase above 1: 1 til 2;
+phrase below 2: 2.5 til 3.5;
+bar
+
+score vscheme=2o
+music
+
+1 1: 2.e+;
+1 2: [with .]8c bm with staff below;[]c;[]e;4.s ebm;
+2 1: 4.s bm with staff above;[with .]8g;[]a;[]b ebm;
+2 2: 2.a-;
+bar
+

@@ -1,0 +1,39 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "usersym_err.mup"
+	paragraph (14) "This file tests user input errors on uer-defined symbols."
+
+symbol "123"
+	bbox=-100, -100, 200, 200
+	postscript="something"
+
+symbol "aacute"
+	bbox=-100, -100, 200, 200
+	postscript="something"
+
+symbol "3E7"
+	bbox=-100, -100, 200, 200
+	postscript="something"
+
+symbol "missing1"
+	postscript="something"
+
+symbol "missing2"
+	bbox=-100, -100, 200, 200
+
+symbol "missing2"
+	bbox=100, 100, -200, -200
+	postscript="something"
+
+symbol "myDubious"
+	bbox=-100, -100, 200, 200
+	postscript="something"
+	ystemoffset= -400, 700
+
+symbol "tooBig"
+	bbox=-31000,-31000, 31000,31000
+	postscript="something"
+music
+1: c;;;;
+bar

@@ -1,0 +1,95 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "split.mup"
+	paragraph (14) "When the beginning and ending points of lines or curves are associated
+with different scores, they have to split between those scores and
+any intervening ones, and sometimes even across pages.
+This file tests that splitting."
+
+music
+
+// line and print moved to pseudo-bar
+1: d;;;;
+bar
+1: c =i;;;;
+bar =g
+newscore
+1: e;;;;
+line (i.x, i.y) to (g.x + 7, g.y)
+print (g.x + 3, g.y + 6) "Hi"
+bar
+1: f;;;;
+bar
+
+1: c =a;d;e;f;
+bar
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+1: g;;;;
+bar
+newpage
+1: b;;;;
+// do a print that has to be moved to previous page
+print (a.x, a.y + 11) "This segment was moved from next page"
+bar
+1: a;;;;
+bar
+newscore
+1: e+;;;=b;
+wavy line (a.e, a.y) to (b.w, b.y)
+bar
+1: g;;;;
+bar
+
+// now case of y's with different scores
+score
+	staffs = 3
+
+music
+
+1: b =q;;;;
+2: g;;;;
+3: e;;;;
+bar
+newscore
+
+1: d;;;;
+2: f;;;;
+3: a;;;;
+bar
+newpage
+
+1: d;;;;
+2: a-;;;;
+3: c+;;;;
+bar
+newscore
+
+1: g;;;;
+2: e;;;;
+3: f;;;b =u;
+line (q.e, q.y) to (u.w, u.y)
+bar
+
+// test splitting curves
+staff 3
+	visible=n
+music
+1: c =a; ; ; g =b;
+2: d+ =m; ; ; a =n;
+bar =c
+newscore
+1: f; g; a; d;
+2: [=h]b;;;[=y]a;
+bar =r
+newscore
+1: d;e;f;g;
+2: g=k;[=p]ceg;cf=ja;;
+line (a.e + 1, b.y+3) to (h.w - 2, y.y+3)
+medium curve (m.x +2, n.y - 1) to (c.x, n.y - 5) to (k.x, k.y - 7) to (p.x, p.y - 5) to (j.w, j.y - 1)
+medium curve (m.x, m.y) to (n.x, n.y + 6) to (r.x, y.y)
+bar

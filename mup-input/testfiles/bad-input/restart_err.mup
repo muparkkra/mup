@@ -1,0 +1,25 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "restart.mup"
+	paragraph (14) "This file tests invalid uses of restart."
+
+// can't start piece with restart
+restart
+
+1: c;;;;
+repeatstart ending "1."		// can't have restart in ending
+
+// can't restart after repeat start or both
+restart	ending "2"		// can't include ending
+
+1: c;;;;
+repeatboth
+
+restart hidechanges	// hidechanges not allowed
+
+1: c;;;;
+bar
+
+// can't end with restart
+restart

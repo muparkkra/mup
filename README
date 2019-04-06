@@ -1,0 +1,137 @@
+-*- text -*-
+
+Mup
+
+Mup is music publication program. It takes a text file as input and
+generates PostScript or MIDI output.
+
+See the LICENSE file for license information.
+
+See http://www.arkkra.com for more information about Mup.
+
+	Prerequisites for building
+
+If you use the delivered files that are generated,
+then Mup itself only needs a C compiler, the standard C library,
+and the math library.
+
+Mupmate requires a C++ compiler and the FLTK library (1.x version),
+plus libm, libz, and either libjpeg and libpng or the fltk equivalents.
+On Unix-like systems, Mupmate requires X11 libraries (X11, Xext, Xft, Xpm,
+Xinerama).
+For building for Windows, Mupmate icon building requires xpmtoppm,
+and either pamtowinicon or ppmtowinicon and ppmtopgm
+
+To build everything completely from scratch, in addition to the things
+mentioned above, you will need at least:
+ sed
+ flex
+ bison
+ egrep
+ mkdir -p
+ gs	(ghostscript)
+ groff	(and what it uses: troff, pic, tbl, grops)
+ ppmtogif
+ sort
+ expr
+ cut
+ cat
+
+Packaging files are included for creating
+Linux packages (.rpm or .deb or pacman),
+a .dmg file for OS X,
+or a NSIS installer for Windows.
+You would need the appropriate tools: rpmbuild, dpkg-buildpkg, makepkg,
+hdiutil, or makensis.
+
+	Building Mup
+
+There are two ways to build Mup:
+either using autoconf or using the provided simple.makefile.
+Autoconf attempts to support building on almost any system by
+trying to deduce and handle any idiosynchracies of your system,
+However, if it fails, it may be difficult to debug and correct.
+The simple.makefile attempts to support building on almost any system
+by being as simple as possible, so that if it fails, it may be easier
+to figure out why, and devise a solution.
+
+The simple.makefile uses pre-generated files, whereas the autoconf method
+builds everything from scratch, so if you just want to use Mup "as is"
+with no changes, or only reasonably straightforward changes,
+while either method may work, the simple.makefile method is likely
+to be quicker and easier. If you want to make changes
+to any of the tools used to build Mup, or to files that are generated,
+you will probably want to use the autoconf methods,
+or could end up doing a lot by hand.
+
+If all you really need is to compile and install Mup itself, and not
+any of the helper programs,
+	make -f simple.makefile install-mup
+may suffice. Read the comments in simple.makefile for other options.
+
+To build using autoconf, the normal autoconf steps are followed:
+	./configure
+	make
+	make check   # optional, to run the test suite
+	make install
+
+In addition to the standard configure options, there are also:
+	--disable-mupdisp		to not build mupdisp
+	--disable-mupmate		to not build mupmate
+	--with-fltk-prefix=/path/to/fltk to use fltk from specified path
+
+Alternately, you can build using the simple.makefile:
+	make -f simple.makefile all
+or build and install:
+	make -f simple.makefile install
+
+	Building installer packages
+
+After doing the autoconf build, run:
+	make dist
+Then select and follow the procedure below for the desired package type.
+
+To build an RPM package (on a system with rpmbuild command):
+	cd packaging
+	./buildrpm
+The resulting binary RPM will be under rpmtop/RPMS and the resulting
+source RPM will be under rpmtop/SRPMS
+
+To  build an RPM for 32-bit Intel target from a 64-bit Intel host:
+	cd packaging
+	./buildrpm --target i586-linux
+
+To build a .deb package (on a system with dpkg-buildpackage command):
+	cd packaging
+	./builddeb "Your Name <your.email@your.com>" amd64
+Packages needed for build include at least bison, debhelper, dpkg-dev, flex
+gcc, g++, groff, libfltk1.3-dev, libxft-dev, libxpm-dev, libxinerama-dev,
+make and netpbm.
+
+To build a 32-bit .deb package:
+	cd packaging
+	./builddeb "Your Name <your.email@your.com>" i386
+
+To build a pacman package (for Arch Linux and similar):
+Copy mup-%{VERSION}.tar.gz and packaging/PKGBUILD to some directory.
+Edit PKGBUILD with the correct md5sum for the tar.gz file. Then run:
+	makepkg
+ 
+To build a Windows installer package (from a Linux machine with makensis
+command, mingw cross compiler, and openwatcom cross compiler):
+	cd packaging
+	./buildexe
+See the comments at the top for options if you don't have the openwatcom
+cross compiler, and/or have tools installed in places it can't find them.
+
+To build an MS-DOS package (from a Linux machine with
+djgpp cross compiler, and openwatcom cross compiler):
+	cd packaging
+	./buildexe --dos
+See the comments at the top for options if you don't have the openwatcom
+cross compiler, and/or have tools installed in places it can't find them.
+
+To build a Mac OS-X .dmg package:
+	cd packaging
+	./builddmg
+The resulting .dmg file will be in the mac-osx sub-directory.

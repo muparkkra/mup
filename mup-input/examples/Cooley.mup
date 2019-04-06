@@ -1,0 +1,151 @@
+//!Mup-Arkkra-6.1
+
+include "tabstems"
+
+header 
+	title (24) "Cooley's Reel"
+	//title palatino ital (12) "(ornamented version)"
+	print nl ""
+
+top
+	left "\(dnbow) = downstroke"
+	left nl "\(upbow) = upstroke"
+	print nl ""
+	right "traditional Irish reel"
+	
+score	
+	topmargin = 1.0
+	time = 4/4
+	staffscale = 1.0
+	key = d major
+	timeunit = 8
+	beamstyle= 2,2
+	tabwhitebox=y
+	staffs=2
+	bracket = 1-2
+	
+
+staff 2
+	stafflines = tab (e5 a4 d4 g3)
+
+music
+
+//A-part
+
+repeatstart
+//1
+
+	2: d2=a;a2=b;=c;a0=d;4a2=e;8d2=f;a2=g;
+		C(1,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+bar
+//2
+
+	2: 4a2=a;8a0=b;a2=c;a5=d;a2=e;a0=f;d5=g;
+		D(1) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		S(a) B2(b,c) B4(d,e,f,g)
+		
+bar
+//3
+
+	2: d4=a;d0=b;a0=c;d0=d;a2=e;d0=f;a0=g;d0=h;
+		C(1,D) D(1) U(1.5) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		B4(a,b,c,d) B4(e,f,g,h)
+bar
+//4
+
+	2: d4=a;d0=b;d4=c;a0=d;a5=e;a0=f;d4=g;d0=h;
+		D(1) U(1.5) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		B4(a,b,c,d) B4(e,f,g,h)
+bar
+//5
+
+	2:  d2=a;a2=b;=c;a0=d;4a2=e;8d2=f;a2=g;
+		C(1,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+bar
+//6
+
+	2: 4a2=a;8a0=b;a2=c;a5=d;e0=e;e2=f;e3=g;
+		D(1) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		S(a) B2(b,c) B4(d,e,f,g)
+bar
+//7
+
+	2: e5=a;e2=b;e0=c;a4=d;a5=e;a2=f;a0=g;d4=h;
+		C(1,D) D(1) U(1.5) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		B4(a,b,c,d) B4(e,f,g,h) 
+bar ending "1"
+//8
+
+	2: d0=a;d2=b;d4=c;d0=d;4d2=e;8=f;d0=g;
+		C(3,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+		
+repeatend ending "2"
+
+	2: d0=a;d2=b;d4=c;d0=d;4d2=e;8e3=f;e2=g;
+		C(3,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+dblbar endending
+		 
+
+//B-part
+
+newscore
+
+repeatstart
+//1
+
+	2: e0=a;a2=b;4=c;8e0=d;a2=e;e3=f;e2=g;
+		C(1,Em) D(1) U(1.5) D(2) D(3) U(3.5) D(4) U(4.5)
+		B2(a,b) S(c) B4(d,e,f,g)	
+bar
+//2
+
+	2: e0=a;a2=b;4=c;8e3=d;e0=e;a5=f;a2=g;
+		D(1) U(1.5) D(2) D(3) U(3.5) D(4) U(4.5)
+		B2(a,b) S(c) B4(d,e,f,g)
+bar
+//3
+
+	2: 4a0=a;8d4=b;a0=c;d0=d;a0=e;d4=f;a0=g;
+		C(1,D) D(1) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		S(a) B2(b,c) B4(d,e,f,g)
+bar
+//4
+
+	2: 4a0=a;8d4=b;a0=c;a5=d;e0=e;e2=f;a5=g;
+		D(1) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		S(a) B2(b,c) B4(d,e,f,g)
+		
+bar
+//5
+
+	2: e0=a;a2=b;4=c;8e0=d;a2=e;e3=f;e2=g;
+		C(1,Em) D(1) U(1.5) D(2) D(3) U(3.5) D(4) U(4.5)
+		B2(a,b) S(c) B4(d,e,f,g)	
+bar
+//6
+
+	2: e0=a;a2=b;4=c;8a5=d;e0=e;e2=f;e3=g;
+		D(1) U(1.5) D(2) D(3) U(3.5) D(4) U(4.5)
+		B2(a,b) S(c) B4(d,e,f,g)
+bar
+//7
+
+	2: e5=a;e2=b;e0=c;a4=d;a5=e;a2=f;a0=g;d4=h;
+		C(1,D) D(1) U(1.5) D(2) U(2.5) D(3) U(3.5) D(4) U(4.5)
+		B4(a,b,c,d) B4(e,f,g,h) 
+bar ending "1"
+//8
+
+	2: d0=a;d2=b;d4=c;d0=d;4d2=e;8e3=f;e2=g;
+		C(3,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+repeatend ending "2"
+	2: d0=a;d2=b;d4=c;d0=d;4d2=e;8=f;d0=g;
+		C(3,Em) D(1) U(1.5) D(2) U(2.5) D(3) D(4)U(4.5)
+		B4(a,b,c,d) S(e) B2(f,g)
+		
+dblbar endending

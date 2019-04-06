@@ -1,0 +1,143 @@
+/*
+ Copyright (c) 1995-2019  by Arkkra Enterprises.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms,
+ with or without modification, are permitted provided that
+ the following conditions are met:
+
+ 1. Redistributions of source code must retain
+ the above copyright notice, this list of conditions
+ and the following DISCLAIMER.
+
+ 2. Redistributions in binary form must reproduce the above
+ copyright notice, this list of conditions and
+ the following DISCLAIMER in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Any additions, deletions, or changes to the original files
+ must be clearly indicated in accompanying documentation,
+ including the reasons for the changes,
+ and the names of those who made the modifications.
+
+	DISCLAIMER
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS
+ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#ifdef EXTCHAR
+
+/* Define the extended (non-ASCII) characters */
+/* Mapping between name and number is done via Ext_char_table[] */
+
+#define C_exclamdown		(%)
+#define C_cent			(%)
+#define C_sterling		(%)
+#define C_yen			(%)
+#define C_quotedblleft		(%)
+#define C_guillemotleft		(%)
+#define C_guillemotright	(%)
+#define C_guilsinglleft		(%)
+#define C_guilsinglright	(%)
+#define C_dagger		(%)
+#define C_daggerdbl		(%)
+#define C_bullet		(%)
+#define C_quotedblbase		(%)
+#define C_quotedblright		(%)
+#define C_questiondown		(%)
+#define C_grave			(%)
+#define C_acute			(%)
+#define C_macron		(%)
+#define C_breve			(%)
+#define C_dotaccent		(%)
+#define C_dieresis		(%)
+#define C_ring			(%)
+#define C_cedilla		(%)
+#define C_hungarumlaut		(%)
+#define C_ogonek		(%)
+#define C_caron			(%)
+#define C_emdash		(%)
+#define C_AE			(%)
+#define C_ae			(%)
+#define C_ordfeminine		(%)
+#define C_ordmasculine		(%)
+#define C_Lslash		(%)
+#define C_lslash		(%)
+#define C_Oslash		(%)
+#define C_oslash		(%)
+#define C_OE			(%)
+#define C_oe			(%)
+#define C_dotlessi		(%)
+#define C_germandbls		(%)
+#define C_Aacute		(%)
+#define C_aacute		(%)
+#define C_Acircumflex		(%)
+#define C_acircumflex		(%)
+#define C_Adieresis		(%)
+#define C_adieresis		(%)
+#define C_Agrave		(%)
+#define C_agrave		(%)
+#define C_Aring			(%)
+#define C_aring			(%)
+#define C_Atilde		(%)
+#define C_atilde		(%)
+#define C_Ccedilla		(%)
+#define C_ccedilla		(%)
+#define C_Eacute		(%)
+#define C_eacute		(%)
+#define C_Ecircumflex		(%)
+#define C_ecircumflex		(%)
+#define C_Edieresis		(%)
+#define C_edieresis		(%)
+#define C_Egrave		(%)
+#define C_egrave		(%)
+#define C_Iacute		(%)
+#define C_iacute		(%)
+#define C_Icircumflex		(%)
+#define C_icircumflex		(%)
+#define C_Idieresis		(%)
+#define C_idieresis		(%)
+#define C_Igrave		(%)
+#define C_igrave		(%)
+#define C_Ntilde		(%)
+#define C_ntilde		(%)
+#define C_Oacute		(%)
+#define C_oacute		(%)
+#define C_Ocircumflex		(%)
+#define C_ocircumflex		(%)
+#define C_Odieresis		(%)
+#define C_odieresis		(%)
+#define C_Ograve		(%)
+#define C_ograve		(%)
+#define C_Otilde		(%)
+#define C_otilde		(%)
+#define C_Scaron		(%)
+#define C_scaron		(%)
+#define C_Uacute		(%)
+#define C_uacute		(%)
+#define C_Ucircumflex		(%)
+#define C_ucircumflex		(%)
+#define C_Udieresis		(%)
+#define C_udieresis		(%)
+#define C_Ugrave		(%)
+#define C_ugrave		(%)
+#define C_Ydieresis		(%)
+#define C_ydieresis		(%)
+#define C_Zcaron		(%)
+#define C_zcaron		(%)
+#define C_space			(%)
+
+#endif

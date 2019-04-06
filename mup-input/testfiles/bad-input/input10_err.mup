@@ -1,0 +1,27 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input1_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+score topmargin=1
+header
+rom 1: 1 "hi";
+
+music
+	1: 1f;
+	bar
+score
+	time = 1/1
+	transpose = up per 5
+	beamstyle=(4,(4),4.)
+	barstyle=1,1
+	defaultkeymap="didn't define"
+staff 1
+	stafflines=tab
+music
+	rom figbass above 1: 1 "this is a very long figbass string to verify that we get an error message when a chord is too long and that we don't core dump";
+	1: 1f;
+	bar
+
+stafflines=7

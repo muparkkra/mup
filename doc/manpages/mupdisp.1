@@ -1,0 +1,127 @@
+.TH mupdisp 1 "November 22, 2012" "Arkkra Enterprises"
+.SH NAME
+.PP
+mupdisp \- display output from Mup music publisher program
+.SH SYNOPSIS
+.PP
+mupdisp \fI[mup_options] file\fP
+.SH DESCRIPTION
+.PP
+Mupdisp provides a way to view Mup output on your screen.
+The \fIfile\fP is Mup input. Any other Mup options can be given,
+except \-C, \-E, \-f, \-F, \-l, \-m, \-M, or \-v, which don't produce print output.
+.PP
+Mupdisp will run under MS\(hyDOS or will run under
+UNIX with a TERM of AT386, linux, or xterm (under X windows). 
+.PP
+When running under X windows, several standard X options are
+available:
+.TP
+\fB\-geometry\fP \fIXxY+M+N\fP
+Sets the window size and/or location on the screen. The actual window
+width will be determined by the width of the Mup output. The height
+will be adjusted if necessary to be between 400 and the actual height
+of the Mup output. The window placment specifications can be positive
+or negative. The actual placement may be adjusted by your window manager.
+.TP
+\fB\-fg\fP \fIcolor\fP or \fB\-foreground\fP \fIcolor\fP
+Specifies the foreground color to use.
+.TP
+\fB\-bg\fP \fIcolor\fP or \fB\-background\fP \fIcolor\fP
+Specifies the background color to use.
+.PP
+These X options can also be set in your .Xdefaults file using resource names of
+mupdisp.geometry, mupdisp.foreground, and mupdisp.background. Command
+line arguments will override values in the .Xdefaults file.
+As an example, you could add these lines to your .Xdefaults file:
+.nf
+.na
+.ft CW
+.in +1i
+
+mupdisp.foreground:   navy
+mupdisp.background:   gray
+mupdisp.geometry:     400x760+100\-34
+
+.in -1i
+.ft P
+.fi
+.ad
+.PP
+The Mupdisp program begins in partial page mode,
+which displays output at approximately actual size (depending
+on the size of your monitor). In this mode, it may be that
+not all of the page fits on the
+screen, so the scrolling commands can be used to move up and down to view
+different parts of the page. In full page mode, a small version of the
+entire page is displayed.  This is useful
+for seeing overall page layout, but is generally too small to see much detail.
+This mode is now somewhat of a relic of the days when screens were typically
+much smaller than they are today, and is thus becoming less useful.
+.PP
+If the environment variable MUPDISPMODE is set to some value,
+Mupdisp will start in full page rather than partial page mode.
+.PP
+The commands are:
+.TP
+\fInum\fP<Enter>
+Go to page number \fInum\fP.
+.TP
++ or <space> or <control\(hyE> or <control\(hyF>
+move forward on the page by about 1/8 of an inch
+(partial page mode only)
+.TP
+\- or <backspace> or <control\(hyY> or <control\(hyB>
+move backward on the page by about 1/8 of an inch
+(partial page mode only)
+.TP
+b or <control\(hyU> or <control\(hyP> or <up\(hyarrow\(hykey>
+move backward on the page by about an inch
+(partial page mode only)
+.TP
+f or <Enter> or <control\(hyD> or <control\(hyN> or <down\(hyarrow\(hykey>
+move forward on the page by about an inch
+(partial page mode only)
+.TP
+h or ?
+display help screen
+.TP
+m
+toggle between partial page and full page modes.
+.TP
+n or <PageDown>
+go to next page
+.TP
+p or <PageUp>
+go to previous page
+.TP
+q or ZZ
+quit
+.TP
+r
+Repaint the page (useful for exiting help page)
+.PP
+When in X windows, the mouse can be used for scrolling. The left button scrolls
+downward like the f command, while the right button scrolls backwards like
+the b command.
+.PP
+Mupdisp supports page sizes of letter (8.5 x 11.0 inches),
+note (7.5 x 10.0 inches), legal (8.5 x 14.0 inches),
+A4 (8.26 x 11.69 inches), A5 (5.85 x 8.26 inches),
+A6 (4.125 x 5.85 inches), flsa (8.5 x 13.0 inches), and
+halfletter (5.5 x 8.5 inches).
+.SH FILES
+.P
+$HOME/.Xdefaults   default X window resource definitions
+.SH "SEE ALSO"
+.PP
+gs(1), mup(1), mupmate(1), mupprnt(1).
+.br
+Mup \(em Music Publisher User's Guide
+.SH "CAVEATS AND BUGS"
+.PP
+You must have mup in your PATH.
+You must have ghostscript (gs or gs386.exe) in your PATH
+and it must be built to include the "bit" device.
+.PP
+Resizing the window does not resize the full page view.

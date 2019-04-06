@@ -1,0 +1,49 @@
+//!Mup-Arkkra
+
+header
+	title bold (12) "circledtext.mup"
+	paragraph (9) "This file tests circled text."
+
+score scale=1.4
+staffs=2
+staff 1 staffscale=0.8
+staff 2 staffscale=1.5
+music
+
+1-2: c;d;e;f;
+ital (10) above 1: 1 "ascenders and decenders";
+rom above 1: 1 "-----";
+rom above 1-2: 1 "\{jmpJ\}";
+rom above 1: 1 "-----";
+
+ital above 1: 3. "single digit";
+rom above 1: 3.5 "--";
+rom above 1-2: 3.5 "\{3\}";
+rom above 1: 3.5 "--";
+rom below 1-2: 2 "\{X\}";
+rom below 1-2: 4 "\{.\}";
+ital below 1: 3 "minimal size circle,\neven for only a dot";
+bar
+
+
+1-2: 1c;
+ital above 1: 2 "folded long string";
+rom above 1: 1 "-----------------------";
+rom above 1: 1.3 "\{This is something very very Long!!!\}";
+rom below 1: 1 "\{This is very Long!\}";
+rom above 1: 1 "-----------------------";
+ital above 2: 2 "\{\s(+9)BIG\}";
+boldital (6) below 2: 2 "\{small\}";
+bar
+
+newscore
+
+1-2: 1c;
+rom above 1: 1 "-------------------------------------------------";
+rom above 1: 1 "\{This is something very very very very Long!!!\}";
+rom above 1: 1 "-------------------------------------------------";
+rom above 1: 4 "\{\(smgclef)\}";
+rom above 1: 4.2 "\{pile\:\|super \|sub \|sub2\}";
+rom above 2: 1 "\{This is very Long!\}";
+ital (9) above 2: 4 "adjusted by staffscale";
+bar

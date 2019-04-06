@@ -1,0 +1,167 @@
+//!Mup-Arkkra
+header
+	title bold (18) "setnotes.mup"
+	paragraph (14) "\
+Test positioning of notes, and stem directions."
+score
+	packfact = 2.0
+	scorepad = 0
+score defoct = 0; time = 1/4; clef = bass; packfact = 0.8
+music
+	rom(12) 1: 1 "Check vertical placement of every note.";
+	1: 4cdefgab;
+	rom 1: 1 "0";
+	bar
+score defoct = 1
+music
+	1: 4cdefgab;
+	rom 1: 1 "1";
+	bar
+score defoct = 2
+music
+	1: 4cdefgab;
+	rom 1: 1 "2";
+	bar
+score defoct = 3
+music
+	1: 4cdefgab;
+	rom 1: 1 "3";
+	bar
+score defoct = 4; clef = treble
+music
+	1: 4cdefgab;
+	rom 1: 1 "4";
+	bar
+score defoct = 5
+music
+	1: 4cdefgab;
+	rom below 1: 1 "5";
+	bar
+score defoct = 6
+music
+	1: 4cdefgab;
+	rom below 1: 1 "6";
+	bar
+score defoct = 7
+music
+	1: 4cdefgab;
+	rom below 1: 1 "7";
+	bar
+score defoct = 8
+music
+	1: 4cdefgab;
+	rom below 1: 1 "8";
+	bar
+ifndef MIDI
+score defoct = 9
+music
+	1: 4cdefgab;
+	rom below 1: 1 "9";
+	bar
+endif
+
+	newscore
+
+score packfact = 1.5
+music
+
+score clef = alto; time = 4/4; beamstyle = 4, 4, 4, 4; size = 15
+
+music
+	rom 1: 1 "Check stem directions.";
+	rom 1: 1 "vscheme = 1";
+	1: 4b-; c; b-c; cd;
+	bar
+
+	1: 4a-c; b-d; a-d; b-e;
+	bar
+
+	1: 8b-; c; b-c; cd; a-c; b-d; a-d; b-e;
+	bar
+
+	1: 8c-; c+; b; c-; f-g; f-f; 4f-a-g;
+	bar
+
+	1: 4e-g-b-b; e-egb; d-f-a-a; d-dfa;
+	bar
+
+	1: 8g-c bm; e ebm; a- bm; cf ebm; f bm; d; b-; g- ebm;
+	bar
+
+score vscheme = 2o
+
+music
+	rom 1: 1 "vscheme = 2o";
+	1 1: 4b-; c; d; f;
+	1 2: 4g-; b-; c; d;
+	bar
+
+score vscheme = 2f
+
+music
+	rom 1: 1 "vscheme = 2f";
+	1 1: 4b-; c; d; f;
+	1 2: 4g-; b-; c; d;
+	bar
+
+	rom 1: 1 "vscheme = 2f";
+	rom above 1: 1 "b-"; 2 "c"; 3 "d"; 4 "f";
+	1 1: 4b-; c; d; f;
+	1 2: 4s; ; c; d;
+	rom below 1: 1 "s"; 2 "s"; 3 "c"; 4 "d";
+	bar
+
+	newscore
+
+	rom 1: 1 "Check stem directions with forcing of directions.";
+	rom 1: 1 "vscheme = 1";
+	rom 1: 1 "force up";
+	1: [up]4b-; [up]c; [up]b-c; [up]cd;
+	bar
+
+	rom 1: 1 "force down";
+	1: [down]4a-c; [down]b-d; [down]a-d; [down]b-e;
+	bar
+
+	rom 1: 1 "force up";
+	1: [up]8b-; []c; []b-c; []cd; []a-c; []b-d; []a-d; []b-e;
+	bar
+
+	rom 1: 1 "force down";
+	1: [down]8c-; []c+; []b; []c-; []f-g; []f-f; []4f-a-g;
+	bar
+
+	rom 1: 1 "force up";
+	1: [up]4e-g-b-b; []e-egb; []d-f-a-a; []d-dfa;
+	bar
+
+	rom 1: 1 "force down";
+	1: [down]8g-c bm; e ebm; a- bm; [down]cf ebm; d bm; [down]c; g-; e- ebm;
+	bar
+
+score vscheme = 2o
+
+music
+	rom 1: 1 "vscheme = 2o";
+	rom 1: 1 "force notes on count 4";
+	1 1: 4b-; c; d; [up]f;
+	1 2: 4g-; b-; c; [down]d;
+	bar
+
+score vscheme = 2f
+
+music
+	rom 1: 1 "vscheme = 2f";
+	rom 1: 1 "force notes on count 4";
+	1 1: 4b-; c; d; [up]f;
+	1 2: 4g-; b-; c; [down]d;
+	bar
+
+	rom 1: 1 "vscheme = 2f";
+	rom 1: 1 "force first note down";
+	rom 1: 1 "force last note up";
+	rom above 1: 1 "b-"; 2 "c"; 3 "d"; 4 "s";
+	1 1: [down]4b-; c; d; s;
+	1 2: 4s; ; c; [up]d;
+	rom below 1: 1 "s"; 2 "s"; 3 "c"; 4 "d";
+	bar

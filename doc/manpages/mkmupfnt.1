@@ -1,0 +1,106 @@
+.TH mkmupfnt 1 "November 22, 2012" "Arkkra Enterprises"
+.SH NAME
+.PP
+mkmupfnt \- create fontfile for overriding Mup fonts
+.SH SYNOPSIS
+.PP
+mkmupfnt \fIPostScript_font_name Mup_font_name outfile [file]\fP
+.SH DESCRIPTION
+.PP
+The \fBmkmupfnt\fP program creates an \fIoutfile\fP that can be used
+with the Mup "fontfile" statement to override a Mup font.
+.PP
+The \fIPostScript_font_name\fP is the name of the font you want Mup
+to use. This would be something that could be given as a name
+to the PostScript \fBfindfont\fP procedure.
+.PP
+The \fIMup_font_name\fP is the name of the Mup font you want to
+override, either an abbreviated name, like "PR" or a full
+name, like "palatino rom".
+.PP
+The \fIoutfile\fP is the file that will be generated, which will
+contain character size and other information, to use with
+Mup's "fontfile" statement.
+.PP
+The final optional \fIfile\fP argument is the name of a file that
+contains PostScript to be placed at the end of the Mup PostScript prolog.
+This might be useful if you have a font whose implementation PostScript could
+not find on its own. For example, if you've written your own font
+implementation, you could put it in the given \fIfile\fP.
+The actual characters produced by the font need not be similar to those
+in the font being replaced; they could be in some other alphabet,
+or hieroglyphics or whatever you wish. However, see the CAVEATS section
+for limitations.
+.PP
+An an example, suppose you want Mup to use the Helvetica\-Narrow font
+rather than the plain Helvetica font. You could use:
+.br
+.in +0.5i
+mkmupfnt Helvetica\-Narrow HR helvnarr
+.in -0.5i
+.br
+to generate a Mup fontfile, then in your Mup program put:
+.br
+.in +0.5i
+fontfile "helvnarr"
+.in -0.5i
+.br
+Then anything that would normally be printed in Helvetica will come out
+in Helvetica\-Narrow instead.
+.SH "FILE FORMAT"
+.PP
+Mup requires a \fIfontfile\fP to be in a fairly rigid format.
+This section describes the format of the file that is produced by
+mkmupfnt.
+The file can contain comment lines, which have a '#' in column 1.
+Otherwise the format is:
+.br
+.nf
+.na
+.in +0.3i
+\fBMup font name:\fP \fIMup_font_name\fP
+\fBPostScript font name:\fP \fIPostScript_font_name\fP
+\fBSize data:\fP
+\fB32\fP   \fIwidth   height   ascent\fP
+\fB33\fP   \fIwidth   height   ascent\fP
+	\fI... similar lines for ASCII codes 34\-126.
+	Dimension are given in 1/1000ths of an inch for a 12\-point character.
+	All codes must be specified, and they must be in order.\fP
+\fBPostScript:\fP
+	\fIZero or more lines of PostScript that will be copied
+	exactly as is to the end of the Mup PostScript prolog.\fP
+.br
+.in -0.3i
+.fi
+.ad
+.SH FILES
+.P
+mkmupfnt.ps    PostScript program that extracts font size information
+.SH "SEE ALSO"
+.PP
+gs(1), mup(1).
+.br
+Mup \(em Music Publisher User's Guide
+.SH "CAVEATS"
+.PP
+You must have ghostscript (gs or gs386.exe) in your PATH
+and it must be built to include the "bit" device.
+.PP
+Mup uses certain fonts for certain things, such as
+time signatures, octave marks, endings, tuplet numbers, etc.
+(The fonts used include all the Times fonts and New Century bold, plus
+Helvetica roman and Helvetica bold for tablature.)
+If your override one of the fonts used for those things, they will
+come out in your new font. On the one hand, if you don't like Mup's
+choices, this provides you a way to get your own. On the other hand,
+if you want to change most, but not all uses of a particular font,
+it may not be possible to do that.
+.PP
+Only the ASCII characters 32\-126 can be overridden. The non\(hyASCII
+characters can not be overridden.
+.PP
+Mup only allows width values up to 1/2 inch for
+a 12\(hypoint character. This program does not enforce that limitation.
+.PP
+This program has been tested with various Ghostscript fonts,
+but may not work on just any arbitrary PostScript font.

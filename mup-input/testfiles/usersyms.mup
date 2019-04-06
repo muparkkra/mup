@@ -1,0 +1,323 @@
+//!Mup-Arkkra
+
+header
+	title bold (9) "usersyms.mup"
+	paragraph (7) "This file defines the maximum number of user-defined symbols,
+and uses each of them. It uses names in somewhat random order, to make sure sorting works.
+Five basic symbol types are used, with 32 variations of each."
+
+score
+	scale=2
+	packfact=2
+
+define USYM(NAME,INTERVAL,HEIGHT)
+
+symbol `NAME`
+	bbox= -900, -900, 900, 900
+	postscript="gsave
+		60 setlinewidth
+		-800 " + `INTERVAL` + " 800 {
+			dup " + `HEIGHT` + " neg moveto " + `HEIGHT` + " lineto stroke
+		} for
+		grestore"
+@
+
+define USYM2(NAME,INTERVAL,WIDTH)
+
+symbol `NAME`
+	bbox= -900, -900, 900, 900
+	postscript="gsave
+		60 setlinewidth
+		-800 " + `INTERVAL` + " 800 {
+			dup " + `WIDTH` + " neg exch moveto " + `WIDTH` + " exch lineto stroke
+		} for
+		grestore"
+@
+
+define USYM3(NAME,ANGLE)
+
+symbol `NAME`
+	bbox= -400, -400, 400, 400
+	postscript="gsave
+		160 setlinewidth
+		0 0 300 0 " + `ANGLE` + " arc stroke
+		grestore"
+@
+
+define USYM4(NAME,ANGLE)
+
+symbol `NAME`
+	bbox= -500, -500, 500, 500
+	postscript="gsave
+		300 setlinewidth
+		0 0 350 0 " + `ANGLE` + " arc stroke
+		grestore"
+@
+
+define USYM5(NAME,INTERVAL,WIDTH)
+
+symbol `NAME`
+	bbox= -1000, -1000, 1000, 1000
+	postscript="gsave
+		150 setlinewidth
+		-800 " + `INTERVAL` + " 800 {
+			dup " + `WIDTH` + " neg exch moveto " + `WIDTH` + " exch lineto stroke
+		} for
+		grestore"
+@
+define SHOW4(S1,S2,S3,S4)
+music
+mussym above 1: 1 `S1`; 2 `S2`; 3 `S3`; 4 `S4`;
+1: c;;;;
+bar
+@
+
+
+USYM(ab5,550,800)
+USYM(ab6,650,800)
+USYM(ab7,750,800)
+USYM(ab8,850,800)
+SHOW4(ab5,ab6,ab7,ab8)
+
+USYM(us1,150,800)
+USYM(us2,250,800)
+USYM(us3,350,800)
+USYM(us4,450,800)
+SHOW4(us1,us2,us3,us4)
+
+USYM(xyz1,150,600)
+USYM(xyz2,250,600)
+USYM(xyz3,350,600)
+USYM(xyz4,450,600)
+SHOW4(xyz1,xyz2,xyz3,xyz4)
+
+USYM(aa1,550,600)
+USYM(aa2,650,600)
+USYM(aa3,750,600)
+USYM(aa4,850,600)
+SHOW4(aa1,aa2,aa3,aa4)
+
+USYM(1a,150,400)
+USYM(1b,250,400)
+USYM(2a,350,400)
+USYM(2b,450,400)
+SHOW4(1a,1b,2a,2b)
+
+USYM(longname1,550,400)
+USYM(longname2,650,400)
+USYM(longname3,750,400)
+USYM(longname4,850,400)
+SHOW4(longname1,longname2,longname3,longname4)
+
+USYM(_1a,150,200)
+USYM(_1b,250,200)
+USYM(_2a,350,200)
+USYM(_2b,450,200)
+SHOW4(_1a,_1b,_2a,_2b)
+
+USYM(_3a,550,200)
+USYM(_3b,650,200)
+USYM(_4a,750,200)
+USYM(_4b,850,200)
+SHOW4(_3a,_3b,_4a,_4b)
+
+newpage
+
+USYM2(i,150,800)
+USYM2(j,250,800)
+USYM2(k,350,800)
+USYM2(l,450,800)
+SHOW4(i,j,k,l)
+
+USYM2(m,550,800)
+USYM2(n,650,800)
+USYM2(o,750,800)
+USYM2(p,850,800)
+SHOW4(m,n,o,p)
+
+USYM2(q,150,600)
+USYM2(r,250,600)
+USYM2(s,350,600)
+USYM2(t,450,600)
+SHOW4(q,r,s,t)
+
+USYM2(u,550,600)
+USYM2(v,650,600)
+USYM2(w,750,600)
+USYM2(x,850,600)
+SHOW4(u,v,w,x)
+
+USYM2(Q,150,400)
+USYM2(R,250,400)
+USYM2(S,350,400)
+USYM2(T,450,400)
+SHOW4(Q,R,S,T)
+
+USYM2(U,550,400)
+USYM2(V,650,400)
+USYM2(W,750,400)
+USYM2(X,850,400)
+SHOW4(U,V,W,X)
+
+USYM2(Qx,150,200)
+USYM2(Rx,250,200)
+USYM2(Sx,350,200)
+USYM2(Tx,450,200)
+SHOW4(Qx,Rx,Sx,Tx)
+
+USYM2(Ux,550,200)
+USYM2(Vx,650,200)
+USYM2(Wx,750,200)
+USYM2(Xx,850,200)
+SHOW4(Ux,Vx,Wx,Xx)
+
+newpage
+
+USYM3(Foo,360)
+USYM3(Foobar,350)
+USYM3(Hello,340)
+USYM3(ByeBye,330)
+SHOW4(Foo,Foobar,Hello,ByeBye)
+
+USYM3(MyAlpha,320)
+USYM3(MyBeta,310)
+USYM3(MyGamma,300)
+USYM3(MyDelta,290)
+SHOW4(MyAlpha,MyBeta,MyGamma,MyDelta)
+
+USYM3(c280,280)
+USYM3(c270,270)
+USYM3(c260,260)
+USYM3(c250,250)
+SHOW4(c280,c270,c260,c250)
+
+USYM3(c240,240)
+USYM3(c230,230)
+USYM3(c220,220)
+USYM3(c210,210)
+SHOW4(c240,c230,c220,c210)
+
+USYM3(c200,200)
+USYM3(c190,190)
+USYM3(c180,180)
+USYM3(c170,170)
+SHOW4(c200,c190,c180,c170)
+
+USYM3(c160,160)
+USYM3(c150,150)
+USYM3(c140,140)
+USYM3(c130,130)
+SHOW4(c160,c150,c140,c130)
+
+USYM3(c120,120)
+USYM3(c110,110)
+USYM3(c100,100)
+USYM3(c90,90)
+SHOW4(c120,c110,c100,c90)
+
+USYM3(c80,80)
+USYM3(c70,70)
+USYM3(c60,60)
+USYM3(c50,50)
+SHOW4(c80,c70,c60,c50)
+
+newpage
+
+USYM4(xyz360,360)
+USYM4(xyz350,350)
+USYM4(xyz340,340)
+USYM4(xyz330,330)
+SHOW4(xyz360,xyz350,xyz340,xyz330)
+
+USYM4(xyz320,320)
+USYM4(xyz310,310)
+USYM4(xyz300,300)
+USYM4(xyz290,290)
+SHOW4(xyz320,xyz310,xyz300,xyz290)
+
+USYM4(xyz280,280)
+USYM4(xyz270,270)
+USYM4(xyz260,260)
+USYM4(xyz250,250)
+SHOW4(xyz280,xyz270,xyz260,xyz250)
+
+USYM4(xyz240,240)
+USYM4(xyz230,230)
+USYM4(xyz220,220)
+USYM4(xyz210,210)
+SHOW4(xyz240,xyz230,xyz220,xyz210)
+
+USYM4(xyz200,200)
+USYM4(xyz190,190)
+USYM4(xyz180,180)
+USYM4(xyz170,170)
+SHOW4(xyz200,xyz190,xyz180,xyz170)
+
+USYM4(xyz160,160)
+USYM4(xyz150,150)
+USYM4(xyz140,140)
+USYM4(xyz130,130)
+SHOW4(xyz160,xyz150,xyz140,xyz130)
+
+USYM4(xyz120,120)
+USYM4(xyz110,110)
+USYM4(xyz100,100)
+USYM4(xyz90,90)
+SHOW4(xyz120,xyz110,xyz100,xyz90)
+
+USYM4(xyz80,80)
+USYM4(xyz70,70)
+USYM4(xyz60,60)
+USYM4(xyz50,50)
+SHOW4(xyz80,xyz70,xyz60,xyz50)
+
+newpage
+
+USYM5(il5,550,800)
+USYM5(il6,650,800)
+USYM5(il7,750,800)
+USYM5(il8,850,800)
+SHOW4(il5,il6,il7,il8)
+
+USYM5(foo1,150,800)
+USYM5(foo2,250,800)
+USYM5(foo3,350,800)
+USYM5(foo4,450,800)
+SHOW4(foo1,foo2,foo3,foo4)
+
+USYM5(try1,150,600)
+USYM5(try2,250,600)
+USYM5(try3,350,600)
+USYM5(try4,450,600)
+SHOW4(try1,try2,try3,try4)
+
+USYM5(K1,550,600)
+USYM5(K2,650,600)
+USYM5(K3,750,600)
+USYM5(K4,850,600)
+SHOW4(K1,K2,K3,K4)
+
+USYM5(1K,150,400)
+USYM5(2K,250,400)
+USYM5(3K,350,400)
+USYM5(4K,450,400)
+SHOW4(1K,2K,3K,4K)
+
+USYM5(longname100,550,400)
+USYM5(longname200,650,400)
+USYM5(longname300,750,400)
+USYM5(longname400,850,400)
+SHOW4(longname100,longname200,longname300,longname400)
+
+USYM5(_1a__,150,200)
+USYM5(_1b__,250,200)
+USYM5(_2a__,350,200)
+USYM5(_2b__,450,200)
+SHOW4(_1a__,_1b__,_2a__,_2b__)
+
+USYM5(_3a__,550,200)
+USYM5(_3b__,650,200)
+USYM5(_4a__,750,200)
+USYM5(_4b__,850,200)
+SHOW4(_3a__,_3b__,_4a__,_4b__)
+

@@ -1,0 +1,43 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "rehearsal.mup"
+	paragraph (14) "This file test rehearsal marks."
+	paragraph (14) "rehstyle is boxed on staff 1, circled on staff 2, and plain on staff 3."
+	paragraph (14) "Tests the various types: a string, let, num, and mnum."
+	title ""
+
+score measnum=y;key=3#
+topmargin=1
+staffs=3
+measnumfont=boldital
+measnumfontfamily=avantgarde
+measnumsize=17
+endingstyle=barred
+staff 1
+	rehstyle=boxed
+staff 2
+	rehstyle=circled
+staff 3
+	rehstyle=plain
+music
+1-3: 4c;;;[with "\(acc_gt)"];
+bar pad 0.3 ending "1" =_pkk reh "hi"
+1-3: [with "\(acc_uhat)"] 4e;f;[with >] g;a;
+bar endending  reh let
+1-3: 8g;;;;4;;
+bar reh num
+1-3: 4eg;;;;
+bar reh let
+1-3: 4cfa;;;;
+dblbar reh let
+1-3: 8f;;;;;;;;
+bar
+multirest 4
+bar reh num
+1-3: 4g;;;;
+bar rehearsal mnum
+1-3: 4c;;;;
+bar
+1-3: 8e;f;g;a;4c;;
+endbar 

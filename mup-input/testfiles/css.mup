@@ -1,0 +1,304 @@
+//!Mup-Arkkra
+header
+	title bold (20) "css.mup"
+        paragraph (15) "\
+Test cross staff stemming.
+When \"S\" is printed, it was done via a \"rom\" command.
+When \"W\" is printed, it was done via a \"with\" command."
+score
+	scale = 0.9
+	packfact = 2.5
+	staffs = 2
+	beamstyle = 2, 2
+	dist = 0
+staff 2
+	clef = bass
+music
+	rom all: 1 "using staff 1";
+	rom above 1: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	rom below 1: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	1: 4fb; 4ca+ with c-g- below; [down]8; 4 with g-d below; [down]8 with g-d below;
+	bar
+
+	rom all: 1 "using staff 2";
+	rom above 2: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	rom below 2: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	2: 4fb; 4e-b with c+g+ above; [up]8; 4 with gd+ above; [up]8 with gd+ above;
+	bar
+
+	rom all: 1 "stem towards our staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: 8b with g- below; c; with g- below; d+; 2s;
+	2: 2s; 8b with g+ above; c+; with g+ above; a-;
+	bar
+
+	rom all: 1 "stem towards our staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: 8b with g- below; c; b with g- below; d+; 2s;
+	2: 2s; 8b with g+ above; c+; b with g+ above; a-;
+	bar
+
+	rom all: 1 "stem towards other staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [down] 8a+ with g- below; f; b with g- below; f; 2s;
+	2: 2s; [up] 8b with g+ above; f; b with g+ above; e-;
+	bar
+
+	rom all: 1 "no CSS";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: 8c; e; g; d+; 2r;
+	2: 2r; 8c+; a; f; b-;
+	bar
+
+	newscore
+
+	rom above 1: 1[-3] "S"; 1[+2] "S"; 2 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 1: 1[-3] "S"; 1[+2] "S"; 2 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [grace]8g+ with c--b- below; 4g; [grace]8d with a- below; [grace]; 4f; \
+		8g with a- below; 8g with a- below; [grace]a; 8g with a- below; \
+		[grace]f with e below ;[grace]a with e below ; 8g with a- below;
+	bar
+
+	newpage
+
+	rom all: 1 "using staff 1";
+	rom above 1: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	rom below 1: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	1: [with "W"]4fb; [with "W"]4ca+ with c-g- below; \
+		[down][with "W"]8; [with "W"]4 with g-d below; [down][with "W"]8 with g-d below;
+	bar
+
+	rom all: 1 "using staff 2";
+	rom above 2: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	rom below 2: 1 "S"; 2 "S"; 3 "S"; 3.5 "S"; 4.5 "S";
+	2: [with "W"]4fb; [with "W"]4e-b with c+g+ above; \
+		[up][with "W"]8; [with "W"]4 with gd+ above; [up][with "W"]8 with gd+ above;
+	bar
+
+	rom all: 1 "stem towards our staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [with "W"]8b with g- below; [with "W"]c; \
+		[with "W"]with g- below; [with "W"]d+; 2s;
+	2: 2s; [with "W"]8b with g+ above; [with "W"]c+; \
+		[with "W"]with g+ above; [with "W"]a-;
+	bar
+
+	rom all: 1 "stem towards our staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [with "W"]8b with g- below; [with "W"]c; \
+		[with "W"]b with g- below; [with "W"]d+; 2s;
+	2: 2s; [with "W"]8b with g+ above; [with "W"]c+; \
+		[with "W"]b with g+ above; [with "W"]a-;
+	bar
+
+	rom all: 1 "stem towards other staff";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [with "W"][down] 8a+ with g- below; [with "W"]f; \
+		[with "W"]b with g- below; [with "W"]f; 2s;
+	2: 2s; [with "W"][up] 8b with g+ above; [with "W"]f; \
+		[with "W"]b with g+ above; [with "W"]e-;
+	bar
+
+	rom all: 1 "no CSS";
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S";
+	rom above 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [with "W"]...8c; e; g; d+; [-]2r;
+	2: 2r; [with "W"]...8c+; a; f; b-;
+	bar
+
+	newscore
+
+	rom above 1: 1[-3] "S"; 1[+2] "S"; 2 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 1: 1[-3] "S"; 1[+2] "S"; 2 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	1: [grace][with "W"]8g+ with c--b- below; [with "W"]4g; [with "W"][grace]8d with a- below; [with "W"][grace]; [with "W"]4f; \
+		[with "W"]8g with a- below; [with "W"]8g with a- below; [with "W"][grace]a; [with "W"]8g with a- below; \
+		[with "W"][grace]f with e below ;[with "W"][grace]a with e below ; [with "W"]8g with a- below;
+	bar
+
+	newpage
+score
+	beamstyle = 4,4,4,4r
+music
+	1: { 8cc+ with a- below; r; cc+; } above 3; { [down] 8e with a- below; r; f; } above 3; \
+	   { 8cc+ with a- below; r; cc+; } below 3; { [down] 8e with a- below; r; f; } below 3;
+	bar
+
+	1: { 8cc+a-; r; cc+; }3; { [down] 8ea-; r; f; }3; \
+	   { 8cc+a-; r; cc+; }3; { [down] 8ea-; r; f; }3;
+	bar
+
+	1: { 4cc+ with a- below; r; cc+; } above 3; { [down] 4e with a- below; r; f; } above 3;
+	bar
+
+	1: { 4cc+ with a- below; r; cc+; } below 3; { [down] 4e with a- below; r; f; } below 3;
+	bar
+
+	1: { 4cc+a-; r; cc+; }3; { [down] 4ea-; r; f; }3;
+	bar
+
+	1: { 4cc+a-; r; cc+; }3; { [down] 4ea-; r; f; }3;
+	bar
+
+	newscore
+score
+	beamstyle = 2,2r
+music
+	rom all: 1 "staff 1, stemdir up";
+	1: [up; len 0]8eb-; f with c below; g with d below; [len 0]ea; 4 with g-b- below; 4;
+	bar
+
+	rom all: 1 "staff 1, stemdir down";
+	1: [len 0]8eb-; f with c below; [down]g with d below; [len 0] with ea below; [down]...4 with g-b- below; [down]4;
+	bar
+
+	rom all: 1 "staff 1, stemdir down";
+	1: 8eb-; f with c below; [down]g with d below; with ea below; [down]...4 with g-b- below; [down]4;
+	bar
+
+	rom all: 1 "staff 1";
+	1: 8e with b- below; with a- below; d; f with b- below; 2;
+	bar
+
+	rom all: 1 "staff 1";
+	1: 8e with f- below; with a-c below; [down]df; f with b- below; 2;
+	bar
+
+	rom all: 1 "staff 2";
+	2: 8a with g+ above; with c+e+ above; [up]gb; g with d+ above; 4 with gd+ above; [up];
+	bar
+
+	rom all: 1 "staff 1";
+	1: 1ea with e-a- below;
+	bar
+
+	rom all: 1 "staff 2";
+	2: 1ea with e+a+ above;
+	bar
+
+	rom all: 1 "staff 2";
+	2: 8a; with c+e+ above; [up]gb; g; 4 with gd+ above; [up];
+	bar
+
+	rom 1: 1 "staff 2"; 3 "staff 1";
+	1: 2s; 8a; with ce below; [down]gb; g;
+	2: 8a; with c+e+ above; [up]gb; g; 2s;
+	bar
+
+	rom 1: 1 "staff 2"; 3 "staff 1";
+	1: 2s; [down]8a; with ce below; r; g;
+	2: [up]8a; with c+e+ above; r; g; 2s;
+	bar
+
+	rom 1: 1 "staff 2"; 3 "staff 1";
+	1: 2s; [up]8a; with ce below; r; g;
+	2: [down]8a; with c+e+ above; r; g; 2s;
+	bar
+
+	rom 1: 1 "staff 2";
+	2: [up] 8a; with c+e+ above; r; g; 4 with gd+ above; [up];
+	bar
+
+	rom 1: 1 "staff 2";
+	2: [up]8a; with f+a+ above; with b above; [grace;len 10]f; g; \
+		[down]8a; with c+e+ above; b; [grace]g-; g; 
+	bar
+
+	rom 1: 1 "staff 2";
+	2: [up]8a; with c+e+ above; b; [grace]f with b+ above; g; \
+		[down]8a; with c+e+ above; b; [grace]f; g; 
+	bar
+
+	rom 1: 1 "staff 2";
+	2: [up]8a; c+e+; b; [grace]f with b+ above; g; \
+		[down]8a; with c+e+ above; b; [grace]f; g; 
+	bar
+
+	rom 1: 1 "staff 1";
+	1: 8d; c with g- below; d; <<staff clef=bass>> a-; \
+		[down]8f+; <<staff clef=treble>>a+; d+; e+ with c below;
+        bar
+staff 1
+	vscheme = 2o
+music
+	rom 1: 1 "staff 1";
+	1 1: 8f; ; ; ; 2;
+	1 2: 16f with b- below; 8g+ with b- below; ; ; 16f; 2;
+	bar
+
+	rom 1: 1 "staff 1";
+	1: 8 with d- below; ; with d-b- below; ;  8 with d- below; b-; with d-b- below; ;
+        bar
+
+	rom 1: 1 "staff 2";
+	2: 8 with b+ above; ; with d+b+ above; ;  8 with b+ above; d+; with d+b+ above; ;
+        bar
+score
+	dist = 0
+	vscheme = 1
+music
+	rom 1: 1 "staff 1";
+	1: 8 with d- below; ; with d-b- below; ;  8 with d- below; b-; with d-b- below; ;
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	bar
+
+	rom 1: 1 "staff 1";
+	1: [with "W"]... 8 with d- below; ; with d-b- below; ;  8 with d- below; b-; with d-b- below; ;
+	rom above 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 1: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	bar
+
+	rom 1: 1 "staff 2";
+	2: 8 with b+ above; ; with b+d+ above; ;  8 with b+ above; d+; with b+d+ above; ;
+	rom above 2: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	bar
+
+	rom 1: 1 "staff 2";
+	2: [with "W"]... 8 with b+ above; ; with b+d+ above; ;  8 with b+ above; d+; with b+d+ above; ;
+	rom above 2: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	rom below 2: 1 "S"; 1.5 "S"; 2 "S"; 2.5 "S"; 3 "S"; 3.5 "S"; 4 "S"; 4.5 "S";
+	bar
+
+	1: 8a- with e- below; e; b; f+; \
+	8f+ with e- below; b; e; a-;
+	2: 8g; r; g; ; 4; ;
+	bar
+
+	1: 8a-; e; b with e- below; f+; \
+	8f+; b; e with e- below; a-;
+	2: 8g; r; g; ; 4; ;
+	bar
+
+	1: 8f; r; f; ; 4; ;
+	2: 8e+ with a+ above; a; d; g-; \
+	8g- with a+ above; d; a; e+;
+	bar
+
+	1: 8f; r; f; ; 4; ;
+	2: 8e+; a; d with a+ above; g-; \
+	8g-; d; a with a+ above; e+;
+	bar

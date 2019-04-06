@@ -1,0 +1,25 @@
+//!Mup-Arkkra
+
+	title bold (18) "macparm_err.mup"
+	paragraph (14) "This file tests error in macro parameters."
+// duplicate name in parameters 
+define NEWMACRO(FOO, BAR, FOOBAR, FOO) this is a test \q @
+
+// invalid parameter name
+define SOMETHING(junk) tweedle-dee @
+
+// an okay macro 
+define GOODMAC(A,B,C) 1: A;B;2C; @
+
+1: c;;;;
+// no arguments
+GOODMAC abc;
+// too many arguments
+GOODMAC (a, b, c#, d)
+// too few arguments
+GOODMAC(aeg)
+// dubious escape
+GOODMAC(a, b, c\q)
+bar
+// macro that just trails off into end-of-file
+GOODMAC( hello there...

@@ -1,0 +1,108 @@
+
+header
+	title bold (18) "fonts.mup"
+	paragraph (14) "This file tests all the fonts, and switching between them."
+
+music
+1: c;;;;
+
+rom below 1: 1 "\f(avantgarde bold)avantgarde bold";
+rom below 1: 1 "\f(avantgarde boldital)avantgarde boldital";
+rom below 1: 1 "\f(avantgarde ital)avantgarde ital";
+rom below 1: 1 "\f(avantgarde rom)avantgarde rom";
+
+rom below 1: 1 "\f(bookman bold)bookman bold";
+rom below 1: 1 "\f(bookman boldital)bookman boldital";
+rom below 1: 1 "\f(bookman ital)bookman ital";
+rom below 1: 1 "\f(bookman rom)bookman rom";
+
+rom below 1: 1 "\f(courier bold)courier bold";
+rom below 1: 1 "\f(courier boldital)courier boldital";
+rom below 1: 1 "\f(courier ital)courier ital";
+rom below 1: 1 "\f(courier rom)courier rom";
+
+rom below 1: 1 "\f(helvetica bold)helvetica bold";
+rom below 1: 1 "\f(helvetica boldital)helvetica boldital";
+rom below 1: 1 "\f(helvetica ital)helvetica ital";
+rom below 1: 1 "\f(helvetica rom)helvetica rom";
+
+rom below 1: 1 "\f(newcentury bold)newcentury bold";
+rom below 1: 1 "\f(newcentury boldital)newcentury boldital";
+rom below 1: 1 "\f(newcentury ital)newcentury ital";
+rom below 1: 1 "\f(newcentury rom)newcentury rom";
+
+rom below 1: 1 "\f(palatino bold)palatino bold";
+rom below 1: 1 "\f(palatino boldital)palatino boldital";
+rom below 1: 1 "\f(palatino ital)palatino ital";
+rom below 1: 1 "\f(palatino rom)palatino rom";
+
+rom below 1: 1 "\f(times bold)times bold";
+rom below 1: 1 "\f(times boldital)times boldital";
+rom below 1: 1 "\f(times ital)times ital";
+rom below 1: 1 "\f(times rom)times rom";
+
+bar
+
+music
+1: c;;;;
+
+rom below 1: 1 "\f(AB)AB";
+rom below 1: 1 "\f(AI)AI";
+rom below 1: 1 "\f(AR)AR";
+rom below 1: 1 "\f(AX)AX";
+
+rom below 1: 1 "\f(CB)CB";
+rom below 1: 1 "\f(CI)CI";
+rom below 1: 1 "\f(CR)CR";
+rom below 1: 1 "\f(CX)CX";
+
+rom below 1: 1 "\f(HB)HB";
+rom below 1: 1 "\f(HI)HI";
+rom below 1: 1 "\f(HR)HR";
+rom below 1: 1 "\f(HX)HX";
+
+rom below 1: 1 "\f(BB)BB";
+rom below 1: 1 "\f(BI)BI";
+rom below 1: 1 "\f(BR)BR";
+rom below 1: 1 "\f(BX)BX";
+
+rom below 1: 1 "\f(NB)NB";
+rom below 1: 1 "\f(NI)NI";
+rom below 1: 1 "\f(NR)NR";
+rom below 1: 1 "\f(NX)NX";
+
+rom below 1: 1 "\f(PB)PB";
+rom below 1: 1 "\f(PI)PI";
+rom below 1: 1 "\f(PR)PR";
+rom below 1: 1 "\f(PX)PX";
+
+rom below 1: 1 "\f(TB)TB";
+rom below 1: 1 "\f(TI)TI";
+rom below 1: 1 "\f(TR)TR";
+rom below 1: 1 "\f(TX)TX";
+bar
+
+newpage
+
+define T(FF)
+score fontfamily=FF
+music
+rom above 1: 1 "hello \f(R)roman \f(I)italic \f(B)bold and \f(X)boldital";
+rom below 1: 1 "hello \f(rom)roman \f(ital)italic \f(bold)bold and \f(boldital)boldital";
+1: c;d;e;f;
+bar
+newscore
+@
+
+T(times)
+T(avantgarde)
+T(courier)
+T(helvetica)
+T(bookman)
+T(newcentury)
+T(palatino)
+
+
+ital above 1: 1 "ital then \f(R)roman then back to \f(PV)previous";
+1: c;d;e;f;
+bar

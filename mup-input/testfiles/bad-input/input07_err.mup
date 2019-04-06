@@ -1,0 +1,27 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input07_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+score
+	vscheme=2f
+	staffs=4
+music
+3-2 2-1: 1c;
+lyrics 1: 1; [3-1] "test";
+lyrics 2: 2;; "short";
+lyrics 3: 1; "too many things";
+rom between 1&3: 2 "hello";
+ital below 1&2: 1 "xxx";
+bold between 4&5: 3 "xx";
+rom between 2: 4 "qqq";
+phrase all: 1 til 3.7m;
+bar
+score
+	visible=n
+music
+1: 1c;
+rom above all: 3 "something";
+line (a.x, a.y) to (_win.x, _win.y)
+bar

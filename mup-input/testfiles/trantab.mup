@@ -1,0 +1,137 @@
+//!Mup-Arkkra
+header
+	title bold (20) "trantab.mup"
+	paragraph (16) "\
+Test tablature staffs and their translation to ordinary notation
+(the \"tabnote\" staff).
+This includes bends and slides, and interactions with other features."
+score
+	size = 12
+	scale = 0.9
+	staffs = 4
+	beamstyle = 2, 2
+	barstyle = 1-2, 3-4
+	bracket = 1-2
+	brace = 3-4
+staff 1
+	key = 3#
+staff 2
+	stafflines = tab
+staff 3
+	clef = bass
+	key = 4&
+staff 4
+	stafflines = tab(b&3 f#3 c3 b&'2)
+music
+	rom all: 1 "beamstyle = 2, 2";
+	rom 2: 1 "stafflines = tab";
+	rom 3: 3 "octave above 3: 3 \"8va\" til 5;";
+	octave above 3: 3 "8va" til 5;
+	2: 4 e0 b0 g0 d0 a0 e'0; 16e0a0; e1a1; e2a2; e3a3; \
+		e4a4; e5a5; e6a6; e7a7; e8a8; e9a9; e10a10; e11a11;
+	rom 4: 1 "stafflines = tab(b&3 f#3 c3 b&'2)";
+	4: 4 b&0 f#0 c0 b&'0; 16b&0f#0; b&1f#1; b&2f#2; b&3f#3; \
+	b&4f#4; b&5f#5; b&6f#6; b&7f#7; b&8f#8; b&9f#9; b&10f#10; b&11f#11;
+	bar
+
+	2: 8d2; d"1/2"; d"full"; d(2)""; \
+	8.d1g4; 16d"1/4"g"1/5"; 8d2g2; 32d"1/4"g"1/2"; d2g2; d"1/4"; d"1/2";
+	3: mr;
+	rom 3: 1 "manually specify tabnote staff";
+	rom 3: 1 "as a measure rest";
+	4: 4 c3; ; ; ;
+	bar
+
+	rom 1: 1 "smallbends can't cross tuplet boundaries";
+	2: { 8d2; ; ; }3; 4d"1/4"; { 8d2; d"1/4"; d2; }3; { 8d"1/4"; d2; ; }3;
+	rom 3: 1 "smallbends combined or not based on";
+	rom 3: 1 "whether the total duration is expressible";
+	4: 8c3; 8.c"1/4"; c1; 4..c5; 16c"1/4";
+	bar
+
+	rom 1: 1 "manual beaming, grace frets";
+	2: [grace]16g0;[];   8 g2; ; bm; ebm; bm; 8; ebm; ;
+	rom 3: 1 "manual beaming, \"with\" lists";
+	4: 8 c2; [with "with"]; bm; ebm; bm; [grace]16;[]; 8; ebm; ;
+	bar
+score
+	time = 9/8
+	beamstyle = 4., 4., 4.
+	timeunit = 4.
+music
+	2: d2"full" b1"full" g3"1/2"; ; ;
+	rom 3: 1 "slashes and \(``)with\('') list interactions";
+	4: [slash 6] 8b&2c3f#3b&'2; [slash 1] b&2c3f#3b&'2; \
+		[slash 1; with "foo"] b&2; \
+		[with "foo"] 4.c5f#3; \
+		[slash 3; with "foo"] 4c3; 8c1;
+	bar
+
+	rom 1: 1 "multiple bend and release";
+	2: 4.e'0 a1 d2 g3 b4 e5; \
+		e'"1/5" a"3/5" d"3/4" g"full" b"1 2/9" e"1 1/2"; \
+		e'"" a"" d"" g"" b"" e"";
+	rom 3: 1 "many sequential bends, crossing a bar line";
+	rom between 3&4: 9 "cue";
+	4: 8 c"3/5"; c"full"; c"3/5"; c"1 1/2"; c"1/2"; c"2"; c"full"; c""; \
+		[cue] c0;
+	bar
+score
+	time = 4/4
+	beamstyle = 2, 2
+music
+	rom 1: 1 "manual beaming and smallbend interactions";
+	rom between 1&2: 1 "bm"; 1.5 "ebm"; 2.5 "bm"; \
+			3 "ebm"; 3.5 "bm"; 4.5 "ebm";
+	2: 8d2 bm; d"1/4" ebm; d2; d"1/4" bm; d2 ebm; d2 bm; d"1/4"; d2 ebm;
+	rom between 3&4: 1 "bm"; 1.25 "ebm"; 1.75 "bm"; \
+			2 "ebm"; 2.25 "bm"; 2.75 "ebm";
+	4: 16c2 bm; c"1/4" ebm; c2; c"1/4" bm; c2 ebm; c2 bm;c"1/4";c2 ebm;2c2;
+	bar
+
+	rom between 1&2: 1 "tie"; 2 "tie"; 3 "slur"; 4 "slur";
+	2: 8d2 tie; d2; d3~; d3; d2 slur; d3; d3<>; d2;
+	4: 8.c2</n>; c2<\n>; c2<n/>; c2<n\>; 4c2;
+	bar
+
+	2: 8 g5; b2; g5 b2; d9 g5 b2; a13 d9 g5; d4 g0; d5 g1; d6 g2;
+	4: 8 b&'1 c0; b&'2 c1; b&'3 c2; b&'4 c3; \
+			b&'5 c4; b&'6 c5; b&'7 c6; b&'8 c7;
+	bar
+
+	rom between 1&2: 1 "d3;"; 1.5 ";"; 2 "d(3);"; 2.5 ";"; \
+		3.0 "(d3);"; 3.5 ";"; 4 "(d(3));"; 4.5 ";";
+	2: 8 d3; ; d(3); ; (d3); ; (d(3)); ;
+	4: 8 c3<\n><n/>; c(4)<\n><n/>; (c3)<\n><n/>; (c(4))<\n><n/>; \
+			c3</n><n\>; c(4)</n><n\>; (c3)</n><n\>; (c(4))</n><n\>;
+	bar
+
+	2: d3; 4d"1 1/2"; [grace] 4d3; 4d"1 1/2"; 4d3"1 1/2";
+	4: c1; 4c"1 1/2"; [grace] 4c1; 4c"1 1/2"; 4c1"1 1/2";
+	bar
+
+	2: 2d(3)""; g2;
+	4: 8c(1)""; r; 4 c2"1/2"; c"full"; c"1 1/2";
+	bar ending "1."
+
+	2: 1g"full";
+	4: [with "with","word"] 4c2; []; [with "with","word"; slash 1] 4c2; [];
+	phrase above 3,4: 1 til 2; 3 til 4;
+        phrase below 3,4: 1 til 2; 3 til 4;
+	repeatend ending "2."
+
+	2: 1g"full";
+	4: [with "with","word"] 4c2; []; [with "with","word"; slash 5] 4c2; [];
+	phrase above 3,4: 1 til 2; 3 til 4;
+        phrase below 3,4: 1 til 2; 3 til 4;
+	bar endending
+
+	2: 1d2<>;
+	4: 2c2; c"1/2";
+	bar
+
+	newscore
+
+	2: 1d4;
+	4: 2c""; 4 c2"1/2" b&2"1/2"; ;
+	bar

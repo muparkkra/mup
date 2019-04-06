@@ -1,0 +1,19 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "paper_legal.mup"
+	paragraph (14) "This file tests legal paper size."
+footer
+	title (18) "Footer for legal paper size"
+score
+	pagesize=legal
+music
+
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+newscore
+1: e;;;;
+bar

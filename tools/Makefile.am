@@ -1,0 +1,12 @@
+if BUILD_MUPDISP
+ MUPDISP_SUBDIR=mupdisp
+else
+ MUPDISP_SUBDIR=
+endif
+if BUILD_MUPMATE
+ MUPMATE_SUBDIR=mupmate
+else
+ MUPMATE_SUBDIR=
+endif
+SUBDIRS = mup $(MUPDISP_SUBDIR) $(MUPMATE_SUBDIR) doc test
+EXTRA_DIST = mup.vim

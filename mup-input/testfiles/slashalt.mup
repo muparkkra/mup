@@ -1,0 +1,57 @@
+//!Mup-Arkkra
+header
+	title bold (18) "slashalt.mup"
+	paragraph (14) "\
+Test slashes and alternations, including cue and grace note slashes."
+score
+	scoresep = 9, 9
+	scorepad = 0
+	size = 9
+	beamstyle=4,4,4,4
+music
+	1: [cue; slash 1] 8g; [cue; slash 2] 8b; [slash 3] 8g; [slash 4]; \
+	[slash 1] 8g; [slash 2] 8g; [slash 3] 8g; [slash 4]d;
+	bar
+	1: [slash 2] 1g;
+	bar
+	1: [slash 2] 2g; [slash 2] 4; [slash 2] 8; ;
+	bar
+	1: [slash 2] 1e+;
+	bar
+	1: [slash 2] 2e+; [slash 2] 4; [slash 2] 8; ;
+	bar
+	1: [slash 1] 16e; [slash 2] 16f; [slash 3] 16g; [slash 4]a; \
+	[slash 1] 16g; [slash 2] 16g; [slash 3] 16g; [slash 4]; \
+	[grace; slash 1] 16f; 4g; [grace; slash 1] 16f+; 4g+;
+	bar
+	1: 2f alt 3; a; [cue] f alt 3; [] a;
+	bar
+	1: [grace; slash 1] 8e; 1f alt 3; a;
+	bar
+score
+	time = 8/4
+music
+	1: 1/2f alt 3; a;
+	bar
+score
+	time = 4/4
+music
+	1: 4f alt 3; 4a; [cue] 4f alt 3; [] 4a; \
+	   4f+ alt 3; 4a+; [cue] 4f+ alt 3; [] 4a+;
+	bar
+	1: 8f alt 3; 8a; 8f+ alt 3; 8a+; 8a alt 3; 8f; 8f alt 3; 8a; \
+	   [cue] 8f+ alt 3; [] 8a+; [] 8f alt 3; [] 8a; \
+	   [cue] 8a alt 3; [] 8f; [] 8f alt 3; [] 8a;
+	bar
+	1: 1d-- alt 2; g-;
+	bar
+	1: [slash 3] 1d--;
+	bar
+	1: 2d-- alt 2; g-; [slash 3] 2d-;
+	bar
+	1: [cue] 1d-- alt 2; [] g-;
+	bar
+	1: [slash 3; cue] 1d--;
+	bar
+	1: [cue] 2d-- alt 2; [] g-; [slash 3; cue] 2d-;
+	bar

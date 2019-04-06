@@ -1,0 +1,412 @@
+//!Mup-Arkkra
+
+// An example of an early notation style, with extensive use of Mup macros.
+
+score
+ topmargin=.75
+ staffs=6
+ key=1&
+ time=4/2n
+ scale=.85
+ bracket=1-6
+ barstyle=1-6
+ staffsep=14
+ warn=n
+
+define MENSUR(BARID)
+line(BARID.x,BARID.y-4) to (BARID.x,BARID.y-18)
+line(BARID.x,BARID.y-26) to (BARID.x,BARID.y-40)
+line(BARID.x,BARID.y-48) to (BARID.x,BARID.y-62)
+line(BARID.x,BARID.y-70) to (BARID.x,BARID.y-84)
+line(BARID.x,BARID.y-92) to (BARID.x,BARID.y-106)
+@
+
+define CENTERSTEMUP(NOTEID)
+line(NOTEID.x,NOTEID.y+1) to (NOTEID.x,NOTEID.y+7)
+@
+
+define CENTERSTEMDOWN(NOTEID)
+line(NOTEID.x,NOTEID.y-1) to (NOTEID.x,NOTEID.y-7)
+@
+
+define FICTA(NOTEID,HEIGHT,SYMBOL)
+print(NOTEID.x-1, NOTEID.y+HEIGHT) "\\(sm"+SYMBOL+")"
+@
+
+define OLDCCLEF(NOTEID,VO)
+line(NOTEID.x-15,NOTEID.yVO) to (NOTEID.x-15,NOTEID.y-12VO)
+line(NOTEID.x-12.5,NOTEID.y-2VO) to (NOTEID.x-12.5,NOTEID.y-10VO)
+medium line(NOTEID.x-15,NOTEID.y-3VO) to (NOTEID.x-12.5,NOTEID.y-3VO)
+medium line(NOTEID.x-15,NOTEID.y-5VO) to (NOTEID.x-12.5,NOTEID.y-5VO)
+medium line(NOTEID.x-15,NOTEID.y-7VO) to (NOTEID.x-12.5,NOTEID.y-7VO)
+medium line(NOTEID.x-15,NOTEID.y-9VO) to (NOTEID.x-12.5,NOTEID.y-9VO)
+@
+
+define OLDFCLEF(NOTEID,VO)
+line(NOTEID.x-15,NOTEID.y+.5VO) to (NOTEID.x-15,NOTEID.y-2.5VO)
+line(NOTEID.x-13,NOTEID.y+.5VO) to (NOTEID.x-13,NOTEID.y-8VO)
+medium line(NOTEID.x-15,NOTEID.y-.25VO) to (NOTEID.x-13,NOTEID.y-.25VO)
+medium line(NOTEID.x-15,NOTEID.y-1.75VO) to (NOTEID.x-13,NOTEID.y-1.75VO)
+print(NOTEID.x-12.5,NOTEID.yVO) "\(diamond)"
+print(NOTEID.x-12.5,NOTEID.y-2VO) "\(diamond)"
+line(NOTEID.x-11.15,NOTEID.y+1VO) to (NOTEID.x-11.15,NOTEID.y+4VO)
+line(NOTEID.x-11.15,NOTEID.y-3VO) to (NOTEID.x-11.15,NOTEID.y-9VO)
+@
+
+define OLDFLAT(NOTEID,VO,LENGTH)
+print(NOTEID.x-9,NOTEID.y VO) "\f(TR)o"
+line(NOTEID.x-8.7,NOTEID.y+.5 VO) to (NOTEID.x-8.7,NOTEID.y+LENGTH VO)
+@
+
+define LONGAUP(NOTEID,VO)
+line(NOTEID.x-1,NOTEID.y+1.5VO) to (NOTEID.x-1,NOTEID.y-1.5VO)
+line(NOTEID.x+1,NOTEID.y-1.5VO) to (NOTEID.x+1,NOTEID.y+7VO)
+medium line(NOTEID.x-1,NOTEID.y+.75VO) to (NOTEID.x+1,NOTEID.y+.75VO)
+medium line(NOTEID.x-1,NOTEID.y-.75VO) to (NOTEID.x+1,NOTEID.y-.75VO)
+@
+
+define LONGADOWN(NOTEID,VO)
+line(NOTEID.x-1,NOTEID.y+1.5VO) to (NOTEID.x-1,NOTEID.y-1.5VO)
+line(NOTEID.x+1,NOTEID.y+1.5VO) to (NOTEID.x+1,NOTEID.y-7VO)
+medium line(NOTEID.x-1,NOTEID.y+.75VO) to (NOTEID.x+1,NOTEID.y+.75VO)
+medium line(NOTEID.x-1,NOTEID.y-.75VO) to (NOTEID.x+1,NOTEID.y-.75VO)
+@
+
+define BREVE(NOTEID,VO)
+line(NOTEID.x-1,NOTEID.y+1.5VO) to (NOTEID.x-1,NOTEID.y-1.5VO)
+line(NOTEID.x+1,NOTEID.y+1.5VO) to (NOTEID.x+1,NOTEID.y-1.5VO)
+medium line(NOTEID.x-1,NOTEID.y+.75VO) to (NOTEID.x+1,NOTEID.y+.75VO)
+medium line(NOTEID.x-1,NOTEID.y-.75VO) to (NOTEID.x+1,NOTEID.y-.75VO)
+@
+
+define AUGDOT(NOTEID)
+print(NOTEID.x+2,NOTEID.y) "\(dot)"
+@
+
+define LIGATURE(NOTEID1,NOTEID2,VO1,VO2)
+line(NOTEID1.x-2,NOTEID1.y+7VO1) to (NOTEID2.x+2,NOTEID2.y+7VO2)
+line(NOTEID1.x-2,NOTEID1.y+7VO1) to (NOTEID1.x-2,NOTEID1.y+7VO1-1)
+line(NOTEID2.x+2,NOTEID2.y+7VO2) to (NOTEID2.x+2,NOTEID2.y+7VO2-1)
+@
+
+define EXTENDER(NOTEID,HO1,HO2,VO)
+line(NOTEID.x+2HO1,NOTEID.y-7VO) to (NOTEID.x+2HO2,NOTEID.y-7VO)
+@
+
+define DASH(NOTEID,HO,VO)
+print(NOTEID.x+2HO,NOTEID.y-7VO) "-"
+@
+
+define WHOLEREST(NOTEID)
+wide line(NOTEID.x,NOTEID.y+2) to (NOTEID.x,NOTEID.y+.75)
+@
+
+define HALFREST(NOTEID)
+wide line(NOTEID.x,NOTEID.y) to (NOTEID.x,NOTEID.y+1.25)
+@
+
+header
+  title "Victimae paschali laudes"
+  title "Johannes Brunet"
+  title ""
+  
+staff 1
+ vscheme = 1
+ clef = soprano
+ stafflines = 5n
+
+staff 2
+ vscheme = 1
+ clef = alto
+ stafflines = 5n
+
+staff 3
+ vscheme = 1
+ clef = alto
+ stafflines = 5n
+
+staff 4
+ vscheme = 1
+ clef = tenor
+ stafflines = 5n
+
+staff 5
+ vscheme = 1
+ clef = bass
+ stafflines = 5n
+
+staff 6
+ vscheme = 1
+ clef = bass
+ stafflines = 5n
+
+music
+//bar 1 
+1 1: [pad 12;diam;len 0]2b& =_n1; [pad -5;diam;len 0] 2.a =_n2;[diam;len 0]4g =_n3; [diam;len 0]2g =_n4;
+lyrics below 1: 1/2; "(ya)_";
+ifdef MIDI
+2 1: 1r =_r1;2r;[diam;len 0]...2c =_n5;
+else
+2 1: [=_s11]1s;[=_s12]2s;[diam;len 0]...2c =_n5;
+WHOLEREST(_s11)
+HALFREST(_s12)
+endif
+lyrics below 2: "al-";
+3 1: [diam;len 0]...1d =_n6; 2b&3 =_n7; 2c =_n8;
+lyrics below 3: 1/2; "ya,_";
+4 1: [diam;len 0]...2g =_n9; 2f =_n10; 1g =_n11;
+lyrics below 4: 1/2; "(ya),_";
+5 1: [diam;len 0]...2b&2 =_n12; 2f =_n13; 1e(&) =_n14;
+lyrics below 5: 1;1; "le-lu-";
+6 1: [diam;len 0]...2g2 =_n15; 2d =_n16; 2e(&) =_n17; 2c =_n18;
+lyrics below 6: "ya, \f(TI)al-le-lu";
+invisbar =_bar1
+OLDCCLEF(_n1,+0)  //staff 1
+OLDFLAT(_n1,-1,9)   //staff 1
+OLDFLAT(_n1,-8,5)   //staff 1
+OLDCCLEF(_n1,-18) //staff 2
+OLDFLAT(_n1,-26,9)  //staff 2
+OLDCCLEF(_n6,+5)  //staff 3
+OLDFLAT(_n6,-3,9)  //staff 3
+OLDCCLEF(_n9,+9)  //staff 4
+OLDFLAT(_n9,+1,9)   //staff 4
+OLDFCLEF(_n12,+5) //staff 5
+OLDFLAT(_n12,-1,9)  //staff 5
+OLDFCLEF(_n15,+7) //staff 6
+OLDFLAT(_n15,+1,9)  //staff 6
+CENTERSTEMDOWN(_n1)
+CENTERSTEMUP(_n2)
+CENTERSTEMUP(_n3)
+CENTERSTEMUP(_n4)
+CENTERSTEMUP(_n5)
+CENTERSTEMUP(_n7)
+CENTERSTEMUP(_n8)
+CENTERSTEMUP(_n9)
+CENTERSTEMUP(_n10)
+CENTERSTEMUP(_n12)
+CENTERSTEMDOWN(_n13)
+FICTA(_n14,5,"flat")
+CENTERSTEMUP(_n15)
+CENTERSTEMUP(_n16)
+CENTERSTEMUP(_n17)
+FICTA(_n17,9,"flat")
+CENTERSTEMUP(_n18)
+MENSUR(_bar1)
+
+//bar 2
+ifdef MIDI
+1 1: [pad 1;diam;len 0]...2f =_n19; 4d =_n20; 4e(&) =_n21; 4f =_n22; 4g =_n23; 2a~ =_n24;
+else
+1 1: [pad 1;diam;len 0]...2f =_n19; 4d =_n20; 4e(&) =_n21; 4f =_n22; 4g =_n23; 2a =_n24;
+AUGDOT(_n24)
+endif
+lyrics below 1: 2s;1;2; "al-le";
+CENTERSTEMUP(_n19)
+CENTERSTEMUP(_n20)
+CENTERSTEMUP(_n21)
+CENTERSTEMUP(_n22)
+CENTERSTEMUP(_n23)
+CENTERSTEMUP(_n24)
+FICTA(_n21,9,"flat")
+2 1: [diam;len 0]...2.f =_n25; 4e(&) =_n26; 4d =_n27; 4c =_n28; 2f =_n29;
+lyrics below 2: 1;1s; "le";
+DASH(_n26,-3,-4)
+CENTERSTEMDOWN(_n25)
+CENTERSTEMDOWN(_n26)
+CENTERSTEMDOWN(_n29)
+CENTERSTEMUP(_n27)
+CENTERSTEMUP(_n28)
+FICTA(_n26,4,"flat")
+3 1: [diam;len 0]...1a3 =_n30; 1d =_n31;
+lyrics below 3: 1/2; "al";
+DASH(_n31,-2,-3)
+LIGATURE(_n30,_n31,+2,-1)
+ifdef MIDI
+4 1: 2r;[diam;len 0]...2d4 =_n32; 2a3 =_n33; 2d4~ =_n34;
+else
+4 1: [=_s21]2s;[diam;len 0]...2d4 =_n32; 2a3 =_n33; 2d4 =_n34;
+AUGDOT(_n34)
+HALFREST(_s21)
+endif
+lyrics below 4: "al-le-lu";
+CENTERSTEMDOWN(_n32)
+CENTERSTEMDOWN(_n34)
+CENTERSTEMUP(_n33)
+5 1: [diam;len 0]...2d =_n35; 2.f =_n36; 4e(&) =_n37; 2d =_n38;
+lyrics below 5: 1/2; "ya,_";
+CENTERSTEMUP(_n35)
+CENTERSTEMUP(_n37)
+CENTERSTEMUP(_n38)
+CENTERSTEMDOWN(_n36)
+FICTA(_n37,9,"flat")
+ifdef MIDI
+6 1: [diam;len 0]...1d =_n39; 2r; 2d =_n40;
+else
+6 1: [diam;len 0]...1d =_n39; [=_s22;diam;len 0]...2s; 2d =_n40;
+HALFREST(_s22)
+endif
+lyrics below 6: "ya, \f(TR)al-";
+CENTERSTEMUP(_n40)
+invisbar =_bar2
+MENSUR(_bar2)
+
+//bar 3
+ifdef MIDI
+1 1: [pad 2;diam;len 0]...4a =_n41; 4g =_n42; 1g =_n43; 2f(#) =_n44;
+else
+1 1: [diam;len 0]...4s; 4g =_n42; 1g =_n43; 2f(#) =_n44;
+endif
+DASH(_n43,-2,-2)
+DASH(_n44,+3,-1)
+lyrics below 1: 2s;1s;2; "lu";
+CENTERSTEMUP(_n42)
+CENTERSTEMUP(_n44)
+FICTA(_n44,10,"sharp")
+2 1: [pad 1;diam;len 0]...2g =_n45; 2e(&) =_n46; 4f =_n47; 4e(&) =_n48; 4d =_n49; 4c =_n50;
+lyrics below 2: 1s;1; "lu";
+DASH(_n45,+0,-6)
+DASH(_n49,-2,-3)
+CENTERSTEMDOWN(_n45)
+CENTERSTEMDOWN(_n46)
+CENTERSTEMDOWN(_n47)
+CENTERSTEMDOWN(_n48)
+CENTERSTEMUP(_n49)
+CENTERSTEMUP(_n50)
+FICTA(_n46,4,"flat")
+FICTA(_n48,4,"flat")
+3 1: [diam;len 0]...2b&3 =_n51; 2g3 =_n52; 1a3 =_n53;
+lyrics below 3: 1;1; "le-lu";
+DASH(_n53,+4,+0)
+CENTERSTEMUP(_n51)
+CENTERSTEMUP(_n52)
+ifdef MIDI
+4 1: [diam;len 0]...4d4 =_n54; 4b&3 =_n55; 2c4 =_n56; 1d4 =_n57;
+else
+4 1: [diam;len 0]...4s; 4b&3 =_n55; 2c4 =_n56; 1d4 =_n57;
+endif
+DASH(_n56,+1,-4)
+CENTERSTEMDOWN(_n55)
+CENTERSTEMDOWN(_n56)
+5 1: [diam;len 0]...2g =_n58; 2c =_n59; 2.f =_n60; 4d =_n61;
+lyrics below 5: 2;2;1; "al-le-lu-";
+CENTERSTEMDOWN(_n58)
+CENTERSTEMUP(_n59)
+CENTERSTEMDOWN(_n60)
+CENTERSTEMUP(_n61)
+6 1: [diam;len 0]...1e(&) =_n62; 1d =_n63;
+lyrics below 6: "le-lu-";
+FICTA(_n62,5,"flat")
+invisbar =_bar3
+MENSUR(_bar3)
+
+//bar 4
+ifdef MIDI
+1 1: [pad 2;diam;len 0]...1/2g =_n64;
+else 
+1 1: [pad 2;=_n64]1/2us;
+print (_n64.x-1.5,_n64.y-9.25) "ya!"
+LONGADOWN(_n64,+0)
+endif
+ifdef MIDI
+2 1: [diam;len 0]...1b&3 =_n65; 2r; 2b&3 =_n66;
+else
+2 1: [diam;len 0]...1b&3 =_n65; [=_s41]2s; [diam;len 0]...2b&3 =_n66;
+HALFREST(_s41)
+endif
+lyrics below 2: "ya, al-";
+CENTERSTEMUP(_n66)
+ifdef MIDI
+3 1: [diam;len 0]...1/2g3 =_n67;
+else
+3 1: [=_n67]1/2us;
+print(_n67.x-1.5,_n67.y-9.25) "ya!"
+LONGAUP(_n67,-3)
+endif
+ifdef MIDI
+4 1: [diam;len 0]...1/2d4 =_n68;
+else
+4 1: [=_n68]1/2us;
+print(_n68.x-1.5,_n68.y-9.25) "ya,"
+BREVE(_n68,+3)
+endif
+5 1: [diam;len 0]...2d =_n69; 2.g =_n70; 4f =_n71; 4e(&) =_n72; 4d =_n73;
+lyrics below 5: 1;1s; "ya!";
+EXTENDER(_n69,+4,+70,-2)
+CENTERSTEMUP(_n69)
+CENTERSTEMDOWN(_n70)
+CENTERSTEMDOWN(_n71)
+CENTERSTEMUP(_n72)
+CENTERSTEMUP(_n73)
+FICTA(_n72,9,"flat")
+6 1: [diam;len 0]...1g2 =_n74; 2.g =_n75; 4f =_n76;
+lyrics below 6: 1;1s; "ya!";
+EXTENDER(_n74,+4,+70,+1.5)
+LIGATURE(_n74,_n75,+4,-3)
+CENTERSTEMDOWN(_n75)
+CENTERSTEMDOWN(_n76)
+invisbar =_bar4
+MENSUR(_bar4)
+
+//bar 5
+1 1: ms; 
+2 1: [pad 2;diam;len 0]...2c =_n77; 2b&3 =_n78; 1c =_n79;
+lyrics below 2: 1;1; "le-lu";
+DASH(_n79,+3.5,-2)
+CENTERSTEMUP(_n77)
+CENTERSTEMUP(_n78)
+3 1: ms;
+ifdef MIDI
+4 1: 2r; [diam;len 0]...2d4 =_n80; 2.g3 =_n81; 4a3 =_n82;
+else
+4 1: [=_s51]2s; [diam;len 0]...2d4 =_n80; 2.g3 =_n81; 4a3 =_n82;
+HALFREST(_s51)
+endif
+lyrics below 4: "al-le-lu";
+DASH(_n82,+0,-2)
+CENTERSTEMDOWN(_n80)
+CENTERSTEMUP(_n81)
+CENTERSTEMUP(_n82) 
+5 1: [diam;len 0]...2c =_n83; 2d =_n84; 1e(&) =_n85;
+CENTERSTEMUP(_n83)
+CENTERSTEMUP(_n84)
+FICTA(_n85,5,"flat")
+6 1: [diam;len 0]...2e(&) =_n86; 2d =_n87; 2.c =_n88; 4b&2 =_n89;
+CENTERSTEMUP(_n86)
+CENTERSTEMUP(_n87)
+CENTERSTEMUP(_n88)
+CENTERSTEMUP(_n89)
+FICTA(_n86,9,"flat")
+invisbar =_bar5
+MENSUR(_bar5)
+
+//bar 6
+1 1: ms;
+ifdef MIDI
+2 1: [diam;len 0]...1/2d =_n90;
+else
+2 1: [=_n90]1/2us;
+print(_n90.x-1.5,_n90.y-9.25) "ya!"
+LONGADOWN(_n90,+1)
+endif
+3 1: ms;
+ifdef MIDI
+4 1: [diam;len 0]...1/2b(n)3 =_n91;
+else
+4 1: [=_n91]1/2us;
+print(_n91.x-1.5,_n91.y-9.25) "ya!"
+LONGADOWN(_n91,+1)
+endif
+FICTA(_n91,7,"nat")
+ifdef MIDI
+5 1: [diam;len 0]...1/2d =_n92; 
+else
+5 1: [=_n92]1/2us;
+LONGADOWN(_n92,+0)
+endif
+ifdef MIDI
+6 1: [diam;len 0]...1/2g2 =_n93;
+else
+6 1: [=_n93]1/2us;
+LONGAUP(_n93,-4)
+endif
+endbar

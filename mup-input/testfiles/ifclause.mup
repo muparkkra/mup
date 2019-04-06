@@ -1,0 +1,109 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "ifclause.mup"
+	paragraph (13) "This file tests 'if' clauses."
+
+score
+	scale=1.2
+music
+
+define FOO @
+define FIVE 5 @
+
+
+1: c;;;;
+if defined FOO && ! defined(BAR) then
+rom above 1: 1 "using defined(), FOO is defined and BAR isn't";
+endif
+ifdef FOO
+rom above 1: 1 "using ifdef way, FOO is set";
+endif
+if  FIVE < 17 then
+	// This is a comment inside an if
+	rom below 1: 3 "FIVE < 17";
+endif
+if  FIVE == 5 then
+	rom below 1: 3 "FIVE == 5";
+endif
+if  FIVE == 25 / FIVE then
+	rom below 1: 3 "FIVE == 25 / FIVE";
+endif
+if FIVE | 0x4 == 04 then
+	rom below 1: 1 "bit for 4 is set in 5";
+endif
+if FIVE | 0x2 == 0 then
+	rom below 1: 1 "bit for 2 is not set in 5";
+endif
+
+// test operations
+
+define TEST(E, N)
+	if E then
+		rom below 1: 1 `N`+ " works";
+	else
+		
+		rom below 1: 1 `N`+ " FAILS!!!!!!!!!!!!!!!!!!";
+	endif
+@
+
+TEST(  (3+4\)*5==35, parentheses)
+TEST(-(4\) == 0 - 4, unary minus)
+TEST(+4 == 4, unary plus)
+TEST(!(1 == 2\), negation)
+TEST(~1000 == -1001, one's complement)
+
+TEST(3*4 == 12, multiplication)
+TEST(12/4 == 3, division)
+TEST(8%3 == 2, modulo)
+
+TEST(5+4==9, addition)
+TEST(5-4==1, subtraction)
+
+TEST(1 << 2 == 4, left shift)
+TEST(12 >> 2 == 3, right shift)
+
+TEST(6<7, less than)
+TEST(9>3, greater than)
+TEST(7<=7, less than or equal)
+TEST(23>=21, greater than or equal)
+
+TEST(99==99, equals)
+TEST(-42 != 42, not equals)
+
+TEST((12&7\) == 4, bitwise and)
+TEST((5^7\) ==2, bitwise xor)
+TEST((7|8\) == 15, bitwise or)
+
+TEST( 5 == 2+3 && 79-1==78, logical and)
+TEST( 3 < 2 || 18>=18, logical or)
+
+TEST(  ((3 < 4\) ? 1 : 5\) == 1, interrogation-true)
+TEST(  ((3 > 4\) ? 1 : 5\) == 5, interrogation-false)
+
+TEST( UNDEFINED == 0, undefined macros having value zero)
+
+if 9<8 then
+	rom below 1: 1 " there is a bug!!!!!!";
+else
+	rom below 1: 1 " getting to Else clause works";
+endif
+
+if 3 > 4 then
+	this is a bug
+else
+	if 6 == 5 then
+		this is a bug too
+	else
+		rom below 1: 1 " nested if works";
+	endif
+endif
+
+define X 7 @
+define Y X @
+TEST(Y == 7, indirect)
+
+define MACWITHP(A,B,C)  A B C @
+TEST(MACWITHP(  \, 42\,   \) == 42, macros with parameters)
+
+bar

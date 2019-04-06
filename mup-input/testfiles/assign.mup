@@ -1,0 +1,225 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "assign.mup"
+	paragraph (14) "This file tests that all SSV parameters can be set in appropiate contexts."
+	title ""
+
+keymap "map1"
+	"a" "A!"
+	"at" "@"
+keymap "map2"
+	"and" "&"
+	"or" "|"
+
+accidentals "acc1"
+	"sharp" f 135/128
+
+score
+	staffs=6
+	a4freq=450
+	aboveorder=mussym,octave,dyn,reh,ending,lyrics,chord&othertext
+	beloworder=mussym,octave,dyn,lyrics,chord&othertext
+	betweenorder=mussym,dyn,lyrics,othertext,chord
+	acctable="acc1"
+	addtranspose=down min 2
+	alignped=n
+	alignrests=y
+	barstyle=3,  1-2
+	botmargin=0.6
+	brace=4, 2-3
+	bracket=5-6, 1
+	bracketrepeats=y
+	cancelkey=n
+	carryaccs=y
+	repeatdots=standard
+	chorddist=5
+	lyricsdist=8
+	dyndist=4
+	emptymeas="mr;"
+	endingkeymap="map1"
+	useaccs=y nonnat
+	clef=baritone
+	cue=n
+	defaultkeymap=
+	extendlyrics=n
+	firstpage=5
+	flipmargins=y
+	defoct=2
+	dist=7
+	endingstyle=top
+	font=ital
+	fontfamily=palatino
+	gridfret=4
+	gridswhereused=y
+	gridscale=0.8
+	gridsatend=y
+	indentrestart=y
+	key=3& min
+	label="lab"
+	label2="lab2"
+	labelkeymap="map1"
+	leftspace=0.3,6
+	leftmargin=0.8
+	lyricsfont=bold
+	lyricssize=14
+	lyricsalign=0.2
+	lyricskeymap="map2"
+	maxmeasures=20
+	maxscores=10
+	measnum=y
+	measnumfont=rom
+	measnumfontfamily=helvetica
+	measnumsize=18
+	measnumstyle=boxed
+	minalignscale=0.5
+	mingridheight=6
+	noteheads="norm"
+	noteinputdir=down
+	numbermrpt=y
+	ontheline=y
+	pad=3.5
+	warn=n
+	pageheight=11
+	pagewidth=8.5
+	panelsperpage=1
+	printkeymap="map2"
+	rehearsalkeymap="map1"
+	rehstyle=boxed
+	release=20
+	repeatdots=all
+	restcombine=15
+	restsymmult=y
+	scale=0.95
+	staffpad=5
+	staffscale=1.1
+	stemlen=4.5
+	stemshorten=0.3,5.0,5,7
+	subbarstyle=dotted dblbar (top-2 to bottom-2) 1 time 3
+	swingunit=4.
+	sylposition=3
+	tabwhitebox=y
+	textkeymap="map1"
+	tuning=equal
+	units=inches
+	vcombine=1 shareone
+	packexp=0.9
+	packfact=0.8
+	rightmargin=0.7
+	scorepad=3
+	scoresep=16
+	size=15
+	slashesbetween=y
+	stafflines=5
+	staffsep=20
+	time=64/64
+	timeunit=4.
+	beamstyle=4,4.,4.
+	beamslope=0.5,35
+	topmargin=0.95
+	transpose=up min 3
+	visible=y
+	vscheme=1
+	division=384
+	pedstyle=pedstar
+	withsize=11
+	withfont=ital
+	withfontfamily=helvetica
+	withkeymap="map2"
+
+staff 2
+	alignrests=y
+	beamstyle=4,2,4
+	chorddist=9
+	lyricsdist=4
+	useaccs=y all
+	clef=treble
+	defoct=5
+	dist=9
+	font=rom
+	key=7# min
+	label="s"
+	label2="sss"
+	lyricsfont=rom
+	lyricssize=8
+	mingridheight=8
+	size=11
+	stafflines=5n
+	timeunit=2
+	transpose=down dim 3
+	visible=y
+	vscheme=2o
+	aboveorder=mussym,octave,dyn,reh,ending,lyrics,chord&othertext
+	beloworder=mussym,octave,dyn,lyrics,chord&othertext
+	betweenorder=mussym,dyn,lyrics,othertext,chord
+	addtranspose=up perfect 4
+	alignped=y
+	dyndist=5
+	emptymeas="ms;"
+	endingkeymap="map1"
+
+staff 4
+	alignrests=y
+	repeatdots=all
+	visible=n
+	clef=bass
+	cue=n
+	defaultkeymap="map2"
+	defoct=3
+	extendlyrics=n
+	fontfamily=courier
+	gridfret=6
+	gridswhereused=n
+	gridscale=0.85
+	labelkeymap="map1"
+	lyricskeymap="map2"
+	minalignscale=0.75
+	noteheads="pie"
+	noteinputdir=down
+	numbermrpt=y
+	ontheline=y
+	pad=3.5
+	rehearsalkeymap="map2"
+	rehstyle=boxed
+	release=20
+	repeatdots=all
+	restsymmult=y
+	staffpad=5
+	staffscale=1.1
+	stemlen=4.5
+	stemshorten=0.3,5.0,5,9
+	swingunit=8.
+	sylposition=3
+	tabwhitebox=y
+	textkeymap="map1"
+
+staff 5
+	clef=alto
+
+voice 3 1
+	alignrests=n
+	beamstyle=2,2
+	defoct=2
+	timeunit=8
+	beamslope=0.2,39
+	cue=y
+	emptymeas="mr;"
+	extendlyrics=y
+	noteheads="rect"
+	noteinputdir=up
+	ontheline=n
+	pad=6
+	release=50
+	stemlen=8
+	stemshorten=1,3,2,5
+	swingunit=2
+	tabwhitebox=y
+	withfont=bold
+	withfontfamily=courier
+	withsize=8
+
+
+music
+1-6: 4c;;;;
+repeatend
+

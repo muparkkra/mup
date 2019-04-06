@@ -1,0 +1,19 @@
+//!Mup-Arkkra
+header
+	title bold (18) "paper_flsa.mup"
+	paragraph (14) "This file tests flsa paper size."
+footer
+	title (18) "Footer for flsa paper size"
+score
+	pagesize=flsa
+
+music
+
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+newscore
+1: e;;;;
+bar

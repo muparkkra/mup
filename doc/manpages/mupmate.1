@@ -1,0 +1,83 @@
+.TH mupmate 1 "November 22, 2012" "Arkkra Enterprises"
+.SH NAME
+.PP
+mupmate \- user interface for Mup music publisher
+.SH SYNOPSIS
+.PP
+mupmate [\fIfile\fP]
+.SH DESCRIPTION
+.PP
+.P
+You can create a Mup file using any ordinary text editor.
+On Windows, Notepad is a typical choice; on Linux, editors like
+vim and emacs are commonly used. But if you prefer to be able to
+edit, display, and play from a single integrated and more graphical
+interface, a helper program called "mupmate" is provided. Mupmate is currently
+supported on Windows, Apple Mac OS\-X, and Linux.
+However, since the source code is
+available, and it is based on the cross\(hyplatform FLTK toolkit, it
+can probably be made to run on any system supported by FLTK fairly easily.
+If you prefer to use the Mup program directly rather than via mupmate,
+you can.  The Mupmate program just helps lead you through some of the steps.
+.PP
+Once you have installed Mup and Mupmate on Windows, double clicking
+a .mup file in Windows explorer will run Mupmate on that file.
+Or, you can run Mupmate by going to the Start menu, and choosing
+Programs, then Arkkra, and then Mupmate.  If you would like an icon
+on the desktop, you can create one by right clicking
+the Mupmate choice in the Arkkra menu,
+choosing "copy", right clicking somewhere on the desktop, and choosing "paste."
+.PP
+On Linux, you can just type the mupmate command,
+optionally followed by the name of a Mup input file. 
+Or you can add mupmate to your favorite window manager's menus.
+.P
+On Mac OS\-X, you can double\(hyclick on the MupMate.app in Finder.
+You should also be able to double\(hyclick any file with a .mup suffix,
+which should then run Mupmate on that file.
+For setting paths in the Preferences, several "magic" variables are set
+automatically, if you have not already set them to something else.
+$APPL is set to the top of the application directory hierarchy.
+$RSRC is effectively set to $APPL/MupMate.app/Contents/Resources.
+$HOME is set to your home directory.
+$SUPP is set to your applications support folder
+(which is typically $HOME/Library/Application Support).
+$DOCS is set to your document folder (which is typically $HOME/Documents).
+.P
+Mupmate provides five top level menus: File, Edit, Run, Config, and Help.
+The File menu provides commands for opening new files and saving the
+file you are working on, as well as exit the program. The Edit menu
+provides the kinds of things you would expect in a editor: commands to find
+a pattern, or find and replace; to select text; to copy, cut, and paste;
+to go to a specific line; and to undo the previous operation, if you make
+a mistake or change you mind.
+The Run menu lets you set runtime options,
+and then run the Mup program on your input in various
+ways. You can either just generate a PostScript or MIDI file,
+or display the PostScript or play the MIDI.
+The Config menu lets you specify what application program you want
+to use to view PostScript files and which you want to use to play MIDI files,
+and well as specify locations for other Mup files. Mupmate will try to
+find reasonable default values, but you may want to check that they are
+what you want, and tweak them if they aren't.
+For paths, you can include environment variables to be expanded, by giving their name preceded by a dollar sign.
+A tilde by itself will be expanded to your home directory, whereas a tilde
+followed by the name of a user will be expanded to that user's home directory.
+The Help menu lets you browse the Mup User's Guide, view some startup hints,
+view the Mup license,
+or see the current version number of Mup and Mupmate.
+.SH "SEE ALSO"
+.PP
+gs(1), mup(1).
+.br
+Mup \(em Music Publisher User's Guide
+.SH "CAVEATS"
+.PP
+Mupmate is currently only supported on Microsoft Windows, Apple Mac OS\-X,
+and Linux or similar.
+.PP
+Mupmate does not directly provide a print facility. Almost any PostScript
+viewer already provides this ability, so you can simply select "Display"
+from the Run menu and use the viewer's print capabilities.
+Alternately you can use the "Write PostScript File" from the Run menu
+and then print the resulting file.

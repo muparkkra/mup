@@ -1,0 +1,88 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "measnum.mup"
+	paragraph (13) "This files tests measure numbering."
+
+score
+	scale=1.1
+
+define A
+1: c;d;e;f;
+bar
+
+1: c;d;e;f;
+bar
+
+1: g;f;d;c;
+bar
+@
+
+score measnum=every 1
+music
+rom above 1: 1 "measnum=every 1";
+A
+
+score measnumstyle=boxed; measnumfont=bold; measnumfontfamily=palatino
+music
+rom above 1: 1 "measnumstyle=boxed";
+A
+
+score measnumstyle=circled
+music
+rom above 1: 1 "mnstyle=circled";
+A
+
+1:a;b;g;f;
+bar reh let
+
+1: g;f;e;d;
+bar
+
+rom above 1: 4 "subtract 1";
+1: e;f;g;e;
+bar mnum -1
+
+1: f;g;a;g;
+bar
+
+rom above 1: 4 "add 1";
+1: e;f;g;e;
+bar mnum +1
+
+1: f;g;a;g;
+bar
+
+score measnum=every 2 ; measnumstyle=plain
+music
+rom above 1: 1 "measnum=every 2";
+rom above 1: 1 "measnumstyle=plain";
+A
+A
+
+score measnum=every 5
+music
+rom above 1: 1 "measnum=every 5";
+A
+A
+
+A
+A
+
+score measnum=y
+music
+
+rom above 1: 1 "measnum=y";
+1: f;g;e;d;
+bar
+
+newscore
+A
+newscore
+A
+
+score measnum=n
+music
+newscore
+rom above 1: 1 "measnum=n";
+A

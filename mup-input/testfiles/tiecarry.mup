@@ -1,0 +1,56 @@
+//!Mup-Arkkra
+
+header
+	title bold (9) "tiecarry.mup"
+	paragraph (7) "This file tests ties that carry over to the following score."
+
+score scale=2
+music
+1: ceg;;;;
+bar
+1: ceg;;; tie;
+bar
+newscore
+1: ceg;;;;
+bar
+1: ceg;;;;
+bar
+1: 1ceg tie;
+bar
+newscore
+1: 1ceg;
+bar
+1: ceg;;;;
+bar
+score time=4/2
+music
+1: 1/2ceg tie;
+bar
+newscore
+1: 1/2ceg;
+bar
+1: 2ceg;;;;
+bar
+newpage
+1: 2c+e+g+;;;;
+bar
+1: 2c+e+g+;;; tie;
+bar
+newscore
+1: 2c+e+g+;;;tie;
+bar
+newscore
+1: 1/2c+e+g+;
+bar
+1: 2c+e+g+;;; tie;
+bar
+newscore
+1: 1c+e+g+;;
+bar
+1: 2ceg;;; tie;
+bar
+newscore
+1:2ceg;;;;
+bar
+1:2ceg;;;;
+bar

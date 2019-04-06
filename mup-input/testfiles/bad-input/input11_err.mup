@@ -1,0 +1,45 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input11_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+// stem direction illegal on grace
+1: [grace; up] 8c; 1d;
+bar
+// stem dir must match in alt pair
+1: [up]1c alt 2; [down]e;
+bar
+// stem dir illegal on rest and space
+1: [up]r;[]e+;[]s;g;
+bar
+
+// illegal uses of stem length
+1: [len 3]c;;;;
+bar
+
+1: c; [len 9]c alt 2;[pad 2]c;;;
+bar
+
+1: c;[len 9]r;2d;
+bar
+
+1: c; [len 10]s; 2d;
+bar
+// test invalid uses of m and 1/4
+score
+	timeunit=1/4m
+	beamstyle=1/4m
+music
+1: 1ms;
+bar
+1: 1mr;
+bar
+1: 1 mrpt;
+bar
+1: 1 mus;
+bar
+1: 1/4s;
+bar
+1: 1/4g;
+bar

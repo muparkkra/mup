@@ -1,0 +1,626 @@
+//!Mup-Arkkra
+define C rom chord all @
+define W lyrics between 1&2 @
+
+top
+	title (24) "Love Is Patient"
+	title (12) "       I Corinthians 13" "Michael Hayashida"
+	title (12) "       1/17/95" ""
+
+top2
+	title (18) "" "Love Is Patient" "page \%"
+
+bottom
+	title(12) "\(copyright) Copyright 1995 Michael F. Hayashida"
+	title(11)	"Published by Arkkra Enterprises" \
+			"http://www.arkkra.com"
+
+score
+	staffs = 5
+	time = 4/4
+	beamstyle = 2, 2
+	barstyle = 1-3, 4-5
+	measnum = y
+	scale = 0.70
+	scoresep = 12, 35
+	font = rom
+	size = 15
+	bracket = 4-5("Guitar")
+
+staff 1
+	label = "Alto"
+	label2 = "A"
+staff 2
+	clef = bass
+	label = "Tenor 1"
+	label2 = "T1"
+staff 3
+	clef = bass
+	label = "Tenor 2"
+	label2 = "T2"
+staff 5
+	stafflines = tab
+
+
+// Define the guitar picking sequences here, since for each given chord they
+// are usually the same.  Then just call the appropriate one from each measure.
+
+define INTRO_C		5: 8g0; b1; e0; b1; g0; b1; e0; b1; @
+define INTRO_CSUS	5: 8g0; b1; e1; b1; g0; b1; e1; b1; @
+define VC		5: 8a3; g0; b1; g0; e0; b1; g0; d2; @
+define VF		5: 8e'1; d3; b1; g2; e1; b1; g2; d3; @
+define VG		5: 8e'3; d0; b3; g0; e3; b3; g0; d0; @
+define VG7		5: 8e'3; d0; b3; g0; e1; b3; g0; d0; @
+define VAM		5: 8a0; g2; b1; g2; e0; b1; g2; d2; @
+define VDM		5: 8d0; g2; b3; g2; e1; b3; g2; d0; @
+define VEM		5: 8e'0; d2; b0; g0; e0; b0; g0; b0; @
+define VBFLAT		5: 8d3; g3; b3; g3; e1; b3; g3; b3; @
+
+music
+	midi all: 0 "tempo=65";
+	midi 1-3: 0 "channel=1"; 0 "program=73";	// flute (really voice)
+	midi 4: 0 "channel=1"; 0 "program=24";		// nylon guitar
+
+	rom all: 1 "INTRO";
+	C: 1 "C/G";
+	1-3: mr;
+	INTRO_C
+	ital below all: 1 "String bass tacet until verse 1";
+	bar
+
+	C: 1 "Csus/G";
+	1-3: mr;
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1-3: mr;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1-2: mr;
+	3: 4.c+<>; 8b~; 4<>; c+~;
+	lyrics 3:			"ah_";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 4.e<>; 8d~; 4<>; 8e<>; f~;
+	lyrics 1:			"ah_";
+	2: mr;
+	3: 1c+~;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f<>;
+	2: 4.c+<>; 8b~; 4<>; 8c+<>; e+~;
+	lyrics 2:			"ah_";
+	3: 2c+<>; a<>;
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 1g<>;
+	2: 1e+<>;
+	3: 1g;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f;
+	2: 1f+<>;
+	3: 4c+; 8; b~; 4; 8c+; ~;
+	lyrics 3:			"Nev-er en-vi-ous,_";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 4e; 8; d~; 4; 8e; f~;
+	lyrics 1:			"Nev-er en-vi-ous,_";
+	2: 1c+;
+	3: 1c+~;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f<>;
+	2: 4c+; 8; b~; 4; 8c+; e+~;
+	lyrics 2:			"Nev-er en-vi-ous,_";
+	3: 2c+; a;
+	lyrics 3:			"oh,";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 1g<>;
+	2: 1e+<>;
+	3: 1g;
+	lyrics 3:			"no.";
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f;
+	2: 1f+<>;
+	3: 4c+; 8; b~; 4; 8c+; ~;
+	lyrics 3:			"Nev-er ev-er rude,_";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 4e; 8; d~; 4; 8e; f~;
+	lyrics 1:			"Nev-er ev-er rude,_";
+	2: 1c+;
+	3: 1c+~;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f<>;
+	2: 4c+; 8; b~; 4; 8c+; e+~;
+	lyrics 2:			"Nev-er ev-er rude_";
+	3: 2c+; a;
+	lyrics 3:			"oh,";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 1g<>;
+	2: 1e+<>;
+	3: 1g;
+	lyrics 3:			"no.";
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f;
+	2: 1f+<>;
+	3: 4c+; 8; b~; 4; 8c+; ~;
+	lyrics 3:			"Nev-er ar-ro-gant,_";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 4e; 8; d~; 4; 8e; f~;
+	lyrics 1:			"Nev-er ar-ro-gant,_";
+	2: 1c+;
+	3: 1c+~;
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f<>;
+	2: 4c+; 8; b~; 4; 8c+; e+~;
+	lyrics 2:			"Nev-er ar-ro-gant,_";
+	3: 2c+; a;
+	lyrics 3:			"oh,";
+	INTRO_CSUS
+	bar
+
+	C: 1 "C/G";
+	1: 1g<>;
+	2: 1e+<>;
+	3: 1g;
+	lyrics 3:			"no.";
+	INTRO_C
+	bar
+
+	C: 1 "Csus/G";
+	1: 1f;
+	2: 1f+;
+	3: 4c+; 8; b~; 4; 8c+; b~;
+	lyrics 3:			"Nev-er want-ing more_";
+	5: 8g0; b1; e1; g0; b1; e1; g0; b1;
+	bar
+// We want to go to 2 staffs now.  Because staff 3 is in a tie right now, we
+// have to make staff 2 be the invisible one.
+score
+	packfact = 1
+staff 1
+	label = "Alto\nTenor 1"
+	label2 = "A\nT1"
+staff 2
+	visible = n
+staff 3
+	label = "Tenor 2"
+	label2 = "T2"
+music
+	C: 1 "G";
+	1: 4df; 8eg; df tie; 2d<c>f~;
+	lyrics 1:			"want-ing more_";
+	3: 2.b; 4g;
+	lyrics 3:			"than";
+	5: 8d5; g4; b3; d5; g4; b3; d5; ;
+	bar
+
+	C: 1 "F";
+	1: 1cf;
+	3: 4c+; 8; b~; 4; 8c+; b~;
+	lyrics 3:			"you are read-y for._";
+	5: 8d3; g2; b1; d3; g2; b1; d3; d5;
+	bar
+
+	C: 1 "G";
+	1: 4df; 8eg; df tie; 2 tie;
+	lyrics 1:			"read-y for_";
+	3: 1b~;
+	5: 8d5; g4; b3; d5; g4; b3; d5; ;
+	bar
+
+	1: 2df; 4b-; d;
+	lyrics 1:			"Love is";
+	3: 2b; 4b; d+;
+	lyrics 3: 2s; ;			"<>";	// stop the underscore
+	VG
+	bar
+
+	newscore	// to make sure lyric lines don't interfere
+
+// To take advantage of the unison at this point, need same defoct for both.
+staff 1
+	defoct = 3
+// Now switch to staff 2 being visible and 3 being invisible, so we can use the
+// "lyrics between 1&2".
+staff 2
+	visible = y
+	label = "T2"
+staff 3
+	visible = n
+music
+	rom all: 1 "VERSE 1";
+	C: 1 "C";
+	1-2: 2c+; g;
+	lyrics between 1&2:		"pa-tient;";
+	VC
+	ital below all: 1 "From here on, the string bass bows the roots of the chords as whole notes";
+	bar
+
+	C: 1 "F";
+	1-2: 2r; 4a; ;
+	lyrics between 1&2:		"love is";
+	VF
+	bar
+
+	C: 1 "C";
+	1-2: 1g;
+	lyrics between 1&2:		"kind.";
+	VC
+	bar
+
+	C: 1 "G";
+	1-2: 2r; 4b; d+;
+	lyrics between 1&2:		"Love is";
+	VG
+	bar
+
+	C: 1 "C";
+	1-2: 2c+; g;
+	lyrics between 1&2:		"hum-ble;";
+	VC
+	bar
+
+	C: 1 "F";
+	1-2: 2r; 4a; ;
+	lyrics between 1&2:		"love is";
+	VF
+	bar
+
+	C: 1 "G7";
+	1: 2g<>; a<>;
+	lyrics between 1&2:		"blind._";
+	2: 1g~;
+	VG7
+	bar
+staff 1
+	defoct = 4	// might as well go back to standard defoct
+music
+	1: 2b-; 4; d;
+	lyrics between 1&2:		"There is";
+	2: 2g; 4b; d+;
+	VG7
+	bar
+
+	C: 1 "C";
+	1: 2ce; ;
+	lyrics between 1&2:		"grace where";
+	2: 2c+; g;
+	VC
+	bar
+
+	C: 1 "F";
+	1: 2r; 4a-d; a-f;
+	lyrics between 1&2:		"love is";
+	2: 2r; 4a; ;
+	VF
+	bar
+
+	C: 1 "C";
+	1: 1ce tie;
+	lyrics between 1&2:		"found._";
+	2: 2g<>; e<>;
+	VC
+	bar
+
+	C: 1 "Am";
+	1: 2ce; 4ce; de;
+	lyrics between 1&2:		"Bar-ren";
+	2: 2a; 4a; b;
+	VAM
+	bar
+
+	C: 1 "Dm";
+	1: 2cf; df;
+	lyrics between 1&2:		"land turns";
+	2: 2c+; a;
+	VDM
+	bar
+
+	1: 4r; a-f; a-e; ;
+	lyrics between 1&2:		"to sa-cred";
+	2: 4r; d; e; f;
+	VDM
+	bar
+
+	C: 1 "G";
+	1: 1b-d;
+	lyrics between 1&2:		"ground.";
+	2: 1g;
+	VG
+	bar
+
+	1: mr;
+	2: 2r; 4b; d+;
+	lyrics 2:			"Love is";
+	VG
+	repeatstart
+
+	newscore
+
+	rom all: 1 "VERSES 2 AND 3";
+	C: 1 "C";
+	1: 2r; 4ce; ;
+	lyrics 1:			[2] "I was";
+	lyrics 1:			[3] "As I";
+	2: 2c+; g;
+	lyrics 2:			"pa-tient;";
+	VC
+	bar
+
+	C: 1 "F";
+	1: 2cf; ;
+	lyrics 1:			[2] "wan-d'ring";
+	lyrics 1:			[3] "watched, he";
+	2: 2r; 4a; ;
+	lyrics 2:			"love is";
+	VF
+	bar
+
+	C: 1 "C";
+	1: 2r; 4ce; ;
+	lyrics 1:			[2] "in the";
+	lyrics 1:			[3] "turned and";
+	2: 1g;
+	lyrics 2:			"kind.";
+	VC
+	bar
+
+	C: 1 "G";
+	1: 4b-g; b-f; g-e; g-d;
+	lyrics 1:			[2] "ev'n-ing's end-ing";
+	lyrics 1:			[3] "gen-tly bent his";
+	2: 2r; 4b; d+;
+	lyrics 2:			"Love is";
+	VG
+	bar
+
+	C: 1 "C";
+	1: 2g-e; 4ce; c;
+	lyrics 1:			[2] "light, as I";
+	lyrics 1:			[3] "head, as he";
+	2: 2c+; g;
+	lyrics 2:			"hum-ble;";
+	VC
+	bar
+
+	C: 1 "F";
+	1: 4cf; ce; c; cd;
+	lyrics 1:			[2] "saw them on the";
+	lyrics 1:			[3] "kissed her on the";
+	2: 2r; 4a; ;
+	lyrics 2:			"love is";
+	VF
+	bar
+staff 1
+	vscheme = 2f
+music
+	C: 1 "G";
+	1 1: 1d~;
+	1 2: 2b-; 4; c;
+	lyrics below 1: 		[2] "lane (weath-ered";
+	lyrics below 1:			[3] "cheek (as he";
+	2: 1g~;
+	lyrics 2:			"blind.";
+	VG
+	bar
+
+	C: 1 "G7";
+	1 1: 1d;
+	1 2: 4d; b-; e; d;
+	lyrics below 1:			[2] "hand in weath-ered";
+	lyrics below 1:			[3] "kissed her on the";
+	2: 2g; 4b; d+;
+	lyrics 2: 2s; 4; ;		"There is";
+	VG7
+	bar
+
+	C: 1 "C";
+	1 1: 2r; 4ce; ;
+	1 2: 4c; 4r; 2s;
+	lyrics 1: 2; 4; ;		[2] "hand) They had";
+	lyrics 1: 2; 4; ;		[3] "cheek) Her face";
+	2: 2c+; g;
+	lyrics 2:			"grace where";
+	VC
+	bar
+staff 1
+	vscheme = 1
+music
+	C: 1 "F";
+	1: 2cf; ;
+	lyrics 1:			[2] "fac-es";
+	lyrics 1:			[3] "crin-kled";
+	2: 2r; 4a; ;
+	lyrics 2:			"love is";
+	VF
+	bar
+
+	C: 1 "C";
+	1: 2r; 4ce; c;
+	lyrics 1:			[2] "creased by";
+	lyrics 1:			[3] "as she";
+	2: 2g<>; e<>;
+	lyrics 2:			"found.";
+	VC
+	bar
+
+	C: 1 "Am";
+	1: 4cd; a-d; a-e; ;
+	lyrics 1:			[2] "laugh-ter's joy-ful";
+	lyrics 1:			[3] "closed her eyes and";
+	2: 2a; 4a; b;
+	lyrics 2:			"Bar-ren";
+	VAM
+	bar
+
+	C: 1 "Dm";
+	1: 2a-f; 4f-d; g-e;
+	lyrics 1:			[2] "hand, and their";
+	lyrics 1:			[3] "smiled, I looked";
+	2: 2c+; a;
+	lyrics 2:			"land turns";
+	VDM
+	bar
+
+	1: 4a-f; g-e; 2f-d;
+	lyrics 1:			[2] "eyes were bright";
+	lyrics 1:			[3] "up a-bove";
+	2: 4r; d; e; f;
+	lyrics 2:			"to sa-cred";
+	VDM
+	bar
+
+	C: 1 "G";
+	1: 2r; 4b-d; ce;
+	lyrics 1:			[2] "with a";
+	lyrics 1:			[3] "to the";
+	2: 1g;
+	lyrics 2:			"ground.";
+	VG
+	bar ending "1.- 2."
+
+	1: 4df; ce; 2b-d;
+	lyrics 1:			[2] "peace-ful light.";
+	2: 2r; 4b; d+;
+	lyrics 2:			"Love is";
+	VG
+	repeatend ending "3."
+
+	1: 4df; ce; 2b-d tie;
+	W:				[1] "pow-er of";
+	2: 1g tie;
+	VG
+	bar
+
+	C: 1 "G7";
+	1: 2.b-d; 4r;
+	2: 2.g; 4r;
+	VG7
+	repeatstart endending
+
+	rom all: 1 "CODA";
+	C: 1 "C";
+	1: 2eg; ;
+	W:				[1] "Love be-";
+	W:				[2] "Love en-";
+	W:				[3] "Love will";
+	W: 1;				[4-5] "oo_";
+	2: 2c+; ;
+	VC
+	bar
+
+	C: 1 "Em";
+	1: 2eg; ;
+	W:				[1] "lieves all";
+	W:				[2] "dures all";
+	W:				[3] "nev-er";
+	2: 2b; g;
+	VEM
+	bar ending "1.- 4."
+
+	C: 1 "B&";
+	1: 1d~f<g>;
+	W:				[1] "things._";
+	W:				[2] "things._";
+	W:				[3] "end._";
+	W:				[5] "<>";
+	2: 1b&<>;
+	VBFLAT
+	bar
+
+	C: 1 "G";
+	1: 2.dg; 4r;
+	2: 2.bn; 4r;
+	VG
+	repeatend ending "5."
+
+	C: 1 "B&";
+	1: 1d<c>f~;
+	2: 1b&<>;
+	W:				[5] "(oo)_";
+	VBFLAT
+	bar
+
+	C: 1 "F";
+	1: 1c~f<e>;
+	2: 1a<>;
+	VF
+	bar
+
+	C: 1 "C";
+	1: 1ce;
+	2: 1g;
+	W: 2..s; 8;			[5] "<>";
+	5: 8a3; g0; b1; g0; e0; b1; g0; b1;
+	bar
+
+	1-2: mr;
+	5: 8e3; b1; g0; e0; b1; g0; b1; g0;
+	bar
+
+	C: 1 "Em";
+	1-2: mr;
+	5: 8e'0; d2; b0; g0; e0; b0; g0; b0;
+	bar
+
+	1-2: mr;
+	5: 8e3; b0; g0; e0; b0; g0; b0; g0;
+	bar
+
+	C: 1 "C";
+	1-2: mr;
+	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	bar
+
+	1-2: mr;
+	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	bar
+
+	1-2: mr;
+	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	bar
+
+	1-2: mr;
+	5: 1a3;
+	endbar

@@ -1,0 +1,61 @@
+%define version 6.7
+%define versionnodot 67
+%define _binary_payload w9.bzdio
+Summary:       A music notation program that can also generate MIDI files
+Name:          mup
+URL:           http://www.arkkra.com/doc/overview.html
+Source:        http://www.arkkra.com/ftp/pub/unix/mup%{versionnodot}src.tar.gz
+Version:       %{version}
+Release:       0%{?_dist}
+License:       BSD
+Group:         Applications/Multimedia
+BuildRequires: glibc-devel
+BuildRequires: fltk-devel
+BuildRequires: libjpeg-devel
+BuildRequires: libpng-devel
+BuildRequires: zlib-devel
+#--Uncomment these lines for RedHat and similar (Fedora, CentOS, Scientific)
+#BuildRequires: xorg-x11-libXpm-devel
+#BuildRequires: xorg-x11-libXinerama-devel
+#BuildRequires: xorg-x11-libXext-devel
+#BuildRequires: xorg-x11-libXft-devel
+#--End uncomment these lines for RedHat
+#--Uncomment these lines for SuSE and similar
+#BuildRequires: libXpm-devel
+#BuildRequires: libXinerama-devel
+#BuildRequires: libXext-devel
+#BuildRequires: libXft-devel
+#--End uncomment these lines for SuSE and similar
+
+%description
+Mup takes a text description of music as input and
+creates either high quality PostScript output for printing
+or a MIDI file.
+
+
+%prep
+%setup -q
+
+%build
+# optflags can be used for things like adding -m32 to compile 32 bit
+# on a 64-bit machine, or setting MUP_VGA_OPTION if you want that.
+optflags="%{optflags}" PREFIX=%{_prefix} make %{?_smp_mflags} -f simple.makefile
+
+%install
+make install DESTDIR=%{buildroot} -f simple.makefile
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%{_bindir}/%{name}
+%{_bindir}/mupdisp
+%{_bindir}/mkmupfnt
+%{_bindir}/mupprnt
+%{_bindir}/mupmate
+%{_mandir}/man1/*
+%{_libdir}/%{name}/*
+%{_datadir}/pixmaps/%{name}/*.xpm
+%{_docdir}/%{name}/*
+
+%changelog

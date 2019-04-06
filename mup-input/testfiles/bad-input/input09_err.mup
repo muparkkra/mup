@@ -1,0 +1,27 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input09_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+1: [slash 0] 2c alt 0;2;
+bar
+1: [grace;cue]8c;;4;;;
+bar reh num reh let
+1: [cue;grace]8c;;4;; ebm;
+bar
+1: 8e bm; ; bm;;;;ebm;;
+bar
+1: c;;;;[grace]8d bm;
+1: ceg;~;?;;
+bar
+1: ?~; =a;;;
+score staffs=2
+music
+bar
+1: r;~;;;
+bar
+1: ce =q g; =c;;;
+wavy curve (_win.w, _win.n) to (_page.t, _page.y) to (_win.a, _win.z)
+line ( time 2, 3) to (q.x - time 2,  7)
+bar reh "a" ending "1."

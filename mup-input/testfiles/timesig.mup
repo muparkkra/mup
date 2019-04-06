@@ -1,0 +1,377 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "tsig.mup"
+	paragraph (14) "This file tests time signatures."
+
+score
+	staffscale=1.4
+	scoresep=8,32
+	time=3+2/4 + 2+3/8
+music
+
+rom (12) above 1: 1 "additive time signatures";
+1: 1...c;
+bar
+
+score time=cut
+music
+
+1: 2f;g;
+bar
+
+
+score time=1+2+2+1/4 + 2/2 + 3+2+1/4
+music
+
+1: 1d;;;;
+bar
+
+score time=1+1/4
+music
+
+1: 4c;;
+bar
+
+score time=15+17/16
+music
+
+1: 1/2a;
+bar
+
+score time= 3+4/4 + cut + common + 1+2/4
+music
+
+1: 1/2c;;2f;
+bar
+
+newpage
+
+score time=3/4 4/4
+music
+
+rom above all: 1 "test multirest with alternating";
+1: c;;;
+bar
+
+1: d;;;;
+bar
+
+multirest 2
+bar
+
+1: e;;;
+bar
+
+1: f;;;;
+bar
+
+1: g;;;
+bar
+
+multirest 3
+bar
+
+1: a;;;
+bar
+
+score time=3/4 4/4 5/4
+music
+
+///
+1: f;;;
+bar
+
+1: g;;;;
+bar
+
+1: a;;;;;
+bar
+
+multirest 2
+bar
+
+1: c;;;;;
+bar
+
+1: e;;;
+bar
+
+multirest 5
+bar
+
+1: g;;;
+bar
+
+newpage
+
+score time=3/4 4/4 y
+music
+
+rom above 1: 1 "test 'y' for explicit alternations";
+1: c;d;e;
+bar
+
+1: c;d;e;f;
+bar
+
+1: g;e;g;
+bar
+
+1: f;e;d;c;
+bar
+
+score time=2/4 6/8 3/4 y
+music
+
+rom above 1: 1 "test more than 2 alternating with y";
+1: c;d;
+bar
+
+1: c;d;e;f;g;a;
+bar
+
+1: a;b;c+;
+bar
+
+1: c+;b;
+bar
+
+1: a;g;f;e;d;c;
+bar
+
+1: g;e;c;
+bar
+
+score time=4/4 y
+music
+
+rom above 1: 1 "test y without alternating sigs";
+1: c;d;e;f;
+bar
+
+1: d;e;f;g;
+bar
+
+1: e;f;g;c;
+bar
+
+score time=3/4 4/4 y
+music
+
+rom above all: 1 "test multirest with alternating y";
+1: c;;;
+bar
+
+1: d;;;;
+bar
+
+multirest 2
+bar
+
+1: e;;;
+bar
+
+1: f;;;;
+bar
+
+1: g;;;
+bar
+
+multirest 3
+bar
+
+1: a;;;
+bar
+
+newpage
+score
+	staffs=3
+	time=4/4
+	beamstyle=4,4,4,4
+	packfact=1.5
+music
+
+rom above all: 1 "Test remembered beamstyles";
+1-3: 8c;;;;;;;;
+bar
+
+score time=2/2 ; beamstyle=2,2
+music
+
+1-3: 8c;;;;;;;;
+bar
+
+score time=4/4
+music
+
+rom above all: 1 "use remembered score-wide beamstyle";
+1-3: 8c;;;;;;;;
+bar
+
+score time=2/2
+music
+
+1-3: 8c;;;;;;;;
+bar
+
+newscore
+
+staff 2
+	vscheme=3o
+	beamstyle=4,4,4,4
+voice 2 2
+	beamstyle=1
+voice 2 3
+	beamstyle=2.,4
+music
+
+rom above 2: 1 "set staff 2 beamstyle=4,4,4,4";
+rom above 2: 1 "set voice 2 2 beamstyle=1";
+rom above 2: 1 "set voice 2 3 beamstyle=2.,4";
+1-3: 8e;;;;;;;;
+2 2: 8c;;;;;;;;
+bar
+
+1-3: 8e;;;;;;;;
+2 3: [down] 8c;;;;;;;;
+bar
+
+newscore
+
+score time=4/4
+music
+
+1-3: 8g;;;;;;;;
+bar
+
+score time=2/2
+music
+
+rom above 2: 1 "restore the overrides";
+1-3: 8e;;;;;;;;
+2 2: 8c;;;;;;;;
+bar
+
+1-3: 8e;;;;;;;;
+2 3: 8c;;;;;;;;
+bar
+
+score time=6/8
+	timeunit=4.
+staff 2 timeunit=2.
+voice 2 2 timeunit=4
+staff 3 timeunit=4. ; beamstyle=4.,4.
+music
+
+newscore
+
+rom above all: 1 "test remembered timeunit";
+define XX
+1: c;;
+2: c;
+2 2: e;;;
+3: c;8g;;;
+bar
+@
+XX
+
+score time=4/4
+music
+
+1-3: 1c;
+bar
+
+score time=6/8
+music
+
+XX
+
+newpage
+
+score
+	staffscale=0.9
+	time=32/32
+music
+
+rom (18) above 1: 1 "Test jamming of 2-digit time signatures";
+1: 1c;
+bar
+
+score time=64/64
+music
+
+1: 1d;
+bar
+
+score time=16/16
+music
+
+1: 1e;
+bar
+
+score time=10/4
+music
+
+1: 2c;;;;;
+bar
+
+score time=11/4
+music
+
+1: 2c;;;;;4;
+bar
+
+score time=12/4
+music
+
+1: 2d;;;;;;
+bar
+
+score time=13/4
+music
+
+1: 1c;;;4;
+bar
+
+score time=14/4
+music
+
+1: 1d;;;2;
+bar
+
+score time=15/4
+music
+
+1: 1d;;;2.;
+bar
+
+score time=16/4
+music
+
+1: 1d;;;;
+bar
+
+score time=17/4
+music
+
+1: 1d;;;;4;
+bar
+
+score time=18/4
+music
+
+1: 1d;;;;2;
+bar
+
+score time=19/4
+music
+
+1: 1d;;;;2.;
+bar
+
+score time=20/4
+music
+
+1: 1d;;;;;
+bar

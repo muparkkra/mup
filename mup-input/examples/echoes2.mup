@@ -1,0 +1,350 @@
+//!Mup-Arkkra
+
+// This file demonstrates very extensive usage of macros.
+// Bits of melody are played by one instrument and then echoed by the other,
+// so macros are used to avoid having to enter the notes twice.
+// There are macros for different patterns, like two measure phrases
+// with melody in the upper instrument first, or three measure phrases
+// with melody in the lower instrument first.
+// Chords on the bass background staff are given abbreviated names,
+// to avoid entering the actual notes over and over.
+// Macros are passed as argument to other macros.
+
+top
+	title (18) "Echoes - II"
+	title (12) "" "John A. Krallmann (3/2/02)"
+
+top2
+	title (12) "Echoes II - \%"
+
+bottom
+	title (12) "\(copyright) Copyright 2002 John A. Krallmann"
+	title (8) " "
+	title (11) "Published by Arkkra Enterprises" \
+		"http://www.arkkra.com"
+
+
+score
+	staffs=3
+	brace=1-3
+	barstyle=1-3
+	beamstyle=4,4,4,4
+	staffscale=0.85
+	scoresep=10,30
+	measnum=y
+	// Warnings about accidentals on second note of tie is just
+	// because of how the macros are used in this song.
+	// They are harmless and can be safely ignored.
+	warn=n
+
+staff 1
+	defoct=5
+staff 3
+	clef=bass
+	timeunit=1
+
+// Define chords for bass.
+// Which accidentals are needed depends on the key signature,
+// so when changing keys, some of these may need to be undef-ed
+// and re-defined.
+// Suffixes:
+//	M = minor
+//	F = flat (needs appropriate key signature)
+//	N3 = no third
+define C c-g-e @
+define CM c-g-e @
+define DM d-a-f @
+define DF d-a-f @
+define D d-an-f# @
+define EM e-b-g @
+define F f-ca @
+define FM f-ca @
+define G g-db @
+define GM g-db& @
+define GF g-db @
+define AM a-ec+ @
+define AMN3 a-ea @
+define AF a-ec+ @
+define A a-ec#+ @
+define BF b-fdn+ @
+define BFM b-fd+ @
+
+// melody in upper voice
+define U(BA,M)
+1: M
+2: mr;
+3: BA;
+bar
+@
+
+// melody in lower voice
+define L(BA,M)
+1: mr;
+2: M
+3: BA;
+bar
+@
+
+// echo: upper first, then lower
+define UL(BASS,MEL)
+U(BASS,MEL)
+L(BASS,MEL)
+@
+
+// echo: lower first, then upper
+define LU(BASS,MEL)
+L(BASS,MEL)
+U(BASS,MEL)
+@
+
+// echo: lower first, then upper with alternate bass chord for upper
+define LUA(BASS,MEL,BASS2)
+L(BASS,MEL)
+U(BASS2,MEL)
+@
+
+// 2 measure echo: lower voice first, then upper
+define LU2(B1,M1,B2,M2)
+L(B1,M1)
+L(B2,M2)
+U(B1,M1)
+U(B2,M2)
+@
+
+// 2 measure echo: lower voice first, then upper, alternate bass on final meas
+define LU2A(B1,M1,B2,M2,B2A)
+L(B1,M1)
+L(B2,M2)
+U(B1,M1)
+U(B2A,M2)
+@
+
+// 2 measure echo: upper voice first, then lower
+define UL2(B1,M1,B2,M2)
+U(B1,M1)
+U(B2,M2)
+L(B1,M1)
+L(B2,M2)
+@
+
+// 3 measure echo: upper voice first, then lower
+define UL3(B1,M1,B2,M2,B3,M3)
+U(B1,M1)
+U(B2,M2)
+U(B3,M3)
+L(B1,M1)
+L(B2,M2)
+L(B3,M3)
+@
+
+// 3 measure echo: lower voice first, then upper
+define LU3(B1,M1,B2,M2,B3,M3)
+L(B1,M1)
+L(B2,M2)
+L(B3,M3)
+U(B1,M1)
+U(B2,M2)
+U(B3,M3)
+@
+
+define PAUSE
+ifdef MIDI
+	// half note pause; space gets squeezed out
+	1: 2r;s;
+	bar
+endif
+@
+
+music
+
+midi all: 1 "tempo=70";
+// upper melody is ocarina, far to the right
+midi 1 1: 0 "channel=11"; 0 "program=79"; 0 "onvelocity=42"; 0 "param=10,114";
+// lower melody is clarinet, far to the left
+midi 2 1: 0 "channel=12"; 0 "program=71"; 0 "param=10,14";
+// bass is strings, in the middle
+midi 3 1: 0 "channel=13"; 0 "program=49";
+
+LU2( C, g;e;d;c;, F, a-;c;4.g;8f; )
+
+UL( G, a;d;2b; )
+
+UL2( AM, c+;b;a;8d;e;, DM, a-;c#;8d;e;f;a; )
+
+LU( G, 8f;b-;4a-;a&-;g-; )
+
+UL( C, e;b&-;d;c; )
+
+LU( F, d;f;2; )
+
+score key=5&
+music
+
+UL3( DF, f;e;d;a-;, GF, b-;e;4.d;8e;, DF, e;8f;e;2d; )
+
+LU2( AF, e;8dn;e;f;gn;a;b;, DF, a;f;2a; )
+
+UL( GF, b;a;8c;d;4b-; )
+
+LU( AF, f;e;b;c+; )
+
+UL2( BFM, 2d+;4c+;f;, GF, b;f;2e; )
+
+LU2A( AF, e;a;2;, BFM, 2b;;, BF )
+
+PAUSE
+score key=3&
+music
+
+// redefine chords for new key signature
+undef DF
+define DF 1d&-a-f @
+undef BFM
+define BFM b-fd&+ @
+
+UL( CM, c;g-;[grace]8c;d;e;4c; )
+
+LU( AF, c;b-;2a-; )
+
+LU( FM, a-;f-;[grace]8a-;bn-;c;4f; )
+
+UL( DF, f;a-;8e;d&;4f-; )
+
+LU2( BFM, f-;b-;2;, CM, c;g-;[grace]8c;d;e;4g; )
+
+UL( D, an;bn;2a; )
+
+score key=0&
+music
+
+LU3( EM, a-;g-;8f#-;g-;4e;, C, e;d;c;b-;, D, b-;a-;e;f#; )
+
+UL( EM, 4.g;8f#;4e;b-; )
+
+LU( AMN3, d;c;[grace]8e;d;c;4a-; )
+
+LU( F, a;g;[grace]8b;a;g;d+;e+; )
+
+UL( G, e+;d+;[grace]8b;a;4.g; )
+
+LUA( AM, 8g;4.a;2;, 2AM;A )
+
+PAUSE
+
+LU( C, a-;g-;8a-;4.c; )
+
+UL2( F, d;c;2e;, G, e;d;8f;4.g; )
+
+LU( C, 8a;g;4d;2e; )
+
+UL3( EM, e;b-;8d#;4.e;, F, e;d;8a-;b-;c;d;, C, 8d;e;4c;2; )
+
+LU( AM, 8d;e;4c;2; )
+
+LU( F, 8d;e;4c;a-;c; )
+
+UL2( G, d;g-;d;d#;, C, e;a;2g; )
+
+LU3( DM, g;f;g#-;a-;, G, 2e;g;, AM, 1a; )
+
+PAUSE
+
+////
+// Add two more echo voices, softer and nearer the center
+score time=6/4
+staff 1 vscheme=2f
+staff 2 vscheme=2f
+staff 3 timeunit=1.
+music
+midi 1 2: 0 "channel=14"; 0 "program=79"; 0 "onvelocity=22"; 0 "param=10,40";
+midi 2 2: 0 "channel=15"; 0 "program=71"; 0 "onvelocity=44"; 0 "param=10,84";
+
+// melody on upper staff, 2 voices, 2 bass chords
+define U2(BA,BAX,M,M2)
+1: M
+1 2: M2
+2: mr;
+3: 2.BA;BAX;
+bar
+@
+
+// melody on lower staff, 2 voices, 2 bass chords
+define L2(BA,BAX,M,M2)
+1: mr;
+2: M
+2 2: M2
+3: 2.BA;BAX;
+bar
+@
+
+// 1 measure repeated, upper lower first, then upper, 2 voices, 2 bass chords
+define LU_2(B1,B1X,M1,M1A)
+L2(B1,B1X,M1,M1A)
+U2(B1,B1X,M1,M1A)
+@
+
+// 1 measure repeated, upper staff first, then lower, 2 voices, 2 bass chords
+define UL_2(B1,B1X,M1,M1A)
+U2(B1,B1X,M1,M1A)
+L2(B1,B1X,M1,M1A)
+@
+
+LU( C, a;g;a;2.e; )
+
+LU( AM, e;d;e;b-;2a-; )
+
+LU_2( F, G, a;b;c+;c+;2d+;, 2.s;4;{b;a;g;}3; )
+
+LU_2( AM, F, 2.e+;4e+;2f+;, c+;b;c+;;2a; ) 
+
+// MS = staff with the melody, RS = staff with rest
+define SECTION(MS,RS)
+RS: mr;
+MS: 2.g;4e;d;ce;
+MS 2: d;c;b-;2.b&-;
+3: C;
+bar
+
+RS: mr;
+MS: f;e;d;b&;c+;d+;
+MS 2: 2.c;f;
+3: 2.F;GM;
+bar
+
+score time=3/4
+music
+
+RS: mr;
+MS: d+;2e+;
+MS 2: b&;c+;b;
+3: 2.C;
+bar
+
+score time=6/4
+staff 3 timeunit=1.
+music
+@
+
+SECTION(2,1)
+SECTION(1,2)
+
+undef BFM
+define BFM b&-fd&+ @
+
+define FINAL(MS,RS,BAR)
+MS: 2.f+;e+;
+MS 2: 2.a;4b&;a;g;
+RS: mr;
+3: 2.DM;BFM;
+bar
+
+MS: 1.f+;
+MS 2: 1.a;
+RS: mr;
+3: 1.F;
+BAR
+@
+
+FINAL(1,2,bar)
+midi all: 1 "tempo=58";
+FINAL(2,1,endbar)

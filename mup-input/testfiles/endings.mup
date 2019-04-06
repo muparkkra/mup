@@ -1,0 +1,67 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "endings.mup"
+	paragraph (14) "This file tests endings."
+	title ""
+score
+	staffs=2
+	endingstyle=top
+	packfact=1.1
+	aboveorder=ending,othertext
+	scoresep=10,28
+
+
+music
+
+rom above all: 1 "endingstyle=top";
+1: [cue] 4ce; 4g;  4f; e;
+bar ending "first"
+1:  2df;  {4c;e;f;}3;
+bar ending "1."
+1:  2df; ;
+bar
+1: 4f;;;;
+bar ending "2."
+1: 4bd+g+b++ ;;;;
+bar ending "3."
+1: 8ce;;;;;;;;
+endbar endending
+
+newscore
+
+score
+	endingstyle=grouped
+	bracket=1,2
+
+music
+
+rom above all: 1 "endingstyle=grouped";
+1-2: c;d;e;f;
+repeatstart
+
+1-2: f;e;;g;
+bar ending "1."
+
+1-2: r;f;g;c;
+repeatend ending "2."
+
+rom above all: 1 "openendending";
+1-2: c;d;;c;
+dblbar openendending
+
+1-2: e;r;f;r;
+repeatstart
+
+1-2: e;g;a;b;
+bar ending "1."
+
+1-2: f;b;a;g;
+repeatend ending "2."
+
+1-2: g;f;e;c;
+rom above all: 1 "closedendending";
+bar closedendending
+
+1-2: 2c;;
+endbar

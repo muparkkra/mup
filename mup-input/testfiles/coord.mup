@@ -1,0 +1,40 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "coord.mup"
+	paragraph (14) "This file tests cases where a tag is defined on one page and then referenced by a coordinate on a later page,
+to make sure whatever references it is moved back to the proper page.
+It also includes test cases for things that should not be moved."
+	title ""
+
+music
+
+
+1: c;;;;
+print (50, 50) "this is absolute at (50, 50)"
+bar
+
+1: g;;; =g;
+bar
+
+1: a;;;;
+bar
+
+newpage
+1: e;;;;
+// things that have to be moved to previous page
+print (g.x + 3, g.y + 10) "moved, (g.x + 3, g.y + 10)"
+print (g.x - 4, 100) "moved, (g.x - 4, 100)"
+print (50, g.y - 10) "moved, (50, g.y - 10)"
+print (g.x - 14, _win.s + 160) "moved, (g.x - 14, _win.s + 160)"
+print (_win.w + 80, g.y - 20) "moved, (_win.w + 80, g.y - 20)"
+bar
+
+1: f;;=n;;
+print (n.x + 1, n.y - 10) "not moved, (n.x + 1, n.y - 10)"
+print (20, n.y - 20) "not moved, (20, n.y - 20)"
+print (n.x - 10, 120) "not moved, (n.x - 10, 120)"
+print (_win.w + 10, n.y - 30) "not moved,  (_win.w + 10, n.y - 30)"
+print (n.x - 15, _win.n - 80) "not moved, (n.x - 15, _win.n - 80)"
+bar
+

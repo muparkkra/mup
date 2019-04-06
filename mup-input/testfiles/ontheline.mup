@@ -1,0 +1,72 @@
+//!Mup-Arkkra
+header
+	title bold (18) "ontheline.mup"
+	paragraph (14) "\
+Test the \"ontheline\" parameter."
+score
+	staffs = 3
+	stafflines = 1
+	ontheline = n
+	packfact = 2
+staff 1
+	vscheme = 1
+staff 2
+	vscheme = 2f
+staff 3
+	vscheme = 2o
+music
+	rom 1: 1 "both voices: ontheline = n";
+	1-3 1: 4f~; 2~; 4;
+	2-3 2: 2f~; ;
+	bar
+
+	1-3 1: 4f~; ; 2s;
+	2-3 2: 4f~; 2~; 4;
+	bar
+
+voice 1 1 ontheline = y
+voice 2 1 ontheline = y
+voice 3 1 ontheline = y
+voice 2 2 ontheline = n
+voice 3 2 ontheline = n
+music
+	rom 1: 1 "voice 1: ontheline = y";
+	rom 1: 1 "voice 2: ontheline = n";
+	1-3 1: 4f~; 2~; 4;
+	2-3 2: 2f~; ;
+	bar
+
+	1-3 1: 4f~; ; 2s;
+	2-3 2: 4f~; 2~; 4;
+	bar
+
+voice 1 1 ontheline = n
+voice 2 1 ontheline = n
+voice 3 1 ontheline = n
+voice 2 2 ontheline = y
+voice 3 2 ontheline = y
+music
+	rom 1: 1 "voice 1: ontheline = n";
+	rom 1: 1 "voice 2: ontheline = y";
+	1-3 1: 4f~; 2~; 4;
+	2-3 2: 2f~; ;
+	bar
+
+	1-3 1: 4f~; ; 2s;
+	2-3 2: 4f~; 2~; 4;
+	bar
+
+voice 1 1 ontheline = y
+voice 2 1 ontheline = y
+voice 3 1 ontheline = y
+voice 2 2 ontheline = y
+voice 3 2 ontheline = y
+music
+	rom 1: 1 "both voices: ontheline = y";
+	1-3 1: 4f~; 2~; 4;
+	2-3 2: 2f~; ;
+	bar
+
+	1-3 1: 4f~; ; 2s;
+	2-3 2: 4f~; 2~; 4;
+	bar

@@ -1,0 +1,67 @@
+header
+	title bold (18) "tabrepeat.mup"
+	paragraph (14) "This file tests repeats on tab staffs."
+
+score
+	staffs=18
+	topmargin=0.2
+	botmargin=0.3
+	brace=2,4,6,8,10,12,14,16,18
+staff 1
+	visible=n
+staff 2
+	stafflines = tab(c)
+
+staff 3
+	visible=n
+staff 4
+	stafflines = tab(c d)
+
+staff 5
+	visible=n
+staff 6
+	stafflines = tab(c d e)
+
+staff 7
+	visible=n
+staff 8
+	stafflines = tab(c d e f)
+
+staff 9
+	visible=n
+staff 10
+	stafflines = tab(c d e f g)
+
+staff 11
+	visible=n
+staff 12
+	stafflines = tab(c d e f g a)
+
+staff 13
+	visible=n
+staff 14
+	stafflines = tab(c d e f g a b)
+
+staff 15
+	visible=n
+staff 16
+	stafflines = tab(c d e f g a b c')
+
+staff 17
+	visible=n
+staff 18
+	stafflines = tab(c d e f g a b c' d')
+
+music
+
+2,4,6,8,10,12,14,16,18: c0;c1;c2;c3;
+repeatboth
+
+2,4,6,8,10,12,14,16,18: c0;c1;c2;c3;
+repeatend
+
+2,4,6,8,10,12,14,16,18: c0;c1;c2;c3;
+repeatstart
+
+2,4,6,8,10,12,14,16,18: c0;c1;c2;c3;
+endbar

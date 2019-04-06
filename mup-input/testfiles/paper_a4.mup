@@ -1,0 +1,23 @@
+//!Mup-Arkkra
+
+score
+	pagesize=a4
+header
+	title bold (18) "paper_a4.mup"
+	paragraph (14) "This file tests A4 paper size."
+footer
+	title (18) "Footer for A4 paper size"
+
+score
+	pagewidth=8.26
+	pageheight=11.7
+music
+
+1: c;;;;
+bar
+newscore
+1: d;;;;
+bar
+newscore
+1: e;;;;
+bar

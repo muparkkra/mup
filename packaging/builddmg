@@ -1,0 +1,90 @@
+# This script creates an Apple .dmg disk image of Mup.
+
+version=6.7
+version_no_dot=67
+
+srcdir=src
+docdir=doc
+
+set -e
+
+# Create a build directory and populate it
+builddir=mup-osx
+if [ -d "$builddir" ]
+then
+	rm -rf $builddir
+fi
+mkdir -p $builddir
+cd $builddir
+
+if [ ! -f ../../mup-$version.tar.gz ]
+then
+	echo "mup-$version.tar.gz is missing; be sure to run 'make dist' first"
+	exit 1
+fi
+tar zxf ../../mup-$version.tar.gz
+cd mup-$version
+
+# Edit in the makefile changes
+orig_makefile=simple.makefile
+osx_makefile=makefile.osx
+sed -e "/^X_LIBS/s/^/#/" -e "/Carbon/s/# //" -e "/CFLAG.*mac/s/# //" -e "/optflags)/s/^/#/ " -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" $orig_makefile > $osx_makefile
+
+# Build the products
+make -f $osx_makefile
+
+# clean up the OS-X specific makefile
+rm $osx_makefile
+
+staging_dir=staging
+mkdir $staging_dir
+for d in Macinst.html blind.html faq.html mupfeat.html overview.html usercomm.html whatsnew.html
+do
+	cp $docdir/htmldocs/$d $staging_dir/
+done
+cp LICENSE $staging_dir/LICENSE.txt
+
+# Copy in the command line tools
+mkdir -p $staging_dir/optional_CmdLineTools/bin
+cp $srcdir/mup/mup $staging_dir/optional_CmdLineTools/bin/
+cp $srcdir/mkmupfnt/mkmupfnt $staging_dir/optional_CmdLineTools/bin/
+cp $srcdir/mupdisp/mupdisp $staging_dir/optional_CmdLineTools/bin/
+cp $srcdir/mupprnt/mupprnt $staging_dir/optional_CmdLineTools/bin/
+mkdir -p $staging_dir/optional_CmdLineTools/man/man1
+cp $docdir/manpages/*.1  $staging_dir/optional_CmdLineTools/man/man1/
+
+# Copy in the standard include files and examples
+mkdir $staging_dir/MupMate
+mkdir $staging_dir/MupMate/MupIncludes
+mkdir $staging_dir/MupMate/MupMusic
+cp mup-input/examples/*.mup $staging_dir/MupMate/MupMusic/
+includes_list=$(ls mup-input/includes/* | grep -v Makefile)
+cp $includes_list $staging_dir/MupMate/MupIncludes/
+
+# Set up the special things needed for a .dmg 
+mkdir -p $staging_dir/MupMate/MupMate.app/Contents
+mkdir $staging_dir/MupMate/MupMate.app/Contents/MacOS
+mkdir -p $staging_dir/MupMate/MupMate.app/Contents/Resources/bin
+mkdir "$staging_dir/MupMate/MupMate.app/Contents/Resources Disabled"
+echo -n "APPL????" > $staging_dir/MupMate/MupMate.app/Contents/PkgInfo
+cp packaging/Info.plist $staging_dir/MupMate/MupMate.app/Contents/Info.plist
+cp $srcdir/mupmate/mupmate $staging_dir/MupMate/MupMate.app/Contents/MacOS/MupMate
+cp $srcdir/mup/mup $staging_dir/MupMate/MupMate.app/Contents/Resources/bin/mup
+for i in MupMate MupMateDoc
+do
+	uudecode -o $staging_dir/MupMate/MupMate.app/Contents/Resources/$i.icns $srcdir/mupmate/$i.icns.b64
+done
+
+# Copy in the Mup app files
+mkdir -p $staging_dir/MupMate/MupMate.app/Contents/Resources/doc/packages/mup/uguide
+cp $docdir/uguide.ps $docdir/quickref.ps $staging_dir/MupMate/MupMate.app/Contents/Resources/doc/packages/mup/
+cp $docdir/uguide/* $staging_dir/MupMate/MupMate.app/Contents/Resources/doc/packages/mup/uguide/
+
+# Create Mac disk image that user can then drag-and-drop to install
+diskimage=../MupMate-${version_no_dot}.dmg
+rm -f $diskimage
+hdiutil create -srcfolder $staging_dir -volname "MupMate-$version" -uid 99 -gid 99 $diskimage
+hdiutil internet-enable -yes $diskimage
+
+# Clean up the staging directory
+rm -rf $staging_dir

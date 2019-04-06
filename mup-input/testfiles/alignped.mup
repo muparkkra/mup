@@ -1,0 +1,223 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "alignped.mup"
+	paragraph (14) "This file tests cases when alignped=n."
+	title ""
+
+score
+	alignped=n
+music
+
+1: a-;g;g;a-;
+pedal 1: 1;2;3;4;
+rom 1: 1 "slants up/down within a bar";
+bar
+
+1: g;c;g;c;
+pedal 1: 1;2;3;4;
+rom 1: 1 "slants up/down across bar line";
+bar
+
+1: g-;g;;c;
+pedal 1: 1;3;
+rom 1: 1 "slant down across scorefeed";
+bar
+
+newscore
+
+1: c-;c--;a-;;
+pedal 1: 2;3;
+bar
+
+1: g;;;c-;
+pedal 1: 1;4;
+rom 1: 1 "slant up across scorefeed";
+bar
+
+newscore
+
+1: c;d;e;f-;
+pedal 1: 2;4*;
+bar
+
+1: e;d;c;f-;
+pedal 1: 1;2;3;4;
+rom 1: 1 "up across multiple score feeds";
+bar
+
+newscore
+
+1: e;c;g;c;
+bar
+
+1: b;g;e;d;
+bar
+
+newscore
+
+1: b;a;g;f;
+bar
+
+1: e;c+;e+;g;
+bar
+
+newscore
+
+1: c;d;e;f;
+pedal 1: 1;3*;4;
+bar 
+
+1: g;a;g;a;
+rom above all: 1 "down across multiple score feeds";
+pedal 1: 3;
+bar
+
+newscore
+
+1: c;d;e;f;
+bar
+
+1: g;f;e;d;
+bar
+
+1: e;f;g;a;
+bar
+
+newscore
+
+1: d-;c;d;e;
+pedal 1: 1;4*;
+bar
+
+newpage
+
+1: d;a-;e;g;
+pedal 1 align 1: 1;3;
+rom above all: 1 "all with same align tags";
+bar
+
+1: a;b;g;f;
+pedal 1 align 1: 2;4*;
+bar
+
+newscore
+
+1: a-;;f;d;
+pedal 1 align 1: 1;2;
+pedal 1: 3;4;
+rom above all: 1 "1;2; with same align tags, 3;4; without align tag";
+bar
+
+1: f-;a-;c;e;
+pedal 1 align 1: 1;2;
+pedal 1: 3;4*;
+bar
+
+newscore
+
+1:c;d;g;a;
+pedal 1 align 1: 1;2;
+pedal 1 align 2: 3;4;
+rom above all: 1 "1;2; with one align tag 1, 3;4; with align tag 2";
+bar
+
+1: a;g;d;c;
+pedal 1 align 1: 1;2;
+pedal 1 align 2: 3;4*;
+bar
+
+newscore
+
+1: g-;b-;c;d;
+pedal 1 align 4: 1;2;
+pedal 1: 3;4;
+rom above all: 1 "1;2; of first measure with align tag 4, 1;2; of second measure with align tag 7, others no align tag";
+bar
+
+1: a;d;c;d;
+pedal 1 align 7: 1;2;
+pedal 1: 3;4*;
+bar
+
+newscore
+
+1: c;e;g;c+;
+pedal 1: 1;3;
+rom above all: 1 "same align tag across score feeds; measure before and after no tag";
+bar
+
+1: c+;g;g-;c;
+pedal 1 align 5: 1;3;
+bar
+
+newscore
+
+1: g;a-;b;a;
+bar
+
+1: f;g;a-;g;
+bar
+
+newscore
+
+1: g;a;b;c+;
+pedal 1 align 5: 1;3;
+bar
+
+1: 2g;;
+pedal 1: 1;3*;
+bar
+
+newpage
+
+1: c;d;e;f;
+pedal 1: 1;2;3;4;
+rom 1: 1 "restart";
+bar
+
+restart
+
+1: g;a;g;a;
+pedal 1: 1;2;3;4;
+bar
+
+newscore
+
+
+1: c;;;;
+pedal 1: 1;3;
+rom 1: 1 "ending, next pedal on same score";
+bar ending "1."
+
+1: c;a-;c;a-;
+pedal 1: 1;4;
+repeatend ending "2."
+
+1: g;;;;
+pedal 1: 1;4*;
+bar endending
+
+newscore
+
+1: c;d;e;f;
+bar
+
+1: c;;;;
+pedal 1: 1;3;
+rom 1: 1 "ending, next pedal on subsequent score";
+bar ending "1."
+
+1: c;a-;c;a-;
+pedal 1: 1;4;
+repeatend ending "2."
+
+1: g;;;;
+bar
+
+newscore
+
+1: e;f;g;a;
+pedal 1: 1;4*;
+endbar
+

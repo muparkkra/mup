@@ -1,0 +1,62 @@
+//!Mup-Arkkra
+
+header
+	title bold (14) "accparen.mup"
+	paragraph (11) "This file tests parentheses around accidentals."
+	title ""
+
+score
+	size=13
+	scale=1.3
+
+music
+
+1: ce(&)g;df(#)a;ce(n)g;d(&&)fag(x)+;
+rom above 1: 1 "acc in parentheses";
+bar
+
+1: 2c(n)e(&)g(#)b(&&)d+(x);c(x)d(&&)e(#)f(&)g(n);
+rom above 1: 1 "packing of acc in paren";
+bar
+
+newscore
+1: 2c(n)e&g(#)b&&d+(x);c(x)d&&e(#)f&g(n);
+rom above 1: 1 "mixture w/ and w/o paren";
+bar
+
+1: 2cne(&)g#b(&&)d+x;cxd(&&)e#f(&)gn;
+bar
+
+newscore
+
+1: [cue]... ce(&)g;df(#)a;ce(n)g;d(&&)fag(x)+;
+rom above 1: 1 "same as prev 2 lines, but with cue notes";
+bar
+
+1: [cue]... 2c(n)e(&)g(#)b(&&)d+(x);c(x)d(&&)e(#)f(&)g(n);
+bar
+
+newscore
+
+1: [cue]... 2c(n)e&g(#)b&&d+(x);c(x)d&&e(#)f&g(n);
+bar
+
+1: [cue]... 2cne(&)g#b(&&)d+x;cxd(&&)e#f(&)gn;
+bar
+
+newscore
+
+1: 2c(n)?e&g(#)?b&&d+(x)?;c(x)?d&&e(#)?f&g(n)?;
+rom above 1: 1 "mixture of cue and normal size";
+bar
+
+1: 2cn?e(&)g#?b(&&)d+x?;cx?d(&&)e#?f(&)gn?;
+bar
+
+newscore
+
+1: [grace]... 16c(n);d(#);e(&);f(&&);g(x); [-]2c; \
+	 [grace; slash 1] 8c(#)e(&)g(n)b(&&)d+(x); 4g; \
+	 [grace; slash 1] 8c(#)e&g(n)b&&d+(x); 4g;
+rom above 1: 1(-5) "acc with paren on grace notes";
+bar

@@ -1,0 +1,29 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "input04_err.mup"
+	paragraph (14) "This tests handling of various kinds of invalid input."
+
+score
+	staffs=2
+	time=4/0
+	stafflines=17
+music
+
+if (3 / 0)== 5
+then
+ rom 1: 1 "should not get here";
+endif
+[1 &2]: [=a]f;;;;
+staff 3
+bar
+
+staff 0
+	measnum=foo
+music
+
+
+score 
+XYZ
+define UNENDED this macro is not terminated
+

@@ -1,0 +1,175 @@
+#!/bin/bash
+
+# This script creates a mup_VERSION_arch.deb package.
+
+# $1 = builder ("Name Surname <user@xxx.com>")
+#	If not set, uses $logname <$(logname)@$(hostname)>
+# $2 = architecture. If not set, uses $(arch)
+
+MUPVERSION=6.7
+SRC_TAR=mup-$MUPVERSION.tar.gz
+if [ ! -f "../$SRC_TAR" ]
+then
+	echo "cannot open '../$SRC_TAR'"
+	exit 1
+fi
+
+# Guess builder name and email if not specified.
+if [ -n "$1" ]
+then
+	BUILDER="$1"
+else
+	USER=$(logname)
+	if [ -z "$USER" ]
+	then
+		echo unable to determine user name
+		exit 1
+	fi
+	HOST=$(hostname)
+	if [ -z "$HOST" ]
+	then
+		echo unable to determine host name
+		exit 1
+	fi
+	BUILDER="$USER <$USER@$HOST>"
+fi
+
+# Deduce architecture if not specified.
+# User can specify, for example, to build an i386 package on an amd64 machine 
+if [ -n "$2" ]
+then
+	ARCH=$2
+else
+	ARCH=$(arch)
+fi
+
+ORIG_TAR=mup_$MUPVERSION.orig.tar.gz
+BUILD_DIR=mup-$MUPVERSION.debian
+if [ -d "$BUILD_DIR" ]
+then
+	echo $BUILD_DIR directory already exists
+	exit 1
+fi
+
+# Unpack the source
+mkdir -p $BUILD_DIR
+cd $BUILD_DIR
+ln -s ../../$SRC_TAR $ORIG_TAR
+tar zxf $ORIG_TAR
+
+# Create the Debian packaging files.
+mkdir -p mup-$MUPVERSION/debian
+cd mup-$MUPVERSION/debian
+cp ../README README
+cp ../README README.source
+cp ../LICENSE copyright
+touch docs
+echo 7 > compat
+
+cat >> changelog <<EOF
+mup ($MUPVERSION-1) unstable; urgency=low
+
+  * Debian specific changes: since the Debian version of fltk is
+  compiled in a way that allows Mupmate to be linked with fewer X11 libraries
+  (the fltk library itself arranges to link them in),
+  a patch is included to alter the makefile to omit those libraries.
+  Also, Debian puts doc file under /usr/share/doc/mup rather than
+  /usr/share/doc/packages/mup
+
+EOF
+echo " -- $BUILDER  $(date '+%a, %d %b %Y %T %z')" >> changelog
+cat >> changelog <<EOF
+
+mup ($MUPVERSION) unstable; urgency=low
+
+EOF
+sed -e "s/^/  /" ../ChangeLog >> changelog
+echo >> changelog
+echo " -- $BUILDER  $(date '+%a, %d %b %Y %T %z')" >> changelog
+
+cat > control << EOF
+Source: mup
+Section: sound
+Priority: extra
+Maintainer: $BUILDER
+Build-Depends: debhelper (>= 7.0.50~), libx11-dev, libfltk1.3-dev, libxpm-dev
+Standards-Version: 3.9.1
+Homepage: http://www.arkkra.com
+
+Package: mup
+Architecture: any
+Depends: \${shlibs:Depends}, \${misc:Depends}
+Suggests: gv, timidity
+Description: The Mup music publication program
+ Mup produces very high quality PostScript printed music output
+ or MIDI output, based on a text input file that describes the music.
+ A companion Mupmate program is included which provides a GUI on top of Mup.
+EOF
+
+cat > mup.doc-base.uguide <<EOF
+Document: mup-uguide
+Title: Mup User's Guide
+Author: Arkkra Enterprises
+Abstract: User's Guide for the Mup music publication program
+Section: Sound
+
+Format: HTML
+Index: /usr/share/doc/mup/uguide/index.html
+Files: /usr/share/doc/mup/uguide/*.html
+
+Format: PostScript
+Files: /usr/share/doc/mup/uguide.ps.gz
+EOF
+
+cat > mup.menu <<EOF
+?package(mup): needs="x11" \\
+	section="Applications/Sound" \\
+	title="Mupmate" command="mupmate" \\
+	icon="/usr/share/pixmaps/mup/mup32.xpm"
+EOF
+
+cat > watch <<'EOF'
+version=3
+opts=uversionmangle=s/(\d)/$1./ ftp://ftp.arkkra.com/pub/unix/mup(.*)src.tar.gz
+EOF
+
+case "$ARCH" in
+amd64|arm64|mup64el|ppc64el) cc_opts="optflags=-m64" ;;
+armel|armhf|i386|mips) cc_opts="optflags=-m32" ;;
+esac
+
+cat > rules <<EOF
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+%:
+	dh \$@
+
+override_dh_auto_configure:
+
+override_dh_auto_build:
+	make $cc_opts -f simple.makefile
+
+override_dh_install:
+	make -f simple.makefile DESTDIR=\$(PWD)/debian/mup install
+EOF
+chmod 755 rules
+
+mkdir -p source
+echo "3.0 (quilt)" > source/format
+
+mkdir -p patches ../.pc
+PATCHNAME=makefile.patch
+echo "$PATCHNAME" > patches/series
+
+orig_makefile=../simple.makefile
+sed -e "/X_LIBS =/s/=.*/= -lX11 -lXpm/" -e "/JPEGLIB =/s/=.*/=/" -e "/PNGLIB =/s/=.*/=/" -e "/ZLIB =/s/=.*/=/" -e '/$(JPEGLIB)/d' -e "/fltk_images/s/ .$/ -lm/" -e "/packages/s:packages/::" $orig_makefile > tempmakefile
+echo "The way the Debian fltk is compiled, mupmate doesn't need to link with as many libraries" > patches/$PATCHNAME
+echo "Also, Debian wants doc files in /usr/share/mup rather than /usr/share/packages/mup" >> patches/$PATCHNAME
+echo >> patches/$PATCHNAME
+diff -u $orig_makefile tempmakefile | sed -e "/^---/s: .*: a/simple.makefile:" -e "/^+++/s: .*: b/simple.makefile:" >> patches/$PATCHNAME
+rm tempmakefile
+
+# Build the .deb package
+cd ..
+dpkg-buildpackage -us -uc -a$ARCH

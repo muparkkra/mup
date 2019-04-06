@@ -1,0 +1,46 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "warnings.mup"
+
+block
+paragraph (14) "This file tests cases that were originally coded to be
+fatal errors, but then were relaxed to be just warnings.
+For each such case, first an input was contrived to cause
+the error, then code was changed to make it into a warning,
+and then this file was used to verify it had indeed been reduced
+to a warning, and did not have bad side effects. You can verify the
+warnings are silenced entirely by using -DNOWARNINGS"
+	
+score
+	staffs=2
+	ifdef NOWARNINGS
+		warn=n
+	endif
+
+staff 2
+	stafflines=tab (e e& g)
+	defoct=6
+	beamstyle=4,4,4,4
+
+music
+"string1 string1" "string2"
+
+scoresep=19
+
+1: [slash 19]c(4);<<staff lyricssize=4>>;alt 11; f#3 ebm;
+2: [down]e3;e&(1);alt 5; e(&)2;
+bar
+
+1: 4ms;
+2: 4mus;
+(dblbar) bar
+
+1: 4mrpt;
+bar reh mnum reh "A" reh "Last"
+
+restart  hidechanges
+
+1: c =a;;; =b;
+bar endending
+wavy curve (a.x, a.y-2) to (b.x, b.y -2) bulge -2
