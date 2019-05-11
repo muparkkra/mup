@@ -77,7 +77,7 @@ BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/share/man/man1
 ICONDIR = $(PREFIX)/share/pixmaps/mup
 LIBDIR = $(PREFIX)/lib/mup
-DOCDIR = $(PREFIX)/share/doc/packages/mup
+DOCDIR = $(PREFIX)/share/doc/mup
 
 # This is the name of your C compiler.
 # cc would be another common choice.
@@ -136,6 +136,10 @@ PNGLIB = -lpng
 # You can use fltk_z or z library, whichever you have,
 # or depending on how fltk was compiled, you may not need it at all
 ZLIB = -lz
+
+# Options to pass to man command.
+# On Mac OS X, replace with -t
+MAN_OPTIONS = -l -Tps
 
 #-----------------------------------------------------------------------
 
@@ -253,16 +257,16 @@ MUP_LIB_FILES = \
 	mup-input/includes/cyrillic \
 	mup-input/includes/gen_midi \
 	mup-input/includes/grids \
+	mup-input/includes/grids2 \
 	mup-input/includes/guitar \
 	mup-input/includes/helmholtz_accs \
 	tools/mup.vim \
 	mup-input/includes/quarterstep_accs \
-	mup-input/includes/tabstems \
-	mup-input/includes/ukelele
+	mup-input/includes/tabstems
 
 #---------------------------------------------------------------
 
-all: src/mup/mup src/mupdisp/mupdisp src/mkmupfnt/mkmupfnt src/mupmate/mupmate
+all: src/mup/mup src/mupdisp/mupdisp src/mkmupfnt/mkmupfnt src/mupmate/mupmate docs
 
 src/mup/mup: $(MUP_HDRS) $(MUP_SRC)
 	$(CCOMPILER) -Isrc/include $(CFLAGS) -o $@ $(MUP_SRC) -lm
@@ -281,6 +285,24 @@ src/mupmate/mupmate: $(MUPMATE_SRC) $(MUPMATE_HDRS) $(MUPMATE_OTHER_FILES)
 	$(FLTK_VERSION) -I$(FLTK_INCLUDE) -Isrc/include -L$(X_LOCATION)/lib \
 	$(FLTK_LIB_LOCATION) -lfltk -lfltk_images $(X_LIBS) \
 	$(JPEGLIB) $(PNGLIB) $(ZLIB) -lm
+
+
+docs: doc/manpages/mup.ps doc/manpages/mkmupfnt.ps doc/manpages/mupmate.ps doc/manpages/mupprnt.ps doc/manpages/mupdisp.ps
+
+doc/manpages/mup.ps: doc/manpages/mup.1
+	man $(MAN_OPTIONS) doc/manpages/mup.1 > doc/manpages/mup.ps
+
+doc/manpages/mupmate.ps: doc/manpages/mupmate.1
+	man $(MAN_OPTIONS) doc/manpages/mupmate.1 > doc/manpages/mupmate.ps
+
+doc/manpages/mkmupfnt.ps: doc/manpages/mkmupfnt.1
+	man $(MAN_OPTIONS) doc/manpages/mkmupfnt.1 > doc/manpages/mkmupfnt.ps
+
+doc/manpages/mupprnt.ps: doc/manpages/mupprnt.1
+	man $(MAN_OPTIONS) doc/manpages/mupprnt.1 > doc/manpages/mupprnt.ps
+
+doc/manpages/mupdisp.ps: doc/manpages/mupdisp.1
+	man $(MAN_OPTIONS) doc/manpages/mupdisp.1 > doc/manpages/mupdisp.ps
 
 install:	install-mup install-mkmupfnt install-mupdisp install-mupmate install-mupdocs install-mupincludes install-mupprnt
 
@@ -307,8 +329,8 @@ install-mupprnt: src/mupprnt/mupprnt
 	cp src/mupprnt/mupprnt $(BINDIR)/mupprnt
 
 install-mupdocs: LICENSE doc/uguide.ps doc/quickref.ps \
-	doc/manpages/mup.1 doc/manpages/mupmate.1 \
-	doc/manpages/mkmupfnt.1 doc/manpages/mupprnt.1 \
+	doc/manpages/mup.ps doc/manpages/mupmate.ps \
+	doc/manpages/mkmupfnt.ps doc/manpages/mupprnt.ps doc/manpages/mupdisp.ps \
 	mup-input/examples/template.mup mup-input/examples/template.mup
 	mkdir -p $(MANDIR) $(DOCDIR)/uguide
 	cp doc/manpages/*.1 $(MANDIR)
@@ -319,15 +341,16 @@ install-mupdocs: LICENSE doc/uguide.ps doc/quickref.ps \
 	cp doc/quickref.ps $(DOCDIR)/quickref.ps
 	cp mup-input/examples/template.mup $(DOCDIR)/template.mup
 	cp mup-input/examples/sample.mup $(DOCDIR)/sample.mup
-	man -l -Tps doc/manpages/mup.1 > $(DOCDIR)/mup.ps
-	man -l -Tps doc/manpages/mupmate.1 > $(DOCDIR)/mupmate.ps
-	man -l -Tps doc/manpages/mkmupfnt.1 > $(DOCDIR)/mkmupfnt.ps
-	man -l -Tps doc/manpages/mupprnt.1 > $(DOCDIR)/mupprnt.ps
-	man -l -Tps doc/manpages/mupdisp.1 > $(DOCDIR)/mupdisp.ps
+	cp doc/manpages/mup.ps $(DOCDIR)/mup.ps
+	cp doc/manpages/mupmate.ps $(DOCDIR)/mupmate.ps
+	cp doc/manpages/mkmupfnt.ps $(DOCDIR)/mkmupfnt.ps
+	cp doc/manpages/mupprnt.ps $(DOCDIR)/mupprnt.ps
+	cp doc/manpages/mupdisp.ps $(DOCDIR)/mupdisp.ps
 
 install-mupincludes:
 	mkdir -p $(LIBDIR)
 	cp $(MUP_LIB_FILES) $(LIBDIR)
+
 
 clean:
 	rm -f src/mup/*.o src/mupdisp/*.o src/mkmupfnt/*.o src/mupmate/*.o

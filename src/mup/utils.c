@@ -1930,9 +1930,12 @@ float *west_p;
 		*east_p = (space * grid_p->numstr) / 2.0;
 		if (fretnum > 0) {
 			/* We will need "N fr".
-			 * Get enough space to hold
-			 * font, size, 2 digits, space, "fr", null */
-			char tmp[8];
+			 * So we need enough space to hold
+			 * font, size, 2 digits, space, "fr", null.
+			 * But super-safe compilers don't know the number
+			 * will never be more than 2 digits, and insist
+			 * on more. */
+			char tmp[16];
 
 			/* this is printed in Palatino Roman */
 			tmp[0] = (char) FONT_PR;

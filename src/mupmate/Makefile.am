@@ -11,18 +11,21 @@ mupmate_SOURCES = Config.C Config.H Edit.C Edit.H File.C File.H \
 	../include/defines.h $(PIXMAPS) resource.h mupmate.rc
 AM_CXXFLAGS = -I../include $(FLTK_CXXFLAGS) @EXTRA_CFLAGS@ $(optflags)
 
-AM_LDFLAGS = $(FLTK_LDFLAGS)
+mupmate_LDFLAGS =
+mupmate_LDADD = $(FLTK_LDFLAGS)
 # Add appropriate options for Windows and OSX
 if WINDOWS
- AM_LDFLAGS += icon.o -Wl,--subsystem,windows -lcomdlg32 -lgdi32 -luuid -lole32 -lws2_32
+   mupmate_LDFLAGS += -Wl,--subsystem,windows
+   mupmate_LDADD += icon.o -lcomdlg32 -lgdi32 -luuid -lole32 -lws2_32
 endif
 if OSX
-   AM_LDFLAGS += -framework Carbon -L/usr/X11/lib -lX11
+   mupmate_LDFLAGS += -framework Carbon -L/usr/X11/lib
+   mupmate_LDADD += -lX11
 endif
 if LINUX
-   AM_LDFLAGS += -lXext -lX11 -lXpm -lXft -lXinerama
+   mupmate_LDADD += -lXext -lX11 -lXpm -lXft -lXinerama
 endif
-AM_LDFLAGS += -lm
+mupmate_LDADD += -lm
 
 template.C: ../../tools/mupmate/mktemplateC ../../mup-input/examples/template.mup ../../LICENSE
 	../../tools/mupmate/mktemplateC ../../LICENSE ../../mup-input/examples/template.mup > template.C

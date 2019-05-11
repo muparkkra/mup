@@ -7,7 +7,7 @@
 - new -q (quiet) option
 - "include" file search expanded to relative to the including file
 - cyrillic include file can print mapping table in Russian alphabet order
-- new include file of chords for ukelele, baritone ukelele, guitar, mandolin, and banjo.
+- new "grids2" include file of chords for ukulele, baritone ukulele, guitar, mandolin, and banjo.
 - miscellaneous improvements in the User's Guide
 * Sat Dec 16 2017 Arkkra Enterprises <support@arkrka.com> 6.6
 - Ability to force "with" items to be above or below
@@ -111,18 +111,18 @@
 - Alignment tags
 * Tue Oct 24 2006 Arkkra Enterprises <support@arkkra.com> 5.3
 - Mupmate front end program. New pagesize and vcombine parameters.
-Optional maximum for scorepad parameter. Enhanced error messages.
+- Optional maximum for scorepad parameter. Enhanced error messages.
 * Sat Jan 14 2006 Arkkra Enterprises <support@arkkra.com> 5.2
 - generalized 'if' clauses, beamstyle parameter is remembered,
-support for complicated time signatures, ability to force stem direction,
-beam angle improvements.
+- support for complicated time signatures, ability to force stem direction,
+- beam angle improvements.
 * Fri Apr 29 2005 Arkkra Enterprises <support@arkkra.com> 5.1
 - cross-staff stems, number-of-pages string, additive time values,
-beaming across spaces, alternate multirest notation, upward roll arrow,
-alternate tuplet numbering style, voice 3 placement improvements,
-miscellaneous bug fixes.
+- beaming across spaces, alternate multirest notation, upward roll arrow,
+- alternate tuplet numbering style, voice 3 placement improvements,
+- miscellaneous bug fixes.
 * Mon May 17 2004 Arkkra Enterprises <support@arkkra.com> 5.0
 - shaped notes, stemlen parameter, mid-measure clef changes,
-raw PostScript, swingunit parameter, etc.
+- raw PostScript, swingunit parameter, etc.
 * Fri Sep 26 2003 Arkkra Enterprises <support@arkkra.com> 4.6
 - new contexts for top/bottom/top2/bottom2/block, paragraphs, etc

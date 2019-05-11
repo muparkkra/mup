@@ -21,38 +21,6 @@ done
 
 cat mup.spec.in ../ChangeLog > rpmtop/SPECS/mup.spec
 
-# Edit in tweaks for known distros
-os_like=
-if [ -f /etc/os-release ]
-then
-	. /etc/os-release
-	case "$NAME" in
-	openSUSE*|SLES*)
-		os_like=SuSE ;;
-	"Red Hat"*|Fedora*|CentOS*|Scientific*) 
-		os_like=RedHat ;;
-	esac
-fi
-if [ -z "$os_like" ]
-then
-	[ -f /etc/redhat-release] && os_like=RedHat
-	[ -f /etc/centos-release] && os_like=RedHat
-	[ -f /etc/SuSE-release ] && os_like=SuSE
-	[ "$ID" == rhel ] && os_like=RedHat
-	[ "$ID_LIKE" == suse ] && os_like=SuSE
-	[ "$ID_LIKE" == Fedora ] && os_like=RedHat
-	[ "$ID_LIKE" == fedora ] && os_like=RedHat
-fi
-
-if [ -n "$os_like" ]
-then
-	ed - rpmtop/SPECS/mup.spec <<-EOF
-	/#--Uncomment these lines for $os_like/+1,/#--End uncomment these lines for $os_like/-1s/#//
-	w
-	q
-	EOF
-fi
-
 MUP_VERSION_NO_DOT=$(echo $MUP_VERSION | tr -d .)
 RPM_SRC_TAR=rpmtop/SOURCES/mup${MUP_VERSION_NO_DOT}src.tar.gz
 rm -f $RPM_SRC_TAR

@@ -274,10 +274,12 @@ Uguide_browser::resolve_link(Fl_Widget * help_browser_p, const char * uri)
 				Default_Mup_documentation_location);
 	char expanded_url[FL_PATH_MAX];
 	filename_expand(expanded_url, base_url);
-	(void) snprintf(link_path, sizeof(link_path),
+	if (snprintf(link_path, sizeof(link_path),
 				"%s%c%s%c%s", expanded_url, dir_separator(),
 				uguide_directory, dir_separator(),
-				fl_filename_name(uri));
+				fl_filename_name(uri)) > (int) sizeof(link_path)) {
+		fl_message("Path too long; truncated");
+	}
 
 	URI_Cache *uri_cache_p;
 	uri_cache_p = new URI_Cache(uri, link_path);

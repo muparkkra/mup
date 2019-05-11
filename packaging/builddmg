@@ -28,7 +28,7 @@ cd mup-$version
 # Edit in the makefile changes
 orig_makefile=simple.makefile
 osx_makefile=makefile.osx
-sed -e "/^X_LIBS/s/^/#/" -e "/Carbon/s/# //" -e "/CFLAG.*mac/s/# //" -e "/optflags)/s/^/#/ " -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" $orig_makefile > $osx_makefile
+sed -e "/^X_LIBS/s/^/#/" -e "/Carbon/s/# //" -e "/CFLAG.*mac/s/# //" -e "/optflags)/s/^/#/ " -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" -e "s/-l -Tps/-t/" $orig_makefile > $osx_makefile
 
 # Build the products
 make -f $osx_makefile

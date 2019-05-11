@@ -52,6 +52,8 @@ char * license_text =
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #if defined(SIGCHLD) && ! defined(SIGCLD)
 #define SIGCLD SIGCHLD
@@ -73,6 +75,7 @@ void cleanup(int status);
 
 
 
+int
 main(argc, argv)
 
 int argc;
@@ -94,7 +97,10 @@ char **argv;
 	}
 
 	name = argv[1];
-	tmpnam(gstempfile);
+	if (tmpnam(gstempfile) == 0) {
+		fprintf(stderr, "unable to create temporary file\n");
+		exit(1);
+	}
 
 	/* arrange to remove temp file */
 	for (i = 1; i < NSIG; i++) {
@@ -107,9 +113,12 @@ char **argv;
 	/* run Ghostscript */
 	switch(child = fork()) {
 	case 0:
-		(void) sprintf(buff, "-sOutputFile=%s", gstempfile);
+		(void) snprintf(buff, sizeof(buff), "-sOutputFile=%s", gstempfile);
 		close(1);
-		dup(2);
+		if (dup(2) < 0) {
+			fprintf(stderr, "unable to connect to gs\n");
+			exit(1);
+		}
 		(void) execlp("gs", "gs", "-sDEVICE=bit", "-dNOPAUSE",
 				"-sPAPERSIZE=letter", "-dQUIET", buff, "-", (char *) 0);
 		/*FALLTHRU*/
@@ -206,7 +215,10 @@ char **argv;
 			lseek(t, i * PGWIDTHBYTES + leftmost, SEEK_SET);
 			printf("0x00, 0xff, ");
 			for (j = leftmost; j <= rightmost; j++) {
-				read(t, buff, 1);
+				if (read(t, buff, 1) != 1) {
+					(void) fprintf(stderr, "read error\n");
+					cleanup(1);
+				}
 				printf("0x%02x, ", (buff[0] ^ 0xff) & 0xff);
 			}
 			printf("0xff, 0x00,\n");

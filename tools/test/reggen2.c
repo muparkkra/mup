@@ -861,6 +861,7 @@ extern int optind;
 extern char *optarg;
 
 /* function templates */
+void gen(void);
 void genmeas(int num, int den, int staff, int voice, int staffs);
 struct GRP * gen_music(int num, int den, int staff);
 int sometimes(int percent);
@@ -868,6 +869,7 @@ int myrandom(int min, int max);
 void out(char *str);
 void outfmt(char *fmt, ...);
 void newline(void);
+void genbar(int);
 struct GRP *picktimes(struct GRP *grplist_p, RATIONAL remtime);
 struct GRP *scramble_times(struct GRP *grplist_p);
 void freegrps(struct GRP *g_p);
@@ -1331,6 +1333,7 @@ gen_score_ssv()
 
 /* generate a test file */
 
+void
 gen()
 {
 	int measures;			/* how many measures to generate */
@@ -2238,6 +2241,10 @@ int percent;
 
 int
 myrandom(min, max)
+
+int min;
+int max;
+
 {
 	return ((rand() % (max - min + 1)) + min);
 }
@@ -2297,6 +2304,7 @@ newline()
 
 /* generate bar line */
 
+void
 genbar(int feed_ok)
 {
 	long f_off;	/* offset in file */
@@ -2748,6 +2756,8 @@ int generation;
 
 void
 genstring(leng)
+
+int leng;
 
 {
 	outfmt("%s", create_a_string(0, leng));

@@ -300,6 +300,7 @@ extern void assign_firstpage P((int pagenum, int firstside,
 extern void set_margin P((int var, double leftval, double rightval,
 		struct MAINLL *mainll_item_p));
 extern void assign_direction P((int param, int value, struct MAINLL *mainll_p));
+extern void check_beamstyle P((struct SSV *ssv_p));
 
 /* beaming.c */
 extern void setbeamloc P((struct GRPSYL *curr_grp_p,

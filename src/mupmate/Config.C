@@ -603,7 +603,7 @@ Preferences_dialog::set_size_list(Fl_Font font, uchar curr_size)
 		if (sizelist[i] > Max_size) {
 			break;
 		}
-		char num_as_string[4];
+		char num_as_string[16];
 		(void) sprintf(num_as_string, "%d", sizelist[i]);
 		size_p->add(num_as_string, 0, 0, 0, 0);
 		// If this is closest index to desired size, mark as current

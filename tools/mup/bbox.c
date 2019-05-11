@@ -68,6 +68,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <sys/wait.h>
 
 #if defined(SIGCHLD) && ! defined(SIGCLD)
@@ -258,7 +259,7 @@ main()
 		(void) fprintf(outf, "\tFontinfo[index].ch_width = FI_M%d_widths;\n", f);
 		(void) fprintf(outf, "\tFontinfo[index].ch_height = FI_M%d_heights;\n", f);
 		(void) fprintf(outf, "\tFontinfo[index].ch_ascent = FI_M%d_ascents;\n", f);
-		(void) fprintf(outf, "\tFontinfo[index].is_ital = NO;\n", suffix);
+		(void) fprintf(outf, "\tFontinfo[index].is_ital = NO;\n");
 
 		/* prepare for second music font */
 		suffix = "2";
@@ -453,7 +454,7 @@ int font;		/* font number */
 
 	/* emit code to look up character in font dictionary and draw it */
 	(void) fprintf(psf, "mfont%d begin Encoding ", font);
-	(void) fprintf(psf, charname);
+	(void) fprintf(psf, "%s", charname);
 	(void) fprintf(psf, " get CharStrings exch get exec end\n");
 	/* display and quit */
 	(void) fprintf(psf, "showpage\n");

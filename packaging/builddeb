@@ -73,8 +73,6 @@ mup ($MUPVERSION-1) unstable; urgency=low
   compiled in a way that allows Mupmate to be linked with fewer X11 libraries
   (the fltk library itself arranges to link them in),
   a patch is included to alter the makefile to omit those libraries.
-  Also, Debian puts doc file under /usr/share/doc/mup rather than
-  /usr/share/doc/packages/mup
 
 EOF
 echo " -- $BUILDER  $(date '+%a, %d %b %Y %T %z')" >> changelog
@@ -163,9 +161,8 @@ PATCHNAME=makefile.patch
 echo "$PATCHNAME" > patches/series
 
 orig_makefile=../simple.makefile
-sed -e "/X_LIBS =/s/=.*/= -lX11 -lXpm/" -e "/JPEGLIB =/s/=.*/=/" -e "/PNGLIB =/s/=.*/=/" -e "/ZLIB =/s/=.*/=/" -e '/$(JPEGLIB)/d' -e "/fltk_images/s/ .$/ -lm/" -e "/packages/s:packages/::" $orig_makefile > tempmakefile
+sed -e "/X_LIBS =/s/=.*/= -lX11 -lXpm/" -e "/JPEGLIB =/s/=.*/=/" -e "/PNGLIB =/s/=.*/=/" -e "/ZLIB =/s/=.*/=/" -e '/$(JPEGLIB)/d' -e "/fltk_images/s/ .$/ -lm/" $orig_makefile > tempmakefile
 echo "The way the Debian fltk is compiled, mupmate doesn't need to link with as many libraries" > patches/$PATCHNAME
-echo "Also, Debian wants doc files in /usr/share/mup rather than /usr/share/packages/mup" >> patches/$PATCHNAME
 echo >> patches/$PATCHNAME
 diff -u $orig_makefile tempmakefile | sed -e "/^---/s: .*: a/simple.makefile:" -e "/^+++/s: .*: b/simple.makefile:" >> patches/$PATCHNAME
 rm tempmakefile

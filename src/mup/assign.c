@@ -2704,7 +2704,7 @@ int mnum;
 
 {
 	char *old_reh_string;
-	char num_string[8];
+	char num_string[16];
 
 	if (mnum < 1) {
 		l_yyerror(Curr_filename, yylineno, "mnum must be > 0");

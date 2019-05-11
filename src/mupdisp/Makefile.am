@@ -3,12 +3,10 @@ BUILT_SOURCES =	help.bm waitmsg.bm
 mupdisp_SOURCES = at386.c do_cmd.c genfile.c init.c mupdisp.c xterm.c \
 	 dos.c linvga.c mupdisp.h dispttyp.h help.bm waitmsg.bm
 AM_CFLAGS = @LIBVGA@ @EXTRA_CFLAGS@ $(optflags)
-AM_LDFLAGS = -lm
 if OSX
-  AM_LDFLAGS += -framework Carbon -L/usr/X11/lib -lX11
-else
-  AM_LDFLAGS += -lX11
+  mupdisp_LDFLAGS = -framework Carbon -L/usr/X11/lib
 endif
+mupdisp_LDADD = -lX11 -lm
 
 EXTRA_DIST = help waitmsg
 

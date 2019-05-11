@@ -14,18 +14,10 @@ BuildRequires: fltk-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: zlib-devel
-#--Uncomment these lines for RedHat and similar (Fedora, CentOS, Scientific)
-#BuildRequires: xorg-x11-libXpm-devel
-#BuildRequires: xorg-x11-libXinerama-devel
-#BuildRequires: xorg-x11-libXext-devel
-#BuildRequires: xorg-x11-libXft-devel
-#--End uncomment these lines for RedHat
-#--Uncomment these lines for SuSE and similar
-#BuildRequires: libXpm-devel
-#BuildRequires: libXinerama-devel
-#BuildRequires: libXext-devel
-#BuildRequires: libXft-devel
-#--End uncomment these lines for SuSE and similar
+BuildRequires: libXpm-devel
+BuildRequires: libXinerama-devel
+BuildRequires: libXext-devel
+BuildRequires: libXft-devel
 
 %description
 Mup takes a text description of music as input and
@@ -54,8 +46,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/mupprnt
 %{_bindir}/mupmate
 %{_mandir}/man1/*
-%{_libdir}/%{name}/*
+/usr/lib/%{name}/*
 %{_datadir}/pixmaps/%{name}/*.xpm
-%{_docdir}/%{name}/*
+/usr/share/doc/%{name}/*
 
 %changelog

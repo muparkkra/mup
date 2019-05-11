@@ -40,6 +40,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <ctype.h>
 #ifdef linux
 #define sigset(x, y)  signal(x, y)
 #endif
@@ -157,7 +158,10 @@ main(int argc, char **argv)
 			char *name;
 
 			/* get the HTML NAME tag */
-			fgets(buff, BUFSIZ, stdin);
+			if (fgets(buff, BUFSIZ, stdin) == 0) {
+				fprintf(stderr, "line %d: text ends after .Na\n", line);
+				cleanup(-1);
+			}
 			line++;
 			if (strncmp(buff, ".Hm", 3) != 0) {
 				fprintf(stderr, "line %d: missing .Hm after .Na\n", line);
@@ -168,7 +172,10 @@ main(int argc, char **argv)
 			mark = strdup(buff+4);
 
 			/* get the parameter name */
-			fgets(buff, BUFSIZ, stdin);
+			if (fgets(buff, BUFSIZ, stdin) == 0) {
+				fprintf(stderr, "line %d: missing parameter after .Na\n", line);
+				cleanup(-1);
+			}
 			line++;
 			printf("%s", buff);
 			buff[strlen(buff)-1] = '\0';
@@ -213,7 +220,7 @@ proc_ex(char **fname_p, int *llx_p, int *lly_p, int *urx_p, int *ury_p)
 		if (open(t1filename, O_WRONLY | O_CREAT| O_TRUNC, 0664) < 0) {
 			exit(1);
 		}
-		execlp("mup", "mup", tfilename, 0);
+		execlp("mup", "mup", tfilename, (char *) 0);
 		/*FALLTHRU*/
 	case -1:
 		fprintf(stderr, "couldn't run mup\n");
@@ -238,7 +245,7 @@ proc_ex(char **fname_p, int *llx_p, int *lly_p, int *urx_p, int *ury_p)
 		close(0);
 		open(t1filename, O_RDONLY, 0);
 		execlp("gs", "gs", "-sDEVICE=bit", "-sPAPERSIZE=letter",
-						"-dNOPAUSE", outfile, "-", 0);
+					"-dNOPAUSE", outfile, "-", (char *) 0);
 		/*FALLTHRU*/
 	case -1:
 		fprintf(stderr, "failed to run gs\n");

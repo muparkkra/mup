@@ -271,7 +271,7 @@ do
 done
 
 # Copy in the "include" files
-for f in cyrillic gen_midi grids guitar helmholtz_accs quarterstep_accs tabstems ukelele
+for f in cyrillic gen_midi grids grids2 guitar helmholtz_accs quarterstep_accs tabstems
 do
 	unix2dos < ../mup-input/includes/$f  > $BUILD_DIR/$f
 done
@@ -282,9 +282,9 @@ PRODUCT_FILES="mup.exe $MUPDISP mkmupfnt.exe mupprnt.bat \
 	mupfeat.html whatsnew.html uguide.ps mupqref.ps \
 	mup.ps mupdisp.ps mupprnt.ps mkmupfnt.ps \
 	sample.mup sample.ps template.mup \
-	tabstems cyrillic grids guitar \
+	tabstems cyrillic grids grids2 guitar \
 	quarterstep_accs helmholtz_accs gen_midi \
-	mup.vim ukelele usercomm.html"
+	mup.vim usercomm.html"
 
 if [ "$build_dos" == yes ]
 then

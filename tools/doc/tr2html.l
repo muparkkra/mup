@@ -1,5 +1,5 @@
 %{
-/* Copyright 2006, 2007, 2010, 2011 by Arkkra Enterprises */
+/* Copyright 2006, 2007, 2010, 2011, 2019 by Arkkra Enterprises */
 /* All rights reserved */
 
 /* troff to HTML converter.
@@ -43,6 +43,7 @@
 
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #ifndef NLSTATE
 #define NLSTATE yy_set_bol(1)
@@ -193,7 +194,7 @@ void index_entry();
 					free(prevfile);
 				}
 				if (currfile != 0 && strcmp(currfile, "index.html") != 0) {
-					printf(table_of_contents);
+					printf("%s", table_of_contents);
 				}
 				printf(next_page, yytext);
 				prevfile = currfile;
@@ -221,7 +222,7 @@ void index_entry();
 					int s;
 
 					printf("<P>\n&nbsp;&nbsp;&nbsp;<A HREF=\"%s\">&lt;-- previous page</A>\n\n", prevfile);
-					printf(table_of_contents);
+					printf("%s", table_of_contents);
 					/* Print enough blanks to allow for
 					 * a "next page" link. We don't know
 					 * what to put there yet, so will fill
@@ -407,6 +408,7 @@ void index_entry();
 
 %%
 
+int
 main()
 {
 	yyin = stdin;
@@ -420,7 +422,7 @@ main()
 	if (trailer) {
 		if (prevfile != 0) {
 			printf("<HR>\n<P>\n&nbsp;&nbsp;&nbsp;<A HREF=\"%s\">&lt;-- previous page</A>\n", prevfile);
-			printf(table_of_contents);
+			printf("%s", table_of_contents);
 			printf("</P>\n");
 		}
 		printf("</BODY></HTML>\n");

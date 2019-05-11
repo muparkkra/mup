@@ -48,6 +48,7 @@
 #include "utils.H"
 #include "Preferences.H"
 #include <FL/filename.H>
+#include <FL/fl_ask.H>
 
 // Access to the user preferences file
 Fl_Preferences * Preferences_p;
@@ -407,10 +408,12 @@ users_guide_index_file(const char * const doc_dir)
 	char expanded_doc_dir[FL_PATH_MAX];
 
 	filename_expand(expanded_doc_dir, doc_dir);
-	(void) snprintf(file_path, sizeof(file_path),
+	if (snprintf(file_path, sizeof(file_path),
 			"%s%c%s%c%s", expanded_doc_dir,
 			dir_separator(), uguide_directory,
-			dir_separator(), uguide_filename);
+			dir_separator(), uguide_filename) > (int) sizeof(file_path)) {
+		fl_message("Path too long; truncated");
+	}
 	return((const char *) file_path);
 }
 

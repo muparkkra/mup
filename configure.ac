@@ -77,7 +77,14 @@ AS_IF([test "x$enable_mupmate" != xno],
 	test "$fltk_api_major" != "1" && AC_MSG_ERROR([fltk api version 1.x required, not $fltk_api_major])
 	# Set variables for Mupmate compile to use
 	AC_SUBST([FLTK_CXXFLAGS], [`$FLTK_CONFIG --cxxflags`])
-	AC_SUBST([FLTK_LDFLAGS], [`$FLTK_CONFIG --use-images --ldflags`])
+	# Red Hat/CentOS 7 version of fltk-config doesn't include -lfltk when using --use_image --ldflags, so fix that
+	fltk_ldflags="`$FLTK_CONFIG --use-images --ldflags`"
+	if test "$fltk_ldflags" == "-lfltk_images"
+	then
+		AC_SUBST([FLTK_LDFLAGS], ["-lfltk -lfltk_images"])
+	else
+		AC_SUBST([FLTK_LDFLAGS], [`$FLTK_CONFIG --use-images --ldflags`])
+	fi
 	test "$build_mac" == "yes" && AC_SUBST([EXTRA_CFLAGS], [-Dunix])
 	# Check that libraries that Mupmate needs exist
 	AC_CHECK_LIB([fltk], [fl_alphasort], [ ])

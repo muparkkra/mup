@@ -169,7 +169,10 @@ main(int argc, char **argv)
 
 		/* copy the page to output */
 		for (n = 0; n < page_p->length; n++) {
-			fgets(buff, BUFSIZ, f);
+			if (fgets(buff, BUFSIZ, f) == 0) {
+				fprintf(stderr, "unexpected end of file\n");
+				exit(1);
+			}
 
 			/* patch up the Page line with proper number */
 			if (strncmp(buff, "%%Page: ", 8) == 0) {

@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define MODE_CHAR 0
 #define MODE_USED 1

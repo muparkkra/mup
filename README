@@ -25,13 +25,13 @@ and either pamtowinicon or ppmtowinicon and ppmtopgm
 To build everything completely from scratch, in addition to the things
 mentioned above, you will need at least:
  sed
- flex
+ flex (on some systems, flex-devel may be required)
  bison
  egrep
  mkdir -p
  gs	(ghostscript)
  groff	(and what it uses: troff, pic, tbl, grops)
- ppmtogif
+ ppmtogif (this is usually in netpbm or netpbm-progs package)
  sort
  expr
  cut
