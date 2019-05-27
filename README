@@ -69,7 +69,13 @@ any of the helper programs,
 	make -f simple.makefile install-mup
 may suffice. Read the comments in simple.makefile for other options.
 
-To build using autoconf, the normal autoconf steps are followed:
+To build using autoconf, the normal autoconf steps are followed.
+If starting from a github clone, first do
+	autoreconf --install
+If starting from a "dist" package, like the source packages available
+from arkkra.com, and you are not making any changes to configure.ac
+or any of the Makefile.am files, the autoreconf step can be skipped.
+Then do:
 	./configure
 	make
 	make check   # optional, to run the test suite
@@ -105,8 +111,8 @@ To build a .deb package (on a system with dpkg-buildpackage command):
 	cd packaging
 	./builddeb "Your Name <your.email@your.com>" amd64
 Packages needed for build include at least bison, debhelper, dpkg-dev, flex
-gcc, g++, groff, libfltk1.3-dev, libxft-dev, libxpm-dev, libxinerama-dev,
-make and netpbm.
+gcc, g++, groff (not just groff-base), libfltk1.3-dev, libxft-dev, libxpm-dev,
+libxinerama-dev, make, and netpbm.
 
 To build a 32-bit .deb package:
 	cd packaging
