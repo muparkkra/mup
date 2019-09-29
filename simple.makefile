@@ -327,6 +327,7 @@ install-mupmate:	src/mupmate/mupmate
 
 install-mupprnt: src/mupprnt/mupprnt
 	cp src/mupprnt/mupprnt $(BINDIR)/mupprnt
+	chmod +x $(BINDIR)/mupprnt
 
 install-mupdocs: LICENSE doc/uguide.ps doc/quickref.ps \
 	doc/manpages/mup.ps doc/manpages/mupmate.ps \
