@@ -375,3 +375,34 @@ music
 
 1: 1d;;;;;
 bar
+
+score
+	time=4/4
+	printedtime="P"
+music
+
+rom above all: 0 "printedtime";
+1: c;;;;
+bar
+
+score
+	time=3/4
+	printedtime="SCP"
+staff 1
+	printedtime="ST" "\(dn4n)"
+staff 2
+	printedtime="ST2"
+music
+
+1: c;d;e;
+bar
+
+score
+	time=6/8
+staff 3
+	printedtime=3/4
+music
+
+1-2: 4.d;f;
+3: 4f;g;a;
+bar

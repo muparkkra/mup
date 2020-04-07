@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -307,6 +307,8 @@ eph		return(T_EPH);
 bm		return(T_BM);
 esbm		return(T_ESBM);
 ebm		return(T_EBM);
+abm		return(T_ABM);
+eabm		return(T_EABM);
 slope		return(T_SLOPE);
 pad		{ yylval.intval = PAD; return(T_PAD); }
 
@@ -317,8 +319,9 @@ dashed[ \t]*"~"		{ yylval.intval = L_DASHED; return(T_TILDE); }
 "?"		return(T_QUESTION);
 
 "."		return(T_DOT);
-"1/2"		{ yylval.intval = 2; return(T_MULTIWHOLE); }
-"1/4"		{ yylval.intval = 4; return(T_MULTIWHOLE); }
+1" "*"/"" "*2		{ yylval.intval = 2; return(T_MULTIWHOLE); }
+1" "*"/"" "*4		{ yylval.intval = 4; return(T_MULTIWHOLE); }
+1" "*"/"" "*8		{ yylval.intval = 8; return(T_MULTIWHOLE); }
 
 m		return(T_LET_M);
 r		return(T_LET_R);
@@ -384,9 +387,9 @@ to		return(T_TO);
 curve		return(T_CURVE);
 bulge		return(T_BULGE);
 
-left		{ yylval.intval = J_LEFT; return(T_PRINTTYPE); }
-right		{ yylval.intval = J_RIGHT; return(T_PRINTTYPE); }
-center		{ yylval.intval = J_CENTER; return(T_PRINTTYPE); }
+left		{ yylval.intval = J_LEFT; return(T_JUSTIFYTYPE); }
+right		{ yylval.intval = J_RIGHT; return(T_JUSTIFYTYPE); }
+center		{ yylval.intval = J_CENTER; return(T_JUSTIFYTYPE); }
 print		{ yylval.intval = J_NONE; return(T_PRINTTYPE); }
 postscript	{ return(T_POSTSCRIPT); }
 ragged		{ yylval.intval = J_RAGPARA; return(T_PARATYPE); }
@@ -487,6 +490,8 @@ noteinputdir	{ yylval.intval = NOTEINPUTDIR; return(T_INPUTDIR); }
 beamslope	{ yylval.intval = BEAMSLOPE; return(T_2FNUMVAR); }
 transpose	{ yylval.intval = TRANSPOSITION; return(T_TRANSPOSE); }
 addtranspose	{ yylval.intval = ADDTRANSPOSITION; return(T_TRANSPOSE); }
+chordtranslation { yylval.intval = CHORDTRANSLATION ; return(T_CHORDTRANSLATION); }
+alignlabels	{ yylval.intval = ALIGNLABELS; return(T_ALIGNLABELS); }
 notes		{ yylval.intval = TR_NOTES; return(T_TRANSUSAGE); }
 chords		{ yylval.intval = TR_CHORDS; return(T_TRANSUSAGE); }
 lyricsalign	{ yylval.intval = LYRICSALIGN; return(T_FNUMVAR); }
@@ -531,6 +536,7 @@ noneremuser	{ yylval.intval = UA_Y_NONEREMUSER; return(T_NONE); }
 nonnatremuser	{ yylval.intval = UA_Y_NONNATREMUSER; return(T_NONE); }
 nonnat		{ return(T_NONNAT); }
 time		{ yylval.intval = TIME; return(T_TIME); }
+printedtime	{ yylval.intval = PRINTEDTIME; return(T_PRINTEDTIME); }
 beamstyle	{ yylval.intval = BEAMSTLIST; return(T_RATNUMLISTVAR); }
 visible		{ yylval.intval = VISIBLE; return(T_VISVAR); }
 whereused	{ return(T_WHEREUSED); }
@@ -594,8 +600,27 @@ drum		{ return(T_DRUM); }
 dotted[ \t]*"<"	{ yylval.intval = L_DOTTED; return(T_L_ANGLE); }
 dashed[ \t]*"<"	{ yylval.intval = L_DASHED; return(T_L_ANGLE); }
 \\n		{ yylval.intval = IN_DOWNWARD; return(T_NOWHERE_SLIDE); }
-"/n"		{ yylval.intval = IN_UPWARD; return(T_NOWHERE_SLIDE); }
-"n/"		{ yylval.intval = OUT_UPWARD; return(T_NOWHERE_SLIDE); }
+"/n"		{
+			if (Expr_mode == YES) {
+				yyless(1);
+				yylval.intval = OP_DIV;
+				return(T_MULDIV_OP);
+			}
+			else {
+				yylval.intval = IN_UPWARD;
+				return(T_NOWHERE_SLIDE);
+			}
+		}
+"n/"		{
+			if (Expr_mode == YES) {
+				yyless(1);
+				return(T_LET_N);
+			}
+			else {
+				yylval.intval = OUT_UPWARD;
+				return(T_NOWHERE_SLIDE);
+			}
+		}
 n\\		{ yylval.intval = OUT_DOWNWARD; return(T_NOWHERE_SLIDE); }
 
 pedal		return(T_PEDAL);

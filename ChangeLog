@@ -1,3 +1,11 @@
+* Fri Feb 21 2020 ArkkraEnterprises <support@arkkra.com> 6.8
+- Quadruple whole notes, and octuple whole notes and rests
+- New printedtime parameter
+- New chordtranslation parameter
+- New alignlabels parameter
+- abm and eabm to use automatic beaming for just part of a measure
+- Option to compile in code to debug mallocs/frees
+- Updates to documentation to improve consistency, etc
 * Mon Apr  1 2019 ArkkraEnterprises <support@arkkra.com> 6.7
 - Source code available on Github at https://github.com/muparkkra/mup
 - Can be built using either simple.makefile or autoconf/automake

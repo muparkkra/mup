@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -90,7 +90,7 @@ struct MAINLL *mll_p;
 
 		/* multirests are special. Print on tab staff only if its
 		 * corresponding tabnote staff is not printed */
-		if (gs_p->basictime < -1) {
+		if (gs_p->is_multirest == YES) {
 			if (svpath(gs_p->staffno - 1, VISIBLE)->visible == NO) {
 				pr_multirest(gs_p, mll_p->u.staff_p);
 			}

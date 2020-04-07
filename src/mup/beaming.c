@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -145,27 +145,65 @@ struct GRPSYL *last_grp_p;	/* the last group we did */
  * and others to staff below--because beaming involving 3 staffs at once is
  * just too hard to deal with.
  * Also check that any esbm has at least 2 notes before and after it.
+ * This function also checks for abm/eabm, as marked by the autobeam field in
+ * GRPSYL having STARTITEM and ENDITEM, and sets the autobeam field in the
+ * remaining ones appropriately.
+ * YES is returned if autobeaming needs to be done, NO if not.
  */
 
 int
-has_cust_beaming(grpsyl_p)
+needs_auto_beaming(grp_p)
 
-struct GRPSYL *grpsyl_p;	/* list of GRPSYLs to check */
+struct GRPSYL *grp_p;	/* list of GRPSYLs to check */
 
 {
-	int has = NO;
+	int has_cust = NO;
 	int size = GS_NORMAL;
 	int numnotes = 0;	/* how many notes groups, for esbm check */
 	short stemto = CS_SAME;	/* to check for mixed CS_ABOVE/CS_BELOW */
 	struct GRPSYL *start_p = 0;	/* first beamed group */
+	struct GRPSYL *grpsyl_p;
+	int has_explicit_abm = NO;
+	int in_autobeam = NO;
+	int in_custom = NO;
 
-	for (   ; grpsyl_p != (struct GRPSYL *) NULL;
+
+	for (grpsyl_p = grp_p; grpsyl_p != (struct GRPSYL *) 0;
 				grpsyl_p = grpsyl_p->next) {
+
+		/* Handle abm / eabm (autobeaming of a portion of measure) */
+		if (grpsyl_p->autobeam == STARTITEM) {
+			if (in_autobeam == YES) {
+				l_yyerror(grpsyl_p->inputfile,
+					grpsyl_p->inputlineno,
+					"abm cannot be nested");
+			}
+			if (in_custom == YES) {
+				l_yyerror(grpsyl_p->inputfile,
+					grpsyl_p->inputlineno,
+					"abm cannot overlap with bm");
+			}
+			has_explicit_abm = YES;
+			in_autobeam = YES;
+		}
+		else if (grpsyl_p->autobeam == ENDITEM) {
+			if (in_autobeam == NO) {
+				l_yyerror(grpsyl_p->inputfile,
+				grpsyl_p->inputlineno, "eabm without abm");
+			}
+			in_autobeam = NO;
+		}
+		else if (in_autobeam == YES) {
+			grpsyl_p->autobeam = INITEM;
+		}
+		else {
+			grpsyl_p->autobeam = NOITEM;
+		}
 
 		if ((grpsyl_p->grpvalue != GV_ZERO)
 				&& (grpsyl_p->beamloc != NOITEM)) {
 			/* have non-grace with beam info set */
-			has = YES;
+			has_cust = YES;
 
 			/* check for size or cross-staff stem mixtures */
 			if (grpsyl_p->beamloc == STARTITEM) {
@@ -233,9 +271,16 @@ struct GRPSYL *grpsyl_p;	/* list of GRPSYLs to check */
 			}
 	
 			if (grpsyl_p->beamloc == STARTITEM) {
+				if (in_autobeam == YES) {
+					l_yyerror(grpsyl_p->inputfile,
+						grpsyl_p->inputlineno,
+						"abm cannot overlap with bm");
+				}
+				in_custom = YES;
 				start_p = grpsyl_p;
 			}
 			else if (grpsyl_p->beamloc == ENDITEM) {
+				in_custom = NO;
 				if (start_p != 0) {
 					slopelencheck(start_p, grpsyl_p, "beam");
 					start_p = 0;
@@ -295,7 +340,39 @@ struct GRPSYL *grpsyl_p;	/* list of GRPSYLs to check */
 		}
 	}
 
-	return(has);
+	if (in_autobeam == YES) {
+		l_warning(grp_p->inputfile, grp_p->inputlineno,
+			"missing eabm");
+	}
+
+	/* If implicit autobeaming of entire measure, mark the first group as
+	 * starting autobeam, the last as ending it, and those in between
+	 * as being in it. That way, do_beaming() doesn't have to directly
+	 * care if the whole measure or only part of it is autobeamed.
+	 * However, don't mark if there is only a single group.
+	 */
+	if (has_cust == NO && has_explicit_abm == NO && grp_p->next != 0) {
+		for (grpsyl_p = grp_p; grpsyl_p != 0; grpsyl_p = grpsyl_p->next) {
+			/* We could skip grace groups, but doesn't seem
+			 * worth the check. */
+			if (grpsyl_p == grp_p) {
+				grpsyl_p->autobeam = STARTITEM;
+			}
+			else if (grpsyl_p->next == 0) {
+				grpsyl_p->autobeam = ENDITEM;
+			}
+			else {
+				grpsyl_p->autobeam = INITEM;
+			}
+		}
+	}
+
+	/* If there was explicit abm, auto beaming will need to be done */
+	if (has_explicit_abm == YES) {
+		return(YES);
+	}
+	/* If there was custom beaming without abm, then no auto beaming */
+	return(has_cust ? NO : YES);
 }
 
 
@@ -391,6 +468,9 @@ int vno;			/* voice number */
 				stop = YES;
 			}
 
+			if (gs_p->autobeam == NOITEM) {
+				stop = YES;
+			}
 			/* only 8th and shorter get beamed */
 			if (gs_p->basictime < 8 || (gs_p->grpcont == GC_SPACE &&
 						beamspaces == NO) ) {
@@ -414,6 +494,7 @@ int vno;			/* voice number */
 				restart = YES;
 			}
 			else if (gs_p->grpcont == GC_NOTES && 
+						(gs_p->autobeam != NOITEM) &&
 						LE(tot_time, styletime)) {
 				/* found something beam-able */
 				if (first_p == 0) {
@@ -1086,7 +1167,7 @@ int size;		/* GS_NORMAL or GS_SMALL */
 
 
 /* User is not allowed to specify length on both ends of a beam along with
- * a slope, because they could becontradictory. */
+ * a slope, because they could be contradictory. */
 
 static void
 slopelencheck(first_p, last_p, bmtype)

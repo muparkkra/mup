@@ -3,7 +3,8 @@ bin_PROGRAMS = mup
 BUILT_SOURCES = ../include/muschar.h ../include/extchar.h ../include/ssvused.h ../include/ytab.h lex.c ifgram.c ytab.c fontdata.c prolog.c musfont.c
 EXTRA_DIST = lex.l gram.y ifgram.y prolog.ps.in
 
-mup_SOURCES = abshorz.c absvert.c assign.c beaming.c beamstem.c brac.c \
+mup_SOURCES = abshorz.c absvert.c ../include/allocdebug.h \
+	assign.c beaming.c beamstem.c brac.c \
 	charinfo.c check.c debug.c ../include/defines.h  \
 	errors.c ../include/extchar.h \
 	font.c fontdata.c globals.c ../include/globals.h \

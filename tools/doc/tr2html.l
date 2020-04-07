@@ -1,6 +1,43 @@
 %{
-/* Copyright 2006, 2007, 2010, 2011, 2019 by Arkkra Enterprises */
-/* All rights reserved */
+/*
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
+ All rights reserved.
+
+ Redistribution and use in source and binary forms,
+ with or without modification, are permitted provided that
+ the following conditions are met:
+
+ 1. Redistributions of source code must retain
+ the above copyright notice, this list of conditions
+ and the following DISCLAIMER.
+
+ 2. Redistributions in binary form must reproduce the above
+ copyright notice, this list of conditions and
+ the following DISCLAIMER in the documentation and/or
+ other materials provided with the distribution.
+
+ 3. Any additions, deletions, or changes to the original files
+ must be clearly indicated in accompanying documentation,
+ including the reasons for the changes,
+ and the names of those who made the modifications.
+
+	DISCLAIMER
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS
+ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+ OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 /* troff to HTML converter.
  * Handles .H  .P   .AL   .DL   .BL   .LI   .LE   .bp   .br   .SK
@@ -21,6 +58,8 @@
  * link name to go before the </A>.
  * A   .Hm  name	creates an HTML <A NAME> construct. The name is
  * the anchor name and the next line of input is taken as the anchor text
+ * A   .Hh name		create an HTML <A NAME> construct inside
+ * the <Hx>..</Hx> created by the .H that is expected to be on the next line.
  *
  * .Hd  filename    causes output to be diverted to filename
  * .Ha  filename    is similar but opens the filename in append mode
@@ -83,6 +122,7 @@ char title[YYLMAX];	/* text for <TITLE> */
 char *curr_title;	/* malloced copy of current title, for index */
 char *index_filename;	/* malloced copy of current file, for index */
 char *curr_tagname;	/* malloced copy of current #name, for index */
+int do_headname;	/* If to add an A NAME to the next heading */
 void ignore(void);	/* to throw away stuff between .Hi   and  .He */
 int get_a_line(char *buff);
 void add_param_index();
@@ -102,6 +142,7 @@ void index_entry();
 %Start EXAMPLE EX1 HEAD HEAD1 REF REFTEXT TMAC DIVERT TITLE NL
 %Start TABLETOP TABLEBODY
 %Start INDEX
+%Start HEADREF
 
 %%
 
@@ -148,6 +189,7 @@ void index_entry();
 
 ^".Hr"" "*	{ printf("<A HREF=\""); BEGIN REF; doing_name = 0; }
 ^".Hm"" "*	{ printf("<A NAME=\""); BEGIN REF; doing_name = 1; }
+^".Hh"" "*	{ BEGIN HEADREF; }
 
 ^".Co"		printf("<HR>\n<CODE>Command line:&nbsp;</CODE>");
 ^".Mo"		printf("<BR>\n<CODE>Mupmate:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</CODE>");
@@ -175,6 +217,12 @@ void index_entry();
 				curr_param = strdup(yytext + i);
 			}
 			BEGIN 0;
+		}
+
+<HEADREF>.*	{
+			BEGIN 0;
+			curr_tagname = strdup(yytext);
+			do_headname = 1;
 		}
 
 ^".Hd"" "*	{ mode = "w"; BEGIN DIVERT; }
@@ -291,6 +339,9 @@ void index_entry();
 		}
 
 <HEAD1>.*\n	{
+			if (do_headname && curr_tagname != 0 && curr_tagname[0] != '\0') {
+				printf("<A NAME=\"%s\">", curr_tagname);
+			}
 			for (i = 0; i < yyleng; i++) {
 				if (yytext[i] == '"' && yytext[i-1] != '\\') {
 					continue;
@@ -299,6 +350,10 @@ void index_entry();
 					putchar(yytext[i]);
 				}
 			}
+			if (do_headname && curr_tagname != 0 && curr_tagname[0] != '\0') {
+				printf("</A>");
+			}
+			do_headname = 0;
 			printf("</H%d>\n", headlevel);
 			BEGIN 0;
 		}

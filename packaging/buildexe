@@ -81,7 +81,7 @@ function find_watcom_file
 		if [ ! -x "$LOCATION" ]
 		then
 			echo "Could not find OpenWatcom file $1" >&2
-			echo 'You can set $OPENWATCOM to the directory where it is located,' >&2
+			echo 'You can set --openwatcom option to the directory where it is located,' >&2
 			echo "or can use --no-mupdisp to skip building mupdisp" >&2
 			exit 1
 		fi
@@ -120,8 +120,8 @@ then
 	exit 1
 fi
 
-VERSION=6.7
-VERSION_NO_DOT=67
+VERSION=6.8
+VERSION_NO_DOT=68
 
 if [ "$build_dos" == yes ]
 then

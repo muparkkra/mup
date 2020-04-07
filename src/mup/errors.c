@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -666,7 +666,23 @@ int lineno;
 				fprintf(stderr, " ...more...");
 				break;
 			}
-			putc(inp, stderr);
+			/* a bare carriage return with no newline
+			 * gets translated to \r to be easier to see */
+			if (inp == '\r') {
+				int peek;
+				peek = getc(f);
+				if (peek != '\n') {
+					putc('\\', stderr);
+					putc('r', stderr);
+				}
+				else {
+					putc(inp, stderr);
+				}
+				ungetc(peek, f);
+			}
+			else {
+				putc(inp, stderr);
+			}
 		}
 		putc('\n', stderr);
 	}

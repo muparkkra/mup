@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -117,6 +117,10 @@ extern char * lookup_pgm_for_file_suffix(const char * file_suffix);
 // otherwise try their "My Documents" folder.
 // Returns path in static area or null on failure.
 extern char * find_music_folder(void);
+
+// ps2pdf may not be able to find gswin32c (or gswin64c) in PATH.
+// This tries to deduce where it is, and adds to PATH if found.
+extern void find_gswinNNc(const char * const ps2pdf_location);
 
 #endif
 

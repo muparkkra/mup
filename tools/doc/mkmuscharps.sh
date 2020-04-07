@@ -8,7 +8,7 @@ cat - > muschar.ps <<!
 %!PS-Adobe-1.0
 %%BoundingBox: 70 157 513 746
 /boxheight 62 def
-/boxwidth 40 def
+/boxwidth 43 def
 /nameheight 10 def
 /tmpstring 50 string def
 /flagsep 1.6 300 mul def
@@ -42,8 +42,8 @@ cat - > muschar.ps <<!
 	name show
 	grestore
 	% display the music character
-	boxwidth 2 div nameheight add
-	realboxheight nameheight sub 2 div
+	boxwidth 2 div nameheight add 2 sub
+	realboxheight nameheight sub 2 div 2 add
 	1.0 sym cvx exec
 	restore
 } def
@@ -61,9 +61,10 @@ cat - > muschar.ps <<!
 	/col col 1 add def
 	% go to next column when current one is full
 	col 11 ge { /col 0 def /row row 1 sub def } if
-	% one row has to be extra tall
-	row 5 eq { /extra 28 def } if
-	row 4 eq { /extraoffset 28 def /extra 0 def } if
+	% a couple rows have to be extra tall
+	row 5 eq { /extra 4 def } if
+	row 4 eq { /extraoffset 4 def /extra 30 def } if
+	row 3 eq { /extraoffset 34 def /extra 0 def } if
 } def
 
 !

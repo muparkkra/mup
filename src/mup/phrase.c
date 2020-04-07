@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -958,12 +958,13 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			}
 		}
 
-		/* whole notes and longer don't really have a stem, so top
-		 * note of "stem up" can be moved. Stemless grace notes also
-		 * don't have a stem, so the same logic applies. */
-		else if ( (begin_gs_p->basictime < 2
+		/* Whole and double whole notes don't really have a stem,
+		 * so the top note of "stem up" can be moved.
+		 * Stemless grace notes also don't have a stem,
+		 * so the same logic applies. */
+		else if ( (STEMLESS(begin_gs_p)
 				|| (begin_gs_p->grpvalue == GV_ZERO
-				&& begin_gs_p->basictime < 8))
+				&& (begin_gs_p->basictime < 8 || begin_gs_p->stemlen < Stepsize)))
 				&& begin_gs_p->stemdir == UP
 				&& place == PL_ABOVE &&
 				begnote_p == &(begin_gs_p->notelist[0])) {
@@ -982,12 +983,13 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			}
 		}
 
-		/* can also be moved if bottom note of stem-down group */
+		/* Can also be moved if bottom note of a whole or
+		 * double whole stem-down group */
 		else if (begin_gs_p->stemdir == DOWN && place == PL_BELOW
 				&& begnote_p == &(begin_gs_p->notelist
 				[begin_gs_p->nnotes - 1])  &&
 				stuff_p->carryin == NO) {
-			if (begin_gs_p->basictime < 2
+			if ( STEMLESS(begin_gs_p)
 					&& has_nonnormwith(begin_gs_p) == YES) {
 				curvelist_p->x = begin_gs_p->c[AE];
 				y_adj = (Stepsize * (begnote_p->notesize
@@ -1173,7 +1175,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			if (place == PL_ABOVE && begnote_p
 						== &(begin_gs_p->notelist[0])) {
 				endlist_p->x = begnote_p->c[AX];
-				if ((begin_gs_p->basictime > 1) &&
+				if ( STEMMED(begin_gs_p) &&
 						(begin_gs_p->stemdir == UP)) {
 					endlist_p->y += Stepsize;
 					curvelist_p->y += Stepsize;
@@ -1183,9 +1185,9 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 						&(begin_gs_p->notelist
 						[begin_gs_p->nnotes - 1])
 						&& (begin_gs_p->stemdir == UP
-						|| begin_gs_p->basictime < 2)) {
+						|| STEMLESS(begin_gs_p) ) ) {
 				endlist_p->x = begnote_p->c[AX];
-				if ((begin_gs_p->basictime < 2) &&
+				if (STEMLESS(begin_gs_p) &&
 						(begin_gs_p->stemdir == DOWN)) {
 					endlist_p->y -= Stepsize;
 					curvelist_p->y -= Stepsize;
@@ -1273,9 +1275,9 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 				}
 			}
 
-			/* whole and longer don't have stem, so end note where
+			/* Whole and dblwhole don't have stem, so end note where
 			 * a stem would be (if there were one) can be moved */
-			else if (end_gs_p->basictime < 2 &&
+			else if (STEMLESS(end_gs_p) &&
 					end_gs_p->stemdir == DOWN
 					&& place == PL_BELOW
 					&& endnote_p == &(end_gs_p->notelist
@@ -1312,7 +1314,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 				if (begin_gs_p->stemdir == UP &&
 						begnote_p ==
 						&(begin_gs_p->notelist[0])  &&
-						begin_gs_p->basictime > 1 ) {
+						STEMMED(begin_gs_p) ) {
 					curvelist_p->y += (Stepsize *
 						(begnote_p->notesize
 						== GS_NORMAL ? 1.7 : 1.2));
@@ -1338,7 +1340,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 					begin_gs_p->stemdir == DOWN &&
 					begnote_p == &(begin_gs_p->notelist
 					[begin_gs_p->nnotes - 1]) &&
-					end_gs_p->basictime > 1 ) {
+					STEMMED(end_gs_p) ) {
 				endlist_p->y -= (Stepsize *
 						(begnote_p->notesize
 						== GS_NORMAL ? 1.7 : 1.2));
@@ -1364,12 +1366,12 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 		}
 	}
 
-	/* one final adjustment. If the stem of first group is up and stem
+	/* One final adjustment. If the stem of first group is up and stem
 	 * of second group is down, and the notes being tied/slurred are both
-	 * the tops notes if the place is above or both bottom notes if the
+	 * the top notes if the place is above or both bottom notes if the
 	 * place is below, then move the y coord on the side that wasn't
-	 * already moved, to level the curve. Do only if the note is shorter
-	 * than a whole note, because longer notes were already moved because
+	 * already moved, to level the curve. Do only if the note is not a
+	 * whole or double whole, because those notes were already moved because
 	 * they had no stem. */
 	if (is_phrase == NO && begin_gs_p->stemdir == UP
 					&& end_gs_p != (struct GRPSYL *) 0
@@ -1377,7 +1379,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 		if (place == PL_ABOVE && begnote_p ==
 				&(begin_gs_p->notelist[0])
 				&& endnote_p == &(end_gs_p->notelist[0])
-				&& begin_gs_p->basictime > 1) {
+				&& STEMMED(begin_gs_p) ) {
 			curvelist_p->y += (Stepsize * (begnote_p->notesize
 						== GS_NORMAL ? 1.7 : 1.2));
 		}
@@ -1385,7 +1387,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 				&(begin_gs_p->notelist[begin_gs_p->nnotes - 1])
 				&& endnote_p ==
 				&(end_gs_p->notelist[end_gs_p->nnotes - 1])
-				&& end_gs_p->basictime > 1) {
+				&& STEMMED(end_gs_p) ) {
 			endlist_p->y -= (Stepsize * (endnote_p->notesize
 						== GS_NORMAL ? 1.7 : 1.2));
 		}
@@ -2905,10 +2907,10 @@ int curveno;		/* index into slurto, or -1 for a tie */
 	 * or because there is effectively only one since the other is space)
 	 * and there is only one note in group, then bend is opposite stem */
 	if (gs1_p->nnotes < 2) {
-		/* quarter note grace groups are a special case, since they
-		 * don't have a stem (they are for showing prebends). So we
+		/* Stemless grace groups are a special case> Usually they
+		 * are for showing prebends). Since they have no stem, we
 		 * put the bend opposite the stem of the following group. */
-		if (gs1_p->grpvalue == GV_ZERO && gs1_p->basictime == 4 &&
+		if (gs1_p->grpvalue == GV_ZERO && gs1_p->stemlen < Stepsize &&
 				gs1_p->next != (struct GRPSYL *) 0) {
 			return(gs1_p->next->stemdir == UP ? DOWN : UP);
 		}

@@ -4,6 +4,36 @@
 </HEAD>
 <BODY>
 <H1>New Mup Features</H1>
+<H2>New Features in Mup and Mupmate Version 6.8 (released in 2020)</H2>
+<P>
+<UL>
+<LI>
+Quadruple whole notes and octuple whole notes and rests are now supported.
+<LI>
+There is a new
+<A HREF="uguide/param.html#printedtime">printedtime parameter</A>,
+that allows printing something other than the actual time signature on
+some or all staffs.
+<LI>
+There is a new
+<A HREF="uguide/param.html#chordxlate">chordtranslation parameter</A>,
+that will translate chord letters to &quot;DO RE MI&quot; style syllables,
+or the German convention of using H for B and B for B flat.
+<LI>
+There is a new
+<A HREF="uguide/param.html#alignlabels">alignlabels parameter</A>,
+that allows specifying how staff labels, including those for brace and
+brcket groups, will be aligned.
+<LI>
+It is now possible to apply
+<A HREF="uguide/ichdattr.html#custbeam">automatic beaming</A>
+to just a portion of a measure,
+by specifying abm and eabm on the first and last groups to which it it to
+be applied. That avoids the need to specify custom beaming for an entire
+measure, when you only want to override the automatic beaming for a few
+notes in the measure.
+</UL>
+</P>
 <H2>New Features in Mup and Mupmate Version 6.7 (released in 2019)</H2>
 <P>
 <UL>
@@ -16,27 +46,27 @@ along with the option to build using autoconf / automake scripts.
 There is a new &quot;stepsapart&quot; value for the
 <A HREF="uguide/param.html#vcombine">vcombine</A>
 qualifier, which will combine notes when the bottom note
-of the the higher voice is at least two steps higher
+of the higher voice is at least two steps higher
 than the top note of the lower voice.
 <LI>
 There is a new
-<A HREF=uguide/macros.html#concat">## concatenate operator,</A>
-that can be used inside ` ` in
-macro parameters, to concatenate two or more other macros names,
+<A HREF="uguide/macros.html#concat">## concatenate operator,</A>
+which can be used inside ` ` in
+macro parameters, to concatenate the names of two or more other macros,
 and then make a string out of the value of the resulting macro name.
 <LI>
 The mupdisp program will now automatically rotate landscape and 2-panel
 output to be displayed correctly.
 <LI>
-There is a new -q (quiet) option, that will omit printing the version
+There is a new -q (quiet) option, which will omit printing the version
 and copyright notice on startup. 
 <LI>
 If an &quot;include&quot; file is not found in the current directory, or
 in $MUPPATH, it will be searched for relative to the including file.
 <LI>
-The <A HREF="ftp://ftp.arkkra.com/pub/windows/user.pgms/cyrillic">cyrillic &quot;include&quot; file</A>
+The <A HREF="ftp://ftp.arkkra.com/pub/windows/user.pgms/cyrillic">Cyrillic &quot;include&quot; file</A>
 can now be run with -D RUSSIAN_ORDER to print
-a table mapping keyboard input to cyrillic characters, sorted by the
+a table mapping keyboard input to Cyrillic characters, sorted by the
 modern Russian alphabet.
 <LI>
 There is a new
@@ -96,7 +126,7 @@ by <B>notes</B> or <B>chords</B> to restrict the transposition to apply to
 only notes or only chords.
 <LI>
 <A HREF="uguide/chrdattr.html#chstyle">Grace notes</A>
-are now allowed to be specified with any un-dotted time value,
+are now allowed to be specified with any undotted time value,
 not just quarter or shorter.
 <LI>
 The <A HREF="uguide/param.html#barstyle">barstyle parameter</A>
@@ -151,12 +181,12 @@ in the set printed at the end.
 <P>
 <UL>
 <LI>
-There are new builtin <A HREF="uguide/tags.html">location tags</A> _score, and _staff.<I>N</I>
+There are new built-in <A HREF="uguide/tags.html">location tags</A>: _score, and _staff.<I>N</I>
 <LI>
 <A HREF="uguide/prnttext.html#postscript">User PostScript code</A>
 can be provided in a file rather than given literally inline. 
 <LI>
-It is possible to supply <A HREF="uguide/prnttext.html#postscript">PostScript &quot;hooks,&quot;</A> that will get called
+It is possible to supply <A HREF="uguide/prnttext.html#postscript">PostScript &quot;hooks,&quot;</A> which will get called
 at specific times, including at the beginning or end of each page or score.
 <LI>
 It is now possible to pass the values of Mup location tags to
@@ -185,9 +215,9 @@ on how to define a
 for
 <A HREF="uguide/autocue.html">automatically deriving cue notes from another staff.</A>
 <LI>
-json files for mapping between Mup music symbol names and SMuFL symbol names,
+Two json files for mapping between Mup music symbol names and SMuFL symbol names,
 as provided by L. Peter Deutsch,
-have been added to the <A HREF="userpgms.html">user donated files<A>.
+have been added to the <A HREF="userpgms.html">user-donated files</A>.
 </UL>
 </P>
 <H2>New Features in Mup and Mupmate Version 6.3 (released in 2014)</H2>
@@ -226,7 +256,7 @@ There is a new
 <A HREF="uguide/param.html#cue">cue parameter</A> that lets you have a
 long passage of cue notes without having to specify [cue]... over and over.
 <LI>
-Grace notes before a cue sized chord will automatically be made smaller than
+Grace notes before a cue-sized chord will automatically be made smaller than
 regular grace notes, and
 <A HREF="uguide/chrdattr.html#chstyle">grace and cue</A>
 can now be specified together, to force smaller grace notes.
@@ -286,7 +316,7 @@ or from some completely different staff.
 <LI>
 Since lyrics aren't used in
 <A HREF="uguide/midi.html">MIDI mode,</A>
-some lyrics related user errors
+some lyrics-related user errors
 have been reduced to warnings when run in MIDI mode.
 <LI>
 Unary plus and minus operators are now supported for
@@ -314,7 +344,7 @@ The User's Guide section on <A HREF="uguide/param.html">parameters</A>
 now describes where each parameter takes effect, since for some of them,
 it may not be obvious.
 <LI>
-Lower case letters a-g are now considered as pitches when used as the
+Lowercase letters &quot;a-&quot; are now considered as pitches when used as the
 first character of a
 <A HREF="uguide/textmark.html#chordmod">chord</A>, for the purposes of
 <A HREF="uguide/trnspose.html">transposition</A> and for
@@ -336,8 +366,8 @@ that would otherwise not be willing to include it.
 <A HREF="uguide/midi.html">MIDI commands</A> that have numeric values
 can now optionally include zero or more intermediate values and an
 ending value, along with a duration. Mup will then automatically add as
-many midi commands as necessary to produce
-<A HREF="uguide/gradmidi.html">smooth gradual changes.</A>
+many MIDI commands as necessary to produce
+<A HREF="uguide/gradmidi.html">smooth, gradual changes.</A>
 This can greatly simplify specifying things like ritards and crescendos.
 <LI>
 <A HREF="obtain.html">Mup is now available</A> as
@@ -367,7 +397,7 @@ You can
 <LI>
 It is now possible to define
 <A HREF="uguide/textstr.html#keymaps">keymaps,</A>
-that allow you to map keys on your computer keyboard to other symbols.
+which allow you to map keys on your computer keyboard to other symbols.
 This would typically be used to allow typing phonetically on a
 standard ASCII keyboard, while generating strings in another alphabet,
 such as Cyrillic or Greek. An example phonetic keymap
@@ -375,12 +405,12 @@ for Cyrillic is included.
 <LI>
 It is now possible to specify different
 <A HREF="uguide/headfoot.html">headers and footers</A>
-for left and right hand pages.
+for left- and right-hand pages.
 <LI>
 There is a new
-<A HREF="uguide/param.html#flipmarg">flipmargins parameter,</A> that
+<A HREF="uguide/param.html#flipmarg">flipmargins parameter,</A> which
 lets you interchange left and right margins setting on alternating pages.
-This may be useful for allows extra space for book binding.
+This may be useful for allowing extra space for book binding.
 <LI>
 Margin overrides on the
 <A HREF="uguide/newscore.html">newscore command</A>
@@ -406,7 +436,7 @@ A warning is issued for any items that cannot be made to fit within the limit.
 <LI>
 Some additional files are included as part of the standard Mup distribution,
 that had previously only been available as user-donated files from the 
-Arkkra web site.
+Arkkra website.
 </UL>
 </P>
 <H2>New Features in Mup and Mupmate Version 5.8 (released in 2011)</H2>
@@ -465,12 +495,12 @@ The maximum number of
 has also been raised from 95 to 160.
 <LI>
 You can now specify a
-<A HREF="uguide/stuff.html">grace back up value on the end of things like phrases,</A>
+<A HREF="uguide/stuff.html">grace backup value on the end of things like phrases,</A>
 just like on the beginning.
 <LI>
 There is a new
 <A HREF="uguide/ichdattr.html#phrase">alternate way of specifying phrases,</A>
-by putting 'ph' and 'eph'
+by putting &quot;ph&quot; and &quot;eph&quot;
 markers in your music input. With this new method, you don't need to
 count up the number of bars lines crossed or calculate the time offsets;
 Mup will do that for you.
@@ -558,20 +588,20 @@ have a stepsize offset, just like the start time can.
 Mup is now much more lenient in allowing
 <A HREF="uguide/tuplets.html">tuplets</A> that, strictly speaking,
 are mathematically incorrect.
-If you specify the 'n' option, to not print the tuplet number,
+If you specify the &quot;n&quot; option, to not print the tuplet number,
 it will now silently allow almost any summation of time values,
 and adjust as necessary to fit the total time you say you want the tuplet
 to take, on the assumption you are just using tuplets as a way to print
 a <A HREF="uguide/cadenza.html">cadenza</A>
 or <A HREF="uguide/chant.html">chant</A>.
-If you don't use the 'n' option, Mup will still warn
+If you don't use the &quot;n&quot; option, Mup will still warn
 you about any tuplets that are not really valid, but will still accept them.
 <LI>
 When you use the
 <A HREF="uguide/chrdattr.html#rptattr">three dots to mark attributes in brackets as &quot;good til canceled,&quot;</A>
 any <A HREF="uguide/chrdattr.html#withlist">&quot;with&quot; list items</A>
 will now not be applied to rests, because they are usually things
-that only make sense on notes (like stacatto or accents).
+that only make sense on notes (like staccato or accents).
 <LI>
 The
 <A HREF="uguide/midi.html">MIDI</A> channel command will now output
@@ -590,7 +620,7 @@ for any voices for which no music input is given,
 but often it would be handy to have it fill in a measure
 rest instead. You can do that by setting this parameter to &quot;mr;&quot;
 but this parameter is actually much more general, allowing you to specify
-any valid music input. So, for example, if you have a measure long pattern
+any valid music input. So, for example, if you have a measure-long pattern
 that it used frequently, you can set this parameter to that pattern,
 and Mup will then fill it in for you anywhere you don't explictly provide
 something else.
@@ -630,11 +660,11 @@ and staccato in previous versions of Mup.)
 <UL>
 <LI>
 It is now possible to define
-<A HREF="uguide/udefsym.html">user defined symbols,</A>
+<A HREF="uguide/udefsym.html">user-defined symbols,</A>
 and also to override the appearance of the
-<A HREF="uguide/textstr.html#symlist">builtin music symbols.</A>
+<A HREF="uguide/textstr.html#symlist">built-in music symbols.</A>
 <LI>
-There is now an index for the HTML version of the User's Guide,
+There is now an <A HREF="uguide/mupindex.html">index for the HTML version of the User's Guide,</A>
 like for the PostScript version.
 <LI>
 There is a new
@@ -648,7 +678,7 @@ Parameters that control distance from the staff
 <A HREF="uguide/param.html#lyrdist">lyricsdist</A>),
 and well as the
 <A HREF="uguide/stuff.html">dist on tempo and dynamic marks, etc.</A>
-can now include a deicmal fraction part, rather than being restricted
+can now include a decimal fraction part, rather than being restricted
 to whole numbers.
 <LI>
 There is a new
@@ -708,8 +738,8 @@ and decrescendo marks,</A> to force several such items to be aligned vertically.
 </P>
 <H2>New Features in Mup Version 5.3</H2>
 <P>
-Version 5.3 is primarily focused on ease of use enhancements.
-The largest item is the additional of a companion program, called Mupmate,
+Version 5.3 is primarily focused on ease-of-use enhancements.
+The largest item is the addition of a companion program, called Mupmate,
 that provides an interface for editing, displaying, and playing Mup files
 with the kinds of menus and windows that many people are used to. 
 The Help menu will take you right to the
@@ -740,7 +770,7 @@ There is a new
 that lets you specify paper size by common names like letter or a4,
 as an alternate to specifying
 <A HREF="uguide/param.html#pgheight">pageheight</A> and
-<A HREF="uguide/param.html#pgheight">pagewidth</A> in
+<A HREF="uguide/param.html#pgwidth">pagewidth</A> in
 <A HREF="uguide/param.html#units">inches or cm.</A>
 <LI>
 There is a new
@@ -795,8 +825,8 @@ restored automatically.
 they may need small modifications, but that should be rare.)
 <LI>
 It is now possible to
-<A HREF="uguide/chrdattr.html#stemdir">force stem direction</A>on voices 1 and 2
-even when the other voice is not space.
+<A HREF="uguide/chrdattr.html#stemdir">force stem direction</A>
+on voices 1 and 2 even when the other voice is not space.
 <LI>
 Improvements have been made to how the
 angle for beams is calculated.
@@ -819,7 +849,7 @@ just one end of a beamed set of chords as an alternative to
 setting it at both ends.
 <LI>
 <A HREF="uguide/index.html">The HTML version of the Mup User's Guide</A>
-now includes 'next page' and 'previous page' links on each page.
+now includes &quot;next page&quot; and &quot;previous page&quot; links on each page.
 </UL>
 </P>
 <H2>New Features in Mup Version 5.1</H2>
@@ -881,7 +911,7 @@ Harp&quot; music, also sometimes called &quot;fasola&quot; notation.
 New note head characters are available for the most common system of 4 shapes,
 as well as a system with 7 shapes.
 As part of this feature, there is a new
-<A HREF="uguide/shaped.html#hdshape">headshape context</A>
+<A HREF="uguide/shaped.html#hdshape">headshapes context</A>
 and a new
 <A HREF="uguide/param.html#notehead">noteheads parameter</A>
 that lets you define what shapes will be used for notes.
@@ -958,7 +988,7 @@ that lets you place blocks of text in your musical scores.
 There is a new
 <A HREF="uguide/prnttext.html#paragrph">paragraph</A> command for printing
 long sections of text that you would like to have automatically wrapped
-around unto as many lines as needed. The right margin can be justified
+around onto as many lines as needed. The right margin can be justified
 or ragged.
 <LI>
 For Linux, in addition to being available in tar.gz format, Mup files are now
@@ -1124,7 +1154,7 @@ that is particularly useful for ensuring that verse numbers or the
 beginnings of poetic lines align consistently on all verses.
 <LI>
 There are new
-<A HREF="uguide/cmdargs.html#Eoption">-E and -C options</A>
+<A HREF="uguide/cmdargs.html#Eoption">-E</A> and <A HREF="uguide/cmdargs.html#C_option">-C</A> options
 that let you see how macros expand, which can help you in debugging
 very complex macros.
 <LI>
@@ -1150,13 +1180,6 @@ There is now an &quot;alt pedstar&quot; value for the
 This is like the &quot;pedstar&quot; value
 except that when there is a pedal &quot;bounce,&quot;
 only a &quot;Ped&quot; is printed, rather than a &quot;* Ped.&quot;
-<LI>
-There is a new
-<A HREF="userpgms.html">user-donated program</A> called
-<A HREF="ftp://ftp.arkkra.com/pub/dos/user.pgms/winmup11.zip">Winmup</A>
-which provides a Windows front-end for the MS-DOS version of Mup. The 
-<A HREF="ftp://ftp.arkkra.com/pub/dos/user.pgms/winmup11src.zip">Visual Basic source
-code for Winmup</A> is also available.
 <LI>
 Several miscellaneous changes were made to improve the quality of
 printed output and to improve portability.
@@ -1221,7 +1244,7 @@ printed, either
 or
 <A HREF="uguide/param.html#gridend">summarized at the end of a song.</A>
 There is also a
-<A HREF="userpgms.html">library of pre-defined grids</A>
+<A HREF="userpgms.html">library of predefined grids</A>
 that you can
 <A HREF="uguide/include.html">&quot;include&quot;</A> in your music.
 <LI>
@@ -1377,14 +1400,14 @@ If a given input file name does not exist, Mup will try appending .mup
 to the name and attempt to open that file.
 <LI>
 It is now possible to specify an
-<A HREF="uguide/chordinp.html#restspc">uncollapseable space</A>.
+<A HREF="uguide/chordinp.html#restspc">uncollapsible space</A>.
 This may be useful when drawing "slash" marks and at other times.
 <LI>
 There is a new
 <A HREF="userpgms.html">user-donated program</A> called midi2mup, which
 is a Perl script that can convert a MIDI file to Mup input.
 <LI>
-The uguide gives examples of how to
+The <A HREF="uguide/index.html">Mup Users Guide</A> gives examples of how to
 <A HREF="uguide/verses.html">places verses as text blocks below the scores.</A>
 </UL>
 </P>

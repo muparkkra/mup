@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -383,8 +383,8 @@ char *midifilename;		/* put MIDI data in this file */
 					got_data = YES;
 
 					/* check for multi-rest */
-					if (staff_p->groups_p[vno]->basictime
-									< -1) {
+					if (staff_p->groups_p[vno]->is_multirest
+								== YES) {
 						track_size += midi_multirest
 							(mfile, staff_p,
 							staff, vno,
@@ -1618,7 +1618,7 @@ int mfile;
 								mfile, YES);
 					}
 					else {
-						if (gs_p->basictime < -1) {
+						if (gs_p->is_multirest == YES) {
 							/* multirest */
 							RATIONAL fulltime;
 							fulltime.n =
@@ -1915,7 +1915,13 @@ struct MAINLL *mll_p;	/* groups are attached to main list here */
 
 				/* for long notes, adjust so we get down to
 				 * 8th notes for alternation */
-				if (gs_p->basictime == 0) {
+				if (gs_p->basictime == BT_OCT) {
+					alt += 4;
+				}
+				else if (gs_p->basictime == BT_QUAD) {
+					alt += 3;
+				}
+				else if (gs_p->basictime == BT_DBL) {
 					alt += 2;
 				}
 				else if (gs_p->basictime == 1) {

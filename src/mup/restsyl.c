@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -567,11 +567,11 @@ double limlow;			/* lowest relative y coord above v2 */
 			 * (But nothing should ever be lowered if already on
 			 * the center line.)  Short rests need to be moved
 			 * away from the other voice by varying amounts,
-			 * depending on how tall they are.  Quad whole rests
-			 * below need to be raised a notch.
+			 * depending on how tall they are.  Quad and oct
+			 * whole rests below need to be raised a notch.
 			 */
 			if (restsabove == YES) {
-				/* lower whole & double only if above middle */
+				/* lower whole & longer only if above middle */
 				if (gs_p->basictime <= 2 && y > 0)
 					y -= 2 * STEPSIZE;
 				if (gs_p->basictime >= 16)
@@ -581,7 +581,7 @@ double limlow;			/* lowest relative y coord above v2 */
 			} else {
 				if (gs_p->basictime >= 128)
 					y -= 2 * STEPSIZE;
-				if (gs_p->basictime == -1)
+				if (gs_p->basictime <= BT_QUAD)
 					y += 2 * STEPSIZE;
 			}
 		}
@@ -1085,6 +1085,11 @@ int numgrps;			/* how many nonspace groups are here */
 			return (PK_NONE);
 		}
 
+		/* not worth the effort to support quad and oct notes */
+		if (gs_p->basictime <= BT_QUAD) {
+			return (PK_NONE);
+		}
+
 		/* voice cannot have user requested horizontal offset */
 		if (gs_p->ho_usage != HO_NONE) {
 			return (PK_NONE);
@@ -1495,7 +1500,7 @@ float *wid_p, *asc_p, *des_p;	/* return width, ascent, and descent of rest */
 
 
 	/* multirest has no music character; just return the answer */
-	if (gs_p->basictime < -1) {
+	if (gs_p->is_multirest) {
 		*wid_p = MINMULTIWIDTH;
 		*asc_p = 2 * STEPSIZE;
 		*des_p = 2 * STEPSIZE;
@@ -2000,7 +2005,7 @@ relxchord()
 					/*
 					 * If last chord in measure, add pad
 					 * parameter on right side of groups;
-					 * but not for collapseable spaces (s).
+					 * but not for collapsible spaces (s).
 					 */
 					if (ch_p->ch_p == 0 &&
 					   (gs_p->grpcont != GC_SPACE ||
@@ -2989,9 +2994,9 @@ int pedchar;			/* the given char */
  * Returns:     void
  *
  * Description: This function loops through chord lists, looking for each chord
- *		and setting its "uncollapseable" field.  This will be YES if
+ *		and setting its "uncollapsible" field.  This will be YES if
  *		any GRPSYL during that time duration fails to be a
- *		collapseable space.  So we have to look not only at GRPSYLs
+ *		collapsible space.  So we have to look not only at GRPSYLs
  *		belonging to the chord (i.e. starting at this time) but also
  *		GPRSYLs that start earlier or later but overlap this time
  *		duration.
@@ -3017,17 +3022,17 @@ fixspace()
 			continue;	/* skip everything but chord HC */
 
 		/*
-		 * Loop through the chord list, and set "uncollapseable" for
+		 * Loop through the chord list, and set "uncollapsible" for
 		 * every chord.
 		 */
 		for (ch_p = mainll_p->u.chhead_p->ch_p; ch_p != 0;
 					ch_p = ch_p->ch_p) {
 
-			ch_p->uncollapseable = NO;	/* default to NO */
+			ch_p->uncollapsible = NO;	/* default to NO */
 
 			/*
 			 * Loop through every staff until we find a reason to
-			 * be uncollapseable.
+			 * be uncollapsible.
 			 */
 			for (m2_p = mainll_p->next; m2_p->str == S_STAFF;
 					m2_p = m2_p->next) {
@@ -3036,15 +3041,15 @@ fixspace()
 				for (v = 0; v < MAXVOICES && m2_p->u.staff_p->
 							groups_p[v] != 0; v++) {
 
-					/* if anything but collapseable space */
-					if ( ! has_collapseable_space(
+					/* if anything but collapsible space */
+					if ( ! has_collapsible_space(
 						   m2_p->u.staff_p->groups_p[v],
 						   ch_p->starttime,
 						   radd(ch_p->starttime,
 							ch_p->duration))) {
 
 						/* set this and get out */
-						ch_p->uncollapseable = YES;
+						ch_p->uncollapsible = YES;
 						goto endchord;
 					}
 				}
@@ -3060,7 +3065,7 @@ fixspace()
 							ch_p->duration))) {
 
 						/* set this and get out */
-						ch_p->uncollapseable = YES;
+						ch_p->uncollapsible = YES;
 						goto endchord;
 					}
 				}

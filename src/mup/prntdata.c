@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -808,7 +808,7 @@ struct STAFF *staff_p;
 	int size;
 
 
-	if (gs_p->basictime < -1) {
+	if (gs_p->is_multirest == YES) {
 		/* multirest are a special case */
 		pr_multirest(gs_p, staff_p);
 		return;
@@ -1096,7 +1096,8 @@ int side;	/* PL_ABOVE or PL_BELOW */
 	 * and it's on the stem side of a group with a stem, it is supposed
 	 * to be aligned with the stem. */
 	if (normside == NO && nwith_side == 1 &&
-				gs_p->basictime > 1 && gs_p->stemlen > 0.0 &&
+				(gs_p->basictime != 1 && gs_p->basictime != BT_DBL)
+				&& gs_p->stemlen > 0.0 &&
 				is_music_symbol(gs_p->withlist[0].string) == YES) {
 		font = gs_p->withlist[0].string[0];
 		size = gs_p->withlist[0].string[1];
@@ -1317,6 +1318,7 @@ struct GRPSYL *grpsyl_p;	/* which group's stem to print */
 	int grpsize;		/* grpsize field of grpsyl_p */
 	int grpvalue;		/* grpvalue field of grpsyl_p */
 	int slash;		/* to count number of slashes drawn */
+	int eff_stemdir;	/* to account for quad/oct stem oddities */
 	struct NOTE *note_p;
 
 
@@ -1343,11 +1345,21 @@ struct GRPSYL *grpsyl_p;	/* which group's stem to print */
 	}
 
 	if (note_p->headchar != 0) {
-		y1 += stem_yoff(note_p->headchar, note_p->headfont, grpsyl_p->stemdir)
+		if (grpsyl_p->basictime == BT_QUAD
+					|| grpsyl_p->basictime == BT_OCT) {
+			/* Long notes have the stem on the right,
+			 * so the place to put the stem is as if it was up,
+			 * even if the stem is actually down. */
+			eff_stemdir = UP;
+		}
+		else {
+			eff_stemdir = grpsyl_p->stemdir;
+		}
+		y1 += stem_yoff(note_p->headchar, note_p->headfont, eff_stemdir)
 				* (Stepsize * size2factor(note_p->notesize));
 	}
 
-	if (grpsyl_p->basictime >= 2) {
+	if (grpsyl_p->basictime != 1 && grpsyl_p->basictime != BT_DBL) {
 		/* print the stem */
 		do_linetype(L_NORMAL);
 

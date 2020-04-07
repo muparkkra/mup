@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -991,6 +991,10 @@ Run::Run_Mup(bool midi, Action action)
 		(void) Preferences_p->get(PS_to_PDF_converter_location,
 			player_command,
 			Default_PS_to_PDF_converter_location);
+#ifdef OS_LIKE_WIN32
+			// Try to ensure gswin32c or gswin64c is available
+			find_gswinNNc(player_command);
+#endif
 	}
 	else {
 		(void) Preferences_p->get(Viewer_location,
@@ -1222,10 +1226,10 @@ Run::Run_Mup(bool midi, Action action)
 		strncpy(pdf_filename, mup_output, len - 2);
 		strcpy(pdf_filename + len - 2, "pdf");
 
-		// Get the name of the directory will the input file is.
+		// Get the name of the directory where the input file is.
 		// The PDF converters put their output in their current
 		// directory, so we need to go there to ensure the output
-		// appears in the same directory as the input
+		// appears in the same directory as the input.
 		dir_end = strrchr(mup_output, dir_separator());
 		if (dir_end != 0) {
 			size_t dir_len;

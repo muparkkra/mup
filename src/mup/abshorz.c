@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1946,8 +1946,8 @@ int *ressv_p;			/* did we apply a CLEFSIG-causing SSV? */
 				ch_p = ch_p->ch_p) {
 
 		idealwidth = scale * ch_p->pseudodur;
-		/* but a chord of all collapseable space deserves no width */
-		if (ch_p->uncollapseable == NO) {
+		/* but a chord of all collapsible space deserves no width */
+		if (ch_p->uncollapsible == NO) {
 			idealwidth = 0;
 		}
 		*measwidth_p += MAX(idealwidth, ch_p->width);
@@ -2325,7 +2325,7 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 			/*
 			 * Add in min widths & time of all chords in measure.
 			 * The west part of the first chord is considered
-			 * a fixed width.  Chords of collapseable spaces are
+			 * a fixed width.  Chords of collapsible spaces are
 			 * also fixed width, and their time value doesn't
 			 * count either.  The "effwidth" of a chord is its east
 			 * part plus the west part of the next chord, if any.
@@ -2337,7 +2337,7 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 			totwidth -= ch_p->c[RW];
 			for ( ; ch_p != 0; ch_p = ch_p->ch_p) {
 				totwidth += effwidth(ch_p);
-				if (ch_p->uncollapseable == YES) {
+				if (ch_p->uncollapsible == YES) {
 					chw += effwidth(ch_p);
 					totwhole += ch_p->pseudodur;
 				}
@@ -2527,9 +2527,9 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 				/* normal case (proportional) */
 				expanded = ch_p->pseudodur * inchpwhole;
 
-				/* if collapseable, set this 0 so we'll end up
+				/* if collapsible, set this 0 so we'll end up
 				 * using effective width unexpanded */
-				if (ch_p->uncollapseable == NO) {
+				if (ch_p->uncollapsible == NO) {
 					expanded = 0;
 				}
 
@@ -2856,6 +2856,11 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 				move_left_dist = this_aw - prev_ae;
 			}
 
+			/* never move anything to the right */
+			if (move_left_dist < 0.0) {
+				continue;
+			}
+
 			/* move the chord and everything in it */
 			ch_p->c[AX] -= move_left_dist;
 			ch_p->c[AW] -= move_left_dist;
@@ -3118,7 +3123,7 @@ double x;			/* absolute X coord of center of measure */
 
 		if (gs_p->is_meas == YES) {
 			gs_p->c[AE] = x + (x - gs_p->c[AW]);
-		} else if (gs_p->basictime < -1) {
+		} else if (gs_p->is_multirest) {
 			/* multirest; move the left end to the right a little */
 			set_staffscale(gs_p->staffno);
 			gs_p->c[AW] += 2.0 * Stepsize;
@@ -3144,7 +3149,7 @@ double x;			/* absolute X coord of center of measure */
 		 * in this chord) but that's okay.  Due to invisible voices, it
 		 * may not get hit for every gs_p.
 		 */
-		if (gs_p->basictime < -1 || is_mrpt(gs_p)) {
+		if (gs_p->is_multirest || is_mrpt(gs_p)) {
 			ch_p->c[AX] = ch_p->c[AW] +
 				width(FONT_MUSIC, DFLT_SIZE, C_1REST) / 2;
 		}
@@ -4392,9 +4397,6 @@ getmultinum(mll_p)
 struct MAINLL *mll_p;		/* point along MLL, starts at the CLEFSIG */
 
 {
-	int basictime;	/* of the first group in the first following staff */
-
-
 	/* find the first staff after this clefsig */
 	for ( ; mll_p != 0 && mll_p->str != S_STAFF; mll_p = mll_p->next) {
 		;
@@ -4405,6 +4407,9 @@ struct MAINLL *mll_p;		/* point along MLL, starts at the CLEFSIG */
 		return (0);
 	}
 
-	basictime = mll_p->u.staff_p->groups_p[0]->basictime;
-	return (basictime < -1 ? -basictime : 0);
+	if (mll_p->u.staff_p->groups_p[0]->is_multirest) {
+		return -mll_p->u.staff_p->groups_p[0]->basictime;
+	} else {
+		return 0;
+	}
 }

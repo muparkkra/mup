@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -300,8 +300,8 @@ struct GRPSYL *gs_p;		/* the group after which padding may occur */
 	 * between the two notes.  The padding it needs is based on this and on
 	 * whether phrase-like curves can be drawn.  Keep track of the maximum
 	 * padding needed by any pair of notes.
-	 * We also need to pad if the stems are UP-DOWN, because that leaves no
-	 * room for the curve.
+	 * We also need to pad if the first stem is on the right and the second
+	 * stem is on the left, because that leaves no room for the curve.
 	 */
 	for (n = 0; n < gs_p->nnotes; n++) {
 		note_p = &gs_p->notelist[n];
@@ -313,7 +313,7 @@ struct GRPSYL *gs_p;		/* the group after which padding may occur */
 				pfatal("tieslurpad: find_to_group could not find the tied-to group");
 			}
 
-			if ((gs_p->stemdir == UP && ngs_p->stemdir == DOWN)
+			if ((HAS_STEM_ON_RIGHT(gs_p) && HAS_STEM_ON_LEFT(ngs_p))
 			|| phrase_tieslur_note(gs_p, n, STARTITEM, interfere)
 			== NO || phrase_tieslur_note(ngs_p, tied_to_nidx(
 			gs_p, ngs_p, n), ENDITEM, interfere) == NO) {
@@ -344,7 +344,7 @@ struct GRPSYL *gs_p;		/* the group after which padding may occur */
 				pfatal("tieslurpad: find_to_group could not find the slurred-to group");
 			}
 
-			if ((gs_p->stemdir == UP && ngs_p->stemdir == DOWN)
+			if ((HAS_STEM_ON_RIGHT(gs_p) && HAS_STEM_ON_LEFT(ngs_p))
 			|| phrase_tieslur_note(gs_p, n, STARTITEM, interfere)
 			== NO || phrase_tieslur_note(ngs_p,
 			slurred_to_nidx(gs_p, ngs_p, n, s), ENDITEM, interfere)
@@ -406,12 +406,12 @@ int interfere;			/* does the other voice have notes/rests here?*/
 		return (NO);
 
 	/* stem in the way of left end of curve */
-	if (side == STARTITEM && gs_p->basictime >= 2 && gs_p->stemdir == UP &&
+	if (side == STARTITEM && HAS_STEM_ON_RIGHT(gs_p) &&
 			nidx == 0 && gs_p->nnotes > 1)
 		return (NO);
 
 	/* stem in the way of right end of curve */
-	if (side == ENDITEM && gs_p->basictime >= 2 && gs_p->stemdir == DOWN &&
+	if (side == ENDITEM && HAS_STEM_ON_LEFT(gs_p) &&
 			nidx == gs_p->nnotes - 1 && gs_p->nnotes > 1)
 		return (NO);
 
@@ -614,20 +614,20 @@ RATIONAL vtime, vtime2;	/* time when to start and stop checking for space */
 }
 
 /*
- * Name:        has_collapseable_space()
+ * Name:        has_collapsible_space()
  *
- * Abstract:    Check if given voice has collapseable space during given time.
+ * Abstract:    Check if given voice has collapsible space during given time.
  *
  * Returns:     YES or NO
  *
  * Description: Same as hasspace, except that instead of checking for any
- *		spaces, it checks only for spaces that are collapseable.
+ *		spaces, it checks only for spaces that are collapsible.
  *		Similar to hasspace, time beyond the end of a measure is
- *		regarded as collapseable space, and so is gs_p being null.
+ *		regarded as collapsible space, and so is gs_p being null.
  */
 
 int
-has_collapseable_space(gs_p, vtime, vtime2)
+has_collapsible_space(gs_p, vtime, vtime2)
 
 struct GRPSYL *gs_p;	/* starts pointing at the first GRPSYL list */
 RATIONAL vtime, vtime2;	/* time when to start and stop checking for space */
@@ -683,7 +683,7 @@ RATIONAL vtime, vtime2;	/* time when to start and stop checking for space */
  * For purposes of this function, a group is to be treated as effectively being
  * a space if either of these conditions holds:
  * 1.  It is a space, and either a) we are not checking exclusively for
- *     collapseable spaces, or b) it is collapseable.
+ *     collapsible spaces, or b) it is collapsible.
  * 2.  It is not a space, but to recognize a group as effectively non-space we
  *     are requiring it to have a particular pseudo voice number, and it does
  *     not have that number.
@@ -698,7 +698,7 @@ static int
 hasspace_common(gs_p, chk_col, chkpvno, vtime, vtime2)
 
 struct GRPSYL *gs_p;	/* starts pointing at the first GRPSYL list */
-int chk_col;		/* YES or NO: check only for collapseable spaces? */
+int chk_col;		/* YES or NO: check only for collapsible spaces? */
 int chkpvno;		/* if nonzero, treat groups that don't have this pvno
 			 * as equivalent to spaces */
 RATIONAL vtime, vtime2;	/* time when to start and stop checking for space */
@@ -990,7 +990,7 @@ int *timeden_p;		/* gets set to denom of time sig at end of stuff */
 
 
 	/* bail out if multirest */
-	if (mainll_p->u.staff_p->groups_p[0]->basictime < -1)
+	if (mainll_p->u.staff_p->groups_p[0]->is_multirest)
 		return (0);
 
 	timenum = Score.timenum;	/* init to current time sig numerator*/
@@ -1021,7 +1021,7 @@ int *timeden_p;		/* gets set to denom of time sig at end of stuff */
 
 			/* bail out if multirest encountered */
 			if (mainll_p->str == S_STAFF && mainll_p->u.staff_p->
-						groups_p[0]->basictime < -1)
+						groups_p[0]->is_multirest)
 				return (0);
 
 			/* remember last staff of this number */
@@ -1060,7 +1060,7 @@ int *timeden_p;		/* gets set to denom of time sig at end of stuff */
 	}
 	if (mainll_p->str == S_BAR)
 		pfatal("stuff crosses FEED where number of staffs changes");
-	if (mainll_p->u.staff_p->groups_p[0]->basictime < -1)
+	if (mainll_p->u.staff_p->groups_p[0]->is_multirest)
 		return (0);
 
 	return (mainll_p);
@@ -2916,12 +2916,12 @@ struct GRPSYL *gs_p;		/* the group in question */
 	}
 
 	/*
-	 * Only half notes and shorter have stems, but whole and double
+	 * All notes but whole and double whole have stems, but whole and double
 	 * whole notes still need to have a pseudo stem length set if
 	 * alternation beams are to be drawn between two neighboring
 	 * groups, or the group has slashes.
 	 */
-	if (gs_p->basictime <= 1 && gs_p->slash_alt == 0) {
+	if (STEMLESS(gs_p) && gs_p->slash_alt == 0) {
 		/* no (pseudo)stem */
 		return (0.0);
 	}
@@ -3003,6 +3003,11 @@ struct GRPSYL *gs_p;		/* the group in question */
 
 
 	deflen = vvpath(gs_p->staffno, gs_p->vno, STEMLEN)->stemlen;
+
+	/* the default is shorter for quad and oct groups */
+	if (gs_p->basictime <= BT_QUAD) {
+		deflen *= DEFSTEMLEN_LONG / DEFSTEMLEN;
+	}
 
 	beg = vvpath(gs_p->staffno, gs_p->vno, BEGPROSHORT)->begproshort;
 	end = vvpath(gs_p->staffno, gs_p->vno, ENDPROSHORT)->endproshort;

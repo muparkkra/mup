@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -150,6 +150,7 @@ int grp_or_syl;		/* GS_GROUP or GS_SYLLABLE */
 	new_p->clef_vert = NO;
 	new_p->tuploc = NOITEM;
 	new_p->grpsyl = (short) grp_or_syl;
+	new_p->is_multirest = NO;
 	new_p->roll = NOITEM;
 	new_p->inputfile = Curr_filename;
 	new_p->inputlineno = (short) yylineno;
@@ -169,6 +170,8 @@ int grp_or_syl;		/* GS_GROUP or GS_SYLLABLE */
 	new_p->headshape = HS_UNKNOWN;
 	/* let Mup figure out angle for beams */
 	new_p->beamslope = NOBEAMANGLE;
+	/* assume no explicit abm/eabm */
+	new_p->autobeam = NOITEM;
 	/* everything else zero-ed is proper default */
 
 	return(new_p);
@@ -267,6 +270,7 @@ struct TIMELIST *timelist_p;	/* If non-null use this instead of oldgrp_p */
 		newgrp_p->fulltime = ssv_p->timeunit;
 
 		newgrp_p->basictime = reconstruct_basictime(newgrp_p->fulltime);
+		newgrp_p->is_multirest = NO;
 		newgrp_p->dots = recalc_dots(newgrp_p->fulltime,
 							newgrp_p->basictime);
 		return(ssv_p->timelist_p);
@@ -282,14 +286,16 @@ struct TIMELIST *timelist_p;	/* If non-null use this instead of oldgrp_p */
 		 *      - (basic_time x 1/2 to the (dots) power) */
 		/* can't just copy the fulltime from oldgrp, because that
 		 * may have been altered if it was a tuplet */
-		if (newgrp_p->basictime == 0) {
-			/* strange case of double whole, stored as zero */
+		if (newgrp_p->basictime == BT_DBL) {
 			basictime.n = 2;
 			basictime.d = 1;
 		}
-		else if (newgrp_p->basictime == -1) {
-			/* strange case of quad whole, stored as -1 */
+		else if (newgrp_p->basictime == BT_QUAD) {
 			basictime.n = 4;
+			basictime.d = 1;
+		}
+		else if (newgrp_p->basictime == BT_OCT) {
+			basictime.n = 8;
 			basictime.d = 1;
 		}
 		else {
@@ -369,18 +375,6 @@ struct GRPSYL *last_grp_p;		/* one to add it onto */
 	if (Tuplet_state == STARTITEM) {
 		Tuplet_list_p = newgrp_p;
 		Tuplet_state = INITEM;
-	}
-
-	/* We don't have a quad whole note character,
-	 * so don't allow 1/4 on notes */
-	if (EQ(newgrp_p->fulltime, Four)) {
-		for (n = 0; n < newgrp_p->nnotes; n++) {
-			if (newgrp_p->notelist[n].letter >= 'a' &&
-					newgrp_p->notelist[n].letter <= 'g') {
-				yyerror("1/4 not allowed on notes");
-				break;
-			}
-		}
 	}
 
 	/* dist is only allowed on rests */
@@ -521,7 +515,7 @@ int copy_acc_etc;	/* if YES, copy accidentals.  If just reusing a
 		}
 
 		/* alloc space for coordinates */
-		MALLOCA(float, new_p->notelist[n].c, NUMCTYPE);
+		CALLOCA(float, new_p->notelist[n].c, NUMCTYPE);
 	}
 
 	/* if a note that was cloned had an accidental on it,
@@ -594,7 +588,7 @@ char *bendstring;		/* bend specification, or null if no bend */
 	 * also require either going back to patch up any lines, curves, and
 	 * prints that used the coords, or delaying their definition by saving
 	 * lots of information around. */
-	MALLOCA(float, grpsyl_p->notelist[index].c, NUMCTYPE);
+	CALLOCA(float, grpsyl_p->notelist[index].c, NUMCTYPE);
 
 	grpsyl_p->notelist [ index ].letter = (short) pitch;
 	COPY_ACCS(grpsyl_p->notelist [ index ].acclist, acclist);
@@ -1196,7 +1190,7 @@ struct TIMEDSSV *tssv_p;	/* points to any timed SSVs in this measure */
 		/* Apply cue parameter */
 		if (vvpath(staffno, vno, CUE)->cue == YES &&
 						 is_mrpt(grpsyl_p) == NO) {
-			grpsyl_p->grpsize = GS_SMALL;
+			grpsyl_p->grpsize = (grpsyl_p->grpvalue == GV_ZERO ? GS_TINY : GS_SMALL);
 		}
 
 
@@ -1550,7 +1544,7 @@ struct TIMEDSSV *tssv_p;	/* points to any timed SSVs in this measure */
 	}
 
 	/* set up any beaming */
-	if (has_cust_beaming(grpsyllist_p) == NO) {
+	if (needs_auto_beaming(grpsyllist_p) == YES) {
 		do_beaming(grpsyllist_p, GS_NORMAL, staffno, vno);
 		do_beaming(grpsyllist_p, GS_SMALL, staffno, vno);
 	}
@@ -1832,13 +1826,15 @@ RATIONAL fulltime;	/* find the basic time of this */
 	newtime.d = fulltime.d;
 	rred( &newtime );
 
-	/* special case -- double whole basictime is 0 */
+	/* special cases for double whole, quad, and oct */
 	if (EQ(newtime, Two)) {
-		return(0);
+		return(BT_DBL);
 	}
-	/* special case -- quad whole basictime is -1 */
 	else if (EQ(newtime, Four)) {
-		return(-1);
+		return(BT_QUAD);
+	}
+	else if (EQ(newtime, Eight)) {
+		return(BT_OCT);
 	}
 	else {
 		return ( (int) newtime.d);
@@ -1863,14 +1859,17 @@ int basictime;
 	RATIONAL halftime;	/* half of previous note or dot */
 	int dots;
 
-	if (basictime == 0) {
-		/* special case of double whole */
+	/* special cases for double whole and longer */
+	if (basictime == BT_DBL) {
 		rat_basictime.n = 2;
 		rat_basictime.d = 1;
 	}
-	else if (basictime == -1) {
-		/* special case of quad whole */
+	else if (basictime == BT_QUAD) {
 		rat_basictime.n = 4;
+		rat_basictime.d = 1;
+	}
+	else if (basictime == BT_OCT) {
+		rat_basictime.n = 8;
 		rat_basictime.d = 1;
 	}
 	else {
@@ -2294,6 +2293,7 @@ int voice;
 	grpsyl_p->staffno = (short) staff;
 	grpsyl_p->vno = (short) voice;
 	grpsyl_p->basictime = -1;
+	grpsyl_p->is_multirest = NO;
 	grpsyl_p->is_meas = YES;
 
 	/* We are creating a line that doesn't appear in the user's input.
@@ -2592,7 +2592,7 @@ struct MAINLL *mll_p;	/* points to a STAFF */
 	 * measure of rest? If the former, we have big problems if one
 	 * staff has a mrpt and another doesn't. If it's the latter, why
 	 * doesn't the user just use mr? That would be smaller and clearer. */
-	if (prevgrp_p->basictime < -1) {
+	if (prevgrp_p->is_multirest == YES) {
 		l_yyerror(gs_voice_p[0]->inputfile, gs_voice_p[0]->inputlineno,
 				"mrpt cannot be used in measure after multirest");
 		for (v = 0; v < MAXVOICES; v++) {
@@ -3263,11 +3263,12 @@ check4barline_at_end()
 }
 
 
-/* when user wants a multi-rest, create a STAFF for each staff. Then for
+/* When user wants a multi-rest, create a STAFF for each staff. Then for
  * each of them, fill in a GRPSYL with basictime as the negative of the
- * number of measure, and fulltime as the length of a measure. Attach this
+ * number of measures, and fulltime as the length of a measure. Also set
+ * the is_multirest flag to distinguish from the BT_* values. Attach this
  * GRPSYL as the only item off of voice 1, and to other voices as well,
- * if there are other voice and we are doing MIDI. */
+ * if there are other voices and we are doing MIDI. */
 
 void
 add_multirest(nummeas)
@@ -3309,6 +3310,7 @@ int nummeas;		/* how many measures in the multi-rest */
 						= newGRPSYL(GS_GROUP);
 				new_p->grpcont = GC_REST;
 				new_p->basictime = -nummeas;
+				new_p->is_multirest = YES;
 				new_p->fulltime = Score.time;
 			}
 		}

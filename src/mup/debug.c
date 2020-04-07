@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -371,6 +371,9 @@ int vno;		/* voice number or verse number */
 	}
 
 	(void) fprintf(stderr, "\tgrpsyl = %s, vno = %d\n", gstype, vno);
+	if (g_p != 0) {
+		(void) fprintf(stderr, "\tinputfile %s, lineno %d\n", g_p->inputfile, g_p->inputlineno);
+	}
 
 	/* print info about the stuff in GRPSYL structs */
 	for (   ; g_p != (struct GRPSYL *) 0; g_p = g_p->next) {
@@ -383,6 +386,8 @@ int vno;		/* voice number or verse number */
 #endif
 					g_p->basictime, g_p->dots,
 					g_p->fulltime.n, g_p->fulltime.d);
+		(void) fprintf(stderr, "\t\tis_meas = %d, is_multirest = %d\n",
+					g_p->is_meas, g_p->is_multirest);
 		(void) fprintf(stderr, "\t\tc[AN] = %f, c[RN] = %f\n",
 					g_p->c[AN], g_p->c[RN]);
 		(void) fprintf(stderr, "\t\tc[AY] = %f, c[RY] = %f\n",
@@ -428,8 +433,8 @@ int vno;		/* voice number or verse number */
 			if( g_p->padding != 0.0) {
 				(void) fprintf(stderr, "\t\tpadding=%f\n", g_p->padding);
 			}
-			(void) fprintf(stderr, "\t\tis_meas=%d, uncompressible=%d\n",
-				g_p->is_meas, g_p->uncompressible);
+			(void) fprintf(stderr, "\t\tautobeam=%d, uncompressible=%d\n",
+				g_p->autobeam, g_p->uncompressible);
 
 			(void) fprintf(stderr, "\t\tstemlen=%f, stemdir=%s\n",
 				g_p->stemlen, xlate_dir(g_p->stemdir));
@@ -1265,3 +1270,201 @@ char *acclist;
 	result[i] = '\0';
 	return(result);
 }
+
+
+#ifdef MUP_ALLOC_DEBUG
+
+/* This is code to help dubug cases where malloc's data structures get
+ * compromised by things like buffer overflows. You should only
+ * compile this in if you actually need to debug such an issue.
+ * To debug, in addition to compiling this in, you need to create a file
+ * named allocdebug, and make it big enough to hold the data for your test case,
+ * typically by using dd if=/dev/zero of=allocdebug with appropriate
+ * bs and count arguments. (A file size of 500K or so might suffice for
+ * a fairly short and simple Mup file, so you could start there and then
+ * make it bigger if that runs out of slots.)
+ * If this code sees that file, it will mmap it in,
+ * and save data about every malloc and free done via the MALLOC and similar
+ * macros. An offline program (smadi) can then render that information human
+ * readable, to help gives clues on where the memory corruption
+ * might be happening.
+ *
+ * It is also possible to set environment variable MUP_FREE_SKIP to a
+ * number, or a range (a pair of numbers, comma or dash separated) to make Mup
+ * skip actually freeing certain calls to free().
+ * The idea is that if skipping the Nth free causes a problem to go away,
+ * it could be that some code is still using that space after it was
+ * supposedly freed. But there could be lots of other reasons for similar
+ * symptoms, so it may or may not provide useful clues in a particular case.
+ *
+ * This code has to not malloc/free any memory itself for its own purposes,
+ * to avoid recursion or affecting the results.
+ */
+
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <malloc.h>
+#include <sys/fcntl.h>
+#include <errno.h>
+#include "allocdebug.h"
+
+/* where the data is stored; points at memory-mapped allocdebug file */
+static struct ALLOC_INFO * Alloc_info;
+/* current slot in Alloc_info */
+static int Alloc_index = 0;
+/* how many mallocs and frees so far */
+static int Alloc_count = 1;
+static int Free_count = 1;
+/* number of slots available in the mem-mapped file */
+static int Alloc_slots = 0;
+/* flag to remember if we've initialized things yet */
+static int Alloc_init_done = 0;
+/* start/end for $MUP_FREE_SKIP */
+static int Free_skip_start = -1;
+static int Free_skip_end = -1;
+
+/* Function to set start/end value requested by an environment variable.
+ * So for something like MUP_FREE_SKIP=20,30 it would return 20 and 30
+ * via the pointers, or for MUP_FREE_SKIP=5 it would return 5 for both. */
+
+static void
+get_skip(varname, start_p, end_p)
+
+char *varname;  /* name of the environment variable, e.g., MUP_FREE_SKIP */
+int *start_p;	/* start is returned via this pointer */
+int *end_p;	/* end is returned via this pointer */
+
+{
+	char *skip;
+	char *delim;
+
+	if ((skip = getenv(varname)) != 0) {
+		*start_p = atoi(skip);
+		if ((delim = strpbrk(skip, ",-")) != 0) {
+			*end_p = atoi(delim+1);
+		}
+		else {
+			*end_p = *start_p;
+		}
+	}
+}
+
+/* This gets called on the first malloc or free, to memory-map in the
+ * place to store data. */
+
+void
+alloc_debug_init()
+{
+	int file;
+	struct stat info;
+
+
+	if (Alloc_init_done > 0) {
+		return;
+	}
+
+	if ((file = open("allocdebug", O_RDWR, 0660)) < 0) {
+		return;
+	}
+	if( fstat(file, &info) != 0) {
+		fprintf(stderr, "cannot stat allocdebug file\n");
+		exit(1);
+	}
+	Alloc_info = mmap(0, info.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
+	if (Alloc_info == (void*)-1) {
+		fprintf(stderr, "cannot map allocdebug file, error %s\n",
+						strerror(errno));
+		exit(1);
+	}
+	memset(Alloc_info, 0, info.st_size);
+	Alloc_slots = info.st_size / sizeof(struct ALLOC_INFO);
+	Alloc_init_done = 1;
+
+	get_skip("MUP_FREE_SKIP", &Free_skip_start, &Free_skip_end);
+}
+
+/* This returns where the malloc/free was called from. It relies on
+ * a gcc extension, so probably won't work with other compilers.
+ * A post processor could potentially do symbol table lookup to get the actual
+ * function, or user can figure it out by grepping for the first part
+ * of the address in nm output.
+ */
+
+static void *
+get_call_address()
+{
+	return(__builtin_return_address(0));
+}
+
+/* This should be called on return from  malloc/calloc/realloc,
+ * to fill in the return value, and increment the index for the next item. */
+
+void
+alloc_debug_ret_addr(ret_addr)
+
+void *ret_addr;
+
+{
+	if (Alloc_info != 0) {
+		Alloc_info[Alloc_index].ret_addr = ret_addr;
+		Alloc_count++;
+		Alloc_index++;
+	}
+}
+
+/* This should be called before a call to malloc/calloc/realloc/free to
+ * save away the call info. */
+
+void
+alloc_debug(ai_type, size, num_elem, arg_addr, type, newp)
+
+short ai_type;		/* AI_* */
+size_t size;		/* arg to alloc/calloc/realloc */
+size_t num_elem;	/* arg to calloc */
+void *arg_addr;		/* arg to realloc/free */
+char *type;		/* *LLOC* macro type field */
+char *newp;		/* *LLOC* macro new_p field */
+
+{
+	if (Alloc_init_done == 0) {
+		alloc_debug_init();
+	}
+	if (Alloc_info == 0) {
+		return;
+	}
+	if (Alloc_index >= Alloc_slots) {
+		pfatal("ran out of allocdebug slots");
+	}
+	Alloc_info[Alloc_index].ai_type = ai_type;
+	Alloc_info[Alloc_index].size = size;
+	Alloc_info[Alloc_index].num_elem = num_elem;
+	Alloc_info[Alloc_index].arg_addr = arg_addr;
+	if (type != 0) {
+		strncpy(Alloc_info[Alloc_index].type, type, CSIZE-1);
+	}
+	if (newp != 0) {
+		strncpy(Alloc_info[Alloc_index].newp, newp, CSIZE-1);
+	}
+	Alloc_info[Alloc_index].call_addr = get_call_address();
+	if (ai_type == AI_FREE || ai_type == AI_FREE_SKIPPED) {
+		Alloc_index++;
+	}
+}
+
+/* This should be called from user code instead of the real free.
+ * It saves the appropriate info, and does the real free unless
+ * MUP_FREE_SKIP value says not to.
+ */
+
+void
+free_debug(void *addr)
+{
+	Free_count++;
+	if (Free_count >=  Free_skip_start && Free_count <= Free_skip_end) {
+		alloc_debug(AI_FREE_SKIPPED, 0, Free_count, addr, 0, 0);
+		return;
+	}
+	alloc_debug(AI_FREE, 0, Free_count, addr, 0, 0);
+	free(addr);
+}
+#endif

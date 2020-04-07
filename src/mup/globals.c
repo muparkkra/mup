@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -104,30 +104,6 @@ int Tuning_used = NO;	/* used a4freq/tuning/acctable parms, or multiple accs
  * only increment yylineno when the next character after that is read.
  */
 int Lineno_increment = 0;
-
-/*
- * The following table lets you conveniently find the character name of any
- * note head type of form GF_NORMAL.  It is to be indexed like this:
- *	headchar = Hctab [ basictime > 2 ? 3 : basictime ];
- */
-unsigned char Hctab [] = {
-	C_DBLWHOLE,	C_1N,	C_2N,	C_4N
-};
-
-/*
- * This table is like Hctab, but for X notes.  Note that for half notes and
- * longer, we actually draw the note as a diamond instead of an X.
- */
-unsigned char Xhctab[] = {
-	C_DWHDIAMOND,	C_DIAMOND,	C_DIAMOND,	 C_XNOTE
-};
-
-/*
- * This table is like Hctab, but for diamond shaped notes.
- */
-unsigned char Dhctab[] = {
-	C_DWHDIAMOND,	C_DIAMOND,	C_DIAMOND,	 C_FILLDIAMOND
-};
 
 /*
  * The following table lets you conveniently find the character name of any
@@ -369,6 +345,7 @@ RATIONAL One = {1,1};
 RATIONAL Two = {2,1};
 RATIONAL Three = {3,1};
 RATIONAL Four = {4,1};
+RATIONAL Eight = {8,1};
 
 /*
  * If user specified alternating time signatures, this points to

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1041,7 +1041,7 @@ int depth;			/* depth of recursion */
 			 * less than 0.  That's okay; we won't be breaking it.
 			 */
 			if (m2_p->u.staff_p->staffno == 1 &&
-			m2_p->u.staff_p->groups_p[0]->basictime < -1) {
+			m2_p->u.staff_p->groups_p[0]->is_multirest) {
 
 				bars += 1 + m2_p->u.staff_p->
 						groups_p[0]->basictime;
@@ -1110,7 +1110,7 @@ int depth;			/* depth of recursion */
 	 * If the staff has a multirest that's longer than the remaining
 	 * length of the stuff, don't insert a new stuff; just get out now.
 	 */
-	if (m3_p->u.staff_p->groups_p[0]->basictime < -1) {
+	if (m3_p->u.staff_p->groups_p[0]->is_multirest) {
 		if (bars < -(m3_p->u.staff_p->groups_p[0]->basictime)) {
 			stuff_p->carryout = NO;	/* cancel the carryout */
 			return;
@@ -1914,7 +1914,7 @@ int *vscheme2_p;		/* return vscheme at end */
 	/* if all within one bar, return right away */
 	if (blimit == 0) {
 		/* if starts and ends inside multirest, blow away 'til' clause*/
-		if (m2_p->u.staff_p->groups_p[0]->basictime < -1) {
+		if (m2_p->u.staff_p->groups_p[0]->is_multirest) {
 			stuff_p->end.count = 0;
 			return (3);
 		}
@@ -1933,7 +1933,7 @@ int *vscheme2_p;		/* return vscheme at end */
 	 */
 	b = 0;
 	/* if it starts at a multirest, account for that */
-	if (m2_p->u.staff_p->groups_p[0]->basictime < -1) {
+	if (m2_p->u.staff_p->groups_p[0]->is_multirest) {
 		/* if it ends inside the multirest, point at previous bar, */
 		/*  blow away 'til' clause, and get out */
 		if (-(m2_p->u.staff_p->groups_p[0]->basictime) > blimit) {
@@ -1962,7 +1962,7 @@ int *vscheme2_p;		/* return vscheme at end */
 			case S_STAFF:
 				/* multirests count as multiple measures */
 				if (m2_p->u.staff_p->staffno == 1 &&
-				m2_p->u.staff_p->groups_p[0]->basictime < -1) {
+				m2_p->u.staff_p->groups_p[0]->is_multirest) {
 
 					/* add (multi - 1) to no. of bars */
 					b -= 1 + m2_p->u.staff_p->
@@ -2044,7 +2044,7 @@ int *vscheme2_p;		/* return vscheme at end */
 	 * If the first staff in this measure has a multirest, return that fact
 	 * and have the stuff end at this bar line.
 	 */
-	if (m2_p->next->u.staff_p->groups_p[0]->basictime < -1)
+	if (m2_p->next->u.staff_p->groups_p[0]->is_multirest)
 		return (2);
 
 	*chhead2_p_p = m2_p->u.chhead_p;

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -54,10 +54,6 @@
 /* check whether the group exists and is a grace */
 #define IS_GRACE(g_p)	((g_p) != 0 && (g_p)->grpvalue == GV_ZERO)
 
-/* convert basictime to "ticks" */
-#define	TIME2TICKS(time)	\
-	((time) == 0 ? MAXBASICTIME * 2 : MAXBASICTIME / (time))
-
 struct NOTEPTRS {
 	struct NOTE *top_p;	/* point at a note in top group */
 	struct NOTE *bot_p;	/* point at same note in bottom group*/
@@ -77,6 +73,7 @@ static void apply_tsp P((struct MAINLL *mll_p, struct STAFF *staff_p,
 static void procgrace P((struct NOTEPTRS noteptrs[], struct MAINLL *mll_p,
 		struct STAFF *staff_p, struct GRPSYL *gs1_p,
 		struct GRPSYL *gs2_p));
+static int time2ticks P((int time));
 static void procbunch P((struct NOTEPTRS noteptrs[], struct MAINLL *mll_p,
 		struct STAFF *staff_p, struct GRPSYL *gs1_p,
 		struct GRPSYL *gs2_p));
@@ -1184,6 +1181,14 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	}
 
 	/*
+	 * This has to fail, because gs2 (stem down) is on the "wrong"
+	 * (right hand) side for these notes.
+	 */
+	if (gs2_p->basictime <= BT_QUAD) {
+		return (0.0);
+	}
+
+	/*
 	 * At this point we know we can overlap.  The offset has to be bigger
 	 * if the groups are of different size, or if overlapping note(s) have
 	 * parentheses.
@@ -1324,7 +1329,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 	/* point at the rightmost graces and set times to where they start */
 	v1g_p = gs1_p->prev;
 	if (IS_GRACE(v1g_p)) {
-		v1_ticks = TIME2TICKS(v1g_p->basictime);
+		v1_ticks = time2ticks(v1g_p->basictime);
 	} else {
 		v1_ticks = 0;		/* gs1_p had no graces */
 	}
@@ -1334,7 +1339,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 	} else {
 		v2g_p = gs2_p->prev;
 		if (IS_GRACE(v2g_p)) {
-			v2_ticks = TIME2TICKS(v2g_p->basictime);
+			v2_ticks = time2ticks(v2g_p->basictime);
 		} else {
 			v2_ticks = 0;	/* gs2_p had no graces */
 		}
@@ -1379,7 +1384,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 			/* point at prev grace if any, find its start time */
 			v1g_p = v1g_p->prev;
 			if (IS_GRACE(v1g_p)) {
-				v1_ticks += TIME2TICKS(v1g_p->basictime);
+				v1_ticks += time2ticks(v1g_p->basictime);
 			}
 		} else if ( ! IS_GRACE(v1g_p) ||
 				(IS_GRACE(v2g_p) && v1_ticks > v2_ticks) ) {
@@ -1410,7 +1415,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 			/* point at prev grace if any, find its start time */
 			v2g_p = v2g_p->prev;
 			if (IS_GRACE(v2g_p)) {
-				v2_ticks += TIME2TICKS(v2g_p->basictime);
+				v2_ticks += time2ticks(v2g_p->basictime);
 			}
 		} else {
 			/* both voices have groups starting at this time */
@@ -1458,13 +1463,40 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 			/* point at prev graces if any, find their start times*/
 			v1g_p = v1g_p->prev;
 			if (IS_GRACE(v1g_p)) {
-				v1_ticks += TIME2TICKS(v1g_p->basictime);
+				v1_ticks += time2ticks(v1g_p->basictime);
 			}
 			v2g_p = v2g_p->prev;
 			if (IS_GRACE(v2g_p)) {
-				v2_ticks += TIME2TICKS(v2g_p->basictime);
+				v2_ticks += time2ticks(v2g_p->basictime);
 			}
 		}
+	}
+}
+
+/*
+ * Name:	time2ticks()
+ *
+ * Abstract:	Convert a basictime to units of the shortest supported note.
+ *
+ * Returns:	the number of these units
+ *
+ * Description:	Convert basictime to "ticks", where a tick is the length of the
+ *		shortest basictime that Mup supports.
+ */
+static int
+time2ticks(time)
+
+int time;		/* basictime */
+{
+	switch (time) {
+	case BT_DBL:
+		return MAXBASICTIME * 2;
+	case BT_QUAD:
+		return MAXBASICTIME * 4;
+	case BT_OCT:
+		return MAXBASICTIME * 8;
+	default:
+		return MAXBASICTIME / time;
 	}
 }
 
@@ -1581,7 +1613,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		 * we want to offset the groups slightly, such that their stems
 		 * are collinear, so set that flag.
 		 */
-		if (gs1_p->stemdir == UP) {
+		if (STEMSIDE_RIGHT(gs1_p)) {
 			normhead[n-1] = YES;	/* bottom note normal */
 			for (k = n - 2; k >= 0; k--) {
 				if (noteptrs[k+1].top_p->stepsup ==
@@ -1590,7 +1622,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 				else
 					normhead[k] = YES;
 			}
-		} else {	/* stemdir == DOWN */
+		} else {	/* STEMSIDE_LEFT */
 			normhead[0] = YES;	/* top note normal */
 			for (k = 1; k < n; k++) {
 				if (noteptrs[k-1].top_p->stepsup ==
@@ -1602,7 +1634,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		}
 
 		if (gs2_p != 0) {
-			if (gs2_p->stemdir == UP) {
+			if (STEMSIDE_RIGHT(gs2_p)) {
 				/* find the slot beyond the last bottom note */
 				for (k = n + 1; noteptrs[k].bot_p != 0; k++) {
 				}
@@ -1614,7 +1646,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 					else
 						normhead[k] = YES;
 				}
-			} else {	/* stemdir == DOWN */
+			} else {	/* STEMSIDE_LEFT */
 				normhead[n] = YES;	/* top note normal */
 				for (k = n + 1; noteptrs[k].bot_p != 0; k++) {
 					if (noteptrs[k-1].bot_p->stepsup ==
@@ -1654,10 +1686,12 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	maxwide = g1wide = gwide;	/* widest group so far */
 	maxhigh = ghigh;		/* highest group so far */
 
-	if (gs1_p->basictime <= 1) {
-		gs1_p->stemx = 0.0;	/* center the imaginary stem */
+	if (HAS_STEM_ON_RIGHT(gs1_p)) {
+		gs1_p->stemx = gwide / 2;
+	} else if (HAS_STEM_ON_LEFT(gs1_p)) {
+		gs1_p->stemx = -gwide / 2;
 	} else {
-		gs1_p->stemx = gs1_p->stemdir == UP ? gwide / 2 : -gwide / 2;
+		gs1_p->stemx = 0.0;	/* center the imaginary stem */
 	}
 
 	for (n = 0; noteptrs[n].top_p != 0; n++) {
@@ -1672,15 +1706,14 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			 * not shared by the other group, the note needs to
 			 * be off center so that it touches the stem.
 			 */
-			if (nwide != gwide && gs1_p->basictime >= 2 &&
-					noteptrs[n].bot_p == 0) {
-				if (gs1_p->stemdir == UP) {
+			if (nwide != gwide && noteptrs[n].bot_p == 0) {
+				if (HAS_STEM_ON_RIGHT(gs1_p)) {
 					noteptrs[n].top_p->c[RE] = gwide / 2;
 					noteptrs[n].top_p->c[RX] =
 							gwide / 2 - nwide / 2;
 					noteptrs[n].top_p->c[RW] =
 							gwide / 2 - nwide;
-				} else {	/* DOWN */
+				} else if (HAS_STEM_ON_LEFT(gs1_p)) {
 					noteptrs[n].top_p->c[RW] = -gwide / 2;
 					noteptrs[n].top_p->c[RX] =
 							-gwide / 2 + nwide / 2;
@@ -1702,7 +1735,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			 * the stem, so that the note overlays the stem.
 			 */
 			if (nwide != gwide) {
-				if (gs1_p->stemdir == UP) {
+				if (STEMSIDE_RIGHT(gs1_p)) {
 					noteptrs[n].top_p->c[RW] =
 						gwide / 2 - W_NORMAL * POINT;
 					noteptrs[n].top_p->c[RX] =
@@ -1711,7 +1744,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 					noteptrs[n].top_p->c[RE] =
 						gwide / 2 + nwide
 						- W_NORMAL * POINT;
-				} else {	/* DOWN */
+				} else {	/* STEMSIDE_LEFT */
 					noteptrs[n].top_p->c[RE] =
 						W_NORMAL * POINT - gwide / 2;
 					noteptrs[n].top_p->c[RX] =
@@ -1722,14 +1755,14 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 						- gwide / 2 - nwide;
 				}
 			} else {
-				if (gs1_p->stemdir == UP) {
+				if (STEMSIDE_RIGHT(gs1_p)) {
 					noteptrs[n].top_p->c[RX] =
 						nwide - W_NORMAL * POINT;
 					noteptrs[n].top_p->c[RW] =
 						nwide * 0.5 - W_NORMAL * POINT;
 					noteptrs[n].top_p->c[RE] =
 						nwide * 1.5 - W_NORMAL * POINT;
-				} else {	/* DOWN */
+				} else {	/* STEMSIDE_LEFT */
 					noteptrs[n].top_p->c[RX] =
 						W_NORMAL * POINT - nwide;
 					noteptrs[n].top_p->c[RW] =
@@ -1779,11 +1812,12 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			}
 		}
 		g2wide = gwide;
-		if (gs2_p->basictime <= 1) {
-			gs2_p->stemx = 0.0;	/* center the imaginary stem */
+		if (HAS_STEM_ON_RIGHT(gs2_p)) {
+			gs2_p->stemx = gwide / 2;
+		} else if (HAS_STEM_ON_LEFT(gs2_p)) {
+			gs2_p->stemx = -gwide / 2;
 		} else {
-			gs2_p->stemx = gs2_p->stemdir == UP ? gwide / 2
-							   : -gwide / 2;
+			gs2_p->stemx = 0.0;	/* center the imaginary stem */
 		}
 
 		/* if groups have different note head sizes, adjust maxes */
@@ -1807,16 +1841,15 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 				 * other group, the note needs to be off center
 			 	 * so that it touches the stem.
 				 */
-				if (nwide != gwide && gs2_p->basictime >= 2 &&
-						noteptrs[n].top_p == 0) {
-					if (gs2_p->stemdir == UP) {
+				if (nwide != gwide && noteptrs[n].top_p == 0) {
+					if (STEMSIDE_RIGHT(gs2_p)) {
 						noteptrs[n].bot_p->c[RE] =
 							gwide / 2;
 						noteptrs[n].bot_p->c[RX] =
 							gwide / 2 - nwide / 2;
 						noteptrs[n].bot_p->c[RW] =
 							gwide / 2 - nwide;
-					} else {	/* DOWN */
+					} else {  /* STEMSIDE_LEFT */
 						noteptrs[n].bot_p->c[RW] =
 							-gwide / 2;
 						noteptrs[n].bot_p->c[RX] =
@@ -1838,7 +1871,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 				 * differently regardless of whether stemmed.
 				 */
 				if (nwide != gwide) {
-					if (gs2_p->stemdir == UP) {
+					if (STEMSIDE_RIGHT(gs2_p)) {
 						noteptrs[n].bot_p->c[RW] =
 							gwide / 2 - W_NORMAL * POINT;
 						noteptrs[n].bot_p->c[RX] =
@@ -1847,7 +1880,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 						noteptrs[n].bot_p->c[RE] =
 							gwide / 2 + nwide
 							- W_NORMAL * POINT;
-					} else {	/* DOWN */
+					} else {  /* STEMSIDE_LEFT */
 						noteptrs[n].bot_p->c[RE] =
 							W_NORMAL * POINT - gwide / 2;
 						noteptrs[n].bot_p->c[RX] =
@@ -1858,14 +1891,14 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 							- gwide / 2 - nwide;
 					}
 				} else {
-					if (gs2_p->stemdir == UP) {
+					if (STEMSIDE_RIGHT(gs2_p)) {
 						noteptrs[n].bot_p->c[RX] =
 							nwide - W_NORMAL * POINT;
 						noteptrs[n].bot_p->c[RW] =
 							nwide * 0.5 - W_NORMAL * POINT;
 						noteptrs[n].bot_p->c[RE] =
 							nwide * 1.5 - W_NORMAL * POINT;
-					} else {	/* DOWN */
+					} else {  /* STEMSIDE_LEFT */
 						noteptrs[n].bot_p->c[RX] =
 							W_NORMAL * POINT - nwide;
 						noteptrs[n].bot_p->c[RW] =
@@ -1925,8 +1958,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	 * If the stem is down on a half note or shorter that is to have
 	 * slashes through its stem, make sure there is room for the slashes.
 	 */
-	if (gs1_p->slash_alt > 0 && gs1_p->stemdir == DOWN &&
-			gs1_p->basictime >= 2) {
+	if (gs1_p->slash_alt > 0 && HAS_STEM_ON_LEFT(gs1_p)) {
 		gwide = g1wide;
 		/* if position of stem minus slash room < current west . . . */
 		if (-gwide / 2 - SLASHPAD < gs1_p->c[RW])
@@ -1941,10 +1973,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	csbstempad(mll_p, gs1_p);	/* cross staff beaming may need space */
 	gs1_p->c[RW] += gs1_p->c[RX];	/* shift by RX, in case RX isn't 0 */
 
-	/*
-	 * If group 2 exists, do the same for it.  However, in the slash
-	 * section, we know the stem must be down, so no need to check that.
-	 */
+	/* if group 2 exists, do the same for it */
 	if (gs2_p != 0) {
 		gs2_p->c[RW] = 0;
 		for (k = 0; k < gs2_p->nnotes; k++) {
@@ -1952,7 +1981,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			if (rh < gs2_p->c[RW])
 				gs2_p->c[RW] = rh;
 		}
-		if (gs2_p->slash_alt > 0 && gs2_p->basictime >= 2) {
+		if (gs2_p->slash_alt > 0 && HAS_STEM_ON_LEFT(gs2_p)) {
 			gwide = g2wide;
 			/* if pos of stem minus slash room < current west . .*/
 			if (-gwide / 2 - SLASHPAD < gs2_p->c[RW])
@@ -1994,11 +2023,10 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			gs1_p->c[RE] = gs1_p->notelist[0].c[RE] + flagwidth;
 	}
 	/*
-	 * If the stem is up on a half note or shorter that is to have slashes
+	 * If a note that has a stem on the right is to have slashes
 	 * through its stem, make sure there's room for the slashes.
 	 */
-	if (gs1_p->slash_alt > 0 && gs1_p->stemdir == UP &&
-			gs1_p->basictime >= 2) {
+	if (gs1_p->slash_alt > 0 && HAS_STEM_ON_RIGHT(gs1_p)) {
 		gwide = g1wide;
 		/* if position of stem plus slash room > current east . . . */
 		if (gwide / 2 + SLASHPAD > gs1_p->c[RE])
@@ -2011,11 +2039,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	eastwith(gs1_p);
 	gs1_p->c[RE] += gs1_p->c[RX];
 
-	/*
-	 * If group 2 exists, do the same for it.  However, the stem is always
-	 * down, so any flags will always already fit.  For the same reason,
-	 * slashes don't need to be considered.
-	 */
+	/* if group 2 exists, do the same for it */
 	if (gs2_p != 0) {
 		gs2_p->c[RE] = 0;
 		for (k = 0; k < gs2_p->nnotes; k++) {
@@ -2027,6 +2051,22 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			gs2_p->c[RE] += ALTPAD;
 		eastwith(gs2_p);
 		gs2_p->c[RE] += gs2_p->c[RX];
+
+		if (gs2_p->stemdir == UP && gs2_p->basictime >= 8 &&
+					gs2_p->beamloc == NOITEM) {
+			flagwidth = width(FONT_MUSIC,
+				size_def2font(gs2_p->grpsize), C_UPFLAG);
+			if (gs2_p->notelist[0].c[RE] + flagwidth > gs2_p->c[RE])
+				gs2_p->c[RE] =
+					gs2_p->notelist[0].c[RE] + flagwidth;
+		}
+
+		if (gs2_p->slash_alt > 0 && HAS_STEM_ON_RIGHT(gs2_p)) {
+			gwide = g1wide;
+			/* if position of stem plus slash room > current east */
+			if (gwide / 2 + SLASHPAD > gs2_p->c[RE])
+				gs2_p->c[RE] = gwide / 2 + SLASHPAD;
+		}
 	}
 }
 
@@ -3718,7 +3758,7 @@ int numgrps;			/* initially how many nonspace groups exist */
 		 * If there is a stem, make a rectangle for it.  We rarely know
 		 * how long it is yet, so just make it way long.
 		 */
-		if (g_p[gidx]->basictime >= 2 && g_p[gidx]->stemlen != 0) {
+		if (STEMMED(g_p[gidx]) && g_p[gidx]->stemlen != 0) {
 			stem_rx = g_p[gidx]->c[RX] + g_p[gidx]->stemx;
 			if (g_p[gidx]->stemdir == UP) {
 				Rectab[Reclim].n = 1000.0;

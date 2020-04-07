@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1745,7 +1745,7 @@ int place;		/* PL_* */
 			 * in using the other input method,
 			 * so if we ever support phrase across multirest,
 			 * this ought to work equally well. */
-			if (end_gs_p->basictime < -1) {
+			if (end_gs_p->is_multirest ==YES) {
 				bars -= end_gs_p->basictime + 1;
 			}
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -133,7 +133,7 @@ tab2tabnote()
 		/*
 		 * If this is a multirest, adjust any octave marks in progress.
 		 */
-		if (ngs_p->basictime < -1 &&
+		if (ngs_p->is_multirest &&
 				Octave_bars[nstaff_p->staffno] > 0) {
 
 			/* add negative bars plus 1; barline will count as 1 */
@@ -466,7 +466,7 @@ int vidx;			/* voice index, 0 to MAXVOICES-1 */
 	}
 
 	/* do beaming of tabnote staff based on beamstyle */
-	if (has_cust_beaming(nstaff_p->groups_p[vidx]) == NO) {
+	if (needs_auto_beaming(nstaff_p->groups_p[vidx]) == YES) {
 		do_beaming(nstaff_p->groups_p[vidx], GS_NORMAL,
 					nstaff_p->staffno, vidx + 1);
 		do_beaming(nstaff_p->groups_p[vidx], GS_SMALL,
@@ -717,8 +717,7 @@ RATIONAL *comb_p;	/* for returning total time if combinable */
  * Description: This function, given a GRPSYL structure, returns the duration
  *		as a rational number.  It considers basictime and dots, but it
  *		does not include the effect of tuplets.  It assumes nongrace,
- *		it assumes GC_NOTES (thus no quadruple wholes), and it assumes
- *		not multirest.
+ *		it assumes GC_NOTES, and it assumes not multirest.
  */
 
 static RATIONAL
@@ -730,11 +729,17 @@ struct GRPSYL *gs_p;
 	RATIONAL base;
 
 
-	if (gs_p->basictime == 0) {
-		/* double whole note is 2 */
-		base.n = 2;
-		base.d = 1;
-	} else {
+	switch (gs_p->basictime) {
+	case BT_DBL:
+		base = Two;
+		break;
+	case BT_QUAD:
+		base = Four;
+		break;
+	case BT_OCT:
+		base = Eight;
+		break;
+	default:
 		/* anything else is 1/basictime */
 		base.n = 1;
 		base.d = gs_p->basictime;

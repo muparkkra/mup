@@ -1,9 +1,9 @@
 //!Mup-Arkkra
 header
-	title bold (13) "cancelkey.mup"
+	title bold (13) "muschar.mup"
 	paragraph (10) "\
 On the first page, print all music characters,
-in order, separated by vertical bars.
+separated by vertical bars.
 On the second page, print them in 'with' lists,
 with 'X' between each, to test vertical boundaries.
 Page 3 and 4 repeat this with italics.
@@ -22,7 +22,7 @@ print (k.x - 29, k.y - 20) "|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|\(2n)|
 
 print (k.x - 29, k.y - 35) "|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
 
-print (k.x - 29, k.y - 50) "|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+print (k.x - 29, k.y - 50) "|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|\(octwhole)|\(quadwhole)|\(owhrest)|"
 
 print (k.x - 29, k.y - 65) "|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)|"
 
@@ -43,7 +43,8 @@ newpage
 "\(up64n)","X", "\(dn64n)","X" ] 4f; \
 [with "\(up128n)","X", "\(dn128n)","X", "\(up256n)","X", "\(dn256n)","X", \
 "\(dnbow)","X", "\(upbow)","X", "\(wedge)","X", "\(uwedge)","X", \
-"\(ferm)","X", "\(uferm)","X", "\(sign)","X", "\(coda)","X" ] 4f;
+"\(ferm)","X", "\(uferm)","X", "\(sign)","X", "\(coda)","X", \
+"\(octwhole)","X", "\(quadwhole)","X", "\(owhrest)","X" ] 4f;
 bar
 1: [with "\(mor)","X", "\(invmor)","X", "\(turn)","X", "\(invturn)","X", \
 "\(acc_gt)","X", "\(acc_hat)","X", "\(acc_uhat)","X", "\(tr)","X", \
@@ -71,7 +72,7 @@ print (k.x - 15, k.y - 20) "\f(TI)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|
 
 print (k.x - 15, k.y - 35) "\f(TI)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
 
-print (k.x - 15, k.y - 50) "\f(TI)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+print (k.x - 15, k.y - 50) "\f(TI)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|\(octwhole)|\(quadwhole)|\(owhrest)|"
 
 print (k.x - 15, k.y - 65) "\f(TI)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
 
@@ -92,7 +93,8 @@ newpage
 "\f(TI)\(up64n)","X", "\f(TI)\(dn64n)","X" ] 4f; \
 [with "\f(TI)\(up128n)","X", "\f(TI)\(dn128n)","X", "\f(TI)\(up256n)","X", "\f(TI)\(dn256n)","X", \
 "\f(TI)\(dnbow)","X", "\f(TI)\(upbow)","X", "\f(TI)\(wedge)","X", "\f(TI)\(uwedge)","X", \
-"\f(TI)\(ferm)","X", "\f(TI)\(uferm)","X", "\f(TI)\(sign)","X", "\f(TI)\(coda)","X" ] 4f;
+"\f(TI)\(ferm)","X", "\f(TI)\(uferm)","X", "\f(TI)\(sign)","X", "\f(TI)\(coda)","X", \
+"\f(TI)\(octwhole)","X", "\f(TI)\(quadwhole)","X", "\f(TI)\(owhrest)","X" ] 4f;
 bar
 1: [with "\f(TI)\(mor)","X", "\f(TI)\(invmor)","X", "\f(TI)\(turn)","X", "\f(TI)\(invturn)","X", \
 "\f(TI)\(acc_gt)","X", "\f(TI)\(acc_hat)","X", "\f(TI)\(acc_uhat)","X", "\f(TI)\(tr)","X", \
@@ -120,7 +122,7 @@ print (k.x - 15, k.y - 20) "\f(TB)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|
 
 print (k.x - 15, k.y - 35) "\f(TB)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
 
-print (k.x - 15, k.y - 50) "\f(TB)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+print (k.x - 15, k.y - 50) "\f(TB)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|\(octwhole)|\(quadwhole)|\(owhrest)|"
 
 print (k.x - 15, k.y - 65) "\f(TB)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
 
@@ -143,7 +145,8 @@ newpage
 "\f(TB)\(up64n)","X", "\f(TB)\(dn64n)","X" ] 4f; \
 [with "\f(TB)\(up128n)","X", "\f(TB)\(dn128n)","X", "\f(TB)\(up256n)","X", "\f(TB)\(dn256n)","X", \
 "\f(TB)\(dnbow)","X", "\f(TB)\(upbow)","X", "\f(TB)\(wedge)","X", "\f(TB)\(uwedge)","X", \
-"\f(TB)\(ferm)","X", "\f(TB)\(uferm)","X", "\f(TB)\(sign)","X", "\f(TB)\(coda)","X" ] 4f;
+"\f(TB)\(ferm)","X", "\f(TB)\(uferm)","X", "\f(TB)\(sign)","X", "\f(TB)\(coda)","X", \
+"\f(TB)\(octwhole)","X", "\f(TB)\(quadwhole)","X", "\f(TB)\(owhrest)","X" ] 4f;
 bar
 1: [with "\f(TB)\(mor)","X", "\f(TB)\(invmor)","X", "\f(TB)\(turn)","X", "\f(TB)\(invturn)","X", \
 "\f(TB)\(acc_gt)","X", "\f(TB)\(acc_hat)","X", "\f(TB)\(acc_uhat)","X", "\f(TB)\(tr)","X", \
@@ -171,7 +174,7 @@ print (k.x - 15, k.y - 20) "\f(TX)|\(gclef)|\(fclef)|\(cclef)|\(dblwhole)|\(1n)|
 
 print (k.x - 15, k.y - 35) "\f(TX)|\(128rest)|\(256rest)|\(dot)|\(nat)|\(sharp)|\(flat)|\(dblsharp)|\(dblflat)|\(xnote)|\(dwhdiamond)|\(diamond)|\(filldiamond)|\(up2n)|\(dn2n)|\(up4n)|\(dn4n)|\(up8n)|\(dn8n)|\(up16n)|\(dn16n)|"
 
-print (k.x - 15, k.y - 50) "\f(TX)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|"
+print (k.x - 15, k.y - 50) "\f(TX)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn128n)|\(up256n)|\(dn256n)|\(com)|\(cut)|\(begped)|\(pedal)|\(endped)|\(dnbow)|\(upbow)|\(wedge)|\(uwedge)|\(ferm)|\(uferm)|\(octwhole)|\(quadwhole)|\(owhrest)|"
 
 print (k.x - 15, k.y - 65) "\f(TX)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
 
@@ -192,7 +195,8 @@ newpage
 "\f(TX)\(up64n)","X", "\f(TX)\(dn64n)","X" ] 4f; \
 [with "\f(TX)\(up128n)","X", "\f(TX)\(dn128n)","X", "\f(TX)\(up256n)","X", "\f(TX)\(dn256n)","X", \
 "\f(TX)\(dnbow)","X", "\f(TX)\(upbow)","X", "\f(TX)\(wedge)","X", "\f(TX)\(uwedge)","X", \
-"\f(TX)\(ferm)","X", "\f(TX)\(uferm)","X", "\f(TX)\(sign)","X", "\f(TX)\(coda)","X" ] 4f;
+"\f(TX)\(ferm)","X", "\f(TX)\(uferm)","X", "\f(TX)\(sign)","X", "\f(TX)\(coda)","X", \
+"\f(TX)\(octwhole)","X", "\f(TX)\(quadwhole)","X", "\f(TX)\(owhrest)","X" ] 4f;
 bar
 1: [with "\f(TX)\(mor)","X", "\f(TX)\(invmor)","X", "\f(TX)\(turn)","X", "\f(TX)\(invturn)","X", \
 "\f(TX)\(acc_gt)","X", "\f(TX)\(acc_hat)","X", "\f(TX)\(acc_uhat)","X", "\f(TX)\(tr)","X", \

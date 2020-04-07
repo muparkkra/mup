@@ -241,6 +241,9 @@ define G	[grace] @
 	bar
 	newscore
 
+	1: [grace] 1/8f; 4e; [grace] 1/4f; 4e; [grace] 1/8e; 4d; [grace] 1/4e; 4d;
+	bar
+
 	rom 1: 1 "Grace notes on cue notes in voice 1";
 	1 1: [grace]8f; [cue]4g; \
 		[grace]...8e;f#;g; [cue] 4f; \

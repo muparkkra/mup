@@ -144,3 +144,28 @@ bar
 
 newscore
 
+staff 1-4 beamstyle=4,4,4,4
+music
+
+rom above 1: 1 "beamstyle=4,4,4,4";
+rom above 1: 1 "staff 1 autobeam first half, nothing second half";
+1: 8c abm;d;e;f eabm;f;e;d;c;
+rom above 2: 1 "staff 2 autobeam second half, nothing first half";
+2: 8c;d;e;f;f abm;e;d;c eabm;
+rom above 3: 1 "staff 3 autobeam first half, custom beam second half together";
+3: 8c abm;d;e;f eabm;f bm;e;d;c ebm;
+rom above 4: 1 "staff 4 custom beam entire first half, autobeam second half";
+4: 8c bm;d;e;f ebm;f abm;e;d;c eabm;
+bar
+
+newscore
+
+rom above 1: 1 "staff 1 autobeam first quarter, custom the next two quarter together, nothing last quarter";
+1: 8c abm;d eabm;e bm;f;f;e ebm;d;c;
+rom above 2: 1 "staff 2 autobeam first 3/8, custom beam next 3/8, nothing final quarter";
+2: 8c abm;d;e eabm;f bm;f;e ebm;d;c;
+rom above 3: 1 "staff 3 nothing first 3/8, custom beam next 3/8, autobeam final quater";
+3: 8c;d;e;f bm;f;e ebm;d abm;c eabm;
+rom above 4: 1 "staff 4 custom beam first 3/8, autobeam next 3/8, custom beam final quarter";
+4: 8c bm;d;e ebm;f abm;f;e eabm;d bm;c ebm;
+bar

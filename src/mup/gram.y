@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -232,6 +232,8 @@ static int comp_subbar P((const void *item1_p, const void *item2_p));
 #else
 static int comp_subbar P((char *item1_p, char *item2_p));
 #endif
+static int multiwhole2basictime P((int value));
+static void parse_doremi_string P((char *str));
 
 
 %}
@@ -257,9 +259,11 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_1ARG_FUNC
 %token <intval>	T_2ARG_FUNC
 %token <intval>	T_2FNUMVAR
+%token		T_ABM
 %token		T_ACCIDENTALS
 %token <intval>	T_ADDSUB_OP
 %token		T_ALIGN
+%token <intval>	T_ALIGNLABELS
 %token		T_ALL
 %token		T_ALT
 %token		T_AMPERSAND
@@ -273,6 +277,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_BM
 %token <intval>	T_BULGE
 %token		T_CENTS
+%token <intval>	T_CHORDTRANSLATION
 %token <intval>	T_CLEF
 %token <intval>	T_CLEFVAR
 %token		T_COLON
@@ -288,6 +293,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_DOT
 %token		T_DOWN
 %token		T_DRUM
+%token		T_EABM
 %token		T_EBM
 %token <intval>	T_EM_BEGIN
 %token <intval>	T_EM_END
@@ -315,6 +321,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_HO
 %token		T_HS
 %token <intval> T_INPUTDIR
+%token <intval>	T_JUSTIFYTYPE
 %token <intval>	T_KEY
 %token <intval>	T_KEYMAP
 %token <intval>	T_KEYMAPVAR
@@ -374,6 +381,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_PLUS
 %token		T_POSTSCRIPT
 %token <intval>	T_PRINTTYPE
+%token <intval>	T_PRINTEDTIME
 %token <intval> T_PSHOOKLOC
 %token		T_PSVAR
 %token		T_QUESTION
@@ -458,6 +466,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <ratval> basic_time_val
 %type <floatval> beat_offset
 %type <intval> between
+%type <intval> ch_tran_type
 %type <intval> crossbeam
 %type <intval> dir
 %type <intval> direction
@@ -477,6 +486,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <intval> grp_staff_range
 %type <intval> hor_offset
 %type <intval> inputdir
+%type <intval> justifytype
 %type <floatval> line_offset
 %type <intval> line_ref
 %type <intval> linetype
@@ -1431,6 +1441,9 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 	}
 
 	|
+	T_PRINTEDTIME T_EQUAL printed_timesig
+
+	|
 	T_STAFFLINES T_EQUAL stafflinedef
 	{
 	}
@@ -1476,6 +1489,25 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 				asgnssv(Currstruct_p->u.ssv_p);
 			}
 		}
+	}
+
+	|
+	T_CHORDTRANSLATION T_EQUAL ch_tran_type
+	{
+		if (contextcheck(C_SCORE | C_STAFF, "chordtranslation parameter") == YES
+						&& (Currstruct_p != 0) ) {
+			if (Currstruct_p->u.ssv_p->used[$1] == YES) {
+				warning("setting chordtranslation parameter overrides previous setting");
+			}
+			Currstruct_p->u.ssv_p->chordtranslation = $3;
+			Currstruct_p->u.ssv_p->used[CHORDTRANSLATION] = YES;
+		}
+	}
+
+	|
+	T_ALIGNLABELS T_EQUAL justifytype
+	{
+		assign_int($1, $3, Currstruct_p);
 	}
 
 	|
@@ -1610,7 +1642,7 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 			 * a star, this will just cause a few extraenous
 			 * but otherwise harmless lines of output. It is
 			 * less important the ZI gets marked as used,
-			 * since we don't change its encodiong vector,
+			 * since we don't change its encoding vector,
 			 * so don't need to emit special code, but might as
 			 * well mark that here as well. */
 			if ($3 != P_LINE) {
@@ -2609,6 +2641,44 @@ opt_n:
 		$$ = YES;
 	};
 
+printed_timesig:
+	meas_tsig
+	{
+		tsig_item(TSR_END);
+		if (Currstruct_p != 0 && Currstruct_p->u.ssv_p != 0) {
+			MALLOCA(char, Currstruct_p->u.ssv_p->prtime_str1, Tsig_offset);
+			strcpy(Currstruct_p->u.ssv_p->prtime_str1, Timerep);
+			Currstruct_p->u.ssv_p->prtime_str2 = 0;
+			Currstruct_p->u.ssv_p->prtime_is_arbitrary = NO;
+			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = YES;
+		}
+		/* Reset for next time signature usage, if any */
+		Tsig_offset = 0;
+	}
+
+	|
+	string
+	{
+		if (Currstruct_p != 0 && Currstruct_p->u.ssv_p != 0) {
+			Currstruct_p->u.ssv_p->prtime_str1 = $1;
+			Currstruct_p->u.ssv_p->prtime_str2 = 0;
+			Currstruct_p->u.ssv_p->prtime_is_arbitrary = YES;
+			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = YES;
+
+		}
+	}
+
+	|
+	string string
+	{
+		if (Currstruct_p != 0 && Currstruct_p->u.ssv_p != 0) {
+			Currstruct_p->u.ssv_p->prtime_str1 = $1;
+			Currstruct_p->u.ssv_p->prtime_str2 = $2;
+			Currstruct_p->u.ssv_p->prtime_is_arbitrary = YES;
+			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = YES;
+		}
+	};
+
 keyspec: num acc_symbol majmin
 	{
 		if ( ($2 != '#') && ($2 != '&') ) {
@@ -2752,6 +2822,23 @@ prclef:
 			yyerror("flag value must be y or n");
 		}
 		$$ = PTC_ALWAYS;
+	};
+
+ch_tran_type:	/* empty */
+	{
+		$$ = CT_NONE;
+	}
+
+	|
+	string
+	{
+		if (strcmp($1 + 2, "German") == 0) {
+			$$ = CT_GERMAN;
+		}
+		else {
+			parse_doremi_string($1 + 2);
+			$$ = CT_DOREMI;
+		}
 	};
 
 tab_string_list:
@@ -3282,7 +3369,7 @@ paragraph:	opt_paratype T_PARAGRAPH tfont title_size string opt_semi T_NEWLINE
 					 */
 					end_fontsize(String1, &font, &size);
 					string_start = copy_string(p+2, font, size);
-					p = string_start + 2;
+					p++;
 				}
 			}
 			else {
@@ -3396,7 +3483,16 @@ paramname:
 	T_TIME
 
 	|
+	T_PRINTEDTIME
+
+	|
 	T_TRANSPOSE
+
+	|
+	T_CHORDTRANSLATION
+
+	|
+	T_ALIGNLABELS
 
 	|
 	T_RATNUMLISTVAR
@@ -4400,6 +4496,18 @@ beammark:
 	}
 
 	|
+	T_ABM
+	{
+		Curr_grpsyl_p->autobeam = STARTITEM;
+	}
+
+	|
+	T_EABM
+	{
+		Curr_grpsyl_p->autobeam = ENDITEM;
+	}
+
+	|
 	T_ESBM
 	{
 		Curr_grpsyl_p->breakbeam = YES;
@@ -4494,13 +4602,12 @@ basic_time_val:	T_MULTIWHOLE
 			 * lines down from here. But in the normal case,
 			 * we set basictime in the current GRPSYL. */
 			if (Extra_time_p == 0) {
-				/* 1/2 is 0 internally. 1/4 is -1 internally */
-				 Curr_grpsyl_p->basictime = ($1 == 2 ? 0 : -1);
+				 Curr_grpsyl_p->basictime = multiwhole2basictime($1);
 			}
 		}
 		/* If doing additive times, need to save value. */
 		if (Extra_time_p != 0) {
-			Extra_basictime = ($1 == 2 ? 0 : -1);
+			Extra_basictime = multiwhole2basictime($1);
 		}
 	}
 
@@ -4520,10 +4627,10 @@ basic_time_val:	T_MULTIWHOLE
 		}
 		/* can't use rangecheck here because the error message would
 		 * say 0 and -1 are valid times, which is only true internally--
-		 * the user has to use 1/2, 1/4 or m. */
+		 * the user has to use 1/2, 1/4, 1/8, or m. */
 		if ($1 < MINBASICTIME || $1 > MAXBASICTIME) {
 			l_yyerror(Curr_filename, yylineno,
-				"time value must be between 1 and %d, or 1/2 or 1/4 or m",
+				"time value must be between 1 and %d, or 1/2 or 1/4 or 1/8 or m",
 				MAXBASICTIME);
 			/* If user entered outrageous value, clamp to
 			 * something semi-reasonable, else we could get
@@ -4956,7 +5063,7 @@ notedata:	notedata1
 							0, NO, (char *) 0);
 		if (Curr_grpsyl_p->is_meas == YES && User_meas_time == YES) {
 			l_warning(Curr_filename, yylineno,
-				"specifying time value on measure uncollapseable space is pointless; ignoring");
+				"specifying time value on measure uncollapsible space is pointless; ignoring");
 		}
 	}
 
@@ -7506,6 +7613,12 @@ alias_or_export_var:
 	};
 
 printtype:	T_PRINTTYPE
+
+	|
+	justifytype
+	;
+
+justifytype:	T_JUSTIFYTYPE
 	;
 
 opt_loc:
@@ -8417,5 +8530,85 @@ char *item2_p;
 	}
 	else {
 		return(0);
+	}
+}
+
+
+/* Given a MULTIWHOLE value (2, 4, or 8) return the corresponding BT_* value */
+static int
+multiwhole2basictime(value)
+
+int value;
+
+{
+	if (value == 2) {
+		return(BT_DBL);
+	}
+	else if (value == 4) {
+		return(BT_QUAD);
+	}
+	else if (value == 8) {
+		return(BT_OCT);
+	}
+	else {
+		pfatal("invalid value %d passed to multiwhole2basictime", value);
+		/*NOTREACHED*/
+		return(0);
+	}
+}
+
+
+/* Given a chordtranslation parameter "do/re/mi" string, split it into
+ * the 7 syllables, and place them in the doremi_syls field of current SSV. */
+
+static void
+parse_doremi_string(str)
+
+char *str;	/* Typically "do re mi fa sol la si" */
+
+{
+	int nsyl;	/* count of syllables */
+	int syl_leng;
+	char saved;
+
+
+	if (Currstruct_p == 0 || Currstruct_p->u.ssv_p == 0) {
+		/* Must have been a user error earlier */
+		return;
+	}
+
+	CALLOCA(char *, Currstruct_p->u.ssv_p->doremi_syls, 7);
+	/* This code is similar to that for noteheads parameter in assign.c */
+	for (nsyl = 0; nsyl < 7; nsyl++) {
+		/* skip any leading spaces */
+		while (isspace(*str)) {
+			str++;
+		}
+		if (*str == '\0') {
+			break;
+		}
+		syl_leng = strcspn(str, " \t\r\n");
+		saved = str[syl_leng];
+		str[syl_leng] = '\0';
+		Currstruct_p->u.ssv_p->doremi_syls[nsyl] =
+				copy_string(str, FONT_TR, DFLT_SIZE);
+		fix_string(Currstruct_p->u.ssv_p->doremi_syls[nsyl],
+				FONT_TR, DFLT_SIZE,
+				Curr_filename, yylineno);
+		str[syl_leng] = saved;
+		str += syl_leng;
+	}
+	while (isspace(*str)) {
+		str++;
+	}
+	if (nsyl != 7 || *str != '\0') {
+		l_yyerror(Curr_filename, yylineno,
+			 "Wrong number of do/re/mi syllables; expecting 7");
+		/* If there were less than 7, later code could attempt to
+		 * access an uninitalized value, so fix that. */
+		for (  ; nsyl < 7; nsyl++) {
+			Currstruct_p->u.ssv_p->doremi_syls[nsyl] =
+				copy_string(" ", FONT_TR, DFLT_SIZE);
+		}
 	}
 }

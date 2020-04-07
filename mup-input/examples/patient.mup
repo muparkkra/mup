@@ -1,14 +1,14 @@
 //!Mup-Arkkra
-define C rom chord all @
+define C bold chord all @
 define W lyrics between 1&2 @
 
 top
 	title (24) "Love Is Patient"
-	title (12) "       I Corinthians 13" "Michael Hayashida"
-	title (12) "       1/17/95" ""
+	title (14) "       I Corinthians 13" "Michael Hayashida"
+	title (14) "       1/17/95" ""
 
 top2
-	title (18) "" "Love Is Patient" "page \%"
+	title (18) "" "Love Is Patient" "page \% of \#"
 
 bottom
 	title(12) "\(copyright) Copyright 1995 Michael F. Hayashida"
@@ -16,13 +16,14 @@ bottom
 			"http://www.arkkra.com"
 
 score
-	staffs = 5
+	staffs = 6
 	time = 4/4
 	beamstyle = 2, 2
-	barstyle = 1-3, 4-5
+	barstyle = 1-3, 4-6
 	measnum = y
 	scale = 0.70
 	scoresep = 12, 35
+	scorepad = 2, 10
 	font = rom
 	size = 15
 	bracket = 4-5("Guitar")
@@ -32,14 +33,24 @@ staff 1
 	label2 = "A"
 staff 2
 	clef = bass
-	label = "Tenor 1"
-	label2 = "T1"
+	label = "Tenor"
+	label2 = "T"
 staff 3
 	clef = bass
-	label = "Tenor 2"
-	label2 = "T2"
+	label = "Bass\f(TI)\s(-4)\n(melody)"
+	label2 = "B"
 staff 5
 	stafflines = tab
+	tabwhitebox = y
+staff 6
+	clef = bass
+	timeunit = 1
+	ifdef MIDI
+		defoct = 2	// for MIDI use true octave
+	else
+		visible = n	// don't display, only play
+	endif
+	emptymeas = "mr;"
 
 
 // Define the guitar picking sequences here, since for each given chord they
@@ -57,9 +68,11 @@ define VEM		5: 8e'0; d2; b0; g0; e0; b0; g0; b0; @
 define VBFLAT		5: 8d3; g3; b3; g3; e1; b3; g3; b3; @
 
 music
-	midi all: 0 "tempo=65";
-	midi 1-3: 0 "channel=1"; 0 "program=73";	// flute (really voice)
-	midi 4: 0 "channel=1"; 0 "program=24";		// nylon guitar
+	midi all: 0 "tempo=120";
+	midi 1-2: 0 "channel=1"; 0 "program=41";	// viola (really voice)
+	midi 3: 0 "channel=1"; 0 "program=42";		// cello (really voice)
+	midi 4: 0 "channel=4"; 0 "program=24";		// nylon guitar
+	midi 6: 0 "channel=5"; 0 "program=43";		// contrabass
 
 	rom all: 1 "INTRO";
 	C: 1 "C/G";
@@ -219,13 +232,13 @@ music
 score
 	packfact = 1
 staff 1
-	label = "Alto\nTenor 1"
-	label2 = "A\nT1"
+	label = "Alto\nTenor"
+	label2 = "A\nT"
 staff 2
 	visible = n
 staff 3
-	label = "Tenor 2"
-	label2 = "T2"
+	label = "Bass"
+	label2 = "B"
 music
 	C: 1 "G";
 	1: 4df; 8eg; df tie; 2d<c>f~;
@@ -265,13 +278,17 @@ staff 1
 // "lyrics between 1&2".
 staff 2
 	visible = y
-	label = "T2"
+	label = "B"
+	label2 = "B"
 staff 3
 	visible = n
 music
+	midi 2: 0 "onvelocity=70";	// melody
+
 	rom all: 1 "VERSE 1";
 	C: 1 "C";
 	1-2: 2c+; g;
+	6: c;
 	lyrics between 1&2:		"pa-tient;";
 	VC
 	ital below all: 1 "From here on, the string bass bows the roots of the chords as whole notes";
@@ -281,30 +298,35 @@ music
 	1-2: 2r; 4a; ;
 	lyrics between 1&2:		"love is";
 	VF
+	6: f;
 	bar
 
 	C: 1 "C";
 	1-2: 1g;
 	lyrics between 1&2:		"kind.";
 	VC
+	6: c;
 	bar
 
 	C: 1 "G";
 	1-2: 2r; 4b; d+;
 	lyrics between 1&2:		"Love is";
 	VG
+	6: g;
 	bar
 
 	C: 1 "C";
 	1-2: 2c+; g;
 	lyrics between 1&2:		"hum-ble;";
 	VC
+	6: c;
 	bar
 
 	C: 1 "F";
 	1-2: 2r; 4a; ;
 	lyrics between 1&2:		"love is";
 	VF
+	6: f;
 	bar
 
 	C: 1 "G7";
@@ -312,6 +334,7 @@ music
 	lyrics between 1&2:		"blind._";
 	2: 1g~;
 	VG7
+	6: g;
 	bar
 staff 1
 	defoct = 4	// might as well go back to standard defoct
@@ -320,6 +343,7 @@ music
 	lyrics between 1&2:		"There is";
 	2: 2g; 4b; d+;
 	VG7
+	6: g;
 	bar
 
 	C: 1 "C";
@@ -327,6 +351,7 @@ music
 	lyrics between 1&2:		"grace where";
 	2: 2c+; g;
 	VC
+	6: c;
 	bar
 
 	C: 1 "F";
@@ -334,6 +359,7 @@ music
 	lyrics between 1&2:		"love is";
 	2: 2r; 4a; ;
 	VF
+	6: f;
 	bar
 
 	C: 1 "C";
@@ -341,6 +367,7 @@ music
 	lyrics between 1&2:		"found._";
 	2: 2g<>; e<>;
 	VC
+	6: c;
 	bar
 
 	C: 1 "Am";
@@ -348,6 +375,7 @@ music
 	lyrics between 1&2:		"Bar-ren";
 	2: 2a; 4a; b;
 	VAM
+	6: a-;
 	bar
 
 	C: 1 "Dm";
@@ -355,12 +383,14 @@ music
 	lyrics between 1&2:		"land turns";
 	2: 2c+; a;
 	VDM
+	6: d;
 	bar
 
 	1: 4r; a-f; a-e; ;
 	lyrics between 1&2:		"to sa-cred";
 	2: 4r; d; e; f;
 	VDM
+	6: d;
 	bar
 
 	C: 1 "G";
@@ -368,12 +398,14 @@ music
 	lyrics between 1&2:		"ground.";
 	2: 1g;
 	VG
+	6: g;
 	bar
 
 	1: mr;
 	2: 2r; 4b; d+;
 	lyrics 2:			"Love is";
 	VG
+	6: g;
 	repeatstart
 
 	newscore
@@ -386,6 +418,7 @@ music
 	2: 2c+; g;
 	lyrics 2:			"pa-tient;";
 	VC
+	6: c;
 	bar
 
 	C: 1 "F";
@@ -395,6 +428,7 @@ music
 	2: 2r; 4a; ;
 	lyrics 2:			"love is";
 	VF
+	6: f;
 	bar
 
 	C: 1 "C";
@@ -404,6 +438,7 @@ music
 	2: 1g;
 	lyrics 2:			"kind.";
 	VC
+	6: c;
 	bar
 
 	C: 1 "G";
@@ -413,6 +448,7 @@ music
 	2: 2r; 4b; d+;
 	lyrics 2:			"Love is";
 	VG
+	6: g;
 	bar
 
 	C: 1 "C";
@@ -422,6 +458,7 @@ music
 	2: 2c+; g;
 	lyrics 2:			"hum-ble;";
 	VC
+	6: c;
 	bar
 
 	C: 1 "F";
@@ -431,6 +468,7 @@ music
 	2: 2r; 4a; ;
 	lyrics 2:			"love is";
 	VF
+	6: f;
 	bar
 staff 1
 	vscheme = 2f
@@ -443,6 +481,7 @@ music
 	2: 1g~;
 	lyrics 2:			"blind.";
 	VG
+	6: g;
 	bar
 
 	C: 1 "G7";
@@ -453,6 +492,7 @@ music
 	2: 2g; 4b; d+;
 	lyrics 2: 2s; 4; ;		"There is";
 	VG7
+	6: g;
 	bar
 
 	C: 1 "C";
@@ -463,6 +503,7 @@ music
 	2: 2c+; g;
 	lyrics 2:			"grace where";
 	VC
+	6: c;
 	bar
 staff 1
 	vscheme = 1
@@ -474,6 +515,7 @@ music
 	2: 2r; 4a; ;
 	lyrics 2:			"love is";
 	VF
+	6: f;
 	bar
 
 	C: 1 "C";
@@ -483,6 +525,7 @@ music
 	2: 2g<>; e<>;
 	lyrics 2:			"found.";
 	VC
+	6: c;
 	bar
 
 	C: 1 "Am";
@@ -492,6 +535,7 @@ music
 	2: 2a; 4a; b;
 	lyrics 2:			"Bar-ren";
 	VAM
+	6: a-;
 	bar
 
 	C: 1 "Dm";
@@ -501,6 +545,7 @@ music
 	2: 2c+; a;
 	lyrics 2:			"land turns";
 	VDM
+	6: d;
 	bar
 
 	1: 4a-f; g-e; 2f-d;
@@ -509,6 +554,7 @@ music
 	2: 4r; d; e; f;
 	lyrics 2:			"to sa-cred";
 	VDM
+	6: d;
 	bar
 
 	C: 1 "G";
@@ -518,28 +564,36 @@ music
 	2: 1g;
 	lyrics 2:			"ground.";
 	VG
-	bar ending "1.- 2."
+	6: g;
+	bar ending "1."
 
 	1: 4df; ce; 2b-d;
 	lyrics 1:			[2] "peace-ful light.";
 	2: 2r; 4b; d+;
 	lyrics 2:			"Love is";
 	VG
-	repeatend ending "3."
+	6: g;
+	repeatend ending "2."
 
 	1: 4df; ce; 2b-d tie;
-	W:				[1] "pow-er of";
+	W:				[1] "pow-er of_";
 	2: 1g tie;
 	VG
+	6: g;
 	bar
 
 	C: 1 "G7";
 	1: 2.b-d; 4r;
 	2: 2.g; 4r;
 	VG7
+	6: g;
 	repeatstart endending
 
+	// The coda starts with measures repeated five times, but MIDI doesn't
+	// know that, and only repeats once.  So we define macros for the two
+	// parts of the coda.
 	rom all: 1 "CODA";
+define CODASTART
 	C: 1 "C";
 	1: 2eg; ;
 	W:				[1] "Love be-";
@@ -548,6 +602,7 @@ music
 	W: 1;				[4-5] "oo_";
 	2: 2c+; ;
 	VC
+	6: c;
 	bar
 
 	C: 1 "Em";
@@ -557,8 +612,12 @@ music
 	W:				[3] "nev-er";
 	2: 2b; g;
 	VEM
+	6: e;
+@
+	CODASTART
 	bar ending "1.- 4."
 
+define CODAEND
 	C: 1 "B&";
 	1: 1d~f<g>;
 	W:				[1] "things._";
@@ -567,25 +626,47 @@ music
 	W:				[5] "<>";
 	2: 1b&<>;
 	VBFLAT
+	6: f;
 	bar
 
 	C: 1 "G";
 	1: 2.dg; 4r;
 	2: 2.bn; 4r;
 	VG
+	6: g;
+@
+	CODAEND
 	repeatend ending "5."
+ifdef MIDI
+	// For MIDI, play the parts of the coda needed for getting the right
+	// number of repeats.
+	CODAEND
+	bar
+	CODASTART	// third time
+	bar
+	CODAEND
+	bar
+	CODASTART	// fourth time
+	bar
+	CODAEND
+	bar
+	CODASTART	// fifth time
+	bar
+endif
 
 	C: 1 "B&";
 	1: 1d<c>f~;
 	2: 1b&<>;
 	W:				[5] "(oo)_";
 	VBFLAT
+	6: f;
 	bar
 
 	C: 1 "F";
 	1: 1c~f<e>;
 	2: 1a<>;
 	VF
+	6: f;
 	bar
 
 	C: 1 "C";
@@ -593,34 +674,42 @@ music
 	2: 1g;
 	W: 2..s; 8;			[5] "<>";
 	5: 8a3; g0; b1; g0; e0; b1; g0; b1;
+	6: c~;
 	bar
 
 	1-2: mr;
 	5: 8e3; b1; g0; e0; b1; g0; b1; g0;
+	6: c;
 	bar
 
 	C: 1 "Em";
 	1-2: mr;
 	5: 8e'0; d2; b0; g0; e0; b0; g0; b0;
+	6: e~;
 	bar
 
 	1-2: mr;
 	5: 8e3; b0; g0; e0; b0; g0; b0; g0;
+	6: e;
 	bar
 
 	C: 1 "C";
 	1-2: mr;
 	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	6: c~;
 	bar
 
 	1-2: mr;
 	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	6: c;
 	bar
 
 	1-2: mr;
 	5: 8a3; g0; b1; g0; e3; b1; g0; d2;
+	6: c~;
 	bar
 
 	1-2: mr;
 	5: 1a3;
+	6: c;
 	endbar

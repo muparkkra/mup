@@ -1,5 +1,6 @@
 AM_CFLAGS = -I../../src/include
-noinst_PROGRAMS = mkprolog genhdr bbox
+noinst_PROGRAMS = mkprolog genhdr bbox smadi
+smadi_SOURCES = smadi.c ../../src/include/allocdebug.h
 mkprolog_SOURCES = mkprolog.c
 genhdr_SOURCES = genhdr.c
 BUILT_SOURCES = ../../src/include/muschar.h ../../src/include/extchar.h ../../src/include/ssvused.h

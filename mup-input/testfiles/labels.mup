@@ -161,3 +161,50 @@ music
 newscore
 M
 
+score
+	alignlabels=center
+	staffs=7
+	brace=4-5("shortgroup", "shortgroup")
+	bracket=6-7("long group label here", "long group label here")
+
+staff 1
+	label="wee"
+	label2="wee"
+staff 2
+	label="medium"
+	label2="medium"
+staff 3
+	label="very very long"
+	label2="very very long"
+staff 4
+	label="12345678"
+	label2="12345678"
+staff 5
+	label="abc"
+	label2="abc"
+music
+
+newscore
+
+rom above all: 1 "alignlabels=center";
+1-7: c;;;;
+bar
+
+score
+	alignlabels=left
+music
+
+newscore
+
+rom above all: 1 "alignlabels=left";
+1-7: c;;;;
+bar
+
+score
+	alignlabels=right
+music
+
+newscore
+rom above all: 1 "alignlabels=right";
+1-7: c;;;;
+bar

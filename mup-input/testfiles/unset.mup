@@ -24,6 +24,7 @@ unset bracketrepeats
 unset cancelkey
 unset carryaccs
 unset chorddist
+unset chordtranslation
 unset clef
 unset cue
 unset defaultkeymap
@@ -47,6 +48,7 @@ unset indentrestart
 unset key
 unset label
 unset label2
+unset alignlabels
 unset labelkeymap
 unset leftmargin
 unset leftspace
@@ -76,6 +78,7 @@ unset pageheight
 unset panelsperpage
 unset pagewidth
 unset pedstyle
+unset printedtime
 unset printkeymap
 unset printmultnum
 unset rehearsalkeymap

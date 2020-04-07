@@ -275,6 +275,8 @@
 ..
 .de Hm
 ..
+.de Hh
+..
 .de pI
 ..
 .Hd /dev/null
@@ -371,7 +373,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 6.7
+Mup Version 6.8
 .ps
 .vs
 .ev
@@ -385,9 +387,9 @@ Mup Version 6.7
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 6.7
+Mup Music Publisher User's Guide \(em Mup Version 6.8
 .sp 0.5
-\(co Copyright 1995-2019 by Arkkra Enterprises
+\(co Copyright 1995-2020 by Arkkra Enterprises
 .sp 0.5
 All rights reserved.
 .sp
@@ -474,10 +476,10 @@ Note attributes
 .DL
 .LI
 .Hr noteattr.html#small
-Small note head
+Small notehead
 .LI
 .Hr noteattr.html#ntie
-Note tie
+Note ties
 .LI
 .Hr noteattr.html#nslur
 Slurs
@@ -659,7 +661,7 @@ Include files
 Exit
 .br
 .Hr udefsym.html
-User defined symbols
+User-defined symbols
 .br
 .Hr fontfile.html
 Installing other fonts
@@ -687,7 +689,7 @@ Special uses of invisible bars
 Chant
 .br
 .Hr sharehd.html
-Forcing shared note heads
+Forcing shared noteheads
 .br
 .Hr mantup.html
 Manually placed tuplet numbers
@@ -787,7 +789,7 @@ http://www.arkkra.com
 </P>
 <HR>
 <P>
-Copyright (c) 1995-2019 by Arkkra Enterprises
+Copyright (c) 1995-2020 by Arkkra Enterprises
 </P>
 ..
 .Ht Introduction to Mup
@@ -840,11 +842,11 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 6.7.
+This User's Guide is for Mup version 6.8.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
-\(co Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 by Arkkra Enterprises
+\(co Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 by Arkkra Enterprises
 .FE
 .He
 .ig
@@ -880,7 +882,7 @@ staff, but later we'll do songs with more than one.
 Each staff of each measure is normally put on a separate line.
 .P
 The first three notes of "Three Blind Mice" are E, D, and C. For Mup
-input, these pitches are given in lower case to avoid having to use the shift
+input, these pitches are given in lowercase to avoid having to use the shift
 key. No octave information was specified in this simple example, so Mup
 .Ix gA
 would use its default, which in this case would be the octave beginning
@@ -1232,8 +1234,8 @@ On Linux, you can just type the mupmate command in a terminal window,
 optionally followed by the name of a Mup input file. 
 Or you can add mupmate to your favorite window manager's menus.
 .P
-On Mac OS X, you can double-click on the MupMate.app in Finder.
-You should also be able to double-click any file with a .mup suffix,
+On Mac OS X, you can double click on the MupMate.app in Finder.
+You should also be able to double click any file with a .mup suffix,
 which should then run Mupmate on that file.
 For setting paths in the Preferences, several "magic" variables are set
 automatically, if you have not already set them to something else.
@@ -1391,7 +1393,13 @@ This option overrides the
 .Hr param.html#restcomb
 restcombine parameter.
 .Co
+.Hi
 \fB-C\fP
+.He
+.ig
+.Hm C_option
+<B>-C</B>
+..
 .Mo
 Option not available (only used for debugging).
 .Op
@@ -1497,9 +1505,9 @@ the
 macro
 .Ix aM
 \fIMACRO\fP. The macro name must consist of
-upper case letters, digits, and underscores, beginning
+uppercase letters, digits, and underscores, beginning
 .Ix fW
-with an upper case letter. The \fImacro_def\fP is optional, and gives the
+with an uppercase letter. The \fImacro_def\fP is optional, and gives the
 text of the macro. On UNIX, Linux, or similar
 .Ix aJ
 .Hi
@@ -1576,7 +1584,7 @@ the name "stdin.ps" will be used for the output file.
 .Mo
 Help -> License
 .Op
-Show the Mup license and exit
+Show the Mup license and exit.
 .Co
 .Hi
 \fB-m\fP \fImidifile\fP
@@ -1642,7 +1650,7 @@ completely blank page being output. This is most likely to be useful
 when the
 .Hr param.html#panels
 panelsperpage parameter.
-is set to 2. For example, to print a one page song on the right-hand panel
+is set to 2. For example, to print a one-page song on the right-hand panel
 rather than the left, you could use -oblank,1
 .Co
 .Hi
@@ -1721,7 +1729,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 6.7.
+Mup will then exit. This document is for version 6.8.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -1778,7 +1786,7 @@ attempt to open that.
 .P
 If you just want to create a PostScript output file, for printing on a
 PostScript printer, or viewing with a tool such as GSview, you can
-use the -f option, as in
+use the -f option, as in:
 .Ex
     mup -f outfile.ps infile.mup
 .Ee
@@ -1973,7 +1981,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-6.7
+//!Mup-Arkkra-6.8
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -2021,7 +2029,7 @@ with two or more fractions added together,
 as in 3/4 + 3/8, the "count" is the largest denominator, which would be
 8 in the example just given.
 .P
-Upper and lower case letters are not interchangeable. Thus, for example,
+Uppercase and lowercase letters are not interchangeable. Thus, for example,
 \&"SCORE" is not the same as "score."
 .P
 Most lines of input end with a semicolon. There are some kinds of input that
@@ -2219,7 +2227,7 @@ grids
 (typically for guitar)
 .Ix iW
 .LI \fBheadshapes\fP
-to define what note head shapes to use for notes of various durations.
+to define what notehead shapes to use for notes of various durations.
 This context is rarely used, and is described in the chapter on
 .Hr shaped.html
 shaped notes.
@@ -2227,10 +2235,10 @@ shaped notes.
 .LI "\fBsymbol \(dq\fIname\fB\(dq\fR"
 to define
 .Hr udefsym.html
-user defined symbols,
+user-defined symbols,
 or override the appearance of
 .Hr textstr.html#symlist
-builtin music symbols.
+built-in music symbols.
 .LI "\fBaccidentals \(dq\fIname\fB\(dq\fR"
 .Ix bL
 to define symbols and frequency adjustments to use for accidentals.
@@ -2368,7 +2376,7 @@ to define grids (typically for guitar)
 .Hr shaped.html
 headshapes
 <DD>
-to define what note head shapes to use for notes of various durations.
+to define what notehead shapes to use for notes of various durations.
 This context is rarely used, and is described in the chapter on
 .Hr shaped.html
 shaped notes.
@@ -2377,10 +2385,10 @@ shaped notes.
 symbol
 <DD>
 to define
-user defined symbols,
+user-defined symbols,
 or override the appearance of
 .Hr textstr.html#symlist
-builtin music symbols.
+built-in music symbols.
 <DT>
 accidentals "\fIname\fP"
 <DD>
@@ -2540,13 +2548,13 @@ As an alternative to this voice-at-a-time input style, there is
 also a chord-at-a-time input style, which will be covered
 .Hr altinp.html
 later.
+.Hh duration
 .H 3 "Chord duration information"
 .Ix fP
 .P
 The rest of the line contains a list of chords, with a semicolon at the
 .Ix hH
 end of each chord. Each chord has a
-.Hm duration
 time value.
 The time values of all
 .Ix gT
@@ -2564,7 +2572,8 @@ c c
 c l.
 \fBInput\fP	\fBMeaning\fP
 _
-1/4	quadruple whole (not valid for notes)
+1/8	octuple whole
+1/4	quadruple whole
 1/2	double whole
 1	whole
 2	half
@@ -2614,9 +2623,9 @@ number) of the
 time signature.
 For chords after the first, if a time value is not specified, the time
 value for the previous chord is used.
+.Hh letter
 .H 3 "Notes, rests, or spaces"
 .P
-.Hm letter
 There are three kinds of "chords."
 The first type consists of one or more
 pitches, given by the letters "a" through "g".
@@ -2663,11 +2672,11 @@ at the beginning of the piece. Once in a while, however, you
 may want space to actually be allocated on output, perhaps
 to be able to allow space for some special notation. In that case,
 .Ix iX
-you prefix the "s" with a "u" to indicate an uncollapseable space.
+you prefix the "s" with a "u" to indicate an uncollapsible space.
 For
 .H midi.html
 MIDI,
-normal space is squeezed out to take no time, whereas uncollapseable space
+normal space is squeezed out to take no time, whereas uncollapsible space
 essentially becomes a rest.
 .P
 If a given voice is omitted for a particular measure,
@@ -2676,10 +2685,10 @@ but you can make it default to something else (most commonly a measure
 of rest) by setting the
 .Hr param.html#emptym
 emptymeas parameter.
+.Hh measdur
 .H 4 "Measure duration"
 .P
 .Ix hG
-.Hm measdur
 There is a special duration of "m," which means an entire measure.
 It can only be used with a rest, space, or "rpt" (repeat). For example:
 .Ex
@@ -2725,9 +2734,9 @@ bar
 1: mrpt;
 bar
 .Ee
+.Hh acc
 .H 4 "Accidentals"
 .P
-.Hm acc
 Each pitch letter in a chord may be followed by up to 4 accidentals,
 although typically no more than one is used. (Probably the most common uses
 of more than one would be either something like n# to remind the user that the
@@ -2771,9 +2780,9 @@ parentheses if you want them to be printed
 within parentheses.
 All accidentals have to be within a single set of parentheses in that case;
 you can't put just a subset in parentheses.
+.Hh oct
 .H 4 "Octave"
 .P
-.Hm oct
 An octave indicator may be specified after the pitch letter
 or optional accidentals.
 .Ix gA
@@ -2832,12 +2841,12 @@ subbass	2
 .Hi
 .DE
 .He
+.Hh shorthnd
 .H 3 "Shorthand notations"
 .P
-.Hm shorthnd
 If a chord is omitted, then most of the values for the previous chord
 are reused. This includes duration, pitch/rest/space, and octave, as well
-as note head size and shape (which are described in the
+as notehead size and shape (which are described in the
 .Hr noteattr.html
 next section).
 For normal,
@@ -2929,7 +2938,7 @@ They include:
 .DL
 .LI
 .Hr noteattr.html#small
-small note head
+small notehead
 .LI
 .Hr noteattr.html#ntie
 tie
@@ -2943,11 +2952,11 @@ headshape
 .Hr noteattr.html#ntag
 location tag
 .LE
-.H 4 "Small note head"
+.Hh small
+.H 4 "Small notehead"
 .P
-.Hm small
 A note specification can be followed by a "?"
-to indicate the note is to be printed with a small note head,
+to indicate the note is to be printed with a small notehead,
 .Ix gY
 rather than the normal
 size. (Note: if you have several notes in a chord and want all of them to
@@ -2968,9 +2977,9 @@ bar
 1: f; ?; g; ;
 bar
 .Ee
-.H 4 "Note tie"
+.Hh ntie
+.H 4 "Note ties"
 .P
-.Hm ntie
 A "~" can be used to indicate the note is to be tied
 to the note of the same
 .Ix aK
@@ -2983,14 +2992,14 @@ to the following chord,
 .Hr ichdattr.html#tie
 the "tie" construct
 described later may be preferable.)
-The ~ may be preceded by the word 'dotted' or 'dashed' if you want
+The ~ may be preceded by the word "dotted" or "dashed" if you want
 a dotted or dashed tie; otherwise a normal, solid tie is drawn.
-The ~ may be followed by the word 'up' or 'down' to specify the
+The ~ may be followed by the word "up" or "down" to specify the
 direction for the curve's bulge. If neither is specified, Mup will
 determine an appropriate direction, so you only need to give a direction
 if you wish to override Mup's choice.
 After the aforementioned items (if any),
-you may put 'to voice \fIN\fP' to tie to the matching note in
+you may put "to voice \fIN\fP" to tie to the matching note in
 voice \fIN\fP rather than in the current voice.
 .Ix iJ
 .P
@@ -3006,9 +3015,9 @@ bar
 1: 2g+g?~; 4eg?;
 bar
 .Ee
+.Hh nslur
 .H 4 "Slurs"
 .P
-.Hm nslur
 A note can also be followed by a list of notes to be slurred to,
 enclosed in angle brackets.
 .Ix cB
@@ -3049,12 +3058,12 @@ bar
 The < may be preceded by the word 'dotted' or 'dashed' if you want
 a dotted or dashed slur, otherwise a normal, solid slur is drawn.
 .Ix iJ
-The > may be followed by the word 'up' or 'down' to specify the
+The > may be followed by the word "up" or "down" to specify the
 direction for the curve's bulge. If neither is specified, Mup will
 determine an appropriate direction, so you only need to give a direction
 if you wish to override Mup's choice.
 After the aforementioned items (if any),
-you may put 'to voice \fIN\fP' to slur to the matching note in
+you may put "to voice \fIN\fP" to slur to the matching note in
 voice \fIN\fP rather than in the current voice.
 .P
 There are four special "slurs" which are really slides to/from an
@@ -3070,9 +3079,9 @@ same note, multiple sets of angle brackets must be used, as in
 .Ex
 1: 2c</n><d>;d;
 .Ee
+.Hh shaped
 .H 4 "Head shape"
 .P
-.Hm shaped
 Sometimes you may want to mix head shapes on a single stem.
 .Ix jG
 For example, you might want to use a diamond to designate a harmonic,
@@ -3091,6 +3100,7 @@ use hs followed by the name of the shape in quotes.
 .Ex
 1: 2e e+ hs "diam";g;
 .Ee
+.Hh ntag
 .H 4 "Note location tag"
 .P
 Finally, a
@@ -3099,12 +3109,11 @@ Finally, a
 .Ix bE
 can be associated with a note. This would
 enable you to draw things relative to the note.
-.Hm ntag
 A note location tag
 is set by using an "=" followed by a name. The name can be either:
 .DL
 .LI
-a single lower case letter
+a single lowercase letter
 .LI
 an underscore followed by one or more
 letters, numbers, and underscores in any combination.
@@ -3125,7 +3134,6 @@ Location tags can only be used when defining a single voice.
 .H 3 "Chord attributes"
 .Ix gW
 .P
-.Hm attrib
 There are optional attributes that are associated with an entire chord
 rather than an individual note. These are put inside square brackets
 .Ix dW
@@ -3168,9 +3176,9 @@ Each class of information is
 separated from the other by a semicolon. All classes are optional, and can
 .Ix hH
 occur in any order.
+.Hh chstyle
 .H 4 "Chord style"
 .P
-.Hm chstyle
 Several chord styles can be specified.
 .Hm cue
 Grace note chords are designated by the word "grace," or cue note chords by "cue."
@@ -3203,7 +3211,7 @@ It is also possible to specify "diam," or "xnote."
 In the case of "diam," the chords will be drawn with diamond-shaped notes,
 while with "xnote," the chords will be
 drawn with X-shaped notes. A diamond shaped
-note head will be used for xnotes that are half note or longer.
+notehead will be used for xnotes that are half note or longer.
 Here are some examples:
 .Ex
 [grace]
@@ -3214,11 +3222,11 @@ Here are some examples:
 .br
 [diam]
 .Ee
+.Hh shaped
 .H 4 "Head shape"
 .P
 If you want to have the
-.Hm shaped
-note heads in a chord
+noteheads in a chord
 .Ix jG
 use a shape other than the
 normal shapes, you use hs followed by the name of the head shape in quotes.
@@ -3234,7 +3242,7 @@ so only the basics are covered here. The xnote and diam
 .Hr chrdattr.html#chstyle
 described above
 are really just shorthands for two common head shapes.
-The method using hs lets you use many other note head styles,
+The method using hs lets you use many other notehead styles,
 .Ix cA
 such as a slash, or triangle. 
 .Ex
@@ -3244,11 +3252,11 @@ such as a slash, or triangle.
 The
 .Hr shaped.html
 section on shaped notes
-lists all the builtin head shape names,
+lists all the built-in head shape names,
 and explains how you can define your own.
+.Hh withlist
 .H 4 "Symbols to be printed with a chord"
 .P
-.Hm withlist
 It is possible to specify one or more musical symbols or text strings to be printed with a chord.
 .Ix hB
 This is typically used for
@@ -3293,7 +3301,6 @@ A quoted string
 .Ix hB
 can also be specified (e.g., "ff", "adagio", etc.).
 This will be printed in the font and size specified by the
-The
 .Hr param.html#withfam
 \&"withfontfamily,"
 .Hr param.html#withfont
@@ -3328,18 +3335,18 @@ If the symbols acc_hat, ferm, or wedge are used by themselves in a "with"
 list item, they are handled specially. If the stem direction is such that
 .Ix hI
 .Ix iH
-the upside down versions of these characters should be used, the upside down
+the upside-down versions of these characters should be used, the upside-down
 version will be used.
 .P
-At the end of the list, you can specify \fBabove\fP or \fBbelow\fP to force
-a side. Otherwise Mup will normally place them on the notehead side unless
+At the end of the list, you can specify "above" or "below" to force
+a side. Otherwise Mup will normally place them on the notehead side, unless
 there is more than one voice.
 .Ex
 [with . below; with sfz above]
 .Ee
+.Hh slashes
 .H 4 "Slashes"
 .P
-.Hm slashes
 Diagonal lines to be drawn through the stem of the group
 .Ix cA
 can be specified using
@@ -3357,12 +3364,12 @@ specify tremolo or repetition of the note group. Examples:
 [slash 2]
 [grace; slash 1]
 .Ee
+.Hh stemdir
 .H 4 "Stem direction"
 .P
 .Ix hI
 .Ix iH
 The chord stem direction can be specified as "up" or "down".
-.Hm stemdir
 Normally Mup chooses the stem direction, but once in a while you
 may want to override its choice. There are some restrictions.
 All chords beamed together and the pair of chords in an
@@ -3385,9 +3392,9 @@ in an entire song to
 be down, you only need to specify "[down]" on the first chord.
 Grace notes on voice 3, however, are always stem up unless explicitly forced
 down.
-.H 4 "Stem len"
+.Hh stemlen
+.H 4 "Stem length"
 .P
-.Hm stemlen
 Normally, Mup sets stem lengths as appropriate, but sometimes you might
 want to make a stem longer or shorter than normal. This is done with
 .Ix iB
@@ -3399,7 +3406,7 @@ Some examples:
 .Ee
 .P
 You cannot specify stem length on chords inside of beams.
-The len can be set to 0 to produce a note head with no stem at all.
+The len can be set to 0 to produce a notehead with no stem at all.
 .P
 There is a
 .Hr param.html#stemlen
@@ -3414,12 +3421,12 @@ There is a
 .Hr param.html#sshorten
 stemshorten parameter
 that allows you to control how Mup handles those cases.
+.Hh pad
 .H 4 "Padding"
 .P
 Sometimes it may be desirable to space notes somewhat differently than
 .Ix gZ
 Mup would normally place them.
-.Hm pad
 It is possible to specify "padding" before any note group.
 .Ix bD
 This is done by specifying the word "pad" followed
@@ -3435,9 +3442,9 @@ The padding can also be negative. Padding affects the minimum amount of
 width allocated to a chord, so you can use positive padding values to
 force additional room in front of a chord, or negative padding to allow
 things closer together.
+.Hh ctag
 .H 4 "Chord location tag"
 .P
-.Hm ctag
 It is possible to set a location tag
 .Ix bE
 which is
@@ -3454,9 +3461,9 @@ the square brackets rather than after a note.
 3: 2cf; [=h] egc+;
 1: [cue; with >; =_ch] fa;
 .Ee
+.Hh hoffset
 .H 4 "Horizontal offset"
 .P
-.Hm hoffset
 A horizontal offset can be applied to a chord by specifying "ho" followed
 by a number of stepsizes. The number can be positive or negative,
 and can include a fractional part. A positive number will cause the chord to
@@ -3496,9 +3503,9 @@ music
 1 3: [ho+1] g; [ho-5.2; down]; [ho-] f; [ho+; up] a;
 bar
 .Ee
+.Hh dist
 .H 4 "Rest distance"
 .P
-.Hm dist
 Usually Mup's placement of rests is satisfactory, but once in a while
 you might want to force a rest to be placed a little higher or lower
 than Mup would place it. You can specify a "dist" which is the number
@@ -3524,9 +3531,9 @@ Note that the
 .Hr param.html#alignrst
 alignrests parameter
 can also be used to affect how rests are placed.
+.Hh rptattr
 .H 4 "Repeated attributes"
 .P
-.Hm rptattr
 If two or more chords in a row have the same bracketed attributes,
 .Ix dW
 there are two shorthand notations. Specifying an empty set of brackets "[]"
@@ -3562,10 +3569,10 @@ bar
 bar
 .Ee
 .P
-You can use more than one set of backets on a single chord.
+You can use more than one set of brackets on a single chord.
 For example "[len 5][down]" and "[len 5;down]" are equivalent.
 However, [-] can only be used by itself, and if you want to use [] along
-with another backeted set of items (to duplicate the items on the previous
+with another bracketed set of items (to duplicate the items on the previous
 chord plus add some more), the empty [] needs to be first, before the
 other set of items.
 .Ht Mid-measure parameter changes
@@ -3595,7 +3602,7 @@ The change is enclosed in double angle brackets.
 After the opening angle bracket is the
 .Hr contexts.html
 context
-to which the changes applies (score, staff, or voice),
+to which the changes apply (score, staff, or voice),
 followed by one or more parameter changes.
 .Ex 1
 .\" score
@@ -3712,9 +3719,9 @@ phrase
 .P
 If several of these are specified on a single chord, they may be in any
 order, separated by commas.
+.Hh tie
 .H 4 "Chord ties"
 .P
-.Hm tie
 If all notes in a chord are to be tied to the following chord,
 the keyword "tie"
 .Ix aK
@@ -3730,14 +3737,14 @@ is equivalent to
 c~e~g~;
 .Ee
 The word "tie" may be preceded by the word "dotted" or "dashed" to
-produce dotted or dashed ties, otherwise normal, solid ties are drawn.
+produce dotted or dashed ties. Otherwise, normal, solid ties are drawn.
 .Ix iJ
 The word "tie" may be followed by the word "up" or "down" to specify the
 direction of each curve's bulge. If neither is specified, Mup will
 determine an appropriate direction, so you only need to give a direction
 if you wish to override Mup's choice.
 After the aforementioned items (if any),
-you may put 'to voice \fIN\fP' to tie to the chord in
+you may put "to voice \fIN\fP" to tie to the chord in
 voice \fIN\fP rather than in the current voice.
 .P
 You can also produce the effect of tying chords by using additive time
@@ -3747,9 +3754,9 @@ values. For example, the following lines produce the same output:
 
 1: 2+8ceg;8;4;	// tie implied by added time values
 .Ee
+.Hh slur
 .H 4 "Chord slurs"
 .P
-.Hm slur
 The keyword "slur" can be placed at the end of a chord to indicate
 .Ix cB
 that each note in the chord is to be slurred to the corresponding
@@ -3772,15 +3779,16 @@ bar
 The chord with the "slur" keyword
 and the chord that follows it must have the same number of notes.
 The word "slur" may be preceded by the word "dotted" or "dashed" to
-produce dotted or dashed slurs, otherwise normal, solid slurs are drawn.
+produce dotted or dashed slurs. Otherwise, normal, solid slurs are drawn.
 .Ix iJ
 The word "slur" may be followed by the word "up" or "down" to specify the
 direction of each curve's bulge. If neither is specified, Mup will
 determine an appropriate direction, so you only need to give a direction
 if you wish to override Mup's choice.
 After the aforementioned items (if any),
-you may put 'to voice \fIN\fP' to slur to the chord in
+you may put "to voice \fIN\fP" to slur to the chord in
 voice \fIN\fP rather than in the current voice.
+.Hh custbeam
 .H 4 "Custom beaming"
 .P
 .Ix dI
@@ -3790,17 +3798,15 @@ according to the specification of
 .Hr param.html#beamstyl
 the "beamstyle" parameter.
 .Ix dE
-.Hm custbeam
 Occasionally, you may wish to
 override the default beaming style for a particular situation.
 .Ix bA
 This is done using the "bm" and "ebm" keywords. The "bm" (short for "beam")
-is placed at the end of the chord which is the first to be beamed.
+is placed at the end of the chord that is the first to be beamed.
 The  "ebm" (short for "end beam") is placed at the end of the last chord.
 Both chords must be in the same measure. If there is any custom beaming
 .Ix hG
-specified for a given voice in a given measure, the default beamstyle
-is turned off for that voice for the entire measure, meaning that only
+specified for a given voice in a given measure, only
 what you explicitly specify to be beamed will be beamed.
 An example:
 .Ex 1
@@ -3866,8 +3872,8 @@ score time = 9/8 ; beamstyle = 4., 4., 4.
 music
 1: 8c;d;e;d;e;f;e;f;g;
 bar
-// the eight notes will not be beamed together,
-// because they are on opposite side of the dotted quarter boundary
+// the eighth notes will not be beamed together,
+// because they are on opposite sides of the dotted quarter boundary
 1: 4.c;4d;8e;8f;4g;
 bar
 
@@ -3883,6 +3889,22 @@ bar
 score beamstyle = 4., 2.;
 music
 1: 8c;d;e;d;e;f;e;f;g;
+bar
+.Ee
+.P
+It is possible to apply the automatic beaming to just a portion of a measure,
+by specifying abm ("automatic beaming") on the first group
+where it is to be applied, and eabm ("end automatic beaming")
+on the last such group.
+.Ex 1
+.\"score leftmargin=1; rightmargin=1
+score beamstyle=2,2
+music
+
+1: 8c;d;e;f;g abm;a;b;c+ eabm;
+bar
+
+1: 8c abm;d;e;f eabm;g;a;b bm;c+ ebm;
 bar
 .Ee
 .P
@@ -3904,7 +3926,7 @@ You could, of course, override the automatic setting
 with a new beamstyle if you wished.
 .P
 Normally Mup will break beams whenever it encounters a rest or space,
-but if you or specify an "r" at the end of the
+but if you specify an "r" at the end of the
 beamstyle parameter, it will beam across rests
 of eighth note or shorter duration. Similarly, specifying an "s" at the
 end of the beamstyle parameter will cause it to beam across spaces of
@@ -3936,10 +3958,10 @@ bar
 1: 16c bm;d;e;f;g;a esbm;b;c+;c+;b;a;g esbm;f;e;d;c ebm;
 bar
 .Ee
+.Hh crossbm
 .H 4 "Cross-staff beams"
 .P
 In keyboard music,
-.Hm crossbm
 sometimes notes on adjacent staffs are beamed together.
 .Ix iC
 Mup will do this with a variation on
@@ -4038,14 +4060,14 @@ You may want to also look at the section on
 cross-staff stems,
 for an alternate way to handles some cases where you might
 use cross-staff beams.
+.Hh alt
 .H 4 "Alternation"
 .P
-.Hm alt
 Alternation pairs
 .Ix aZ
 can be specified using "alt \fIN\fP" where \fIN\fP
 is a number. An alternation
-pair is two chords that are to played alternately in quick succession
+pair is two chords that are to be played alternately in quick succession
 but are not written out as such. This is shown by drawing \fIN\fP beams
 between the stems of the chords. The note value you specify for each
 .Ix hI
@@ -4059,16 +4081,16 @@ Here is an example:
 .\"music
 // Alternate between c and c an octave
 // higher. Total time taken is that of
-// a half note. Two "beam"-like lines
+// a half note. Two "beam-like" lines
 // will be drawn to show the alternation.
 1: 2c alt 2; 2c+;2g;
 bar
 .Ee
 .P
 Alternation is not allowed on cross-staff beams.
+.Hh slope
 .H 4 "Slope"
 .P
-.Hm slope
 On the first chord of a set of chords that are beamed together,
 you can specify a
 .Ix jJ
@@ -4081,15 +4103,16 @@ This will override whatever angle Mup would have used.
 1: 8g slope 11; b; g slope 0; b;  g slope -5.75; b;
 bar
 .Ee
+.Hh phrase
 .H 4 "Phrase marks"
 .Ix fJ
 .P
-.Hm phrase
 Phrase marks
 can be specified by putting "ph" on the chord where you want the phrase
 to begin, and "eph" on the chord where you want it to end.
 The ph can optionally be followed by "above" or "below"
 to specify the side for the phrase mark.
+The "ph" and its matching "eph do not have to be in the same measure.
 There is also an alternate way to specify phrase marks,
 described in the section on
 .Hr phrase.html
@@ -4117,15 +4140,15 @@ Mup will choose the side that seems best.
 .P
 .Ix hH
 The first number is the number that should be printed with the tuplet.
-If it is followed by an "n" the number (and bracket) will not actually be
+If it is followed by an "n," the number (and bracket) will not actually be
 .Ix dW
 printed.
-If it is followed by a "y" the number and bracket will always be printed,
+If it is followed by a "y," the number and bracket will always be printed,
 unless there is only a single chord in the tuplet, in which case only
 the number will be printed.
-If it is followed by "num" the number will always be printed,
+If it is followed by "num," the number will always be printed,
 but the bracket will never be printed.
-If none of those modifiers are are specified,
+If none of those modifiers are specified,
 the number will always be printed, but
 the bracket will be omitted in cases where all the notes in the tuplet
 are beamed together and the beam does not include any notes not in the tuplet.
@@ -4191,16 +4214,16 @@ bar
 .P
 There is an alternate input style, in which you enter music
 .Ix gW
-a chord at a time, rather than a voice at a time. In this style, the
+a chord-at-a-time, rather than a voice-at-a-time. In this style, the
 specification before the colon gives one or more patterns that tells
 .Ix iV
 how to map notes to staffs and voices.
 .P
 Suppose you want to print some
-music in a style which is common for many traditional hymns:
+music in a style common for many traditional hymns:
 it is to be printed on two staffs, each staff will always have
 exactly two notes, and the rhythm is exactly the same for all voices.
-With chord at a time input, you specify, for each note in a chord,
+With chord-at-a-time input, you specify, for each note in a chord,
 which staff and voice to map that note. Since there are four notes in
 each chord, there will be four mappings listed. You want the bottom
 two notes to get mapped to staff 2, and the top two notes to staff 1.
@@ -4488,9 +4511,9 @@ endbar
 .P
 There are several optional directives that can follow the bar line keyword.
 They can be specified in any order and are described below.
+.Hh bpad
 .H 3 "Bar line padding"
 .P
-.Hm bpad
 One optional directive is padding.
 .Ix bD
 It can be used to force Mup to place extra white space to
@@ -4507,9 +4530,9 @@ than what Mup uses by default:
 .Ex
 restart pad 10
 .Ee
+.Hh btag
 .H 3 "Bar line location tag"
 .P
-.Hm btag
 It is also possible to associate a
 .Hr tags.html
 location tag
@@ -4537,9 +4560,9 @@ just beyond the clef and time and key signatures, if any.
 .Ix cG
 .Ix fI
 .Ix gU
+.Hh endings
 .H 3 Endings
 .P
-.Hm endings
 First and second endings, etc. can be designated at bar lines.
 .Ix aR
 This is done with the keyword "ending," followed by a
@@ -4556,7 +4579,7 @@ endbar endending
 .Ee
 .P
 The ending label will always be
-forced into 12 point times roman font. If you change font or size or include
+forced into 12-point Times roman font. If you change font or size or include
 .Ix bG
 .Ix bH
 .Ix gJ
@@ -4578,9 +4601,9 @@ Once in a while, you may want to override that. To do so, instead of
 specifying endending, you can specify openendending (to force Mup to not draw
 the final vertical), or closedendending (to force it
 to draw the final vertical).
+.Hh reh
 .H 3 "Rehearsal marks"
 .P
-.Hm reh
 Rehearsal letters or numbers
 .Ix aQ
 can be specified on any bar line. There are four formats:
@@ -4655,7 +4678,7 @@ The "rehstyle" parameter
 specifies whether to put rehearsal marks inside a box or a circle
 or leave them plain.
 .P
-By default, rehearsal marks are printed in 12 point Times bold, but
+By default, rehearsal marks are printed in 12-point Times bold, but
 the rehearsal keyword may be followed by a specification for \fIfontfamily\fP,
 \fIfont\fP, and/or \fB(\fP\fIsize\fP\fB)\fP.
 Once specified, these remain in effect
@@ -4678,9 +4701,9 @@ otherwise the value specifies a minimum distance.
 rehearsal num dist 5     // at least 5 stepsizes away
 reh bold "A1" dist 2 !   // exactly 2 stepsizes away
 .Ee
+.Hh setmnum
 .H 3 "Setting the measure number"
 .P
-.Hm setmnum
 Mup keeps track of
 .Hr param.html#measnum
 measure numbers
@@ -4703,9 +4726,9 @@ actually want to be counted. You could then use
 .Ex
 invisbar mnum+1
 .Ee
+.Hh setreh
 .H 3 "Setting rehearsal letter or number"
 .P
-.Hm setreh
 If you are using the "rehearsal let" or "rehearsal num" styles,
 you can set those to specific values too, similarly to how mnum can be set.
 This might be useful, for example, if you have a single input file that
@@ -4718,14 +4741,14 @@ The rehearsal number can be set on any bar line using num=\fIN\fP, where
 bar num=1
 .Ee
 The rehearsal letter can be set in a similar way, using let="\fIX\fP" where
-\fIX\fP is either a single upper case letter, A to Z, or two upper case
+\fIX\fP is either a single uppercase letter, A to Z, or two uppercase
 letters, AA to ZZ.
 .Ex
 dblbar let="A" reh let
 .Ee
+.Hh hide
 .H 3 "Hiding time/key signature and clef changes"
 .P
-.Hm hide
 Generally in printed music, when a
 .Hr param.html#time
 time signature
@@ -4768,9 +4791,9 @@ music
 1: d;e;f;2.g;
 bar
 .Ee
+.Hh subbar
 .H 2 "Subbars"
 .P
-.Hm subbar
 Sometimes you may want to mark subdivisions of measures.
 For example, you may want to indicate that something in 7/4 time is to be
 interpreted as 3+4 or 4+3. Although you could indicate that with the
@@ -4787,10 +4810,10 @@ The \fIlinestyle\fP is optional, and can be dashed or dotted.
 The \fIbartype\fP is either bar or dblbar, and indicates whether to draw
 a single line or two lines.
 .P
-The \fIappearance\fP is optional. When specified, it is in parenthesis,
+The \fIappearance\fP is optional. When specified, it is in parentheses,
 describing where the subbar should end vertically. Top and bottom specifications
 are given, with the word "to" between them. Each specification consists of
-the word top, middle, or bottom, indicating which line of the staff to draw
+the word "top," "middle," or "bottom," indicating which line of the staff to draw
 relative to, optionally followed by a plus or minus sign and a number of
 stepsizes.
 .Ex
@@ -4804,11 +4827,11 @@ is given.
 .Ee
 would mean draw from the middle line of the top staff in each range to
 the middle line of the bottom staff in the range. As mentioned earlier,
-you can also specify adding or subtacting some number of stepsize on each. So
+you can also specify adding or subtacting some number of stepsizes on each. So
 .Ex
 	(top-2 to bottom+2)
 .Ee
-would draw from 2 stepsize below the top line of the top staff to
+would draw from 2 stepsizes below the top line of the top staff to
 2 stepsizes above the bottom line of the bottom staff.
 .P
 The \fIrange\fP is similar to ranges for the barstyle parameter, so things like
@@ -4817,7 +4840,7 @@ The \fIrange\fP is similar to ranges for the barstyle parameter, so things like
 Often you may want the subbar marks to span just a part of each individual
 staff, so the "ranges" will be just individual staffs.
 .P
-The \fBtime\fP keyword is required and must be followed by at least one
+The "time" keyword is required and must be followed by at least one
 count at which to draw the subbar. The time can include a decimal part.
 Multiple times are separated by commas. Examples would be
 time 3 or time 2.5,4.75
@@ -4931,7 +4954,7 @@ time values.
 .Ix gT
 Time values are separated by semicolons and are specified as they are
 .Ix hH
-for notes: "2" for half notes, "8." for dotted eight, etc.
+for notes: "2" for half notes, "8." for dotted eighth, etc.
 .Ix gX
 .P
 If the time values for lyrics are the same as the time values for the notes
@@ -5064,7 +5087,7 @@ or over several notes. This can be indicated by dashes or underscores.
 .Ix hL
 If the syllable in the lyric string ends with a dash, on output the dash
 will be placed halfway between the given syllable and the next syllable.
-If the distance between the two syllables is long, several evenly-spaced
+If the distance between the two syllables is long, several evenly spaced
 dashes will be printed.
 If a syllable in the lyric string ends with an underscore,
 an underscore line will be printed from the end of the
@@ -5181,7 +5204,7 @@ bar
 In this example, the first half note of the measure is a space, so there will
 be no lyric there. The second half note of the measure will have the word "Now"
 as its lyric. Note that the "s" does not work quite the same way with lyrics
-as it does with notes. With notes, "2s;;" would mean two half-note spaces,
+as it does with notes. With notes, "2s;;" would mean two half note spaces,
 because the space would be used as default for the following chord where no
 notes were specified. With lyrics, "2s;;" means a half note space, followed
 by a half note lyric; the space is not carried forward as a default.
@@ -5332,8 +5355,8 @@ Location tags can be set on lyrics syllables
 .Ix bE
 by adding \e=(\fItagname\fR)
 to the syllable. As with all tags, the \fItagname\fP must be either a
-single lower case letter, or an underscore followed by any number
-of upper or lower case letters, digits, or underscores.
+single lowercase letter, or an underscore followed by any number
+of uppercase or lowercase letters, digits, or underscores.
 The area associated with the tag will include the syllable itself
 and anything inside <^ >, but excluding things inside < >.
 While Mup will recognize a tag like this almost anywhere within a syllable
@@ -5494,7 +5517,7 @@ chord is specified by a string and a
 .Ix hZ
 fret.
 So fret 3 on the g string
-is designated by g3 or fret 0 on the e' string is designated by e'0.
+is designated by g3, or fret 0 on the e' string is designated by e'0.
 If your open string pitch includes an accidental, that would be included
 as well, so if you had an instrument with an f# string and wanted to
 play the 6th fret on that string, it would be f#6.
@@ -5559,7 +5582,7 @@ the X on the tabnote staff, and what note to use for
 MIDI.
 Using [diam]
 .Ix bT
-will have no affect on the tablature staff, but will cause
+will have no effect on the tablature staff, but will cause
 diamond notes to be used on the tabnote staff.
 .Ix aL
 .Ix bB
@@ -5681,14 +5704,14 @@ bar
 .H 2 "Miscellaneous"
 .P
 Note attributes of ~ for tie, ? for a small note, and = for a tag work the
-same on tablatures staffs as on non-tablature staffs.
+same on tablature staffs as on non-tablature staffs.
 .P
-If bm, ebm, or esbm are given on tablature staffs they are
+If bm, ebm, esbm, abm, or eabm are given on tablature staffs they are
 transferred to the tabnote staff and used for
 .Ix dI
 .Hr ichdattr.html#custbeam
 custom beaming
-there.
+or automatic beaming there, as appropriate.
 .Ix fZ
 .Hr chrdattr.html#withlist
 Items in "with" lists inside [ ]
@@ -5770,21 +5793,21 @@ bar
 .Hd shaped.html
 .H 1 "SHAPED NOTES"
 .P
-If you intend to only use the usual system of note heads,
+If you intend to only use the usual system of noteheads,
 you can skip over this section on shaped notes.
 .Ix jG
-If you wish to use less common note head shapes, like X-shaped notes,
-rather than normal note heads, or want "shaped note" music that is often used
+If you wish to use less common notehead shapes, like X-shaped notes,
+rather than normal noteheads, or want "shaped note" music that is often used
 for "Sacred Harp" style music, sometimes also called "fasola notation,"
 then this section will explain how you can do that.
+.Hh hdshape
 .H 2 "Headshapes context"
 .P
-.Hm hdshape
 The headshapes context
 is used in conjuction with the
 .Hr param.html#notehead
 noteheads parameter
-to determine what characters will be used when printing note heads.
+to determine what shapes will be used when printing noteheads.
 It is rarely necessary to include a headshapes context in your music,
 since Mup already has the most common values built in,
 so generally you just need to use the
@@ -5792,23 +5815,25 @@ so generally you just need to use the
 noteheads parameter
 to access them. However, it is still important to understand
 what the headshapes context can contain,
-to understand how the builtin values work.
+to understand how the built-in values work.
 .P
 The headshapes context defines, for
-a given head shape name, what specific note head characters
+a given head shape name, what specific notehead characters
 to use for the notes of various durations.
 It contains one or more pairs of strings.
-The first string in the pair gives a name for a set of note head shapes.
+The first string in the pair gives a name for a set of notehead shapes.
 The second string contains a space-separated list of the names
-of 4 note head characters to use for that head shape name.
+of 4, 5, or 6 notehead characters to use for that head shape name.
 The first shape in the list is used for quarter notes and shorter,
 the second for half notes,
 the third for whole notes, and the fourth for double whole notes.
+If there is a fifth, that is used for quadruple whole notes.
+If there is a sixth, that is used for octuple whole notes.
 .P
-If an upside down version of the character is to be used for stem down notes,
+If an upside-down version of the character is to be used for stem-down notes,
 the name is prefixed by "u?" (The "u" stands for "upside-down" and the
 question mark is intended to be mnemonic for the fact
-that the upside down version
+that the upside-down version
 will only be used part of the time, namely for stem-down notes.)
 .P
 As was mentioned above, the most common mappings are already built into Mup.
@@ -5827,35 +5852,36 @@ note shapes.
 .ne 3i
 .TS
 l l.
-\&"norm"	"4n 2n 1n dblwhole"
-\&"x"	"xnote diamond diamond dwhdiamond"
-\&"allx"	"xnote xnote xnote xnote"
-\&"diam"	"filldiamond diamond diamond dwhdiamond"
+\&"norm"	"4n 2n 1n dblwhole quadwhole octwhole"
+\&"x"	"xnote diamond diamond dwhdiamond quadwhole octwhole"
+\&"allx"	"xnote xnote xnote xnote xnote xnote"
+\&"diam"	"filldiamond diamond diamond dwhdiamond quadwhole octwhole"
 \&"blank"	"blankhead blankhead blankhead blankhead"
-\&"righttri"	"u?fillrighttriangle u?righttriangle u?righttriangle u?dwhrighttriangle"
-\&"isostri"	"fillisostriangle isostriangle isostriangle dwhisostriangle"
-\&"rect"	"fillrectangle rectangle rectangle dwhrectangle"
-\&"pie"	"fillpiewedge piewedge piewedge dwhpiewedge"
-\&"semicirc"	"fillsemicircle semicircle semicircle dwhsemicircle"
-\&"slash"	"fillslashhead slashhead slashhead dwhslashhead"
-\&"allslash"	"fillslashhead fillslashhead fillslashhead fillslashhead"
+\&"righttri"	"u?fillrighttriangle u?righttriangle u?righttriangle u?dwhrighttriangle quadwhole octwhole"
+\&"isostri"	"fillisostriangle isostriangle isostriangle dwhisostriangle quadwhole octwhole"
+\&"rect"	"fillrectangle rectangle rectangle dwhrectangle quadwhole octwhole"
+\&"pie"	"fillpiewedge piewedge piewedge dwhpiewedge quadwhole octwhole"
+\&"semicirc"	"fillsemicircle semicircle semicircle dwhsemicircle quadwhole octwhole"
+\&"slash"	"fillslashhead slashhead slashhead dwhslashhead quadwhole octwhole"
+\&"allslash"	"fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead fillshlashhead"
 .TE
 .P
 You can redefine these or define new ones if you wish.
 The name (the first of the two strings in the pair)
 can be almost anything you want.
-The four names in the second string must be taken from the list of
-valid note head characters given below, or be characters you have defined
+The four to six names in the second string must be taken from the list of
+valid notehead characters given below, or be characters you have defined
 yourself and for which you have provided a ystemoffset value (described in the
 .Hr udefsym.html
-section on user defined symbols).
+section on user-defined symbols).
 .br
 .Hi
 .ne 3i
 .TS
 center;
 l l l.
-4n	2n    1n	dblwhole
+4n	2n	1n
+dblwhole	quadwhole	octwhole
 filldiamond	diamond	dwhdiamond
 fillisostriangle	isostriangle	dwhisostriangle
 fillpiewedge	piewedge	dwhpiewedge
@@ -5869,7 +5895,8 @@ xnote	altdblwhole	blankhead
 .He
 .ig
 <PRE>
-4n	             2n         1n      dblwhole
+4n	             2n                 1n
+dblwhole             quadwhole          octwhole
 filldiamond          diamond            dwhdiamond
 fillisostriangle     isostriangle       dwhisostriangle
 fillpiewedge         piewedge           dwhpiewedge
@@ -5882,15 +5909,15 @@ xnote                altdblwhole	blankhead
 </PRE>
 ..
 The righttriangle shape names can be prefixed by u? when
-used in the headshapes context, to indicate the upside down version of them should
+used in the headshapes context, to indicate the upside-down version of them should
 be used when the stem is down. Note that u? cannot be used on any other
-note head characters, since none of the others have a corresponding
-upside down version.
+notehead characters, since none of the others have a corresponding
+upside-down version.
 .P
 As an example of how you could use the headshapes context,
 suppose you wished to use xnote for half notes and shorter,
 and diamond for longer notes.
-That is different than either of the builtin values "x" or "allx"
+That is different than either of the built-in values "x" or "allx,"
 but you could override one of them:
 .Ex
 headshapes
@@ -5899,22 +5926,22 @@ headshapes
 .P
 Another common case is if you want to use the alternate double whole
 note symbol. There are two very commonly used forms for double whole.
-One has a single vertical lines on either side of an ellipse, the other has two
-vertical lines. Mup uses the one line form by default, but if you prefer the
-two line form, you can get that via:
+One has a single vertical line on either side of an ellipse, the other has two
+vertical lines. Mup uses the one-line form by default, but if you prefer the
+two-line form, you can get that via:
 .Ex
 headshapes
 	"norm" "4n 2n 1n altdblwhole"
 .Ee
 .P
 The blankhead does not print any head at all, it just leaves space as if
-there were a note head. It might be used if for some reason you just want
+there were a notehead. It might be used if for some reason you just want
 stems.
 .H 2 "Noteheads parameter"
 .P
 .Hr param.html#notehead
 The noteheads parameter
-describes which note head shape to use for each pitch
+describes which notehead shape to use for each pitch
 in the scale. It can be specified in score, staff, or voice contexts.
 If you want to use the same shape for all pitches,
 (as is the case with standard notation), only one shape name is specified.
@@ -5946,7 +5973,7 @@ noteheads = "isostri semicirc diam righttri norm rect pie"
 .P
 Once the noteheads parameter is set,
 you specify your music just like you would for standard notation,
-but Mup will use the appropriate note heads based on your specifications.
+but Mup will use the appropriate noteheads based on your specifications.
 .P
 .Ex 1
 score
@@ -5982,9 +6009,9 @@ bar
 1: g;f;e;d;
 bar
 .Ee
-.H 2 "Overriding chord note heads"
+.Hh chord
+.H 2 "Overriding chord noteheads"
 .P
-.Hm chord
 It is possible to override what note shape to use for a chord,
 by giving "hs" followed by a head shape name from the headshapes context,
 inside square brackets.
@@ -5994,8 +6021,8 @@ Thus
 .Ee
 would use the "righttri" headshape. The specific character to use would be
 based on the group's duration. In other words, if the chord was a
-quarter note or shorter, the "fillrighttriangle" note head would be used,
-but if the chord was a half or whole note, a "righttriangle" note head would be
+quarter note or shorter, the "fillrighttriangle" notehead would be used,
+but if the chord was a half or whole note, a "righttriangle" notehead would be
 used, and a "dwhrighttriangle" would be used for a double whole note.
 .P
 The hs specification can be used along with other things that can go in the
@@ -6004,10 +6031,10 @@ square brackets. For example,
 	[hs "blank"; len 0]
 .Ee
 would use blankheads and no stem, resulting in no chord being printed at all!
-.H 2 "Overriding individual note heads"
+.Hh note
+.H 2 "Overriding individual noteheads"
 .P
-.Hm note
-If you want to override the note head shape to be used for one specific
+If you want to override the notehead shape to be used for one specific
 note in a chord, you use hs followed by the head shape name
 as a string after the note.
 .Ex 1
@@ -6021,12 +6048,12 @@ bar
 .H 2 "Putting it all together to use shaped notes"
 .P
 In summary,
-note head shapes can be specified in five different places: per note,
+notehead shapes can be specified in five different places: per note,
 per chord, in voice context, in staff context, and in score context.
-When deciding what note head shape to use, Mup checks for specifications
+When deciding what notehead shape to use, Mup checks for specifications
 in that order, using the first it finds.
 .P
-Since fret numbers are used rather than note heads on
+Since fret numbers are used rather than noteheads on
 .Hr tabstaff.html
 tablature staffs,
 the only head shape name that is allowed is "allx."
@@ -6061,8 +6088,8 @@ bar
 endbar
 .Ee
 .P
-Here is an example of using the same note head shape for all pitches,
-illustrating how the proper version\(emfilled or open\(emof the note head
+Here is an example of using the same notehead shape for all pitches,
+illustrating how the proper version\(emfilled or open\(emof the notehead
 is used, based on the note's duration.
 .Ex 1
 score
@@ -6104,7 +6131,7 @@ bar
 .P
 And finally, here is a somewhat silly example that demonstrates how
 you can use the various shaped notes features to get any kind of
-note head that Mup supports anywhere you want.
+notehead that Mup supports anywhere you want.
 .Ex 1
 .\"  score
 .\"	leftmargin=1.7
@@ -6117,7 +6144,7 @@ headshapes
 	"other" "fillrectangle diamond isostriangle dblwhole"
 
 score
-	// Set notesheads, using an arbitrary mixture of builtin
+	// Set notesheads, using an arbitrary mixture of built-in
 	// and user-defined head shapes.
 	noteheads="norm reg other reg reg other righttri"
 
@@ -6166,9 +6193,9 @@ You can concatenate strings with a + sign. Thus the following are equivalent:
 \&"this is a string"
 \&"this is " + "a string"
 .Ee
+.Hh symlist
 .H 2 "Special characters"
 .P
-.Hm symlist
 A string can also contain special
 music characters.
 These are specified
@@ -6196,11 +6223,14 @@ accidental	flat	flat
 	dblsharp	double sharp
 	nat	natural
 
-note	4n	quarter (and shorter) note head
+note	4n	quarter (and shorter) note notehead
 .Ix hL
-	2n	half note head
+	2n	half note notehead
 	1n	whole note
 	dblwhole	double whole note
+	altdblwhole	alternate double whole 
+	quadwhole	quadruple whole note (longa)
+	octwhole	octuple whole note (maxima)
 	dn2n	half note with stem down
 .Ix hI
 	dn4n	quarter note with stem down
@@ -6223,12 +6253,12 @@ note	4n	quarter (and shorter) note head
 	dnflag	downward flag
 
 notehead
-	xnote	X-shaped note head
+	xnote	X-shaped notehead
 .Ix bS
-	diamond	open diamond-shaped note head
+	diamond	open diamond-shaped notehead
 .Ix bT
-	filldiamond	filled diamond-shaped note head
-	dwhdiamond	double whole diamond-shaped note
+	filldiamond	filled diamond-shaped notehead
+	dwhdiamond	double whole diamond-shaped notehead
 	isostriangle	open isosceles triangle notehead
 	fillisostriangle	filled isosceles triangle notehead
 	dwhisostriangle	double whole isosceles triangle notehead
@@ -6252,7 +6282,8 @@ notehead
 	dwhslashhead	double whole slash notehead
 	blankhead	blank notehead
 
-rest	qwhrest	quadruple whole rest
+rest	owhrest	octuple whole rest	
+	qwhrest	quadruple whole rest
 	dwhrest	double whole rest
 .Ix hC
 	1rest	whole rest
@@ -6285,7 +6316,7 @@ misc	ferm	fermata
 	acc_gt	accent like a greater-than sign
 .Ix bK
 	acc_hat	accent like a "hat" (circumflex or "up-arrow")
-	acc_uhat	accent like an upside down hat
+	acc_uhat	accent like an upside-down hat
 	leg	legato mark
 .Ix bV
 .Ix gX
@@ -6353,14 +6384,17 @@ dnflag      downward flag
 </PRE>
 .H 3 Noteheads
 <PRE>
-4n                   quarter (and shorter) note head
-2n                   half note head
+4n                   quarter (and shorter) note notehead
+2n                   half note notehead
 1n                   whole note
 dblwhole             double whole note
-xnote                X-shaped note head
-diamond              open diamond-shaped note head
-filldiamond          filled diamond-shaped note head
-dwhdiamond           double whole diamond-shaped note
+altdoublewhole       alternate double whole
+quadwhole            quadruple whole note (longa)
+octwhole             octuple whole note (maxima)            
+xnote                X-shaped notehead
+diamond              open diamond-shaped notehead
+filldiamond          filled diamond-shaped notehead
+dwhdiamond           double whole diamond-shaped notehead
 isostriangle         open isosceles triangle notehead
 fillisostriangle     filled isosceles triangle notehead
 dwhisostriangle      double whole isosceles triangle notehead
@@ -6386,6 +6420,7 @@ blankhead            blank notehead
 </PRE>
 .H 3 Rests
 <PRE>
+owhrest     octuple whole rest
 qwhrest     quadruple whole rest
 dwhrest     double whole rest
 1rest       whole rest
@@ -6418,7 +6453,7 @@ ferm        fermata
 uferm       upside-down fermata
 acc_gt      accent like a greater-than sign
 acc_hat     accent like a "hat" or ^ (circumflex or "up-arrow")
-acc_uhat    accent like an upside down hat
+acc_uhat    accent like an upside-down hat
 leg         legato mark
 dot         dot
 wedge       wedge
@@ -6473,10 +6508,10 @@ from the "Latin-1" alphabet, you can simply type them into strings as
 you normally would. If you want a character that your keyboard does not
 support, you can put them in strings
 by using their names in a manner similar to the music characters.
-For example, you can include an 'a' with an acute accent on it in
+For example, you can include an "a" with an acute accent on it in
 .Ix bK
 .Ix hB
-a string by using \e(aacute), or an upside down question mark
+a string by using \e(aacute), or an upside-down question mark
 using \e(questiondown).
 .P
 There are 2-character shortcut names for many
@@ -6558,9 +6593,9 @@ when you want several words to be sung on a single note.
 Another use would be in cases where Mup would normally split up a long
 string between words in order to avoid running off the edge of a page,
 but you want to prevent that split.
+.Hh keymaps
 .H 2 "Keymaps"
 .P
-.Hm keymaps
 Typing in the names for the non-ASCII characters can become tedious,
 so if you are using some of them often,
 .Ix jL
@@ -6572,13 +6607,13 @@ You can define up to 100 different keymaps, and you
 can assign different mappings to different kinds of text. You give each
 keymap a name, and then can set parameters to that name to cause mapping.
 .P
-A keymap context begins with a line with the word keymap followed by
+A keymap context begins with a line with the word "keymap," followed by
 a string in double quotes, giving a name for the map.
 The name can be anything you like.
 This is followed by lines containing pairs of strings. The first in each
 pair is a pattern to be matched, and the second is the replacement.
-The pattern strings can only contain letters (upper or lower case) and
-the equal sign. The replacement strings can only contain
+The pattern strings can only contain letters (uppercase or lowercase) and
+the equals sign. The replacement strings can only contain
 regular characters or the special named characters of the form \e(XXX).
 They cannot contain other "backslash escapes" like changes in font or size.
 Mapping is done as strings are parsed, not when they are printed.
@@ -6667,7 +6702,7 @@ endingkeymap	text on endings
 labelkeymap	staff and group labels
 lyricskeymap	lyrics
 printkeymap	print, left, right, center, title
-rehearsalkeymap	user defined rehearsal marks
+rehearsalkeymap	user-defined rehearsal marks
 textkeymap	rom, ital, bold, boldital
 withkeymap	"with" lists on chords
 .TE
@@ -6707,9 +6742,9 @@ a sentence in a different alphabet:
 .Ee
 As shown, an empty keymap name of \em() means to return to normal literal text,
 without any mapping.
+.Hh fonts
 .H 2 "Font and size changes"
 .P
-.Hm fonts
 Strings can contain special codes to indicate changes in font or size.
 .Ix bG
 .Ix bH
@@ -6832,7 +6867,7 @@ one of those, you may want to see if a newer version is available
 that corrects the problem.
 .P
 If you need a font other than those Mup supports directly,
-it is possible to override Mup's builtin fonts with other fonts.
+it is possible to override Mup's built-in fonts with other fonts.
 This is described later in the
 .Hr fontfile.html
 section on "Installing other fonts."
@@ -6880,14 +6915,15 @@ where the information is also carried forward.
 .Ix cJ
 .Ix hG
 .Ix hK
-The default values can be set as
+The default values can be set as described in
 .Hr param.html
-described in the "Parameters" section. The
+the "Parameters" section.
+The
 .Hr textstr.html#symlist
 music symbols
 are affected by size changes.
-If a music symbol follows italics or bolditalics characters, it will be
-made italics to match.
+If a music symbol follows a specification for italics, bold, or bolditalics,
+it will be slanted and/or made bold, as appropriate.
 .P
 Here are some examples of strings:
 .Ex
@@ -6969,7 +7005,7 @@ the text baseline is moved up, so that the first line of piled text is
 like a superscript, and the next like a subscript. If there are additional
 lines, they are placed below the subscript.
 By default, the lines in a pile are placed such that the last digit
-in each line all line up, or if there is no digit, the last character.
+in each line will line up, or if there is no digit, the last character.
 However, you can force different alignment.
 .Ix iP
 A \e| will force alignment at that point, or a \e^ will force alignment
@@ -7004,9 +7040,9 @@ placing a backslashed slash after a number, like this:
 	"6\e/"
 	"10\e/"
 .Ee
+.Hh boxed
 .H 2 "Boxed or circled text"
 .P
-.Hm boxed
 You can cause the text to be
 .Ix iG
 printed inside a box by placing a \e[ at
@@ -7037,7 +7073,7 @@ lyrics.
 .H 2 "General information"
 .P
 There are a number of symbols and other markings that appear frequently
-in music, which are normally associated with a particular time or place in the
+in music and are normally associated with a particular time or place in the
 .Ix gT
 composition. There are several classes of such symbols, all of which are
 handled by Mup in a somewhat similar fashion. The general format of these
@@ -7290,7 +7326,7 @@ rom above all: 0 [-3.5] "Allegro";
 which would place the "Allegro" 3.5 stepsizes left of the beginning
 of the measure.
 .P
-The grace note back up, if any, must occur before the
+The grace note backup, if any, must occur before the
 stepsize offset, if any.
 For example:
 .Ex 1
@@ -7319,7 +7355,7 @@ If either of them is 0, it can be omitted,
 but at least one of them must be non-zero.
 .P
 This can optionally be followed by
-a grace back up and/or an offset, like the start time.
+a grace backup and/or an offset, like the start time.
 The grace backup is a negative number in parentheses,
 telling how many grace notes to back up. The steps
 offset is a number in square brackets,
@@ -7591,9 +7627,9 @@ the "size" parameter
 for the given staff, or for the score if the staff is specified by "all."
 .Ix cQ
 .Ix hJ
+.Hh chordmod
 .H 3 "Chord, analysis, figured bass, and dynamics"
 .P
-.Hm chordmod
 The final optional qualifier specifies special treatment of the text.
 .Ix iM
 .Ix iN
@@ -7623,7 +7659,7 @@ are translated to the appropriate music character, while "o", "o/",
 and "^" are translated to "\e(dim)", "\e(halfdim)", and "\e(triangle)"
 respectively. However, with "chord," the
 translation of "n" to natural sign is not done, so you have to
-use \e(nat) if you want a natural sign. This is because a literal letter n
+use \e(nat) if you want a natural sign. This is because a literal letter "n"
 tends to occur more often in chords than natural signs.
 .P
 If you want to turn off the translation, to treat one of these characters
@@ -7647,6 +7683,11 @@ music characters
 for accidentals (\e(sharp), \e(flat), etc.).
 If the staff is specified as "all," the score transposition value is used.
 Transposition has no effect on analysis or figbass.
+.P
+.Hr param.html#chordxlate
+The "chordtranslation" parameter
+can be used to translate chords to something like DO/RE/MI, or to apply
+the German usage of H for B, and B for B flat.
 .P
 In figbass, the string starts out in piled mode, which means that
 .Ix iO
@@ -7702,9 +7743,9 @@ rom chord above 1: 1 "E&m";
 bar
 .Ee
 .P
-If a music symbol occurs inside an ital or boldital string,
+If a music symbol occurs inside an ital, bold, or boldital string,
 .Hm italmus
-the music symbol will automatically be made italics,
+the music symbol will automatically be made
 to match the rest of the string.
 .P
 It is possible to supply a duration on text statements. When this is done,
@@ -7740,13 +7781,13 @@ bar
 bold (12) chord above 1: 1 "Cm";
 bar
 .Ee
+.Hh grids
 .H 2 Grids
 .P
-.Hm grids
 If the
 .Hr param.html#gridused
 gridswhereused parameter
-is set to "y" chords will also have a grid printed.
+is set to "y," chords will also have a grid printed.
 .Ix iW
 For this to work, a grid with the same name as the chord must be
 defined in "grids" context elsewhere in the input file.
@@ -7817,7 +7858,7 @@ such as fermatas and coda signs using
 text statements,
 it is perhaps a bit confusing, since music
 symbols are really not part of any particular font. So there is a "mussym"
-statement which can be used. The text strings after the colon must each
+statement that can be used. The text strings after the colon must each
 consist of a single musical symbol whose name can be given without the
 usual \e() wrapper. The following two lines produce identical results,
 but the second is perhaps a bit clearer:
@@ -7882,7 +7923,7 @@ A phrase mark must begin and end on a chord, so Mup first takes the begintime
 and duration and finds the chords nearest to each of them. It then draws a
 phrase mark between them, shaping it to be out of the way of other things as
 much as possible.
-It is possible to specify a "grace back up" on the begintime or endtime
+It is possible to specify a "grace backup" on the begintime or endtime
 to make the phrase start or end on a grace note.
 This is done by giving a negative number in parentheses,
 specifying how many grace notes to back up.
@@ -7936,7 +7977,7 @@ that doesn't apply to all verses.
 .Ix cM
 The "<" and ">" statements are used to specify crescendo and decrescendo marks
 respectively. Each mark must include a begintime and duration.
-The begintime and duration can include a grace back up specification,
+The begintime and duration can include a grace backup specification,
 to make the mark begin or end on a grace note.
 Some examples:
 .Ix dK
@@ -7986,7 +8027,7 @@ and a string starting with 8 will be treated as one octave,
 15 or 16 will be treated as two octaves
 (15 is really "correct," but a few publishers may use 16), 22 or 24 as three
 octaves, etc.  It will always default to be printed in 12-point
-times ital font, although you can override that using the usual \ef
+Times ital font, although you can override that using the usual \ef
 and \es conventions.  If the octave
 .Ix gK
 shifting applies to more than a single chord, there should also be a
@@ -8127,7 +8168,7 @@ roll down 1 1 to 1 2: 2; 4;
 bar
 .Ee
 .P
-You can also explicitly say "up" which will cause an upward arrow to be
+You can also explicitly say "up" to cause an upward arrow to be
 drawn at the top of the roll. If no direction is specified, no arrow is drawn.
 .Hi
 .H 1 "TAGS, PRINTING, LINES, AND CURVES"
@@ -8158,7 +8199,7 @@ barline.
 It can then be referenced in order to place a second object, like a comment
 or dotted line, relative to the first object.
 .P
-A tag name can be either a single lower case letter, or an underscore
+A tag name can be either a single lowercase letter, or an underscore
 folowed by one or more letters, digits, or underscores.
 .Ix fG
 Each location tag is really a collection of six values,
@@ -8186,10 +8227,10 @@ west to the left edge, and the east the right edge. The x and y values
 .Ix fY
 correspond to the "center" coordinate of the object. This is not necessarily
 the geometric center, but more of a "logical center." In the case of a tag
-associated with an individual note, it is the geometric center of the note head.
+associated with an individual note, it is the geometric center of the notehead.
 .Ix hL
 However, on tags associated with a chord, the x is at the center line of 
-note heads that are on the "normal" side of the stem. (Normally, when a stem
+noteheads that are on the "normal" side of the stem. (Normally, when a stem
 .Ix hI
 is up, notes are put on the left side of the stem, and when the stem is
 down they are placed on the right side. However, when two notes adjacent
@@ -8204,7 +8245,7 @@ box that encloses the syllable, including anything
 inside <^ >, but excluding anything inside < >, while
 the x and y are the center of that box.
 .P
-Tag names can be re-used. The value of a tag will always be its most
+Tag names can be reused. The value of a tag will always be its most
 recent definition.
 .P
 There are also several "pre-defined" tags. They are:
@@ -8287,7 +8328,7 @@ data in an arbitrary order, trying to use _cur at other times is likely
 to cause output at a seemingly random place.
 .P
 .Ix jQ
-The _score builtin tag refers to the current or most recent score.
+The _score built-in tag refers to the current or most recent score.
 _score.x will be at the position of the left edge of the staffs.
 _score.y will be at the middle line of the top visible staff.
 _score.w will be the left margin.
@@ -8298,7 +8339,7 @@ _score.s will be the farthest downward that anything
 associated with the score protrudes.
 .P
 .Ix jR
-There are also builtin tags for each staff in the current or most recent score.
+There are also built-in tags for each staff in the current or most recent score.
 Since there is one per staff, there is a special notation: _staff followed
 by a dot and the staff number.
 Only staff numbers that exist (i.e., are between 1 and the value of the
@@ -8309,7 +8350,7 @@ _staff.2.x will be the place on staff 2 between
 where the clef and time signature end and the first measure of the score begins.
 (Actually all staffs have the same x value.)
 _staff.5.y will be the middle line of the staff 5.
-_staff.7.w will the left edge of the staff label if it has a staff label,
+_staff.7.w will the left edge of the staff label if it has a staff label;
 otherwise the left edge of the staff (the same as _score.x).
 _staff.10.e will be the right margin of staff 10
 (or really any staff, since they will all be the same).
@@ -8486,7 +8527,7 @@ even if that wasn't what you meant.
 A common use for an expression more complicated
 than just a simple tag reference and
 offset would be to place something in the middle of a measure. You could set
-locations tags on the bars at either end of the measure, and then use the
+location tags on the bars at either end of the measure, and then use the
 average to get the midpoint of the measure.
 .Ex 1
 .\" score
@@ -8587,7 +8628,7 @@ newcentury, palatino, or times). The default is the value of the "fontfamily"
 parameter.
 .Ix bG
 The \fIfont\fP, if specified, has one of the values valid for the "font"
-parameter (rom, bold, ital, or boldital). If no \fIfont\fP is specified
+parameter (rom, bold, ital, or boldital). If no \fIfont\fP is specified,
 .Ix gH
 .Ix gI
 .Ix gJ
@@ -8767,9 +8808,9 @@ contexts.
 After each printing command,
 the current location is set to the right edge of the last character printed
 horizontally and at the baseline of the current line vertically.
+.Hh postscript
 .H 2 "Including raw PostScript"
 .P
-.Hm postscript
 There is another command that looks a lot like the printing commands,
 but gives you a way to insert raw PostScript into the Mup output.
 This might be used, for example,
@@ -8876,9 +8917,9 @@ With enough work, you could probably even create an ossia.
 .P
 It should be noted that since a postscript command can contain arbitrary
 PostScript code that is merely passed through by Mup, any tools that try to
-transform Mup input to some other music notation format (e.g. Music XML)
+transform Mup input to some other music notation format (e.g., Music XML)
 will most likely be unable to understand any of that PostScript code,
-and any information it in will almost certainly be completely lost during
+and any information in it will almost certainly be completely lost during
 the transformation. So while it is provided as an "escape hatch" to allow
 you to do things Mup does not support natively, its usage is discouraged,
 unless you really need to do something that Mup does not
@@ -8905,21 +8946,21 @@ You can do this by specifying an alias tag.
   postscript atpagebegin with _value = _staff.2 "...PostScript... "
 .Ee
 In that example, _value will be an alias, and the PostScript
-name will be Mup_value but its value will be
-that of _staff.2. So suppose the value of _staff.2.x is 3.8. If you say
+name will be Mup_value, but its value will be
+that of _staff.2. So suppose the value of _staff.2.x is 3.8. If you say:
 .Hi
 .DS
 	with _staff.2.x
 .DE
-the output would be
+the output would be:
 .DS
 	/Mup_staff.2.x 3.8 def
 .DE
-but if you say
+but if you say:
 .DS
 	with _value.x = _staff.2.x
 .DE
-the output would be
+the output would be:
 .DS
 	/Mup_value.x 3.8 def
 .DE
@@ -8962,8 +9003,8 @@ After the restore, the current location is reset back to where it
 was originally.
 .P
 Alternately, you can use the keyword "file" and then give a file name
-as the string. The contents of the file are copied to the output, and no
-escaping of double quotes is necessary.
+as the string. The contents of the file are copied to the output verbatim,
+so it is not necessary to use backslashes before double quotes to preserve them.
 .P
 Since the PostScript code is copied without any interpretation,
 Mup does not reserve any space on the page for it,
@@ -8972,13 +9013,13 @@ The PostScript language is beyond the scope of this User's Guide;
 consult a book on PostScript if you need more information.
 .P
 As a simple example, you might include an Encapsulated PostScript file
-near the lower left corner of the current page using
+near the lower left corner of the current page, using:
 .Ex
 postscript "50 50 translate (file.eps) run"
 .Ee
 .P
 Or you could print a message in red italics
-near the bottom of the page like this:
+near the bottom of the page, like this:
 .Ex
 postscript (70, 20) "
               1 0 0 setrgbcolor
@@ -8988,7 +9029,7 @@ postscript (70, 20) "
               "
 .Ee
 .P
-Next we show an example of a hook, that allows you to do the equivalent of
+Next we show an example of a hook that allows you to do the equivalent of
 a yellow highlighting pen on a particular staff.
 .Ex 1
 score
@@ -9003,7 +9044,7 @@ music
 .\" define HIGHLIGHT ALTO @
 ifdef HIGHLIGHT
 // If HIGHLIGHT is set to a staff number,
-// highlight that staff by drawing a yellow boxbehind it.
+// highlight that staff by drawing a yellow box behind it.
 postscript atscorebegin with _box = _staff.HIGHLIGHT  "
 	newpath
 	Mup_box.w Mup_box.n moveto
@@ -9043,7 +9084,7 @@ The \fIlinetype\fP can be "wide," "medium," "wavy," "dotted," "dashed,"
 or it can be omitted, which means narrow.
 .Ix bQ
 The wavy line could be used for glissandos. It could also be used
-for manually drawing rolls and trills, although it should rarely if ever
+for manually drawing rolls and trills, although it should rarely, if ever,
 .Ix bX
 .Ix fU
 be necessary to resort to this, since the
@@ -9061,7 +9102,7 @@ Narrow, dashed, or dotted lines would typically be used for voice crossings.
 The medium line is about twice as wide as a
 narrow line, and a wide line is about twice as wide as a medium line.
 .P
-The X and Y coordinates are specified as was described
+The x and y coordinates are specified as was described
 in the section on
 .Hr tags.html
 \&"Location tags."
@@ -9200,8 +9241,8 @@ by specifying "leftmargin=\fInum\fP," where \fInum\fP is a
 number of inches or centimeters (depending on the current setting of
 .Hr param.html#units
 the "units" parameter.)
-The number may include a decimal fraction part (e.g. 8.5).
-The number can optionally be preceded by an plus or minus sign,
+The number may include a decimal fraction part (e.g., 8.5).
+The number can optionally be preceded by a plus or minus sign,
 in which case the number is taken as an amount to add or subtract from
 the normal margin, rather than as the actual margin value.
 .Ix gQ
@@ -9329,9 +9370,9 @@ any corresponding version without a page side modifier. So if you also
 defined a plain "top" in addition to ones for leftpage and rightpage,
 it wouldn't actually ever get used. If, on the other hand,
 you defined only a "top leftpage" and a plain "top," then
-the plain top would get used for right hand pages, and if you only
+the plain top would get used for right-hand pages, and if you only
 define "top rightpage," and nothing for the other two, nothing would be
-used on left hand pages. Pages will always alternate between left and right,
+used on left-hand pages. Pages will always alternate between left and right,
 but you can control which to start with, using the
 .Hr param.html#firstpg
 firstpage parameter.
@@ -9363,8 +9404,8 @@ Somewhat similarly, the items in top and bottom will appear on the page
 that is started when they are encountered in the input,
 while top2 and bottom2 will then be used on all subsequent pages.
 However, you can specify a new top and/or bottom later,
-that will then to used for one page, and you can specify
-a new top2 and/or bottom2 later which will replace the previous top2/bottom2.
+which will then be used for one page, and you can specify
+a new top2 and/or bottom2 later, which will replace the previous top2/bottom2.
 Note, however, that if you change top2 but not top,
 that new top2 is used immediately on the new page,
 whereas if you change both, the new top applies
@@ -9455,7 +9496,7 @@ top2
 .Ee
 .P
 Now suppose you'd prefer to have the page numbers at the left margin of
-left hand pages and at the right margin of right hand pages. Instead of
+left-hand pages and at the right margin of right-hand pages. Instead of
 the single unmodified footer2 shown above, you would make two:
 .Ex
 footer2 leftpage
@@ -9485,9 +9526,9 @@ Since headers or footers will expand as necessary, the
 value of _win.s and _win.y
 may be changed by any of the statements in the context. At any given
 time, they refer to the boundaries as defined by what has been printed
-so far. Thus, if the first line of a header contains an 18 point title,
+so far. Thus, if the first line of a header contains an 18-point title,
 after that, _win.s would be 18 points below _win.n.
-It the header then contained a 12 point title, after that it
+If the header then contained a 12-point title, after that it
 would be 31 points below _win.n (12 points for the title string, plus 1 point
 of padding that is added between lines printed).
 .P
@@ -9530,7 +9571,7 @@ things. A macro is defined with the following syntax:
 \fBdefine\fP \fI macro_name macro_text\fP \fB@\fP
 .Ee
 .P
-The \fImacro_name\fP consists of one or more upper case letters, digits,
+The \fImacro_name\fP consists of one or more uppercase letters, digits,
 and underscores, with the first character being a letter.
 .Ix fW
 The \fImacro_text\fP can be any text. It can be any length from empty
@@ -9618,9 +9659,9 @@ per-note versions of "dashed ~" and " dashed <>" (or the "dotted" counterparts
 of any of these) are treated as a single token. That means
 you can't define one macro for "dashed" and another for "tie"
 and put them together and have that be recognized.
+.Hh macparm
 .H 3 "Macros with parameters"
 .P
-.Hm macparm
 Macros defined within Mup input can be defined to have "parameters."
 .Ix aD
 This may be useful
@@ -9630,13 +9671,13 @@ immediately by a ( with no space between the end of the name and the
 parenthesis. The opening parenthesis is followed by one or more
 parameter names, separated by commas, and ending with a close parenthesis.
 Parameter names have the same rules as macro names: they consist of
-upper case letters, numbers, and underscores, starting with an upper case
+uppercase letters, numbers, and underscores, starting with an uppercase
 letter. The parameter names can then appear in the text of the macro
 definition where you want a value to be substituted.
 .P
 As an example, suppose you are doing a score with staffs 1 through 4
 for vocal parts, and staffs 5 and 6 for a piano accompaniment, and that
-you frequently want to mark a dymanics change at the same point in time
+you frequently want to mark a dynamics change at the same point in time
 below each of the vocal scores and between the two piano staffs.
 You could typically do this with something like:
 .Ex
@@ -9678,7 +9719,7 @@ MAC(\e\e\e,\e))
 .Ee
 has one parameter, the text of which is 3 characters long: a backslash,
 comma, and closing parenthesis.
-If you backslash other characters they will be copied without the backslash,
+If you backslash other characters, they will be copied without the backslash,
 but doing this on anything other than a double quote will produce a warning,
 because it seems unlikely the backslash was really needed.
 .P
@@ -9720,9 +9761,9 @@ or other details like that.
 .Hr cmdargs.html#Eoption
 The -E Mup command line option
 shows how macros will expand, which may help you figure out what to do.
+.Hh concat
 .H 3 "Concatenating macro names"
 .P
-.Hm concat
 Inside the ` ` it is possible to use ##
 to concatenate the values of two or more macros to form a macro name,
 whose value is then converted to a string.
@@ -9776,10 +9817,10 @@ The TR macro will be evaluated, and found to have a value of TR_.
 At the first place the K macro is called, the value being passed to the NAME
 parameter is F. Those two values (TR_ and F) are concatenated
 to form TR_F and that macro is then looked up, and found to have the value D.
-That is then made into a string (because of the ` ` enclosing the construct),
+That is then made into a string (because of the ` ` enclosing the construct)
 and printed.  On the second call to K, a C is passed to NAME,
 so the pasted-together name will be TR_C, which then yields "A" to be printed.
-On the second last line, the TR_F gets replaced by the correct notes for
+On the second-last line, the TR_F gets replaced by the correct notes for
 a transposed F, namely a D chord, and the TR_C gets replaced by the
 correct notes for an A chord. Thus the various TR_F macros,
 along with the K macro, adjust the music for having capo.
@@ -9790,13 +9831,14 @@ It is possible to paste more than two macro names together,
 as in `AA##BB##CC##DD` but each component must represent a valid defined name,
 and the result of pasting them all together must also yield a valid defined
 macro name.
+.Hh arrow
 .H 3 "A complex macro example"
 .P
-.Hm arrow
 Let's look at an example of much more complicated use of macros.
 This example demostrates the use of arithmetic functions described in the
 .Hr tags.html
-section on location tags. We will draw a line with an arrow between notes
+section on location tags.
+We will draw a line with an arrow between notes
 on two different staffs.
 While it may be possible to write the expressions directly, 
 the result would be very hard to read and understand,
@@ -9837,9 +9879,9 @@ music
 
 ARROW(h.x + 2, h.y - 1, k.x - 2, k.y + 1)
 .Ee
+.Hh saverest
 .H 3 "Saving and restoring macros"
 .P
-.Hm saverest
 You can take a snapshot of all your current macro definitions by using
 the savemacros command, and then restore that set of definitions later
 using the restoremacros command. These are both followed by a quoted
@@ -9855,7 +9897,7 @@ the macros as they had been at the end of the first movement.
 .P
 Another possible use would be if you have several standalone files,
 each containing a complete song, and  you want to "include" those files
-in a another file. By putting a save/restore around each
+in another file. By putting a save/restore around each
 .Hr include.html
 include,
 you can prevent any macro definitions in one file from interacting with
@@ -9997,7 +10039,7 @@ Note that the values in the conditions can only be either literal numbers
 or macros whose values evaluate to a number. They cannot be things like
 .Hr param.html
 Mup parameters.
-A macro which is not defined is treated as having a value of zero.
+A macro that is not defined is treated as having a value of zero.
 Macro values are substituted for macro names just as elsewhere in Mup,
 so if you use a macro whose resulting value does not evaulate to a number,
 you may get an error or other unexpected result.
@@ -10024,7 +10066,7 @@ order in which operations are done. Consider the following expression:
    5 + 3 * 8
 .Ee
 What is its value? If we just went left to right, we would add 5 and 3,
-getting 8, then multiple by 8, for a final value of 64. However,
+getting 8, then multiply by 8, for a final value of 64. However,
 multiplication is generally considered to have higher "precedence"
 than addition, meaning that multiplications should be done before additions.
 In other words, the expression should actually be treated as
@@ -10062,10 +10104,10 @@ in the expression
 .Ee
 the unary minus would be applied first to get -5, then the "not" would be
 applied. But what does "not -5" mean? The "not" operator will treat its
-operand as a boolean value, with a value of zero meaning false, and
+operand as a Boolean value, with a value of zero meaning false, and
 any non-zero value being true. Since -5 is not zero, it represents "true,"
 and "not true" would be "false," or zero.  By the way,
-any operator that yields a boolean result
+any operator that yields a Boolean result
 (not, logical and, logical or, less than, greater than,
 less than or equal, greater than or equal, equal, or not equal) will
 always yield 1 for true, even though any non-zero value could mean true.
@@ -10113,7 +10155,7 @@ directories are separated by colons. On systems with DOS-like file naming
 conventions, they are separated by semicolons.
 The MUPPATH may be useful if, for example, you have a number of "boilerplate"
 files that you want to include in lots of songs. You can put them in
-some directory and set MUPPATH to list that directory, then any Mup
+some directory and set MUPPATH to list that directory; then any Mup
 files you have can refer to them.
 If a file by the name given is not found, and that name
 does not already have a .mup or .MUP suffix,
@@ -10130,16 +10172,16 @@ The exit statement will cause the rest of the input to be ignored. This
 might be useful if you haven't finished cleaning up the end of a piece,
 but would like to take a look at (or listen to) everything before that.
 Anything after the exit statement will be ignored.
-.Ht User defined symbols
+.Ht User-defined symbols
 .Hd udefsym.html
-.H 2 "User defined symbols"
+.H 2 "User-defined symbols"
 .P
 Mup provides the most common musical symbols, but there are various other
 symbols that have been used over the centuries. If Mup doesn't provide
 some specific symbol that you would like, you can define up to 160
 of your own symbols, as well as override any of the
 .Hr textstr.html#symlist
-builtin music symbols
+built-in music symbols
 with your own versions. Most people will never need this facility,
 so feel free to skip past this section unless you feel you do need it.
 .P
@@ -10156,7 +10198,7 @@ the output that Mup generates for examples. If you want something
 similar to an existing Mup symbol, looking at its definition is probably
 the best place to start.
 .P
-A user defined symbol or override is put in "symbol" context.
+A user-defined symbol or override is put in "symbol" context.
 The general format of this context is as follows:
 .Ex
 \fBsymbol "\fP\fIname\fP\fB"
@@ -10166,7 +10208,7 @@ The general format of this context is as follows:
 .Ee
 The three parameters can be supplied in any order,
 but only once each per symbol. The ystemoffset parameter is optional,
-and only used for symbols that will be used as note heads.
+and only used for symbols that will be used as noteheads.
 This is described in more detail
 .Hr udefsym.html#notehead
 later.
@@ -10178,32 +10220,32 @@ different than existing names for
 .Hr textstr.html#special
 non-ASCII characters.
 .P
-You can refer to user defined symbols just like the builtin symbols,
+You can refer to user-defined symbols just like the built-in symbols,
 using their name in a
 .Hr mussym.html
 mussym statement, or in a
 .Hr textstr.html#symlist
 text string
 using the name inside \e(  ).
-Adding an "sm" prefix to a name will result in a "small" version,
-just like with the builtin symbols.
+Adding the prefix "sm" to a name will result in a "small" version,
+just like with the built-in symbols.
 .P
 In addition to naming and defining your own symbols, you can also
-override the definitions of existing music symbols. Suppose, for example.
+override the definitions of existing music symbols. Suppose, for example,
 you want a different style of C clef. You can then supply a symbol
 context for "cclef" and provide your own PostScript.
 .P
 A symbol definition applies to the entire file, no matter where in the file
 it is defined. If you try to define the same symbol more than once, a warning
 will be issued, and the last definition will be used.
-A user defined symbol must have its "symbol" context before it is
+A user-defined symbol must have its "symbol" context before it is
 referenced.
 .P
 The symbols you define will become part of a PostScript Type 3 font.
 Symbols must be defined in a 1000 unit scale coordinate space,
 where 300 units equals one stepsize,
 with the symbol's "logical center" at (0, 0).
-Limitations of Type 3 fonts apply. For example.
+Limitations of Type 3 fonts apply. For example,
 since PostScript does not allow using setrgbcolor or
 sethsbcolor after a setcachedevice operation in a BuildChar procedure,
 it is not possible to change the color of a symbol.
@@ -10259,28 +10301,28 @@ typically about 100 units,
 so that if it is printed right next to another symbol, they won't touch.
 However, in the case of a symbol you want to use as a
 .Hr udefsym.html#notehead
-note head,
+notehead,
 you should not include any padding, so that stems
-will touch the note head.
+will touch the notehead.
 .P
 .Hm notehead
 If you want to use a user-defined symbol as a
 .Hr param.html#notehead
-note head,
+notehead,
 you need to specify the "ystemoffset" parameter.
-If the symbol is not to be used as a note head,
+If the symbol is not to be used as a notehead,
 you should omit that. The ystemoffset is given as two numbers, the first
 for when the stem is up, the second for when it is down. They specify,
 in the same units as the symbol itself (300 units per stepsize), where
 on the y axis the stem should begin.
-Any note head should be defined with its vertical center at y of zero.
+Any notehead should be defined with its vertical center at y of zero.
 So if you want the stem to start at the vertical center of the note,
 the ystemoffset would also be zero. A stepsize below the center of the note
 would be -300, a half stepsize above would be 150, etc.
 In the x dimension, the stem is always placed at the edge of the note,
 as given by the bbox.
 .P
-If you need an "upside down" version of a note head,
+If you need an "upside-down" version of a notehead,
 just name the upside version of the  symbol
 with a "u" prefix on the name of the right side up version.
 Then you can use the normal u? convention in
@@ -10289,7 +10331,7 @@ headshapes context,
 and Mup will take care of the rest.
 .P
 Once defined, a user-defined symbol can be used just
-like the builtin symbols.
+like the built-in symbols.
 There are only a few places where Mup uses some special knowledge of the
 characteristics of music symbols, but in those cases, if you redefine the
 symbol to have different characteristics, Mup may not place things quite as
@@ -10297,16 +10339,16 @@ perfectly as you would like. One place where this might happen is if you
 redefine the symbol for flat, natural, or dblflat, to make them
 significantly different, since Mup tries very hard to pack accidentals
 as tightly as possible, based on some intimate knowledge of
-the shapes of the builtin versions.
+the shapes of the built-in versions.
 .P
-Here is an example that shows both overriding a builtin symbol and
+Here is an example that shows both overriding a built-in symbol and
 defining a completely new symbol, and then using them.
 .Ex 1
 .\"score
 .\"	leftmargin=1.5
 .\"	rightmargin=1.5
 .\"	scale=1.5
-// Override the builtin xnote to have thicker lines
+// Override the built-in xnote to have thicker lines
 symbol "xnote"
 	bbox=-435, -365, 435, 375
 	postscript="gsave
@@ -10339,9 +10381,9 @@ headshapes
 music
 
 1: [hs "boldxnote"]...g;8b;d+;2g;
-// You can use the user-defined symbol just like a builtin
+// You can use the user-defined symbol just like a built-in
 mussym above 1: 1.5 "Smiley";
-// You can apply size just like for a builtin
+// You can apply size just like for a built-in
 rom below 1: 2 "\e(Smiley) \es(+5)\e(Smiley) \es(+5)\e(Smiley)";
 bar
 .Ee
@@ -10376,7 +10418,7 @@ included files.
 Mup supports custom accidentals: the ability to use any character,
 including a
 .Hr udefsym.html
-user defined symbol,
+user-defined symbol,
 as an
 .Ix bL
 accidental.
@@ -10407,11 +10449,11 @@ do not support the special MIDI commands that are needed for these features.
 Although you can use an existing character as a custom accidental, typically
 you would want to define a new one, as explained in the
 .Hr udefsym.html
-section on user defined symbols.
+section on user-defined symbols.
 When you put a custom accidental on a note,
-the X axis of the symbol (the place where Y = 0) will be aligned vertically
+the x axis of the symbol (the place where y is 0) will be aligned vertically
 with the note.
-The position of the Y axis (the place where X = 0)
+The position of the y axis (the place where x is 0)
 does not affect the positioning.
 .P
 The Mup distribution contains two "include" files of symbol definitions
@@ -10461,7 +10503,7 @@ It can be specified in any of these ways:
 .DL
 .LI
 A positive number by which the note's frequency is to
-be multiplied. It may include a decimal fraction part (e.g. 0.97 or 1.5).
+be multiplied. It may include a decimal fraction part (e.g., 0.97 or 1.5).
 Of course, a number greater than 1 will raise the pitch, and a number
 less than 1 will lower the pitch.
 .LI
@@ -10768,8 +10810,8 @@ of "-d 512", along with an
 .Hr cmdargs.html#moption
 option to generate MIDI.
 In addition to some other debugging output, it will print tables to standard
-error ouput,
-that show the frequency being used for each note in your piece.
+error output,
+which show the frequency being used for each note in your piece.
 If you change any of the parameters along the way, it will print a table for
 each section of your piece as delimited by the places where the
 parameters change.
@@ -10846,7 +10888,7 @@ You can restore from any previous save.
 .P
 Here is a simple example that saves the default parameter settings,
 changes three parameters, and saves again under a different name.
-It then uses the changed parameters for one measure, restores back to
+It then uses the changed parameters for one measure, restores
 the defaults for one measure, then restores
 to the changed values for a measure.
 .Ex 1
@@ -10981,7 +11023,7 @@ applies to entire input, and cannot be changed after music input
 ..
 .de Mn
 .Te
-at next music context if measnum parameter is "every N", else start of next score
+at next music context if measnum parameter is "every N," else start of next score
 ..
 .de Bw
 .Te
@@ -11017,7 +11059,7 @@ between the current score and the next score
 .Hm a4freq
 a4freq
 .De
-specify the frequency, in Hertz, of the A in octave 4,
+This parameter specifies the frequency, in Hertz, of the A in octave 4,
 which is the A above middle C.
 .Va
 100.0 to 1000.0
@@ -11040,7 +11082,7 @@ tuning
 .Hm aboveord
 aboveorder
 .De
-specify in what order to stack items that are printed above a staff.
+This parameter specifies in what order to stack items that are printed above a staff.
 The value is a comma-separated list of all the types of things that
 can be printed above a staff. Items are stacked in the order listed,
 starting from just above the staff and working upward.
@@ -11108,14 +11150,14 @@ dyndist
 .Hm acctable
 acctable
 .De
-specify which table of accidentals, as defined in an
+This parameter specifies which table of accidentals, as defined in an
 accidentals context,
 to use. It can be set to nothing, to mean to use only the normal standard
 accidentals (#, &, x, &&, n) with their default meanings as implied by the
 .Hr param.html#tuning
 tuning parameter.
 .Va
-A quoted string that matches the name used for an accidental context
+a quoted string that matches the name used for an accidental context
 .Df
 not set
 .Cn
@@ -11137,7 +11179,7 @@ tuning
 .Hm addxpose
 addtranspose
 .De
-specify by what additional interval to transpose the music data.
+This parameter specifies by what additional interval to transpose the music data.
 There is another parameter called just
 .Hr param.html#xpose
 transpose.
@@ -11146,30 +11188,31 @@ individual staffs (for transposing instruments), and then use the
 addtranspose parameter if you want to change the key of the entire score.
 But either of these parameters can be used either way.
 In any case, for each staff, and for the score, the values of
-transpose and addtranspose are "added" to find the transposition
-for that staff or score.
+transpose and addtranspose are both applied, one after the other,
+to the current key signature, notes, and chords
+to determine their resulting values.
 The interval can be
 larger than an octave, but must be a valid interval (e.g., there is no
 such thing as a perfect 6th). It is an error to specify a transposition value
-which would result in a key signature with more than 7 flats or sharps.
+that would result in a key signature with more than 7 flats or sharps.
 .Ix cG
 It is also an error if transposition would result in a note requiring a
 triple sharp or triple flat.
 .Va
 the word "up" or "down," followed by an interval and a whole number greater than 0.
-You can optionally add the keyword \fBnotes\fP or \fBchords\fP at the end, to restrict the
+You can optionally add the keyword "notes" or "chords" at the end, to restrict the
 transposition to just notes or just chord symbols; by default, both are
 transposed.
 The interval is one of major, minor, augmented, diminished, or perfect.
 .Ix iQ
-The intervals can be abbreviated to their first 3 letters (maj,
+The intervals can be abbreviated to their first three letters (maj,
 min, aug, dim, or per).
 The
 .Hr trnspose.html
 section on transposition
 lists transposition intervals and gives further details.
 Depending on which key signature you are
-transposing from, some transposition intervals may not work because they
+transposing from, some transposition intervals may not work, because they
 result in more than 7 flats or sharps.
 .Df
 up perfect 1 (i.e., no transposition)
@@ -11196,6 +11239,34 @@ useaccs
 .Ix gA
 .Ix cG
 .Ix hF
+.eP
+.\"-----------------
+.bP
+.Na
+.Hm alignlabels
+alignlabels
+.De
+This parmaeter specifies how to align labels for staffs,
+including those for brace and brackets group.
+Each nesting level will be aligned independently.
+.Va
+center, left, or right
+.Df
+right
+.Cn
+score
+.Ns
+.eX
+alignlabels = center
+.Sa
+.Hr param.html#brace
+brace,
+.Hr param.html#bracket
+bracket,
+.Hr param.html#label
+label,
+.Hr param.html#label2
+label2
 .eP
 .\"-----------------
 .bP
@@ -11233,8 +11304,8 @@ alignrests
 .De
 This parameter controls whether rests stay as close to the middle of the
 staff as possible, or whether they are adjusted to align with the notes
-surrounding them. If the value is 'n' no alignment to the notes is done.
-If the value is 'y' rests are moved to try to follow the flow of the voice.
+surrounding them. If the value is "n," no alignment to the notes is done.
+If the value is "y," rests are moved to try to follow the flow of the voice.
 The alignment of rests with notes is only done when the
 .Hr param.html#vscheme
 vscheme parameter
@@ -11248,6 +11319,7 @@ y or n
 n
 .Cn
 score, staff, voice
+.mM
 .Ni
 .eX
 alignrests=y
@@ -11261,6 +11333,7 @@ vscheme
 .Hm barstyle
 barstyle
 .De
+This parameter
 specifies which staffs are to have their bar lines connected together.
 When drawing bar lines, a continuous vertical line will be drawn from
 the top line of the top staff in a range to the bottom line of the bottom
@@ -11274,7 +11347,7 @@ Staff numbers can be from 1 to the value of the
 \&"staffs" parameter.
 A range is a pair of numbers separated by a dash.
 You can also specify all, which means to bars all staffs together regardless
-of how many they are.
+of how many there are.
 You can specify between, which causes the bar lines to be drawn between
 adjacent staffs and not through them. If you want a mixture of between and
 not between, all the non-between ranges must be specified first, then the
@@ -11313,10 +11386,11 @@ visible
 .Hm beamslp
 beamslope
 .De
+This parameter
 allows you to control the slope of beams.
 Two values must be given, separated by a comma.
 Mup calculates an appropriate slope for beams by applying a linear
-regression algorithm that uses the positions of the note heads within
+regression algorithm that uses the positions of the noteheads within
 the beam. The first value supplied for the beamslope parameter
 is a factor by which to multiply the default slope that Mup calculates.
 The minimum value of 0.0 would cause all beams to be horizontal,
@@ -11352,6 +11426,7 @@ beamslope=0.8,20
 .Hm beamstyl
 beamstyle
 .De
+This parameter
 specifies how to beam eighth notes or shorter. It is specified
 as a list of time values. Any number of notes up to each time value
 will be beamed together. For example, in 4/4 time, with beamstyle=4,4,4,4
@@ -11362,7 +11437,7 @@ would not be beamed together, because they span beats. If beamstyle
 had been specified as 4,2,4 then the eighth notes would be beamed.
 Normally, beams also end whenever a rest or space is encountered.
 However, if an "r" is placed at the end of the list of time values,
-Mup will beams across rests of less than quarter note duration.
+Mup will beam across rests of less than quarter note duration.
 Similarly, if an "s" is placed at the end of the list,
 Mup will beam across spaces of less than quarter note duration.
 You can specify both r and s in either order.
@@ -11372,8 +11447,8 @@ the outer beam extends for the sum of the values in the parentheses,
 while inner beams extend only for the individual values within the parentheses.
 For example, if you set
 beamstyle=(4,4),(4,4) and then have a measure that consists of all 16th notes,
-the first 8 notes would be connected by an outer beam, as would the last 8
-notes, but the second (inner) beams would cover only 4 notes each.
+the first eight notes would be connected by an outer beam, as would the last
+eight notes, but the second (inner) beams would cover only four notes each.
 The parentheses cannot be nested.
 It is possible to override this default beaming style within a specific
 measure. See the section on
@@ -11434,7 +11509,7 @@ beamstyle =      // turn off beaming
 .Hm beloword
 beloworder
 .De
-specify in what order to stack items that are printed below a staff.
+This parameter specifies in what order to stack items that are printed below a staff.
 The value is a comma-separated list of all the types of things that
 can be printed below a staff. Items are stacked in the order listed,
 starting from just below the staff and working downward.
@@ -11499,7 +11574,7 @@ dyndist
 .Hm betwnord
 betweenorder
 .De
-specify in what order to stack items that are printed between two staffs.
+This parameter specifies in what order to stack items that are printed between two staffs.
 The value is a comma-separated list of all the types of things that
 can be printed between staffs. Items are stacked in the order listed,
 starting from a baseline and working upward.
@@ -11558,6 +11633,7 @@ dyndist
 .Hm botmar
 bottommargin
 .De
+This parameter
 sets the amount of white space margin to put at the bottom of each page.
 It is specified in inches if the
 .Hr param.html#units
@@ -11586,9 +11662,9 @@ leftmargin,
 .Hr param.html#rightmar
 rightmargin,
 .Hr param.html#topmar
-topmargin
+topmargin,
 .Hr param.html#pgheight
-pageheight
+pageheight,
 .Hr param.html#units
 units
 .Ix gM
@@ -11602,6 +11678,7 @@ units
 .Hm brace
 brace
 .De
+This parameter
 specifies which staffs are to be grouped together with a brace to the left
 of the score. If there is a string given in parentheses, that string
 will be used as the label to print on the next score,
@@ -11654,6 +11731,7 @@ staffs
 .Hm bracket
 bracket
 .De
+This parameter
 specifies which staffs are to be grouped together with a bracket to the left
 of the score. If there is a string given in parentheses, that string
 will be used as the label to print on the next score,
@@ -11702,7 +11780,7 @@ staffs
 .Hm brktrpts
 bracketrepeats
 .De
-When set to \fBy\fR, brackets are drawn at repeat signs to make it more
+When set to "y," brackets are drawn at repeat signs to make it more
 obvious to the performer where the repeated section begins and ends,
 which may be helpful when playing in a dimly lit area. Which staffs are
 bracketed together is controlled by the
@@ -11721,20 +11799,20 @@ bracketrepeats=y
 .Hr param.html#endingst
 endingstyle,
 .Hr param.html#rptdots
-repeatdots,
+repeatdots
 .eP
 .bP
 .Na
 .Hm canclkey
 cancelkey
 .De
-When set to \fBy\fP, when a key changes, any sharps or flats in the 
+When set to "y," when a key changes, any sharps or flats in the 
 previous key that are not part of the new key will be canceled by printing
 natural signs, before printing the new key signature. When
-set to \fBn\fP, the naturals will only be printed if the new key has no
+set to "n," the naturals will only be printed if the new key has no
 sharps or flats.
 .Va
-\fBy\fP or \fBn\fP
+y or n
 .Df
 n
 .Cn
@@ -11755,9 +11833,9 @@ useaccs
 .Hm carryacc
 carryaccs
 .De
-this specifies for
+This parameter specifies, for
 .Hr midi.html
-MIDI
+MIDI,
 whether accidentals follow the normal notation rules of carrying through
 the remainder of the current measure until explicitly changed. If set to n,
 each accidental will apply only to the specific chord where it was specified.
@@ -11780,7 +11858,7 @@ useaccs
 .Hm chdist
 chorddist
 .De
-sets minimum distance from staff to place chords. When
+This parameter sets the minimum distance from staffs to place chords. When
 chord marks are printed, they will be placed
 no closer to the staff than the value
 of this parameter. This can be used to reduce the ragged effect of having
@@ -11795,7 +11873,7 @@ This parameter may be overridden on specific items. The section on
 tempo, dynamic marks, ornaments, etc.
 gives details on how to do this.
 .Va
-a number between 0.0 and 50.0 inclusive, given in stepsizes.
+a number between 0.0 and 50.0 inclusive, given in stepsizes
 .Df
 3.0
 .Cn
@@ -11822,9 +11900,31 @@ scoresep
 .\"------------------------------------
 .bP
 .Na
+.Hm chordxlate
+chordtranslation
+.De
+If set to "German" a B in a chord will be printed as H, while a B flat in a
+chord will be printed as B. If set to a string containing 7 syllables, those
+syllables will be substituted for pitches in chords, beginning
+with C. I.e., a C will be replaced by the first syllable, a D by the second
+syllable, etc.
+.Va
+\&"German" or a string like "do re mi fa sol la si" or nothing.
+.Df
+nothing
+.Cn
+score, staff
+.Nm
+.eX
+chordtranslation = "DO RE MI FA SOL LA TI"
+.eP
+.\"------------------------------------
+.bP
+.Na
 .Hm clef
 clef
 .De
+This parameter
 sets the clef to use.
 Changing a clef may also change the default octave
 .Hr param.html#defoct
@@ -11899,6 +11999,7 @@ cue=y
 .Hm defkmap
 defaultkeymap
 .De
+This parameter
 specifies which keymap to use if none of the other keymap parameters applies.
 See the
 .Hr textstr.html#keymaps
@@ -11942,8 +12043,9 @@ withkeymap
 .Hm defoct
 defoct
 .De
+This parameter
 sets the default octave for any note 
-which does not have an explicit octave specified.
+that does not have an explicit octave specified.
 An octave goes from C up to the next B, with octave 4 being the octave
 beginning on middle C.
 If the
@@ -11965,7 +12067,7 @@ clef.
 (Octave 5 for frenchviolin and 8treble;
 octave 4 for treble, soprano, mezzosoprano,
 alto and 8bass clefs; octave 3 for treble8, tenor, baritone and bass clefs;
-octave 2 for bass8 and subbass clefs).
+octave 2 for bass8 and subbass clefs.)
 .Cn
 score, staff, voice
 .Pm
@@ -11983,6 +12085,7 @@ defoct = 3
 .Hm dist
 dist
 .De
+This parameter
 sets minimum distance from staff to place
 .Hr textmark.html
 rom, bold, ital, and boldital items,
@@ -12009,7 +12112,7 @@ and on
 rehearsal marks
 give details on how to do this.
 .Va
-a number between 0.0 and 50.0 inclusive, given in stepsizes.
+a number between 0.0 and 50.0 inclusive, given in stepsizes
 .Df
 2.0
 .Cn
@@ -12041,7 +12144,7 @@ scoresep
 .Hm division
 division
 .De
-sets
+This parameter sets the
 .Hr midi.html
 MIDI
 division (number of clock ticks per quarter note). This typically
@@ -12066,6 +12169,7 @@ division = 384
 .Hm dyndist
 dyndist
 .De
+This parameter
 sets minimum distance from staff to place
 .Ix cL
 .Ix cM
@@ -12085,7 +12189,7 @@ This parameter may be overridden on specific items. The section on
 tempo, dynamic marks, ornaments, etc.
 gives details on how to do this.
 .Va
-a number between 0.0 and 50.0 inclusive, given in stepsizes.
+a number between 0.0 and 50.0 inclusive, given in stepsizes
 .Df
 2.0
 .Cn
@@ -12119,7 +12223,7 @@ Mup just leaves a measure of space.
 This parameter lets you specify what Mup should use.
 The most common value other than space would be a measure of rest,
 but you can supply any valid music input. So, for example, if your music
-has a measure long pattern that repeats frequently in some voice, you could 
+has a measure-long pattern that repeats frequently in some voice, you could 
 set this parameter to that pattern, and Mup will fill in that music
 for every measure where you don't override with something else.
 The value is a string, and is effectively placed in the input as if you
@@ -12129,7 +12233,7 @@ a long ways away from the line where the parameter is defined.
 Note also that since the value is a text string, all the usual rules for
 .Hr textstr.html
 text strings
-apply; for example any double quotes inside the string must
+apply; for example, any double quotes inside the string must
 be backslashed. Since the processing of emptymeas happens before the
 derivation of music on tabnote staffs,
 you probably do not want to set a
@@ -12160,6 +12264,7 @@ emptymeas="8.c;16;8.e;16;8.f;16;{8g;f;g;}3;"
 .Hm endkmap
 endingkeymap
 .De
+This parameter
 specifies which keymap to use for labels of endings
 See the
 .Hr textstr.html#keymaps
@@ -12207,6 +12312,7 @@ withkeymap
 .Hm endingst
 endingstyle
 .De
+This parameter
 controls how
 .Hr bars.html#endings
 first and second endings
@@ -12284,7 +12390,7 @@ visible
 .Hm xtendlyr
 extendlyrics
 .De
-this specifies whether Mup should automatically add
+This parameter specifies whether Mup should automatically add
 .Ix fW
 underscore "extender lines"
 to lyrics. This parameter only has effect when you let Mup derive
@@ -12315,6 +12421,7 @@ sylposition
 .Hm firstpg
 firstpage
 .De
+This parameter
 specifies what to number the first page.
 This value can be overridden by the
 .Hr cmdargs.html#poption
@@ -12345,6 +12452,7 @@ panelsperpage
 .Hm flipmarg
 flipmargins
 .De
+This parameter
 specifies if the left and right margins are to be interchanged
 on every other page. This may be useful if you want extra space for
 book binding. If set to y, the first physical page will use the values
@@ -12386,12 +12494,10 @@ rightmargin
 .Hm font
 font
 .De
+This parameter
 specifies which font to use for
 .Hr prnttext.html
-print, left, right, center, and title statements,
-and
-.Hr chrdattr.html#withlist
-\&"with" lists (i.e., strings that are associated with a particular chord).
+print, left, right, center, and title statements.
 .Va
 rom, ital, bold, or boldital
 .Df
@@ -12429,12 +12535,10 @@ withfont
 .Hm fontfam
 fontfamily
 .De
+This parameter
 specifies what font family to use for
 .Hr prnttext.html
-print, left, right, center, and title statements
-and
-.Hr chrdattr.html#withlist
-\&"with" lists (i.e., strings that are associated with a particular chord).
+print, left, right, center, and title statements.
 It also provides the default for rom, bold, ital, and boldital statements.
 .Va
 avantgarde, bookman, courier, helvetica, newcentury, palatino, times
@@ -12462,6 +12566,7 @@ withfontfamily
 .Hm gridfret
 gridfret
 .De
+This parameter
 specifies when to print fret numbers on grids.
 .Ix iW
 Normally, the top line of
@@ -12475,7 +12580,9 @@ the value specified for this parameter, and there are no strings marked "o",
 the "fr" notation is used. If no value is set for this parameter,
 the grid will just be made as tall
 as necessary to accommodate the chord's frets;
-but in any case, the grid will always be at least 4 frets high.
+but in any case, the grid will always be at least as high as the value of
+.Hr param.html#mingrid
+the mingridheight parameter.
 .Va
 2 to 99, or not set
 .Df
@@ -12503,10 +12610,11 @@ mingridheight
 .Hm gridend
 gridsatend
 .De
+This parameter
 specifies whether to print guitar grids at the end of the song.
-If set to "y"
+If set to "y,"
 grids for all of the chords used in the song will be printed.
-Grids only associated with particular staffs with only be printed if that
+Grids only associated with particular staffs will only be printed if that
 staff is visible. Grids associated with "all" will use the score level value
 of this parameter.
 .Va
@@ -12516,7 +12624,7 @@ n
 .Cn
 score, staff
 .Te
-During each music context where this has been set to y
+During each music context where this has been set to "y,"
 it accumulates chords that are used.  If you later set
 it to n, it stops accumulating, but doesn't forget the
 ones it accumulated earlier.  At the end, it prints out
@@ -12540,6 +12648,7 @@ mingridheight
 .Hm gridscl
 gridscale
 .De
+This parameter
 specifies how large to make grids, relative to their default size.
 For example, a value of 0.5 will make them 1/2 their default size.
 The default size for grids summarized at the end
@@ -12578,8 +12687,9 @@ staffscale
 .Hm gridused
 gridswhereused
 .De
+This parameter
 specifies whether to print guitar grids along with chords
-where they appear in the song. If set to "y" each
+where they appear in the song. If set to "y," each
 .Hr textmark.html#chordmod
 text item with the chord modifier
 will have a grid printed below its name.
@@ -12608,6 +12718,7 @@ mingridheight
 .Hm indentrs
 indentrestart
 .De
+This parameter
 specifies whether a restart should be indented when it occurs at the
 beginning of a new score. It does not affect restarts that occur in
 the middle of a score.
@@ -12627,6 +12738,7 @@ indentrestart = y
 .Hm key
 key
 .De
+This parameter
 sets the key signature. This can be specified either by giving the
 number of sharps (#) or flats (&), or by giving the name of the key.
 .Va
@@ -12678,7 +12790,7 @@ useaccs
 .Hm label
 label
 .De
-specify a label to be printed to the left of the staff on the next
+This parameter specifies a label to be printed to the left of the staff on the next
 score. If there is also a
 .Hr param.html#brace
 brace
@@ -12699,7 +12811,7 @@ you might set label="Tenor/Bass" and label2="TB"
 .Va
 .Hr textstr.html
 a text string
-enclosed in double quotes.
+enclosed in double quotes
 .Df
 enough spaces to produce an indent of 1/2 inch
 .Cn
@@ -12708,6 +12820,8 @@ score, staff
 .eX
 label = "oboe"
 .Sa
+.Hr param.html#alignlabels
+alignlabels,
 .Hr param.html#brace
 brace,
 .Hr param.html#bracket
@@ -12727,7 +12841,7 @@ label2
 .Hm label2
 label2
 .De
-specify a label to be printed to the left of the staff on all scores after
+This parameter specifies a label to be printed to the left of the staff on all scores after
 the first. If there is also a
 .Hr param.html#brace
 brace
@@ -12756,6 +12870,8 @@ score, staff
 .eX
 label2 = "Solo"
 .Sa
+.Hr param.html#alignlabels
+alignlabels,
 .Hr param.html#brace
 brace,
 .Hr param.html#bracket
@@ -12768,6 +12884,7 @@ label
 .Hm labkmap
 labelkeymap
 .De
+This parameter
 specifies which keymap to use for labels to the left of staffs.
 See the
 .Hr textstr.html#keymaps
@@ -12815,6 +12932,7 @@ withkeymap
 .Hm leftmar
 leftmargin
 .De
+This parameter
 sets the amount of white space margin to put at the left side of each page.
 It is specified in inches if the
 .Hr param.html#units
@@ -12859,6 +12977,7 @@ units
 .Hm leftspc
 leftspace
 .De
+This parameter
 specifies what portion of the white space around a chord is placed
 on its left side. Usually
 (unless packexp is zero), longer notes will have more white space around
@@ -12894,9 +13013,10 @@ packfact
 .Hm lyralign
 lyricsalign
 .De
+This parameter
 specifies how to align lyric syllables with chords. Its value is the
 proportion of each syllable to place to the left of the syllable's chord.
-Thus for example, a value of 0.0 causes
+Thus, for example, a value of 0.0 causes
 the left edge of syllables to be aligned with
 the chords, whereas a value of 0.5 causes syllables to be centered with
 the chord, and 1.0 causes the right edge of the syllables to be aligned
@@ -12921,7 +13041,7 @@ sylposition
 .Hm lyrdist
 lyricsdist
 .De
-sets minimum distance from staff to place lyrics. When
+This parameter sets the minimum distance from staffs to place lyrics. When
 lyrics are printed, they will be placed
 no closer to the staff than the value of this parameter.
 This only affects lyrics above and below, not between.
@@ -12952,6 +13072,7 @@ scoresep
 .Hm lyrfont
 lyricsfont
 .De
+This parameter
 sets which font to use for
 .Hr lyrics.html
 lyrics.
@@ -12981,6 +13102,7 @@ lyricssize
 .Hm lyrfam
 lyricsfontfamily
 .De
+This parameter
 specifies what font family to use for
 .Hr lyrics.html
 lyrics.
@@ -13006,6 +13128,7 @@ lyricsfont
 .Hm lyrkmap
 lyricskeymap
 .De
+This parameter
 specifies which keymap to use for lyrics.
 See the
 .Hr textstr.html#keymaps
@@ -13053,6 +13176,7 @@ withkeymap
 .Hm lyrsize
 lyricssize
 .De
+This parameter
 sets point size to use for
 .Hr lyrics.html
 lyrics.
@@ -13080,6 +13204,7 @@ size
 .Hm maxmeas
 maxmeasures
 .De
+This parameter
 specifies the maximum number of measures to put on any score.
 .Va
 a number from 1 to 1000
@@ -13112,6 +13237,7 @@ staffscale
 .Hm maxscore
 maxscores
 .De
+This parameter
 specifies the maximum number of scores to print per page.
 .Va
 1 to 1000
@@ -13134,6 +13260,7 @@ scoresep
 .Hm measnum
 measnum
 .De
+This parameter
 specifies whether or not to print measure numbers.
 If set to "y,"
 the current measure number will be printed at the beginning of each score
@@ -13155,7 +13282,7 @@ n
 .Cn
 score
 .Te
-at next music context if "every N", else start of next score
+at next music context if "every N," else start of next score
 .eS
 measnum = y
 .br
@@ -13187,7 +13314,7 @@ rehstyle
 .Hm mnumfont
 measnumfont
 .De
-This specifies which font type to use for the automatic measure numbers,
+This parameter specifies which font type to use for the automatic measure numbers,
 if they are turned on via the
 .Hr param.html#measnum
 measnum parameter.
@@ -13216,7 +13343,7 @@ measnumstyle
 .Hm mnumfam
 measnumfontfamily
 .De
-This specifies which font family to use for the automatic measure numbers,
+This parameter specifies which font family to use for the automatic measure numbers,
 if they are turned on via the
 .Hr param.html#measnum
 measnum parameter.
@@ -13245,7 +13372,7 @@ measnumstyle
 .Hm mnumsize
 measnumsize
 .De
-This specifies what size to use for the automatic measure numbers,
+This parameter specifies what size to use for the automatic measure numbers,
 in points, if they are turned on via the
 .Hr param.html#measnum
 measnum parameter.
@@ -13274,7 +13401,7 @@ measnumstyle
 .Hm mnumstyl
 measnumstyle
 .De
-This specifies whether to put automatic measure numbers inside boxes
+This parameter specifies whether to put automatic measure numbers inside boxes
 or circles, or leave them plain.
 .Va
 plain, boxed, or circled
@@ -13303,7 +13430,7 @@ rehstyle
 .Hm minalign
 minalignscale
 .De
-This specifies how much aligned strings can be compressed, in an effort to
+This parameter specifies how much aligned strings can be compressed, in an effort to
 prevent them from running in the next item at the same alignment level.
 Only aligned things are ever compressed, and then only if they would collide
 with the the next item at the same level, and only as much as needed to
@@ -13327,7 +13454,7 @@ minalignscale = 0.85
 .Hm mingrid
 mingridheight
 .De
-This specifies the minimum number of frets to print on grids. Grids will
+This parameter specifies the minimum number of frets to print on grids. Grids will
 be made taller than this when necessary, but will never be shorter than this.
 .Va
 A number from 2 to 99
@@ -13354,7 +13481,7 @@ gridswhereused
 .Hm notehead
 noteheads
 .De
-The noteheads parameter describes which note head shape(s)
+This parameter describes which notehead shape(s)
 to use for each pitch in the scale.
 If you want to use the same shape for all pitches,
 as is the case with standard notation, the value is a string
@@ -13381,7 +13508,7 @@ before the chord. It can also be
 overridden on an individual note
 by putting hs "shapename" after the note.
 .Va
-A string containing either 1 or 7 head shape names.
+a string containing either 1 or 7 head shape names
 .Df
 \&"norm"
 .Cn
@@ -13404,14 +13531,14 @@ noteheads = "isostri semicirc diam righttri norm rect pie"
 .Hm inputdir
 noteinputdir
 .De
-If set to any, then when there are multiple notes in a chord, the notes
+If set to "any," then when there are multiple notes in a chord, the notes
 can be entered in any order, but any notes not in the
 .Hr param.html#defoct
 default octave
 must have their octave specified, either by octave number, or the appropriate
 number of plus or minus signs, based on their distance from the default octave.
-When set to up, notes in a chord must be entered in pitch order from
-bottom up. When set to down, they must be entered in pitch order from
+When set to "up," notes in a chord must be entered in pitch order from
+bottom up. When set to "down," they must be entered in pitch order from
 top down. When in up or down mode, the first note's octave is specified as
 with any, but subsequent notes in the chord are relative to the previous
 note. Note letters less than or equal to an octave away
@@ -13422,7 +13549,7 @@ minus signs can be used, to specify how many octaves away they are.
 For example, for up mode, default octave of 4, and input of gbe,
 the b will be in octave 4, but the e will be in octave
 5, because that is the next e that is upward from b4.
-In down mode with default octave of 4, and the same input of gbe. 
+In down mode with default octave of 4, and the same input of gbe,
 the b and e would both be in octave 3.
 This parameter is ignored on tablature staff input and when using
 chord-at-a-time input mode.
@@ -13442,10 +13569,10 @@ noteinputdir=up
 .Hm nummrpt
 numbermrpt
 .De
-If set to 'y'
+If set to "y"
 .Hr chordinp.html#measdur
 measure repeats
-are numbered; if set to 'n' they aren't.
+are numbered; if set to "n" they aren't.
 .Va
 y or n
 .Df
@@ -13462,10 +13589,11 @@ numbermrpt = n
 .Hm ontheline
 ontheline
 .De
+This parameter
 specifies whether notes for voices 1 and 2
 on a 1-line staff are to be placed on the line.
 If this is set to n, notes with stem up will be placed above the line
-and notes with stem down will be placed below the line, otherwise both
+and notes with stem down will be placed below the line; otherwise both
 will be placed on the line. For notes that don't have a stem, the rules
 are applied using the direction the stem would be if there were a stem.
 This parameter has no effect on
@@ -13495,6 +13623,7 @@ stafflines
 .Hm packexp
 packexp
 .De
+This parameter
 sets note expansion factor. This factor controls spacing of notes relative
 to their time values. If set to 1.0, Mup will try to give a half note twice
 as much space as a quarter note, a whole note twice as much as a half note,
@@ -13530,6 +13659,7 @@ pad
 .Hm packfact
 packfact
 .De
+This parameter
 specifies how tightly to pack notes together on output. The smaller
 the value, the more tightly notes are packed together.
 .Va
@@ -13554,6 +13684,7 @@ pad
 .Hm pad
 pad
 .De
+This parameter
 specifies the amount of padding to be added to notes.
 This can be used to control how tightly things are packed together.
 Especially if
@@ -13595,7 +13726,7 @@ packfact
 .Hm pgheight
 pageheight
 .De
-Set the page height. If the
+This parameter sets the page height. If the
 .Hr param.html#units
 units parameter
 is inches, the value of pageheight is given in inches,
@@ -13635,7 +13766,7 @@ units
 .Hm pgsize
 pagesize
 .De
-Set the page size. This is just an alternate way of specifying
+This parameter sets the page size. This is just an alternate way of specifying
 .Hr param.html#pgheight
 pageheight
 and
@@ -13675,7 +13806,7 @@ panelsperpage
 .Hm pgwidth
 pagewidth
 .De
-Set the page width. If the
+This parameter sets the page width. If the
 .Hr param.html#units
 units parameter
 is inches, the value of pagewidth is given in inches,
@@ -13717,7 +13848,7 @@ units
 .Hm panels
 panelsperpage
 .De
-Specifies how many pages of music to print on each physical page.
+This parameter specifies how many pages of music to print on each physical page.
 This parameter can only be specified before any music or block input.
 Note that the
 .Hr param.html#pgheight
@@ -13759,11 +13890,11 @@ pagewidth
 .Hm pedstyle
 pedstyle
 .De
-Specifies whether to display
+This parameter specifies whether to display
 .Hr pedal.html
 piano pedal marks
 with lines or with the word "Ped" and "*".
-With the "pedstar" style, a "bounce" of the pedal is shown by a "* Ped"
+With the "pedstar" style, a "bounce" of the pedal is shown by a "* Ped,"
 whereas with the "alt pedstar" style, only a "Ped" is printed.
 .Va
 line, pedstar, or alt pedstar
@@ -13777,11 +13908,50 @@ pedstyle = pedstar
 .Ix dS
 .Ix fL
 .eP
+\"----------------------------------
+.bP
+.Na
+.Hm printedtime
+printedtime
+.De
+This parameter defines what to print as a key signature,
+if you want that to be something other than the actual time signature.
+.Va
+There are three possible formats for the value. The first is just like for
+the "time" parameter, except that alternating time is not allowed.
+An example usage might be if most staffs are in 3/4
+time, but one is really in 6/8, so you could set that staff's printedtime
+parameter to 6/8. Another example would be to set the actual time signature
+to 7/4, but set individual staffs to 3/4+4/4 or 4/4+3/4 as appropriate.
+The second format is a single string. One usage might be to set it to "3"
+and assume the reader can deduce what the time unit is. The third format is
+two strings, which will be centered one on top of the other. A possible usage
+would be to put a "3" for the numerator, and an actual note symbol
+for the "denominator."
+.Df
+nothing
+.Cn
+score, staff
+.Nm
+.eS
+printedtime = 3/4
+.br
+printedtime = 3/4+4/4
+.br
+printedtime = "3"
+.br
+printedtime = "4" "dn4n"
+.Sa
+.Hr param.html#time
+time
+.eP
+.\"-------------------------
 .bP
 .Na
 .Hm prntkmap
 printkeymap
 .De
+This parameter
 specifies which keymap to use for
 .Hr prnttext.html
 print, left, right, center, and title commands.
@@ -13831,11 +14001,11 @@ withkeymap
 .Hm prmultn
 printmultnum
 .De
-If set to 'y'
+If set to "y,"
 .Hr multirst.html
 multirests
 are labeled with the number of measures of rest they represent;
-if set to 'n' they aren't.
+if set to "n," they aren't.
 This would allow you to print some other commentary in place of the
 number, print it in a different style, etc.
 .Va
@@ -13853,6 +14023,7 @@ printmultnum = n
 .Hm rehkmap
 rehearsalkeymap
 .De
+This parameter
 specifies which keymap to use for rehearsal mark strings. This does not
 apply to lettered or numbered rehersal marks.
 See the
@@ -13901,7 +14072,7 @@ withkeymap
 .Hm rehstyle
 rehstyle
 .De
-Specifies whether to enclose
+This parameter specifies whether to enclose
 .Hr bars.html#reh
 rehearsal marks
 inside box, inside a circle, or just as plain text.
@@ -13925,7 +14096,7 @@ endingstyle
 .Hm release
 release
 .De
-Specifies how soon (in milliseconds) before the full time value of note
+This parameter specifies how soon (in milliseconds) before the full time value of note
 to release the note when generating
 .Hr midi.html
 MIDI output.
@@ -13935,9 +14106,9 @@ more detached notes will be. This parameter specifies a
 maximum amount to shorten notes; a note will never be shortened
 to less than 75% of its full value, unless it has a dot or wedge on it,
 it which case the shortening can be a maximum of half or 2/3 respectively.
-release can be changed in
+The release value  can be changed in
 .Hr midmeas.html
-the middle of a measure
+the middle of a measure,
 using a construct like <<score release=50>> before a note group.
 .Va
 0 to 500
@@ -13956,8 +14127,8 @@ release = 40
 .Hm rptdots
 repeatdots
 .De
-If set to "standard" repeat signs are printed using the standard convention
-of two dots. If set to "all" repeat signs are printed with dots between all
+If set to "standard," repeat signs are printed using the standard convention
+of two dots. If set to "all," repeat signs are printed with dots between all
 the lines of the staff.
 .Va
 standard or all
@@ -14007,11 +14178,12 @@ restcombine =    // turn off combining
 .Hm restsymm
 restsymmult
 .De
-Multi-rests are normally drawn as a horizontal line on the middle line
+This parameter specifies how to print multirests.
+Multirests are normally drawn as a horizontal line on the middle line
 of the staff, with two vertical lines at the end. But there is an
 alternate notation style that uses rest symbols (whole, double whole,
 and quad whole) when the number of measures is short.
-If this parameter is set to y, that alternate style will be used for
+If this parameter is set to "y," that alternate style will be used for
 multirests of eight measures or less.
 .Va
 y or n
@@ -14021,7 +14193,7 @@ n
 score, staff
 .Te
 at next multirest. When used with restcombine, if you set this after the
-first rest measure it has no effect
+first rest measure, it has no effect
 .eX
 restsymmult = y
 .Sa
@@ -14034,6 +14206,7 @@ printmultnum
 .Hm rightmar
 rightmargin
 .De
+This parameter
 sets the amount of white space margin to put at the right side of each page.
 It is specified in inches if the
 .Hr param.html#units
@@ -14079,12 +14252,12 @@ units
 .Hm scale
 scale
 .De
-Scale the printed output by the specified factor. For example,
+This parameter specifies by what factor to scale the printed output. For example,
 scale=2 prints everything twice as large as normal, while scale=0.5
 prints everything at half size.
 This parameter can only be specified before any music or block input.
 .Va
-A number between 0.1 and 10.0
+a number between 0.1 and 10.0
 .Df
 1.0
 .Cn
@@ -14107,6 +14280,7 @@ staffscale
 .Hm scorepad
 scorepad
 .De
+This parameter
 sets the amount of padding (white space) to leave between scores,
 accounting for all the things that protrude from both scores.
 Either a single number, giving a minimum
@@ -14120,7 +14294,7 @@ scoresep parameter,
 the maximum may be exceeded; see the description of
 scoresep for how these parameters interact to determine the placement
 of the scores.
-If a negative value is specified for scorepad, some overlap may occur,
+If a negative value is specified for scorepad, some overlap may occur
 (subject to the interaction with scoresep).
 Specifying a negative value may be particularly useful when things
 protrude downward from the top score and upward from the bottom score,
@@ -14137,7 +14311,7 @@ must be greater than or equal to the first.
 This parameter also applies to
 .Hr prnttext.html#block
 blocks,
-but is simplier in that case,
+but is simpler in that case,
 since nothing can actually protrude from a block.
 .Df
 2.0, 2.0
@@ -14168,6 +14342,7 @@ staffsep
 .Hm scoresep
 scoresep
 .De
+This parameter
 sets how much space to leave between scores;
 i.e., between the bottom line of the
 bottom staff of one score and the top line of the top staff of the
@@ -14190,7 +14365,7 @@ the minimum values of scorepad and scoresep between any neighboring scores.
 Next, if there is extra space available at the bottom of the page,
 the scores are spread out, increasing the white space between them, but
 not increasing any beyond the maximum scorepad value.
-(Some may however already be beyond the maximum scorepad value, because
+(Some may, however, already be beyond the maximum scorepad value, because
 the minimum scoresep value required it.)
 This spreading is done without regard for the maximum scoresep value.
 If any of the inter-score gaps start narrower than others
@@ -14208,7 +14383,7 @@ bottom of the page.
 This parameter also applies to
 .Hr prnttext.html#block
 blocks,
-but is simplier in that case,
+but is simpler in that case,
 since nothing can actually protrude from a block.
 .Va
 one or two numbers, in the range from 6.0
@@ -14242,12 +14417,10 @@ staffsep
 .Hm size
 size
 .De
+This parameter
 specifies what point size to use for text in
 .Hr prnttext.html
-print, title, left, right, and center statements,
-and
-.Hr chrdattr.html#withlist
-\&"with" lists (i.e., strings that are associated with a particular chord).
+print, title, left, right, and center statements.
 It also provides the default for rom, bold, ital, and boldital statements.
 .Va
 a number from 1 to 100 inclusive
@@ -14280,6 +14453,7 @@ withsize
 .Hm slashbet
 slashesbetween
 .De
+This parameter
 specifies whether to put two thick slanted lines between scores at the
 left edge of the staffs. These are often used when there are a lot of staffs,
 or when the number of scores per page varies, to help the musicians see clearly
@@ -14300,8 +14474,9 @@ slashesbetween=y
 .Hm stlines
 stafflines
 .De
+This parameter
 specifies how many lines to draw for the staff. Normally, there are 5 lines
-per staff, but a single line staff is sometimes used for percussion,
+per staff, but a single-line staff is sometimes used for percussion,
 and tablature staffs for various instruments
 may have different numbers of lines.
 Setting this parameter to 1 will produce a single line staff.
@@ -14315,13 +14490,13 @@ are not to be printed. The "n" also implies that accidentals are to
 be ignored and that notes are never to be transposed.
 If the number of lines is 1, the clef and
 key signature are never printed,
-regardless of whether or not you add the "n," so the "n" is really only
+regardless of whether you add the "n," so the "n" is really only
 meaningful when used with 5. When stafflines=1, you can only have one note
 per chord, and the pitch of that note is irrelevant, except for
 .Hr midi.html
 MIDI output.
 .Ix iE
-Alternately, rather than specifying "n" you can specify "drum" which
+Alternately, rather than specifying "n," you can specify "drum," which
 means to use the drum clef (also sometimes called the "neutral" clef).
 With the drum clef, no key signature is printed, accidentals are
 ignored, and notes are never transposed. The value used for the
@@ -14344,7 +14519,7 @@ If the list of strings is omitted, standard guitar strings are used,
 which is tab( e5 b4 g4 d4 a3 e'3 ).
 Tablature can only be specified in staff context, not score or voice, and
 when a tablature staff is specified, the staff above it becomes a "tabnote"
-staff which is a normal 5-line staff containing music derived from the
+staff, which is a normal 5-line staff containing music derived from the
 tablature staff.
 The list of strings, if any, can optionally be followed by y or n. Using y
 will cause the word TAB to be printed vertically at the beginning of every
@@ -14417,6 +14592,7 @@ addtranspose
 .Hm staffpad
 staffpad
 .De
+This parameter
 sets the minimum amount of space to leave between staffs,
 accounting for all the things that protrude from both staffs.
 If a negative value is specified, some overlap may occur, although
@@ -14434,7 +14610,7 @@ If this parameter is set in staff context for staff N, it affects
 the distance from staff N to staff N+1.
 .Va
 a number between negative the height of the page
-and the height of a page, in stepsizes.
+and the height of a page, in stepsizes
 .Df
 0
 .Cn
@@ -14462,6 +14638,7 @@ staffsep
 .Hm staffs
 staffs
 .De
+This parameter
 specifies the number of staffs. It is possible that not all of these staffs
 will be printed (see
 .Hr param.html#visible
@@ -14500,7 +14677,7 @@ visible
 .Hm stscale
 staffscale
 .De
-Specifies how to scale the size of a staff relative to the size of other
+This parameter specifies how to scale the size of a staff relative to the size of other
 staffs. A value of 1.0 yields the normal size, whereas 0.5 yields a staff
 that is half as high, and 2.0 one that is twice as high as normal,
 and so forth. This might be used, for example, for a piece written for
@@ -14533,6 +14710,7 @@ scale
 .Hm staffsep
 staffsep
 .De
+This parameter
 specifies the minimum amount of space to leave between
 any two adjacent staffs within the same score. It is specified in stepsizes,
 and is measured from the bottom line of the staff above to the top line
@@ -14569,12 +14747,12 @@ staffpad
 .Hm stemlen
 stemlen
 .De
-Specifies how long stems should be, in stepsizes.
+This parameter specifies how long stems should be, in stepsizes.
 This is for normal-sized chords; grace or cue size chords
 will gets stems that are 5/7 of this length.
-This length can be overridden on specific chords using
+This length can be overridden on specific chords, using
 .Hr chrdattr.html#stemlen
-the len attribute in backets before the chord.
+the len attribute in brackets before the chord.
 Stem lengths can also be affected by the
 .Hr param.html#sshorten
 stemshorten parameter.
@@ -14609,12 +14787,12 @@ The remaining three (optional) values control how Mup shortens stems that
 protrude from the staff. Most publishers of music shorten such stems somewhat,
 but there is some inconsistency in exactly how much. The second value to
 this parameter specifies the maximum amount to shorten any protruding stem,
-in stepsizes. The third and fourth specific at what point
+in stepsizes. The third and fourth specify at what point
 to begin shortening and at what point to reach the maximum shortening.
 These are specified in number of stepsizes from the middle line of the staff.
 Note that Mup will still lengthen stems from this value if necessary to
-accomodate things like dots or flags.
-By default, Mup will use full length stems (normally 7.0 stepsizes)
+accommodate things like dots or flags.
+By default, Mup will use full-length stems (normally 7.0 stepsizes)
 for any stem-up note at or below the middle line of the staff,
 and for any stem-down note at or above the middle line of the staff.
 Beyond there, it will gradually shorten stems
@@ -14633,7 +14811,7 @@ to force a particular length.
 .Va
 0.0 to 2.0 for maximum beam shortening, 0.0 to 7.0 for maximum shortening
 of stems that protrude from the staff, and -4 to 50 for where to begin and end
-shortening of protruding stems.
+shortening of protruding stems
 .Df
 1.0, 2.0, 1, 6
 .Cn
@@ -14672,19 +14850,19 @@ You might consider using this instead of or in connection with an additive
 time signature.
 .Va
 Multiple specifications can be given. Each specification optionally begins with
-a linestyle of \fBdashed\fP or \fBdotted\fP. If neither is given, then
+a linestyle of "dashed" or "dotted." If neither is given, then
 normal solid lines will be used. Next is the bartype, which may be
-either \fBbar\fP for a single line, or \fBdblbar\fP for double lines.
-Next comes the appearance, which is two values in parentheses and separated
-by the word \fBto\fP. The first value in the pair tells where
+either "bar," for a single line, or "dblbar," for double lines.
+Next comes the appearance, which is two values in parentheses, and separated
+by the word "to." The first value in the pair tells where
 to start drawing relative to the top staff in each range, and the second
 tells where to stop drawing relative to the bottom staff in each range.
-Each of the values is the word
-\fBtop\fP (meaning relative to the top line of the staff), \fBmiddle\fP (meaning
-relative to the middle line of the staff), or \fBbottom\fP (meaning relative
+Each of the values is the word "top"
+(meaning relative to the top line of the staff), "middle" (meaning
+relative to the middle line of the staff), or "bottom" (meaning relative
 to the bottom line of the staff), optionally followed by
 a plus or minus sign and a number of stepsizes to add or subtract to
-get to the endpoint. The appearance can instead be just the word \fBbetween\fP,
+get to the endpoint. The appearance can instead be just the word "between,"
 meaning to draw from the bottom line of a staff to the top line of the
 staff below it, and applies to all subsequent specifications on the line.
 Or the appearance can be omitted, which will result in something that
@@ -14693,8 +14871,8 @@ dashed or dotted to distinguish from normal bars). The appearance is followed
 by one or more ranges of staffs, like for the
 .Hr param.html#barstyle
 barstyle parameter,
-so things like 1-3 or 1-4,5-8,9,12 or the word \fBall\fP.
-Finally there is the keyword \fBtime\fP followed by one or more counts at
+so things like 1-3 or 1-4,5-8,9,12 or the word "all."
+Finally there is the keyword "time" followed by one or more counts at
 which to draw the subbars. The counts may include decimal parts.
 Note that subbars are only drawn on a staff
 when a note or rest actually occurs on that count on that staff.
@@ -14753,7 +14931,7 @@ the second group is at least 1/4 of a swingunit long.
 In both of these cases, the durations are altered so that the  
 meeting point is 2/3 of the way into the swingunit.
 .Va
-A time value, like 2, 4, or 8, or not set to anything.
+a time value, like 2, 4, or 8, or not set to anything.
 It can be a dotted value like 2. or 16.. although dotted values
 are rarely likely to be useful.
 It can even be a time expression like 2.-32 although that is even
@@ -14810,13 +14988,13 @@ lyricsalign
 .Hm tabwhite
 tabwhitebox
 .De
-says whether or not to put a small white box behind each fret number on
+This parameter specifies whether or not to put a small white box behind each fret number on
 .Hr tabstaff.html
 tablature staffs.
 This may make the music a little easier to read, since the staff lines
 won't be going through the middle of the fret numbers.
 .Va
-\fBy\fP or \fBn\fP
+y or n
 .Df
 n
 .Cn
@@ -14833,6 +15011,7 @@ stafflines
 .Hm textkmap
 textkeymap
 .De
+This parameter
 specifies which keymap to use for
 .Hr textmark.html
 rom, ital, bold, and boldital commands.
@@ -14882,6 +15061,7 @@ withkeymap
 .Hm time
 time
 .De
+This parameter
 sets the time signature. Music data for each measure is checked to ensure
 that the total time in the measure for each voice and verse
 adds up to exactly the time signature. Setting the time parameter will
@@ -14893,12 +15073,12 @@ and
 the beamstyle parameter
 to their most recent values for the same time signature
 (which would be their default values if they had never been explicitly
-set for this time signature), unles they are also set in the same context.
+set for this time signature), unless they are also set in the same context.
 .Va
 either a ratio of the form \fIN/D\fP or the word "cut" or "common." If the ratio
 form is used, \fIN\fP must be between 1 and 99 inclusive,
 and \fID\fP must be 1, 2, 4, 8, 16, 32, or 64.
-If following by y, the time signature will be printed even if it didn't change.
+If followed by "y," the time signature will be printed even if it didn't change.
 The numerator of the time signature can be the sum of several numbers,
 as in 3+4/4 or 2+3+2/2. You can also have several fractions added
 together, as in 3/4 + 4/4. It is also possible to provide "alternating"
@@ -14908,12 +15088,12 @@ the next time signature in the list. For example, for
 3/4 4/4, the first measure would be in 3/4 time, the second measure in 4/4,
 the third back in 3/4, the fourth in 4/4, and so forth.
 It is possible to combine all the various complexities,
-with things like 3+4/8 + 2+3/4 4+3/4 although that would be very uncommon.
+with things like 3+4/8 + 2+3/4 4+3/4, although that would be very uncommon.
 The time signature can optionally be followed by the
-letter n to specify that the time signature is not to be printed.
-Or it can be followed by the letter y, which causes
+letter "n" to specify that the time signature is not to be printed.
+Or it can be followed by the letter "y," which causes
 alternating time signatures to be treated differently.
-By default, the alternating signature are printed just once, as a list,
+By default, the alternating signatures are printed just once, as a list,
 and the performer has to remember
 that each subsequent measure has a different time signature.
 Using y forces Mup to print the appropriate time signature on each measure.
@@ -14937,6 +15117,10 @@ time = 4/4 3/4      // alternating
 .br
 time = 3/4 6/8 y    // alternating, printing time sig on every measure
 .Sa
+.Hr param.html#beamstyl
+beamstyle,
+.Hr param.html#printedtime
+printedtime,
 .Hr param.html#subbar
 subbarstyle,
 .Hr param.html#timeunit
@@ -14952,6 +15136,7 @@ timeunit
 .Hm timeunit
 timeunit
 .De
+This parameter
 sets the default time unit. If the first note of a measure has no time
 value specified, the value of the timeunit parameter will be used.
 If the
@@ -14962,10 +15147,11 @@ the timeunit parameter reverts back
 to its previous value for that time signature, which defaults to the
 value of the denominator (bottom number) of the new time signature.
 .Va
-1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128, or 256
-representing quadruple whole, double whole, whole, half,
+1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128, or 256
+representing octuple whole, quadruple whole, double whole, whole, half,
 quarter, eighth, sixteenth, thirty-second,
-sixty-fourth, 128th, or 256th,
+sixty-fourth, 128th, or 256th. (Each represents one half the time of the
+one before it in the list). This can be
 followed by zero or more dots. Each dot adds 50% of the previous note or dot
 to the time.
 It can also be a time expression, like 2+8 or 1-4+16.
@@ -14977,7 +15163,7 @@ the time parameter.
 Setting the time parameter will set the timeunit to the value
 used most recently for that time signature.
 .Df
-The denominator (bottom number) of the time signature
+the denominator (bottom number) of the time signature
 .Cn
 score, staff, voice
 .Nm
@@ -15002,6 +15188,7 @@ time
 .Hm topmar
 topmargin
 .De
+This parameter
 sets the amount of white space margin to put at the top of each page.
 It is specified in inches if the
 .Hr param.html#units
@@ -15041,16 +15228,17 @@ units
 .Hm xpose
 transpose
 .De
+This parameter
 specify by what interval to transpose the music data.  The interval can be
 larger than an octave, but must be a valid interval (e.g., there is no
 such thing as a perfect 6th). It is an error to specify a transposition value
-which would result in a key signature with more than 7 flats or sharps.
+that would result in a key signature with more than 7 flats or sharps.
 .Ix cG
 It is also an error if transposition would result in a note requiring a
 triple sharp or triple flat.
 .Va
 the word "up" or "down," followed by an interval and a whole number greater than 0.
-You can optionally add the keyword \fBnotes\fP or \fBchords\fP at the end, to restrict the
+You can optionally add the keyword "notes" or "chords" at the end, to restrict the
 transposition to just notes or just chord symbols; by default, both are
 transposed.
 The interval is one of major, minor, augmented, diminished, or perfect.
@@ -15072,8 +15260,9 @@ individual staffs (for transposing instruments), and then use the
 addtranspose parameter if you want to change the key of the entire score.
 But either of these parameters can be used either way.
 In any case, for each staff, and for the score, the values of
-transpose and addtranspose are "added" to find the transposition
-for that staff or score.
+transpose and addtranspose are both applied, one after the other,
+to the current key signature, notes, and chords
+to determine their resulting values.
 .Df
 up perfect 1 (i.e., no transposition)
 .Cn
@@ -15106,7 +15295,7 @@ useaccs
 .Hm tuning
 tuning
 .De
-specify what tuning system to use for the "white" notes" (a through g)
+This parameter specifies what tuning system to use for the "white" notes" (a through g)
 and the standard accidentals. In equal temperament, each octave is
 divided into 12 equally spaced half steps, with the frequency of each note
 being the twelfth root of 2 times that of the note below it.
@@ -15136,7 +15325,7 @@ acctable
 .Hm units
 units
 .De
-Specifies whether margin and page size parameters are specified
+This parameter specifies whether margin and page size parameters are specified
 in inches or in centimeters.
 .Va
 inches or cm
@@ -15168,6 +15357,7 @@ pagewidth
 .Hm useaccs
 useaccs
 .De
+This parameter
 specifies whether to use accidentals throughout rather than a normal
 .Hr param.html#key
 key signature.
@@ -15243,7 +15433,7 @@ If the qualifier is "stepsapart," voices will only be combined if the
 bottom note of the higher voice is at least two steps higher than
 the top note of the lower voice.
 (That is the typical value for getting the hymn style described above.)
-If the qualifier is "shareone" the bottom note of the top voice must be
+If the qualifier is "shareone," the bottom note of the top voice must be
 no lower than than top note of the lower voice for combining to occur.
 If the qualifier is "overlap," combining will occur without regard for
 how the voices overlap. For the purpose of the qualifier, voice 1 is assumed
@@ -15265,7 +15455,7 @@ tied in one voice but not another. In such cases,
 the usual non-combined format will be used.
 .Va
 comma-separated list of voices or voice ranges, or nothing,
-optionally followed by nooverlap, stepsapart, shareone, overlap, or restsonly.
+optionally followed by nooverlap, stepsapart, shareone, overlap, or restsonly
 .Df
 not set
 .Cn
@@ -15285,6 +15475,7 @@ vscheme
 .Hm visible
 visible
 .De
+This parameter
 specifies whether a staff or voice is actually to be printed.
 This can be useful for
 printing a subset of a full score. The value is either y or n, for yes or no,
@@ -15295,7 +15486,7 @@ to save paper on an orchestral score by only printing staffs for
 instruments when they are actually playing.
 At least one staff must be visible at all times.
 When an individual voice is made invisible, but the other voice(s) on that staff
-remain visible, all the 
+remains visible, all the 
 .Hr stuff.html
 tempo, dynamics, and similar marks
 associated with the staff will still be printed, since Mup cannot know for sure
@@ -15317,7 +15508,7 @@ y
 score, staff, voice
 .Te
 at next music context. If it results in a staff becoming visible or
-invisible, it forces a new score
+invisible, it forces a new score.
 .eX
 visible = n
 .Sa
@@ -15340,6 +15531,7 @@ staffs
 .Hm vscheme
 vscheme
 .De
+This parameter
 sets voice scheme. A value of 1 means there is only a single voice on a
 staff. The direction of note stems will be determined based on how high
 or low the notes are on the staff. A value of 2o means there are two voices
@@ -15396,6 +15588,7 @@ vcombine
 .Hm warn
 warn
 .De
+This parameter
 specifies whether to print warning messages or not.
 Normally, Mup will print warnings when it encounters input that
 it considers somewhat dubious. Sometimes, however, that input will really
@@ -15416,7 +15609,7 @@ warn = n
 .Hm withfont
 withfont
 .De
-This specifies which font type to use for text strings printed with chords
+This parameter specifies which font type to use for text strings printed with chords
 using [with "string"].
 .Va
 rom, ital, bold, or boldital
@@ -15445,7 +15638,7 @@ withsize
 .Hm withfam
 withfontfamily
 .De
-This specifies which font family to use for text strings printed with chords
+This parameter specifies which font family to use for text strings printed with chords
 using [with "string"].
 .Va
 avantgarde, bookman, courier, helvetica, newcentury, palatino, or times
@@ -15473,6 +15666,7 @@ withsize
 .Hm withkmap
 withkeymap
 .De
+This parameter
 specifies which keymap to use for text strings printed with chords
 using [with "string"].
 See the
@@ -15521,7 +15715,7 @@ textkeymap
 .Hm withsize
 withsize
 .De
-This specifies which size to use for text strings printed with chords
+This parameter specifies which size to use for text strings printed with chords
 using [with "string"], specified in points.
 .Va
 1 to 100
@@ -15620,7 +15814,7 @@ a feel for how they work, as trying to change all of them at once may lead to
 interactions that change things more radically than you might expect.
 Changing staffscale in score context lets you adjust the size of the
 music without affecting the size of the text in headers and footers.
-Adjusting the margins is sometimes helpful as well. Other parameters which
+Adjusting the margins is sometimes helpful as well. Other parameters that
 .Ix gS
 might be useful in some situations are:
 .Hr param.html#maxscore
@@ -15850,9 +16044,9 @@ endbar
 .Hd sharehd.html
 .H 2 "Forcing shared noteheads"
 .P
-Mup will automatically share note heads when it can figure out it is safe
+Mup will automatically share noteheads when it can figure out it is safe
 and proper to do so. However, there may be some unusual cases where you would
-like to force the notes from two voices to share note heads even when Mup
+like to force the notes from two voices to share noteheads even when Mup
 would not do that. That can be done by specifying a horizontal offset of zero,
 i.e., [ho 0], on one or both of the voices.
 .Ht Manually placed tuplet numbers
@@ -15929,7 +16123,7 @@ location tag
 .Hr noteattr.html#ntag
 on one of the notes
 in one of the regular groups.
-The manually-positioned note will be placed relative to
+The manually positioned note will be placed relative to
 that location tag. The x will be slightly left or right of the
 west or east of the existing group; something like 3 stepsizes might be
 a good first guess. The y can be specified in terms of
@@ -15990,7 +16184,7 @@ than one ledger line would be needed, and each would need to be specified
 separately. The y coordinate of the each ledger line would be the same
 as the y coordinate of the note,
 plus or minus some number of step sizes. The length of
-the line depends on the note head. About 4.5 stepsizes is a good estimate for
+the line depends on the notehead. About 4.5 stepsizes is a good estimate for
 most notes, but a double whole needs more like 6 stepsizes.
 .Ht Trill with accidental
 .Hd trillacc.html
@@ -16089,7 +16283,8 @@ bar
 .P
 Note that Mup supports
 .Hr crossst.html
-cross-staff stems, which is another way to notate a chord that is split
+cross-staff stems,
+which is another way to notate a chord that is split
 across two staffs, and may often be a better choice.
 .Ht Cross-bar beaming
 .Hd crossbar.html
@@ -16129,7 +16324,7 @@ single measure. Here is an example.
 invisbar
 
 // Now, make the effective time signature twice
-// as long as the real time signature, but use 'n' so this fake
+// as long as the real time signature, but use "n" so this fake
 // time signature is not actually printed.
 // Set up for beaming across the entire double-length measure.
 // (You could could use other beamstyles if you wish, or custom beaming.)
@@ -16206,12 +16401,14 @@ bar
 .Hd mixtsig.html
 .H 2 "Mixed time signatures"
 .P
-.Hm mixdtime
 Once in a while, music is written with different
 .Ix gU
 time signatures
-on different staffs. Mup does not support this directly,
-but it is possible to simulate it
+on different staffs. Starting with Version 6.8, there is a
+.Hr param.html#printedtime
+printedtime parameter
+to do that, so this section is probably not really necessary anymore,
+but it provides an example of how to print things manually
 for the case where the time signatures reduce to the same value, for example,
 3/4 and 6/8 time (since 6/8 taken as a fraction and reduced to lowest terms
 is 3/4). You can make the output use both 3/4 and 6/8 by using a non-printing
@@ -16344,12 +16541,12 @@ bar
 .Hd tempochg.html
 .H 2 "Marking complicated tempo changes"
 .P
-Sometimes you may wish to indicate tempo changes by showing 2 note
+Sometimes you may wish to indicate tempo changes by showing two note
 values with an equals sign between them. For simple cases, this is
 fairly straightforward, but if you want to include beamed notes or a triplet,
 a little more work is required. Another use of this notation is to
 show that the music is to be played in "swing time," as in this example,
-which has two ordinary eight notes on one side of the equals sign,
+which has two ordinary eighth notes on one side of the equals sign,
 and a triplet made up of a quarter and eighth note on the other:
 .Ex 1
 score 
@@ -16608,7 +16805,7 @@ a4freq parameter
 could be used to get the effect of transposing all the voices.
 See also the section on
 .Hr macros.html#concat
-Concatenating Macro Names
+Concatenating macro names
 for another approach.
 .Ht Placing verses below the scores
 .Hd verses.html
@@ -16656,7 +16853,7 @@ and
 .Hr param.html#lyrfont
 lyricsfont.
 .P
-If you also want chords symbols with these verses,
+If you also want chord symbols with these verses,
 you can do that too. It is easiest if you use Courier font,
 as shown in the example below, since its constant-width characters
 make it easy to line things up. If you use a proportional-width font,
@@ -16676,9 +16873,9 @@ of the song.
 .Hd pianored.html
 .H 2 "Automatic piano reduction"
 .P
-Perhaps you'd like a 4-part vocal piece written on 4 separate staffs,
+Perhaps you'd like a four part vocal piece written on four separate staffs,
 .Ix iU
-as well as a piano reduction on two staffs with 2 voices.
+as well as a piano reduction on two staffs with two voices.
 This could be done using:
 .Ex 1
 score
@@ -16836,11 +17033,12 @@ As an alternate to a breath mark, sometimes a short vertical line is
 drawn through the top line of the staff. Another thing that is sometimes
 seen is something like a short bar line, just spanning the two middle spaces.
 That might be used in music that wasn't originally written with true bar
-lines. It might also be used to sub-divide a bar,
+lines. It might also be used to subdivide a bar,
 when there are an odd number of beats, to show the intended grouping of beats.
 These could be done using
 .Hr macros.html
-macros. Here is one possible implementation. Note that you could apply to
+macros.
+Here is one possible implementation. Note that you could apply to
 multiple staffs by setting the STAFF argument to the list of desired staffs.
 .Ex 1
 // short vertical line through top line of staff
@@ -16911,13 +17109,13 @@ Here is a simple input that will generate a page with 8 completely
 blank staffs.
 .Ex
 score
-	scoresep=9,100		// spread staffs out nicely
-	stafflines=5n		// don't print any clefs
-	label=""		// make sure left edges line up both on first
-	label2=""		//    and on subsequent lines
-	topmargin=1		// allow extra margin to write in header/footer
+	scoresep=9,100          // spread staffs out nicely
+	stafflines=5n           // don't print any clefs
+	label=""                // make sure left edges line up both on first
+	label2=""               //    and on subsequent lines
+	topmargin=1             // allow extra margin to write in header/footer
 	bottommargin=1
-	time=4/4n		// don't print any time signature
+	time=4/4n               // don't print any time signature
 music
 
 define SCORE
@@ -16955,7 +17153,7 @@ the Mup output, you specify a current point, but sometimes it would be
 useful for the PostScript code to know about the location of more than
 one thing on the page, for example, to draw a line between two points, or
 to draw a box or oval around several chords. One way to do that is to
-have one postscript section to save away the X,Y values of each point of
+have one postscript section to save away the x,y values of each point of
 interest, and then have a final postscript section that uses the points to
 draw something. Since Mup puts the contents of postscript sections inside
 a save/restore block, saving coordinate information for later use is a
@@ -16981,8 +17179,9 @@ music
 postscript (c.x + 3, c.y) "
 	% Save current point on the stack
 	currentpoint
-	% Since Mup did a 'save,' move that save object to the top of the stack
-	% and do a restore, leaving the currentpoint values on the stack,
+	% Since Mup did a save operation, move that save object
+	% to the top of the stack and do a restore,
+	% leaving the currentpoint values on the stack,
 	% so we can then save them in beginX and beginY.
 	3 -1 roll
 	restore
@@ -17032,17 +17231,17 @@ PostScript (EPS) file. Many text processing and graphics programs will
 let you import EPS files, so this can let you insert Mup output into
 some other document.
 .P
-There is a package called "psutils" available on most Linux archives,
-that contains various Postscript tools. These include "psnup" which lets
+There is a "psutils" package, available from most Linux archives,
+that contains various Postscript tools. These include "psnup," which lets
 you print multiple pages on one sheet of paper with more flexibility
 than Mup's
 .Hr param.html#panels
 panelsperpage parameter,
-and "psselect" which prints a subset of pages.
+and "psselect," which prints a subset of pages.
 .P
 You can check the
 .Hr http://www.arkkra.com/doc/userpgms.html
-user donated programs page on Arkkra's website
+user-donated programs page on Arkkra's website
 for other programs for processing Mup input or output.
 .Ht Mup MIDI output
 .Hd midi.html
@@ -17070,11 +17269,11 @@ at most music stores or computer book stores.
 There are also many online resources and tutorials.
 You could start at
 .Hi
-http://www.harmony-central.com/MIDI/Doc/doc.html
+http://www.midi.org
 .He
 .ig
-.Hr http://www.harmony-central.com/MIDI/Doc/doc.html
-http://www.harmony-central.com/MIDI/Doc/doc.html
+.Hr http://www.midi.org
+http://www.midi.org
 ..
 or use your favorite search engine.
 .P
@@ -17117,8 +17316,8 @@ It is possible to work around this limitation to some extent using
 macros.
 .Ix aM
 For example, a section between a "sign" and a "jump to coda" symbol could
-be put inside a macro definition, then the macro can be called. Then later
-in the piece, where the "D. S." occurs the macro can be called again if MIDI
+be put inside a macro definition; then the macro can be called. Then later
+in the piece, where the "D. S." occurs, the macro can be called again if MIDI
 is defined. For example:
 .Ex
 // an introductory section, ends with a sign
@@ -17290,7 +17489,7 @@ it from "channel" ("cha" or "chan" will be interpreted as channel).
 In most cases, the "=" is followed by either a number or some text. Exceptions
 to this are discussed in the next few paragraphs.
 .P
-The "parameter" keyword is followed by 2 numbers, separated by a comma.
+The "parameter" keyword is followed by two numbers, separated by a comma.
 .Ix aD
 The first is the parameter number, the second is the parameter value.
 Thus to set parameter 7 (which is the volume parameter) to 90 for voice
@@ -17806,6 +18005,7 @@ invisbar\*(fH
 italics\*(gK
 justification\*(dN
 key signature\*(cG
+keymap\*(jL
 labels\*(dP
 .\"   left\*(cW
 leftmargin\*(gQ
@@ -17814,7 +18014,6 @@ length\*(iB
 line\*(fE
 lyrics\*(aE
 lyricsalign\*(hT
-keymap\*(jL
 macros\*(aM
 manual placement\*(fU
 map\*(iV
@@ -17929,7 +18128,7 @@ trill\*(bX
 triplets(see tuplets)
 tuplets\*(aX
 turn\*(gE
-uncollapseable space\*(iX
+uncollapsible space\*(iX
 undef\*(bY
 underline\*(hO
 underscore\*(fW

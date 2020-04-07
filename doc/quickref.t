@@ -22,7 +22,7 @@
 .ps +1
 .ce
 .ft B
-Mup Version 6.7 Statement Summary
+Mup Version 6.8 Statement Summary
 .sp
 \fIcontext\fR
 \fIstaffs voices & staffs voices\fB:\fI chord \fB; \fI....\fR
@@ -111,7 +111,7 @@ Mup Version 6.7 Statement Summary
 \fIheadfoot_context	\fBheader, footer, header2, footer2, top, bottom, top2, \fRor \fBbottom2\fR
 \fIhex_data	\fReven number of hexadecimal digits\fR
 \fIinter-chord_attr	\fItieslur_style \fBtie\fR \fIdirection\fR, \fItieslur_style \fBslur\fR \fIdirection\fR, \fBbm\fR, \fBbm with staff \fIside\fR, \fBebm\fR, \fBesbm\fR,
-	\fBslope\fR \fInum\fR, \fBph \fI side\fR, \fBeph\fR, or \fBalt \fInum\fR
+	\fBabm\fP, \fBeabm\fP, \fBslope\fR \fInum\fR, \fBph \fI side\fR, \fBeph\fR, or \fBalt \fInum\fR
 \fIinterval	\fBperfect\fR, \fBmajor\fR, \fBminor\fR, \fBaugmented\fR, or \fBdiminished\fR
 \fIjustifytype	\fBjustified\fR, or \fBragged\fR
 \fIlinetype	\fBmedium\fR, \fBwide\fR, \fBdashed\fR, or \fBdotted\fR (if omitted, \fIlinetype\fR is narrow)
@@ -158,7 +158,7 @@ Mup Version 6.7 Statement Summary
 	\fRPredefined tag names are \fB_win\fR, \fB_page\fR, \fB_score\fR, \fB_staff.\fIN\fR and \fB_cur\fR
 \fItext	\fRarbitrary text; use \fB\e"\fR to include quotes, \fB\ef(\fIfontfamily font\fB)\fR to change font, \fB\es(\fInum\fB)\fR to change size,
 	\fB\e(\fIxx\fB)\fR to include special characters, \fB\ev(\fInum\fB)\fR for vertical motion, \fB\e:\fR to toggle piling, \fB\e|\fP or \fB\e^\fR for alignment
-\fItime_value	\fB1/4\fR, \fB1/2\fR, \fB1\fR, \fB2\fR, \fB4\fR, \fB8\fR, \fB16\fR, \fB32\fR, \fB64\fR, \fB128\fR, or \fB256\fR with optional dots, \fB+\fR or \fB-\fR; or \fBm\fR (measure)
+\fItime_value	\fB1/8\fR, \fB1/4\fR, \fB1/2\fR, \fB1\fR, \fB2\fR, \fB4\fR, \fB8\fR, \fB16\fR, \fB32\fR, \fB64\fR, \fB128\fR, or \fB256\fR with optional dots, \fB+\fR or \fB-\fR; or \fBm\fR (measure)
 \fItieslur_style	\fBdotted\fR, \fBdashed\fR, or omitted
 \fItil_value	num \fRor\fI num\fBm+\fInum\fR, plus optional \fB(-\fInum\fB)\fR and/or signed \fIsteps\fR in square brackets
 \fItuplet	\fRSee \fIchord\fR
@@ -251,6 +251,7 @@ a4freq	\(bu				100.0 to 1000.0	440.0
 aboveorder	\(bu	\(bu			\fBmussym,octave,dyn&othertext&chord,lyrics,ending,reh	\fRas listed
 acctable	\(bu				\fB"\fItable_name\fB"	""
 addtranspose	\(bu	\(bu			\fBup\fR or \fBdown\fR, followed by \fIinterval\fR and \fInum\fR, then optional \fBnotes\fP or \fBchords\fR	up perfect 1
+alignlabels	\(bu				\fBcenter\fR, or \fBleft\fR, or \fBright\fR	right
 alignped	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 alignrests	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 barstyle	\(bu				optional \fBbetween\fP comma-separated lists of staffs or dash-separated ranges, or \fBall\fP	
@@ -265,6 +266,7 @@ bracketrepeats	\(bu				\fBy\fR or \fBn\fR	n
 cancelkey	\(bu	\(bu			\fBy\fR or \fBn\fR	n
 carryaccs	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 chorddist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	3.0
+chordtranslation	\(bu	\(bu			nothing or "German" or string like "do re mi fa sol la si"	
 clef	\(bu	\(bu			T{
 \s-2\fBtreble\fB,\fBtreble8\fR,\fB8treble\fR,\fBfrenchviolin\fR,\fBsoprano\fR,\fBmezzosoprano\fR,\fBalto\fR,\fBtenor\fR,\fBbaritone\fR,\fBbass\fR,\fB8bass\fR,\fBbass8\fR,\fBsubbass\fR\s+2
 T}	treble
@@ -335,6 +337,7 @@ pagesize	\(bu				\fBletter, legal, flsa, halfletter, a4, a5, a6\fR then optional
 pagewidth	\(bu				2.0 to 24.0 inches or 5.0 to 61.0 cm	8.5 inches
 panelsperpage	\(bu				1 or 2	1
 pedstyle	\(bu	\(bu			\fBline\fR, \fBpedstar\fR, or \fBalt pedstar\fR	line
+printedtime	\(bu	\(bu			times signature or one or two strings	
 printkeymap	\(bu			\(bu	\fB"\fIkeymap_name\fB"	\fR""
 printmultnum	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 rehearsalkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""

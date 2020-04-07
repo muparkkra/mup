@@ -48,6 +48,36 @@ music
 
 	newscore
 
+score
+	time = 8/1
+music
+	rom all: 0 "Octuple and quadruple note stems are 6 steps long from the stem-side note, and need not reach the center line.";
+	rom all: 0 "Also, the stems are on the right side, and are down unless the note is fairly low.";
+	1: 1/8 f;
+	bar
+
+	1: 1/4 g-; a-;
+	bar
+	1: 1/4 b-; c;
+	bar
+	1: 1/4 d; e;
+	bar
+	1: 1/4 f; g;
+	bar
+	1: 1/4 a; b;
+	bar
+	1: 1/4 c+; d+;
+	bar
+	1: 1/4 e+; f+;
+	bar
+	1: 1/4 g+; a+;
+	bar
+	1: 1/4 b+; c++;
+	bar
+score
+	time = 4/4
+music
+
 	rom all: 0 "Every beam/flag beyond the second requires 1.6 stepsizes more.";
 	1: 8e+; ; 16; ; 32; ; 64; ; 128; ; 256; ; 128; 8 bm; ebm; 16 bm; ebm; \
 		32 bm; ebm; 64 bm; ebm; 128 bm; ebm; 256 bm; ebm; 128;

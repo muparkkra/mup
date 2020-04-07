@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -481,6 +481,7 @@ struct SSV {
 
 	short division;		/* clock ticks per 1/4 note (used by midi) */
 	short endingstyle;	/* where ending brackets are to be drawn */
+	short alignlabels;	/* J_* (LEFT, RIGHT, CENTER) */
 	short gridsatend;	/* print chord grids at end of song? */
 	short measnum;		/* should measure numbers be printed? */
 	short measnumfamily;	/* font family for measnum */
@@ -516,6 +517,9 @@ struct SSV {
 	short vcombine[MAXVOICES]; /* voices to be combined if possible, in the
 				    * order to try the combining */
 	short vcombinequal;	/* vcombine qualifer (see definition of VC_*) */
+	char *prtime_str1;	/* printedtime: first arbitrary string */
+	char *prtime_str2;	/* printedtime: second arbitrary string */
+	short prtime_is_arbitrary; /* YES = arbitrary, NO = use timerep */
 	short sharps;		/* no. of sharps, -7 to 7 */
 	short is_minor;		/* minor key (YES/NO)? (used by MIDI) */
 	short cancelkey;	/* should old key sig be canceled with nats? */
@@ -570,6 +574,9 @@ struct SSV {
 	float dist;		/* min dist between stuff & staff, STEPSIZEs */
 	float dyndist;		/* min dist between dyn & staff, STEPSIZEs */
 	float lyricsdist;	/* min dist between lyrics & staff, STEPSIZEs */
+
+	short chordtranslation;	/* CT_* */
+	char **doremi_syls;	/* map C D E F G A B to these syllables */
 
 	/* must malloc a place to store these strings, else set to null */
 	char *label;		/* label on first score */
@@ -1340,11 +1347,13 @@ struct GRPSYL {
 	float orig_rw;
 
 	/*
-	 * The basic time value is one of the following: -1, 0, power of 2 from
-	 * 1 to 256, or less than -1.  For normal (is_meas==NO) groups, -1
-	 * means quadruple whole, 0 means double whole, 1 is whole, 2 is half,
-	 * etc.  Less than -1 means a multirest of (-basictime) measures.  For
-	 * is_meas==YES groups, basictime is the same as the preceding for
+	 * For multirests, basictime is negative the number of measures.
+	 *
+	 * For other is_meas==NO groups, whole is 1, half is 2, quarter is 4,
+	 * etc.; BT_DBL (0) is double whole, BT_QUAD (-1) is quadruple whole
+	 * (longa), and BT_OCT (-2) is octuple whole (maxima).
+	 * 
+	 * For is_meas==YES groups, basictime is the same as the preceding for
 	 * measure rests, where it just tells which rest to draw, but for ms
 	 * and mrpt it is arbitrarily set to -1.
 	 */
@@ -1359,6 +1368,8 @@ struct GRPSYL {
 	 * centered in the measure.
 	 */
 	short is_meas;
+
+	short is_multirest;	/* is this a multirest, YES or NO */
 
 	short dots;		/* number of dots applied to time value */
 
@@ -1389,6 +1400,8 @@ struct GRPSYL {
 
 	short beamloc;		/* none, start, inner, end (only note groups)*/
 	float beamslope;	/* user specified angle of beam in degrees */
+	short autobeam;		/* if autobeaming applies to this group, value
+				 * can be NOITEM, STARITEM, INITEM, or ENDITEM*/
 
 	/*
 	 * If this GRPSYL is not for a rest, this will be NULL.  Otherwise, this
@@ -1614,10 +1627,10 @@ struct CHORD {
 	RATIONAL duration;	/* duration of the chord */
 	float pseudodur;	/* a function of duration; proportional to */
 				/* width this chord will "deserve" */
-	short uncollapseable;	/* YES or NO:  NO means that every GPRSYL
+	short uncollapsible;	/* YES or NO:  NO means that every GPRSYL
 				 * passing through this time duration (whether
 				 * or not in this chord) consists of
-				 * collapseable spaces */
+				 * collapsible spaces */
 
 	struct CHORD *ch_p;	/* point at next chord in list */
 	struct GRPSYL *gs_p;	/* point at first group or syllable in chord */

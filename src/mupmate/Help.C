@@ -1,5 +1,5 @@
 static const char * const license_text =
-" Copyright (c) 1995-2019  by Arkkra Enterprises.\n\
+" Copyright (c) 1995-2020  by Arkkra Enterprises.\n\
  All rights reserved.\n\
 \n\
  Redistribution and use in source and binary forms,\n\
@@ -386,7 +386,7 @@ About_dialog::About_dialog(void)
 			"   for the Mup music publisher\n"
 			"   program.\n"
 			"\n"
-			"     This is Version 6.7");
+			"     This is Version 6.8");
 	// Hide the cursor by making same color as background
 	message_p->cursor_color(message_p->color());
 

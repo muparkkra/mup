@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -268,6 +268,7 @@ static void draw_keysig P((int muschar, int symbols, double x,
 		double y, int *table, int offset, int skip));
 static double pr_timesig P((int staffno, double x, int multnum,
 		int really_print));
+static double pr_arbitrary_tsig P((int staffno, double x, int really_print));
 static double tsjam P((int num));
 static void pr_tsnum P((double x, double y, char *str, double jam));
 static void draw_circle P((double x, double y, double radius));
@@ -485,7 +486,7 @@ init4print()
 	initstructs();
 
 	printf("%%!PS-Adobe-1.0\n");
-	printf("%%%%Creator: Mup (Version 6.7)\n");
+	printf("%%%%Creator: Mup (Version 6.8)\n");
 	printf("%%%%Title: music: %s from %s\n", Outfilename, Curr_filename);
 	clockinfo = time((time_t *)0);
 	timeinfo_p = localtime(&clockinfo);
@@ -1607,16 +1608,15 @@ int is_pseudobar;	/* YES if is pseudobar at beginning of score */
 	if (bar_p->mnum > 0) {
 		Meas_num = bar_p->mnum;
 	}
-	/* if basictime of the last STAFF we saw was < -1, then
-	 * it was a multirest, so the measure number needs to
-	 * be incremented by the number of measures of multirest.
+	/* It the last STAFF we saw was a multirest, the measure number
+	 * needs to be incremented by the number of measures of multirest.
 	 * Since this is stored as a negative, we subtract the
 	 * negative to get the same effect as adding the absolute
 	 * value */
 	else if ( (Last_staff != (struct STAFF *) 0)
 			&& (is_pseudobar == NO)
 			&& (Last_staff->groups_p[0] != (struct GRPSYL *) 0)
-			&& (Last_staff->groups_p[0]->basictime < -1) ) {
+			&& (Last_staff->groups_p[0]->is_multirest == YES) ) {
 		Meas_num -= Last_staff->groups_p[0]->basictime;
 	}
 	else if ((bar_p->bartype != INVISBAR) && (bar_p->bartype != RESTART)
@@ -4201,6 +4201,7 @@ int really_print;	/* if YES, actually print, else just return width */
 	char numstr[MAXTSLEN * 3];	/* numerator as a string */
 	char denstr[8];			/* denominator as a string */
 	char plusstr[4];		/* plus sign as a string */
+	char *timerep;			/* time representation to print */
 	float numwidth, denwidth;	/* width of numstr and denstr */
 	double thiswidth;		/* width of current fraction */
 	double totalwidth;		/* width of entire time signature */
@@ -4229,7 +4230,14 @@ int really_print;	/* if YES, actually print, else just return width */
 	plusstr[2] = '+';
 	plusstr[3] = '\0';
 
-	for (t = Score.timerep; *t != TSR_END; t++) {
+	if (svpath(staffno, PRINTEDTIME)->prtime_is_arbitrary == YES) {
+		return(pr_arbitrary_tsig(staffno, x, really_print));
+	}
+	timerep = svpath(staffno, PRINTEDTIME)->prtime_str1;
+	if (timerep == 0) {
+		timerep = Score.timerep;
+	}
+	for (t = timerep; *t != TSR_END; t++) {
 
 		if (*t == TSR_CUT || *t == TSR_COMMON) {
 			char tschar;
@@ -4353,6 +4361,76 @@ int really_print;	/* if YES, actually print, else just return width */
 	}
 
 	return (totalwidth);
+}
+
+
+static double
+pr_arbitrary_tsig(staffno, x, really_print)
+
+int staffno;		/* which staff to print on */
+double x;		/* coordinate */
+int really_print;	/* if YES, actually print, else just return width */
+
+{
+	char *str1;
+	char *str2;
+	double adjust;	/* vertical from staff center line to string baseline */
+	int size;
+
+	if ((str1 = svpath(staffno, PRINTEDTIME)->prtime_str1) == 0) {
+		pfatal("null printed time string");
+	}
+
+	if ((str2 = svpath(staffno, PRINTEDTIME)->prtime_str2) == 0) {
+		double width;
+
+		/* May need to adjust for staffscale, so make a copy
+		 * and normalize that based on staffscale. */
+		str1 = strdup(str1);
+		size = adj_size(24, Staffscale, (char *) 0, -1);
+		str1 = fix_string(str1, FONT_NB, size, (char *)0, -1);
+		
+		/* only one string, center it vertically */
+		if (really_print == YES) {
+			adjust = (strheight(str1) / 2.0) - strdescent(str1);
+			pr_string(x, Staffs_y[staffno] - adjust, str1,
+						J_LEFT, (char *) 0, -1);
+		}
+		width = strwidth(str1);
+		free(str1);
+		return(width);
+	}
+	else {
+		double width1;
+		double width2;
+		double widest;
+
+		str1 = strdup(str1);
+		size = adj_size(14, Staffscale, (char *) 0, -1);
+		str1 = fix_string(str1, FONT_NB, size, (char *)0, -1);
+		str2 = strdup(str2);
+		size = adj_size(14, Staffscale, (char *) 0, -1);
+		str2 = fix_string(str2, FONT_NB, size, (char *)0, -1);
+
+		/* two strings; stack them vertically */
+		width1 = strwidth(str1);
+		width2 = strwidth(str2);
+		widest = MAX(width1, width2);
+		if (really_print == YES) {
+			adjust = strdescent(str1);
+			pr_string(x + (widest - width1) / 2.0,
+				Staffs_y[staffno] + adjust,
+				str1, J_LEFT, (char *) 0, -1);
+			adjust = strascent(str2);
+			pr_string(x + (widest - width2) / 2.0,
+				Staffs_y[staffno] - adjust - STDPAD,
+				str2, J_LEFT, (char *) 0, -1);
+		}
+		free(str1);
+		free(str2);
+		return(widest);
+	}
+	return(0.0);
 }
 
 

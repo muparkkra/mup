@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -762,7 +762,7 @@ main(int argc, char **argv, const char **arge)
 
 	// Get the user's preferences that persists across sessions
 	Preferences_p = new Fl_Preferences(Fl_Preferences::USER,
-					"arkkra.com", "mupmate67");
+					"arkkra.com", "mupmate68");
 
 	// If user is upgrading from earlier version,
 	// we want to migrate their non-version-specific preferences.

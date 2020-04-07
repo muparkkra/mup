@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1174,7 +1174,7 @@ int c;	/* argument to -c command line option;
 		for (nmll_p = mll_p->next; nmll_p != 0;
 						nmll_p = nmll_p->next) {
 			if (nmll_p->str == S_STAFF) {
-				if (nmll_p->u.staff_p->groups_p[0]->basictime >= -1) {
+				if (nmll_p->u.staff_p->groups_p[0]->is_multirest== NO) {
 					/* not followed by multi-rest,
 					 * can truncate time sig */
 					char * t;
@@ -1304,7 +1304,7 @@ int count;		/* how many measures of all rest so far */
 				 * than using a measure duration. */
 				return(NO);
 			}
-			else if (gs_p->basictime < -1) {
+			else if (gs_p->is_multirest == YES) {
 				/* already multirest! */
 				return(NO);
 			}
@@ -1365,6 +1365,7 @@ int min_combine;	/* minimum number to combine, or NORESTCOMBINE */
 		gs_p = newGRPSYL(GS_GROUP);
 		gs_p->grpcont = GC_REST;
 		gs_p->basictime = -nummeas;
+		gs_p->is_multirest = YES;
 		gs_p->fulltime = Score.time;
 		gs_p->staffno = s;
 		gs_p->vno = 1;
@@ -1385,6 +1386,7 @@ int min_combine;	/* minimum number to combine, or NORESTCOMBINE */
 		if (numvoices > 2) {
 			add_meas_space( &(new_p->u.staff_p->groups_p[2]), s, 3);
 			new_p->u.staff_p->groups_p[2]->basictime = -nummeas;
+			new_p->u.staff_p->groups_p[2]->is_multirest = YES;
 			/* if only the third voice is visible, need to convert
 			 * the space just created into a rest. */
 			if (vvpath(s, 1, VISIBLE)->visible == NO &&
@@ -1716,7 +1718,7 @@ int end;	/* Play only through this measure number.
 		/* Multirests count as multiple bars */
 		else if (mll_p->str == S_STAFF
 				&& mll_p->u.staff_p->groups_p[0] != 0) {
-			if (mll_p->u.staff_p->groups_p[0]->basictime < -1) {
+			if (mll_p->u.staff_p->groups_p[0]->is_multirest == YES) {
 				numbars += -(mll_p->u.staff_p->groups_p[0]->basictime) - 1 ;
 			}
 			/* skip the rest of the STAFFs till BAR */
@@ -1788,7 +1790,7 @@ int end;	/* Play only through this measure number.
 		}
 		else if (mll_p->str == S_STAFF
 				&& mll_p->u.staff_p->groups_p[0] != 0) {
-			if (mll_p->u.staff_p->groups_p[0]->basictime < -1) {
+			if (mll_p->u.staff_p->groups_p[0]->is_multirest == YES) {
 				bars += -(mll_p->u.staff_p->groups_p[0]->basictime) - 1 ;
 			}
 			/* skip the rest of the STAFFs till BAR */
@@ -1800,7 +1802,7 @@ int end;	/* Play only through this measure number.
 	first_p = 0;
 	for (  ; mll_p != 0 && mll_p->str != S_BAR; mll_p = mll_p->next) {
 		if (mll_p->str == S_STAFF) {
-			if (mll_p->u.staff_p->groups_p[0]->basictime < -1) {
+			if (mll_p->u.staff_p->groups_p[0]->is_multirest == YES) {
 				mrbars = -(mll_p->u.staff_p->groups_p[0]->basictime) - 1 ;
 			}
 			mv_accs(mll_p);
@@ -1965,7 +1967,7 @@ int end;	/* Play only through this measure number.
 			}
 
 			/* Deal with multirest */
-			if (mll_p->u.staff_p->groups_p[0]->basictime < -1) {
+			if (mll_p->u.staff_p->groups_p[0]->is_multirest == YES) {
 				mrbars = -(mll_p->u.staff_p->groups_p[0]->basictime);
 				if (bars + mrbars > start) {
 					/* Slice starts in middle of multirest.
@@ -1997,6 +1999,7 @@ int end;	/* Play only through this measure number.
 				    /* If down to single measure, have to
 				     * convert from multirest to meas rest */
 				    if (mll_p->u.staff_p->groups_p[0]->basictime == -1) {
+					mll_p->u.staff_p->groups_p[0]->is_multirest = NO;
 					mll_p->u.staff_p->groups_p[0]->is_meas = YES;
 					mll_p->u.staff_p->groups_p[0]->basictime = 1;
 					mll_p->u.staff_p->groups_p[0]->fulltime = Score.time;
@@ -2134,7 +2137,7 @@ int end;	/* Play only through this measure number.
 			}
 			if (mll_p->str == S_STAFF &&
 					mll_p->u.staff_p->groups_p[0] != 0 &&
-					mll_p->u.staff_p->groups_p[0]->basictime < -1) {
+					mll_p->u.staff_p->groups_p[0]->is_multirest == YES) {
 				/* It's a multirest */
 				mrbars = -(mll_p->u.staff_p->groups_p[0]->basictime);
 				bars += mrbars - 1;
@@ -2147,6 +2150,7 @@ int end;	/* Play only through this measure number.
 					    mll_p->u.staff_p->groups_p[0]->basictime
 							+= bars - end + 1;
 					    if (mll_p->u.staff_p->groups_p[0]->basictime == -1) {
+						mll_p->u.staff_p->groups_p[0]->is_multirest = NO;
 						mll_p->u.staff_p->groups_p[0]->is_meas = YES;
 						mll_p->u.staff_p->groups_p[0]->basictime = 1;
 						mll_p->u.staff_p->groups_p[0]->fulltime = Score.time;

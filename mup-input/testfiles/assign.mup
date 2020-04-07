@@ -58,6 +58,7 @@ score
 	key=3& min
 	label="lab"
 	label2="lab2"
+	alignlabels=center
 	labelkeymap="map1"
 	leftspace=0.3,6
 	leftmargin=0.8

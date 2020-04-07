@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -53,8 +53,9 @@
 #include "globals.h"
 
 
-/* shapes for quarter and shorter, half, whole, double whole */
-#define MAX_SHAPE_DURS	(4)
+/* shapes for quarter and shorter, half, whole, double whole, quad, oct */
+#define MIN_SHAPE_DURS  (4)
+#define MAX_SHAPE_DURS	(6)
 /* UP and DOWN */
 #define MAX_STEM_DIRS	(2)
 
@@ -96,18 +97,18 @@ struct SHAPENAMES {
 	char *clan_name;	/* name for the set of shapes */
 	char *member_names;	/* The names of the 4 shapes in the set */
 } Predef_shape_names[] = {
-	{ "norm",	"4n 2n 1n dblwhole" },
-	{ "x",		"xnote diamond diamond dwhdiamond" },
-	{ "allx",	"xnote xnote xnote xnote" },
-	{ "diam",	"filldiamond diamond diamond dwhdiamond" },
-	{ "blank",	"blankhead blankhead blankhead blankhead" },
-	{ "righttri",	"u?fillrighttriangle u?righttriangle u?righttriangle u?dwhrighttriangle" },
-	{ "isostri",	"fillisostriangle isostriangle isostriangle dwhisostriangle" },
-	{ "rect",	"fillrectangle rectangle rectangle dwhrectangle" },
-	{ "pie",	"fillpiewedge piewedge piewedge dwhpiewedge" },
-	{ "semicirc",	"fillsemicircle semicircle semicircle dwhsemicircle" },
-	{ "allslash",	"fillslashhead fillslashhead fillslashhead fillslashhead" },
-	{ "slash",	"fillslashhead slashhead slashhead dwhslashhead" },
+	{ "norm",	"4n 2n 1n dblwhole quadwhole octwhole" },
+	{ "x",		"xnote diamond diamond dwhdiamond quadwhole octwhole" },
+	{ "allx",	"xnote xnote xnote xnote xnote xnote" },
+	{ "diam",	"filldiamond diamond diamond dwhdiamond quadwhole octwhole" },
+	{ "blank",	"blankhead blankhead blankhead blankhead blankhead blankhead" },
+	{ "righttri",	"u?fillrighttriangle u?righttriangle u?righttriangle u?dwhrighttriangle quadwhole octwhole" },
+	{ "isostri",	"fillisostriangle isostriangle isostriangle dwhisostriangle quadwhole octwhole" },
+	{ "rect",	"fillrectangle rectangle rectangle dwhrectangle quadwhole octwhole" },
+	{ "pie",	"fillpiewedge piewedge piewedge dwhpiewedge quadwhole octwhole" },
+	{ "semicirc",	"fillsemicircle semicircle semicircle dwhsemicircle quadwhole octwhole" },
+	{ "allslash",	"fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead" },
+	{ "slash",	"fillslashhead slashhead slashhead dwhslashhead quadwhole octwhole" },
 	{ 0, 0 }
 };
 
@@ -123,6 +124,8 @@ struct HEADDATA {
 	char *name;
 	struct HEADINFO info;
 } Predef_headinfo[] = {
+  { "octwhole",		{ C_OCTWHOLE,		FONT_MUSIC, { 0.0, 0.0 } } },
+  { "quadwhole",	{ C_QUADWHOLE,		FONT_MUSIC, { 0.0, 0.0 } } },
   { "dblwhole",		{ C_DBLWHOLE,		FONT_MUSIC, { 0.0, 0.0 } } },
   { "altdblwhole",	{ C_ALTDBLWHOLE,	FONT_MUSIC, { 0.0, 0.0 } } },
   { "1n",		{ C_1N,			FONT_MUSIC, { 0.0, 0.0 } } },
@@ -1144,7 +1147,7 @@ float * coord_p;
 }
 
 
-/* Given a shape name and string containing the 4 note heads to use for it,
+/* Given a shape name and string containing the 4 to 6 note heads to use for it,
  * as would exist in a line of "headshapes" context, parse the
  * string with the noteheads and save all the information
  * in the shapes hash table.
@@ -1154,7 +1157,7 @@ void
 add_shape(name, shapes)
 
 char *name;	/* name of the list of shapes */
-char *shapes;	/* list of 4 shape names */
+char *shapes;	/* list of 4 to 6 shape names */
 
 {
 	struct Sym *sym_p;		/* where added into Shape_table */
@@ -1188,7 +1191,7 @@ char *shapes;	/* list of 4 shape names */
 		Shape_map[Shape_entries] = sym_p;
 	}
 
-	/* Parse the list of 4 shapes and save their info */
+	/* Parse the list of shapes and save their info */
 	for (d = i = 0; shapes[i] != '\0';  ) {
 		/* Skip white space */
 		if (isspace(shapes[i])) {
@@ -1199,8 +1202,8 @@ char *shapes;	/* list of 4 shape names */
 		/* Make sure user didn't give too many shapes */
 		if (d >= MAX_SHAPE_DURS) {
 			l_yyerror(Curr_filename, yylineno,
-				"Too many shapes for headshape '%s' (%d expected, %d found)\n",
-				name, MAX_SHAPE_DURS, d);
+				"Too many shapes for headshape '%s' (max of %d expected)\n",
+				name, MAX_SHAPE_DURS);
 			return;
 		}
 
@@ -1263,10 +1266,24 @@ char *shapes;	/* list of 4 shape names */
 		d++;
 		i += nameleng;
 	}
-	if (d < MAX_SHAPE_DURS) {
+	if (d < MIN_SHAPE_DURS) {
 		l_yyerror(Curr_filename, yylineno,
-			"Too few shapes for headshape '%s' (%d expected, %d found)\n",
-			name, MAX_SHAPE_DURS, d);
+			"Too few shapes for headshape '%s' (at least %d expected, %d found)\n",
+			name, MIN_SHAPE_DURS, d);
+	}
+	if (d < MAX_SHAPE_DURS) {
+		ch = find_char("octwhole", &font, &is_small, YES);	
+		shapeinfo_p->headchar[STEMINDEX(UP)][MAX_SHAPE_DURS-1] = ch;
+		shapeinfo_p->headfont[STEMINDEX(UP)][MAX_SHAPE_DURS-1] = font;
+		shapeinfo_p->headchar[STEMINDEX(DOWN)][MAX_SHAPE_DURS-1] = ch;
+		shapeinfo_p->headfont[STEMINDEX(DOWN)][MAX_SHAPE_DURS-1] = font;
+	}
+	if (d < MAX_SHAPE_DURS - 1) {
+		ch = find_char("quadwhole", &font, &is_small, YES);	
+		shapeinfo_p->headchar[STEMINDEX(UP)][MAX_SHAPE_DURS-2] = ch;
+		shapeinfo_p->headfont[STEMINDEX(UP)][MAX_SHAPE_DURS-2] = font;
+		shapeinfo_p->headchar[STEMINDEX(DOWN)][MAX_SHAPE_DURS-2] = ch;
+		shapeinfo_p->headfont[STEMINDEX(DOWN)][MAX_SHAPE_DURS-2] = font;
 	}
 }
 

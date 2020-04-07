@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1224,10 +1224,8 @@ struct MAINLL *mll_p;		/* MLL struct for this group */
  *		are involved.  It stores the answer in the COMB field of all
  *		the groups.
  *
- *		If we shouldn't combine the groups, we return YES so that we
- *		can come back and try a different pair, if appropriate.  If we
- *		can combine the groups, we may return YES or NO; see comments
- *		below.
+ *		We return YES if the caller can call again with a different
+ *		pair, or NO if not.  (Only two combinings can be done per hand.)
  */
 
 static int
@@ -1316,18 +1314,7 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 		/* first groups to be combined in this hand */
 		comb |=  src_p->vno <<  SRC1SHIFT;
 		comb |= dest_p->vno << DEST1SHIFT;
-		/*
-		 * If chkhand1() said all the groups in this hand were
-		 * combineable, we can come back later and try to combine the
-		 * other group.  Otherwise, don't.  We know the non-combineable
-		 * group will fail to combine, so don't waste the time.
-		 */
-		if ((comb & 0x38) == ((1 << (1 + 2)) | (1 << (1 + 3)) |
-				(1 << (2 + 3)))) {
-			keep_going = YES;
-		} else {
-			keep_going = NO;
-		}
+		keep_going = YES;
 	} else {
 		/* second groups to be combined in this hand */
 		comb |=  src_p->vno <<  SRC2SHIFT;

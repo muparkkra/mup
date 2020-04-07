@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -746,5 +746,142 @@ initMagicPaths(void)
 		// without having to know or care that they were "magic."
 		setenv(magicPathTable[i], value, 0);
 	}
+}
+#endif
+
+#ifdef OS_LIKE_WIN32
+
+// Add the given additional_bin to $PATH,
+// using the initial len bytes of it.
+
+static void
+add_to_path(char *additional_bin, int len)
+
+{
+	char *old_path;
+	char *new_path;
+
+	// Look up the current $PATH value
+	if ((old_path = getenv("PATH")) == 0) {
+		// No PATH; don't bother
+		return;
+	}
+	// Truncate to just the specified len, to get just the directory
+	additional_bin[len] = '\0';
+
+	// Allocate space for new PATH
+	int newlen = strlen(old_path) + len + 7;
+	new_path = new char[newlen];
+	// Create the new PATH
+	snprintf(new_path, newlen, "PATH=%s%c%s", old_path,
+				path_separator(), additional_bin);
+
+	// Set the new PATH
+	putenv(new_path);
+}
+
+
+// Check if gswin32c or gswin64c exists at the candidate location.
+// The size is the total length of the candidate_location array.
+// The len is where to append the gswinNNc for checking.
+// Returns true if was found, false if not.
+
+static int
+check_gswin_location(char *candidate_location, int size, int len)
+
+{
+	// Try the location with gswin32 appended
+	strncpy(candidate_location + len, "gswin32c",
+				size - len - 1);
+	candidate_location[len + 8] = '\0';
+	if (check_access(candidate_location)) {
+		// Found it
+		add_to_path(candidate_location, len - 1);
+		return(true);
+	}
+
+	// Try with gswin64c
+	candidate_location[len+5] = '6';
+	candidate_location[len+6] = '4';
+	if (check_access(candidate_location)) {
+		// Found it
+		add_to_path(candidate_location, len - 1);
+		return(true);
+	}
+	return(false);
+}
+
+
+// With recent versions of Ghostscript, ps2pdf may not be able to find
+// gswin32c or gswin64c. So this tries to deduce where it likely is,
+// and if found, adds the location to PATH.
+// If we don't find it, we just go on and hope for the best.
+
+void
+find_gswinNNc(const char * const ps2pdf_location)
+
+{
+	static bool already_called = false;
+
+	if (already_called) {
+		return;
+	}
+	already_called = true;
+
+	char gswin_location[FL_PATH_MAX];
+	gswin_location[0] = '\0';
+	if ( ! find_executable("gswin64c", gswin_location)) {
+		if ( ! find_executable("gswin32c", gswin_location) ) {
+			gswin_location[0] = '\0';
+		}
+	}
+	if (gswin_location[0] != '\0') {
+		// Was already found in the PATH; no need to deduce.
+		return;
+	}
+
+	// Neither gswin32c or gswin64c was found in the PATH
+	// Try looking in same directory as ps2pdf. (This may work if
+	// user gave full path, but it wouldn't have been found via PATH.)
+	char *last_sep;
+	if ((last_sep = strrchr(ps2pdf_location, dir_separator())) == 0) {
+		// Have to give up looking
+		return;
+	}
+
+	// Create the path to be checked
+	char candidate_location[FL_PATH_MAX];
+	int len;
+	len = last_sep - ps2pdf_location + 1;
+	strncpy(candidate_location, ps2pdf_location, len); 
+	candidate_location[len] = '\0';
+
+	if (check_gswin_location(candidate_location, sizeof(candidate_location),
+							len)) {
+		// Found it
+		return;
+	}
+
+	// If the last component was not "bin," try backing up one level
+	// and seeing if there is in a bin directory at the level,
+	// and if so, try looking in there.
+	// This is the place most likely to work.
+	candidate_location[len-1] = '\0';
+	if ((last_sep = strrchr(candidate_location, dir_separator())) == 0) {
+		// Have to give up looking
+		return;
+	}
+	if (strcmp(last_sep + 1, "bin") == 0) {
+		// Already was bin, so no help 
+		return;
+	}
+	len = last_sep - candidate_location + 1;
+	strncpy(candidate_location + len, "bin",
+					sizeof(candidate_location) - len - 1);
+	len += 3;
+	candidate_location[len++] = dir_separator();
+	candidate_location[len] = '\0';
+	(void) check_gswin_location(candidate_location,
+					sizeof(candidate_location), len);
 }
 #endif

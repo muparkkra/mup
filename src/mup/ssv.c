@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -175,6 +175,7 @@ initstructs()
 	Score.subbarlist = 0;
 	Score.division = DEFDIVISION;
 	Score.endingstyle = ENDING_TOP;
+	Score.alignlabels = J_RIGHT;
 	Score.gridsatend = NO;
 	Score.measnum = MN_NONE;
 	Score.measnumfamily = BASE_TIMES;
@@ -211,6 +212,9 @@ initstructs()
 		Score.vcombine[v] = 0;
 	}
 	Score.vcombinequal = VC_NOOVERLAP;
+	Score.prtime_str1 = 0;
+	Score.prtime_str2 = 0;
+	Score.prtime_is_arbitrary = NO;
 	Score.sharps = DEFSHARPS;
 	Score.is_minor = NO;
 	Score.cancelkey = NO;
@@ -245,6 +249,8 @@ initstructs()
 	Score.dist = DEFDIST;
 	Score.dyndist = DEFDYNDIST;
 	Score.lyricsdist = DEFLYRICSDIST;
+	Score.chordtranslation = CT_NONE;
+	Score.doremi_syls = NULL;
 	Score.label = 0;
 	Score.label2 = 0;
 	Score.labelkeymap = 0;
@@ -876,6 +882,10 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 		f_p->endingstyle = i_p->endingstyle;
 	}
 
+	if (i_p->used[ALIGNLABELS] == YES) {
+		f_p->alignlabels = i_p->alignlabels;
+	}
+
 	if (i_p->used[MEASNUM] == YES) {
 		f_p->measnum = i_p->measnum;
 	}
@@ -1145,6 +1155,18 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 		break;
 	}
 
+	switch (i_p->used[PRINTEDTIME]) {
+	case YES:
+		f_p->prtime_str1 = i_p->prtime_str1;
+		f_p->prtime_str2 = i_p->prtime_str2;
+		f_p->prtime_is_arbitrary = i_p->prtime_is_arbitrary;
+		f_p->used[PRINTEDTIME] = YES;
+		break;
+	case UNSET:
+		f_p->used[PRINTEDTIME] = NO;
+		break;
+	}
+
 	switch (i_p->used[SHARPS]) {
 	case YES:
 		f_p->sharps = i_p->sharps;
@@ -1273,6 +1295,17 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 	SETPARM(dyndist, DYNDIST)
 
 	SETPARM(lyricsdist, LYRICSDIST)
+
+	switch (i_p->used[CHORDTRANSLATION]) {
+	case YES:
+		f_p->chordtranslation = i_p->chordtranslation;
+		f_p->doremi_syls = i_p->doremi_syls;  /* needed for CT_DOREMI */
+		f_p->used[CHORDTRANSLATION] = YES;
+		break;
+	case UNSET:				\
+		f_p->used[CHORDTRANSLATION] = NO;
+		break;
+	}
 
 	SETPARM(label, LABEL)
 

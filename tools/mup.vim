@@ -90,6 +90,7 @@ syn keyword Statement font fontfamily lyricsfont lyricsfontfamily extendlyrics c
 syn keyword Statement noteheads stemlen stemshorten swingunit
 syn keyword Statement lyricsdist maxscores useaccs carryaccs measnumstyle
 syn keyword Statement align
+syn keyword Statement alignlabels chordtranslation printedtime
 syn keyword Statement emptymeas withfont withfontfamily withsize
 syn keyword Statement slashesbetween bracketrepeats repeatdots alignrests
 syn keyword Statement indentrestart flipmargin minalignscale

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -164,7 +164,7 @@ static void add_char P((char *name, int fontkind, int code));
 static double lwidth_common P((char *string, int consider_start_pile));
 static int starts_piled P((char *string, int *font_p, int *size_p,
 		char **pile_start_p_p));
-static int str_cmd P((char *str, int *size_p, int *in_pile_p));
+static int str_cmd P((char *str, int *size_p, int *font_p, int *in_pile_p));
 static int get_accidental P((unsigned char *str, char *accidental_p,
 		int *acc_size_p, int trans_natural, int *escaped_p));
 static int add_accidental P((char *buff, int acc_character, int acc_size,
@@ -706,8 +706,11 @@ char *exclusion;/* If this is non-null, then almost all backslash escapes
 						! isdigit( *(inp_p - 2)) ) {
 					l_yyerror(fname, lineno,
 						"slash can only be used after digit(s)");
+					*out_p = '/';
 				}
-				*out_p = (char) STR_SLASH;
+				else {
+					*out_p = (char) STR_SLASH;
+				}
 				break;
 			case '\\':
 			case '"':
@@ -1961,12 +1964,14 @@ int staffno;		/* which staff it is associated with */
 				 * transposing */
 	char letter;		/* A to G */
 	char accidental;
-	int escaped;		/* YES is accidental was escaped */
+	int escaped;		/* YES if accidental was escaped */
+	int chordtranslation;	/* none, do/re/mi, or german */
 	char literal_accidental;	/* what would normally be translated */
-	int nprocessed;		/* how many character processed by subroutine */
+	int nprocessed;		/* how many characters processed by subroutine */
 	char *newstring;	/* final copy of transposed string */
 	int n;
 	int size;
+	int font;
 	int in_pile;		/* YES if inside a pile */
 	int acc_size;		/* size for accidentals */
 
@@ -1974,6 +1979,7 @@ int staffno;		/* which staff it is associated with */
 	/* get font/size info */
 	tmpbuff[0] = chordstring[0];
 	tmpbuff[1] = chordstring[1];
+	font = chordstring[0];
 	size = chordstring[1];
 	in_pile = NO;
 	str = (unsigned char *) (chordstring + 2);
@@ -1992,13 +1998,12 @@ int staffno;		/* which staff it is associated with */
 		acc_size = (in_pile == YES ? size : accsize(size));
 
 		/* If a STR_*, deal with that */
-		if ((n = str_cmd((char *) str, &size, &in_pile)) > 0) {
+		if ((n = str_cmd((char *) str, &size, &font, &in_pile)) > 0) {
 			strncpy(tmpbuff + i, (char *) str, (unsigned) n);
 			i += n;
 			str += n - 1;
 		}
 
-  /*** ??? don't we need to deal with non-standard fonts here ??? */
 		/* handle backslashed o and ^ */
 		else if (*str == '\\' && ( *(str+1) == 'o' || *(str+1) == '^' ) ) {
 			str++;
@@ -2007,8 +2012,9 @@ int staffno;		/* which staff it is associated with */
 
 		/* Transpose A-G anywhere.
 		 * Transpose a-g only if first character of the string. */
-		else if ( (*str >= 'A' && *str <= 'G') ||
-			(i == 2 && *str >= 'a' && * str <= 'g') ) {
+		else if ( IS_STD_FONT(font) &&
+				( (*str >= 'A' && *str <= 'G') ||
+				(i == 2 && *str >= 'a' && * str <= 'g') ) ) {
 
 			/* Aha! Something to transpose. */
 			letter = *str;
@@ -2035,9 +2041,85 @@ int staffno;		/* which staff it is associated with */
 				transposed = tranchnote(letter, accidental, staffno);
 			}
 
-			/* put transposed letter into output */
-			tmpbuff[i++] = *transposed;
+			chordtranslation = svpath(staffno, CHORDTRANSLATION)
+						->chordtranslation;
+			if (chordtranslation == CT_NONE) {
+				/* put transposed letter into output */
+				tmpbuff[i++] = *transposed;
+			}
+			else if (chordtranslation == CT_DOREMI) {
+				int trans_index;	/* into deremi_syls[] */
+				char *replacement;	/* e.g. "do" for "C" */
+				int prevsize;
+				int prevfont;
 
+				/* Map letter to do/re/mi style name */
+				trans_index = (int)(toupper(*transposed)) - (int) 'A';
+				if (trans_index < 0 || trans_index >= 7) {
+					pfatal("invalid pitch letter '%c' returned for do/re/mi translation", *transposed);
+				}
+				/* compensate for array order starting at C */
+				trans_index = (trans_index + 5) % 7;
+				/* Look up the replacement syllable */
+				replacement = svpath(staffno, CHORDTRANSLATION)->doremi_syls[trans_index];
+				/* copy, skipping the font/size bytes */
+				prevfont = font;
+				prevsize = size;
+				for (replacement += 2; *replacement != '\0';
+							replacement++) {
+					/* Reserve 6 in case we need to reset
+					 * size/font, plus a couple to spare */
+					if (i > sizeof(tmpbuff) - 6) {
+						ufatal("chord string too long after translation: '%s'", chordstring + 2);
+					}
+					if ((n = str_cmd((char *) replacement, &size, &font, &in_pile)) > 0) {
+						strncpy(tmpbuff + i, (char *) replacement, (unsigned) n);
+						i += n;
+						replacement += n - 1;
+					}
+					else {
+						tmpbuff[i++] = *replacement;
+					}
+				}
+				if (font != prevfont) {
+					tmpbuff[i++] = STR_FONT;
+					tmpbuff[i++] = prevfont;
+				}
+				if (size != prevsize) {
+					tmpbuff[i++] = STR_SIZE;
+					tmpbuff[i++] = prevsize;
+				}
+			}
+			else if (chordtranslation == CT_GERMAN) {
+				int translated;
+
+				translated = *transposed;
+				if ( toupper(translated) == 'B') {
+					switch (accidental) {
+					case '\0':
+					case '#':
+					case 'x':
+						/* replace with H */
+						translated = (isupper(*transposed)
+							? 'H' : 'h');
+						break;
+					case '&':
+						/* B& becomes just B */
+						transposed[1] = '\0';
+						break;
+					case 'B':
+						/* Change B&& to B& */
+						transposed[1] = '&';
+						transposed[2] = '\0';
+						break;
+					}
+				}
+				tmpbuff[i++] = translated;
+			}
+			else {
+				pfatal("Invalid chordtranslation value %d",
+						chordtranslation);
+			}
 			/* now add accidental if any */
 			i += add_accidental(tmpbuff + i, (int) *++transposed,
 							acc_size, NO);
@@ -2082,7 +2164,7 @@ int staffno;		/* which staff it is associated with */
 
 	/* need to make permanent copy of new string */
 	tmpbuff[i++] = '\0';
-	MALLOCA(char, newstring, i + 1);
+	MALLOCA(char, newstring, i);
 	(void) memcpy(newstring, tmpbuff, (unsigned) i);
 
 	/* free original version */
@@ -2094,14 +2176,15 @@ int staffno;		/* which staff it is associated with */
 
 
 /* If there is a STR_* command in chord/analysis/figbass, return how
- * many characters long it is. Also update the size if the
- * command was one to change size, and update pile status if necessary. */
+ * many characters long it is. Also update the size or font if the
+ * command was one to change those, and update pile status if necessary. */
 
 static int
-str_cmd(str, size_p, in_pile_p)
+str_cmd(str, size_p, font_p, in_pile_p)
 
 char *str;	/* check string starting here */
 int *size_p;
+int *font_p;
 int *in_pile_p;	/* YES if in pile, may be updated */
 
 {
@@ -2114,9 +2197,12 @@ int *in_pile_p;	/* YES if in pile, may be updated */
 			/* command plus 1 argument byte */
 			return(2);
 
+		case STR_FONT:
+			/* update font */
+			*font_p = *(str + 1);
+			return(2);
 		case STR_PAGENUM:
 		case STR_NUMPAGES:
-		case STR_FONT:
 		case STR_BACKSPACE:
 		case STR_VERTICAL:
 		case STR_KEYMAP:
@@ -2417,6 +2503,7 @@ char *string;
 	char replacement[4];	/* space for dim, halfdim, etc */
 	int n;
 	int size, acc_size;
+	int font;
 	char accidental;	/* #, &, x, etc */
 	int escaped;		/* YES is accidental was escaped */
 	int in_pile;		/* YES if inside a pile */
@@ -2424,6 +2511,7 @@ char *string;
 
 	buffer[0] = string[0];
 	buffer[1] = string[1];
+	font = string[0];
 	size = string[1];
 	in_pile = NO;
 
@@ -2454,7 +2542,7 @@ char *string;
 			out_p += strlen(replacement);
 			string += n;
 		}
-		else if ((n = str_cmd(string, &size, &in_pile)) > 0) {
+		else if ((n = str_cmd(string, &size, &font, &in_pile)) > 0) {
 			strncpy(out_p, string, (unsigned) n);
 			out_p += n;
 			string += n;
@@ -2656,21 +2744,19 @@ restchar(basictime)
 int basictime;
 
 {
-	if (basictime < -1) {
-		pfatal("tried to get rest character for multirest");
-		/*NOTREACHED*/
-		return(0);
-	}
-
-	else if (basictime == -1) {
-		/* quad rest */
-		return (C_QWHREST);
-	}
-
-	else if (basictime == 0) {
+	if (basictime == BT_DBL) {
 		/* double whole rest */
 		return (C_DWHREST);
 	}
+	else if (basictime == BT_QUAD) {
+		/* quad rest */
+		return (C_QWHREST);
+	}
+	else if (basictime == BT_OCT) {
+		/* quad rest */
+		return (C_OWHREST);
+	}
+
 
 	else {
 		/* other non-multirest */

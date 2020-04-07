@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1520,6 +1520,7 @@ struct CHORD *chord_p;		/* what chord to attach to */
 							font, size);
 	new_syls_p[insert_index]->inputlineno = -1;
 	new_syls_p[insert_index]->basictime = -1;
+	new_syls_p[insert_index]->is_multirest = NO;
 	new_syls_p[insert_index]->is_meas = YES;
 	new_syls_p[insert_index]->fulltime = Score.time;
 	new_syls_p[insert_index]->staffno = staff_p->staffno;

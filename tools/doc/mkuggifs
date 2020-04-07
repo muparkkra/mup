@@ -29,6 +29,6 @@ do
 done
 
 # Do the chart showing all the special music characters
-echo '-50 -125 translate' | $CAT ../../src/mup/prolog.ps - ../muschar.ps | $GS -sOutputFile=muschar.ppm -sDEVICE=ppmraw -r108 -g735x975 -
+echo '-50 -65 translate' | $CAT ../../src/mup/prolog.ps - ../muschar.ps | $GS -sOutputFile=muschar.ppm -sDEVICE=ppmraw -r108 -g775x1050 -
 $PPMTOGIF < muschar.ppm > muschar.gif
 rm muschar.ppm

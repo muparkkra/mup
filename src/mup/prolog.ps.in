@@ -2,7 +2,7 @@
 % 2008, 2009, 2012 by Arkkra Enterprises
 % All rights reserved
 
-% Mup PostScript Prolog 6.7 for use with Mup 6.7
+% Mup PostScript Prolog 6.8 for use with Mup 6.8
 
 % lwid is used as the width of a standard (thin) line in the music
 % character definitions.
@@ -882,6 +882,32 @@ mfont0 begin
 			-650 -600 moveto -650 600 lineto stroke
 			650 -600 moveto 650 600 lineto stroke
 		} def
+
+		% quadwhole {
+		/colon {
+			lwid setlinewidth
+			-630 600 moveto -630 -600 lineto stroke
+			630 600 moveto 630 -600 lineto stroke
+			200 setlinewidth
+			-630 235 moveto 630 235 lineto stroke
+			-630 -235 moveto 630 -235 lineto stroke
+		} def
+
+		% octwhole {
+		/semicolon {
+			lwid setlinewidth
+			-1000 600 moveto -1000 -600 lineto stroke
+			1000 600 moveto 1000 -600 lineto stroke
+			200 setlinewidth
+			-1000 235 moveto 1000 235 lineto stroke
+			-1000 -235 moveto 1000 -235 lineto stroke
+		} def
+
+		% owhrest {
+		/equal {
+			1200 setlinewidth
+			-600 0 moveto 600 0 lineto stroke
+		} def
 	end
 
 	/BuildChar {
@@ -1240,6 +1266,9 @@ end
 /ll1rest		{ (!) printmchar0 } def
 /ll2rest		{ (@) printmchar0 } def
 /altdblwhole		{ (?) printmchar0 } def
+/quadwhole		{ (:) printmchar0 } def
+/octwhole		{ (;) printmchar0 } def
+/owhrest		{ (=) printmchar0 } def
 /dwhrighttriangle	{ (A) printmchar1 } def
 /righttriangle		{ (B) printmchar1 } def
 /fillrighttriangle	{ (C) printmchar1 } def

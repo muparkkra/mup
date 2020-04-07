@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -337,6 +337,7 @@
 #define	MINSTEMLEN	(0.0)
 #define	DEFSTEMLEN	(7.0)
 #define	MAXSTEMLEN	(100.0)
+#define	DEFSTEMLEN_LONG	(6.0)		/* for long (quad and oct) groups */
 #define	SM_STEMFACTOR	(5.0 / 7.0)	/* grace/cue factor */
 #define	TINY_STEMFACTOR	(4.0 / 7.0)	/* grace-cue versus normal factor */
 
@@ -711,6 +712,14 @@
  * set of music characters used to print note heads of the various basictimes.
  */
 #define	HS_UNKNOWN	(0)
+
+/*
+ * Define basictime values for groups that are longer than a whole note.
+ * Don't bother with shorter values, since they are obvious, 1 over the time.
+ */
+#define	BT_DBL		(0)	/* double whole */
+#define	BT_QUAD		(-1)	/* quadruple whole, a.k.a. "longa" */
+#define	BT_OCT		(-2)	/* octuple whole, a.k.a. "maxima" */
 
 /*
  * Define the size of a group.  Spaces are always normal, but notes and rests
@@ -1164,6 +1173,18 @@
 
 #define STR_KEYMAP		0xf6
 
+/* chord translation */
+#define	CT_NONE			(0)	/* no translation */
+#define	CT_DOREMI		(1)	/* translate letters to syllables */
+#define	CT_GERMAN		(2)	/* translate B -> H, B& -> B */
+
+#ifndef DOREMI /* the old way */
+/* chord translation modifier, used when chord translation is CT_DOREMI */
+#define	CTM_NOCAPS		(0)	/* example:  C -> do */
+#define	CTM_INITIALCAP		(1)	/* example:  C -> Do */
+#define	CTM_ALLCAPS		(2)	/* example:  C -> DO */
+#endif
+
 /*
  * Define macros relating to vertical movement within a string.  It is stored
  * in points, offset by a bias so that the number will always be positive when
@@ -1476,33 +1497,77 @@
 #define NUMELEM(a)	(sizeof(a) / sizeof((a)[0]))
 
 /*
+ * If memory debugging is turned on, include the header file for it, and define
+ * macros to support memory debugging.  
+ */
+#ifdef MUP_ALLOC_DEBUG
+#include "allocdebug.h"
+#define STRINGIFY(s) #s
+#define MALLOC_DEBUG_START(structtype, numelem, new_p) alloc_debug(AI_MALLOC, sizeof(struct structtype), numelem, 0, STRINGIFY(structtype), STRINGIFY(new_p));
+#define MALLOC_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define CALLOC_DEBUG_START(structtype, numelem, new_p) alloc_debug(AI_CALLOC, sizeof(struct structtype), numelem, 0, STRINGIFY(structtype), STRINGIFY(new_p));
+#define CALLOC_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define REALLOC_DEBUG_START(structtype, numelem, new_p) alloc_debug(AI_REALLOC, sizeof(struct structtype), numelem, new_p, STRINGIFY(structtype), STRINGIFY(new_p));
+#define REALLOC_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define MALLOCA_DEBUG_START(type, numelem, new_p) alloc_debug(AI_MALLOCA, sizeof(type), numelem, 0, STRINGIFY(type), STRINGIFY(new_p));
+#define MALLOCA_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define CALLOCA_DEBUG_START(type, numelem, new_p) alloc_debug(AI_CALLOCA, sizeof(type), numelem, 0, STRINGIFY(type), STRINGIFY(new_p));
+#define CALLOCA_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define REALLOCA_DEBUG_START(type, numelem, new_p) alloc_debug(AI_REALLOCA, sizeof(type), numelem, new_p, STRINGIFY(type), STRINGIFY(new_p));
+#define REALLOCA_DEBUG_END(new_p) alloc_debug_ret_value(new_p);
+#define FREE_DEBUG(mem_p) free_debug(mem_p)
+#else
+#define MALLOC_DEBUG_START(type, numelem, new_p)
+#define MALLOC_DEBUG_END(new_p)
+#define CALLOC_DEBUG_START(type, numelem, new_p)
+#define CALLOC_DEBUG_END(new_p)
+#define REALLOC_DEBUG_START(type, numelem, new_p)
+#define REALLOC_DEBUG_END(new_p)
+#define MALLOCA_DEBUG_START(type, numelem, new_p)
+#define MALLOCA_DEBUG_END(new_p)
+#define CALLOCA_DEBUG_START(type, numelem, new_p)
+#define CALLOCA_DEBUG_END(new_p)
+#define REALLOCA_DEBUG_START(type, numelem, new_p)
+#define REALLOCA_DEBUG_END(new_p)
+#define FREE_DEBUG(mem_p)  free(mem_p)
+#endif
+
+/*
  * Define macros for allocating structures.
  */
 #define	MALLOC(structtype, new_p, numelem) {				\
+	MALLOC_DEBUG_START(structtype, numelem, new_p)			\
 	if ((new_p = (struct structtype *)malloc((unsigned)		\
 			(((numelem) == 0 ? 1 : (numelem)) *		\
 			sizeof(struct structtype)))) == 0)		\
 		l_no_mem(__FILE__, __LINE__);				\
+	MALLOC_DEBUG_END(new_p) \
 }
 #define	CALLOC(structtype, new_p, numelem) {				\
+	CALLOC_DEBUG_START(structtype, numelem, new_p)			\
 	if ((new_p = (struct structtype *)calloc(			\
 			(numelem) == 0 ? 1 : (numelem),			\
 			(unsigned)sizeof(struct structtype)))  == 0)	\
 		l_no_mem(__FILE__, __LINE__);				\
+	CALLOC_DEBUG_END(new_p) \
 }
 #ifndef __STDC__
 #define	REALLOC(structtype, new_p, numelem) {				\
+	REALLOC_DEBUG_START(structtype, numelem, new_p)			\
 	if ((new_p = (struct structtype *)realloc((char *)(new_p),	\
 			(unsigned)(((numelem) == 0 ? 1 : (numelem)) *	\
 			sizeof(struct structtype)))) == 0) 		\
 		l_no_mem(__FILE__, __LINE__);				\
+	REALLOC_DEBUG_END(new_p) \
 }
 #else
 #define	REALLOC(structtype, new_p, numelem) {				\
+	REALLOC_DEBUG_START(structtype, numelem, new_p)			\
 	if ((new_p = (struct structtype *)realloc((void *)(new_p),	\
 			(unsigned)(((numelem) == 0 ? 1 : (numelem)) *	\
 			sizeof(struct structtype)))) == 0) 		\
 		l_no_mem(__FILE__, __LINE__);				\
+	REALLOC_DEBUG_END(new_p) \
 }
 #endif
 
@@ -1510,37 +1575,45 @@
  * Define macros for allocating other arrays.
  */
 #define	MALLOCA(type, new_p, numelem) {					\
+	MALLOCA_DEBUG_START(type, numelem, new_p)			\
 	if ((new_p = (type *)malloc((unsigned)				\
 			(((numelem) == 0 ? 1 : (numelem)) *		\
 			sizeof(type)))) == 0)				\
 		l_no_mem(__FILE__, __LINE__);				\
+	MALLOCA_DEBUG_END(new_p) \
 }
 #define	CALLOCA(type, new_p, numelem) {					\
+	CALLOCA_DEBUG_START(type, numelem, new_p)			\
 	if ((new_p = (type *)calloc((numelem) == 0 ? 1 : (numelem),	\
 			(unsigned)sizeof(type)))  == 0)			\
 		l_no_mem(__FILE__, __LINE__);				\
+	CALLOCA_DEBUG_END(new_p) \
 }
 #ifndef __STDC__
 #define	REALLOCA(type, new_p, numelem) {				\
+	REALLOCA_DEBUG_START(type, numelem, new_p)			\
 	if ((new_p = (type *)realloc((char *)(new_p),			\
 			(unsigned)(((numelem) == 0 ? 1 : (numelem)) *	\
 			sizeof(type)))) == 0)				\
 		l_no_mem(__FILE__, __LINE__);				\
+	REALLOCA_DEBUG_END(new_p) \
 }
 #else
 #define	REALLOCA(type, new_p, numelem) {				\
+	REALLOCA_DEBUG_START(type, numelem, new_p)			\
 	if ((new_p = (type *)realloc((void *)(new_p),			\
 			(unsigned)(((numelem) == 0 ? 1 : (numelem)) *	\
 			sizeof(type)))) == 0)				\
 		l_no_mem(__FILE__, __LINE__);				\
+	REALLOCA_DEBUG_END(new_p) \
 }
 #endif
 
 /* define macro for freeing memory */
 #ifdef __STDC__
-#define	FREE(mem_p)	free((void *)mem_p)
+#define	FREE(mem_p)	FREE_DEBUG((void*)mem_p)
 #else
-#define	FREE(mem_p)	free((char *)mem_p)
+#define	FREE(mem_p)	FREE_DEBUG((char*)mem_p)
 #endif
 
 /* convert a RATIONAL to a float */
@@ -1632,6 +1705,30 @@
 /* is this FEED followed by a CLEFSIG (music), not a block? */
 #define IS_CLEFSIG_FEED(mll_p) ((mll_p)->str == S_FEED && \
 		(mll_p)->next != 0 && (mll_p)->next->str == S_CLEFSIG)
+
+/*
+ * For the given note group (but not mrpt), check the side the stem is on, or
+ * would be on.  Whole and dblwhole have a stemside even though no stem.  So
+ * do groups with stemlen = 0.
+ */
+#define	STEMSIDE_RIGHT(gs_p)					\
+	(gs_p->stemdir == UP || gs_p->basictime <= BT_QUAD)
+#define STEMSIDE_LEFT(gs_p)	( ! STEMSIDE_RIGHT(gs_p) )
+
+/*
+ * For the given note group (but not mrpt), check whether it has a stem or not.
+ * Stem length = 0 still counts as there being a stem.
+ */
+#define STEMLESS(gs_p)  ((gs_p)->basictime == 1 || (gs_p)->basictime == BT_DBL)
+#define STEMMED(gs_p)   ( ! STEMLESS(gs_p) )
+
+/*
+ * For the given note group (but not mrpt), check the side the stem is on.
+ * These are true only when there is a stem (so not for whole/dblwhole),
+ * although stemlen = 0 still counts as there being a stem.
+ */
+#define	HAS_STEM_ON_RIGHT(gs_p)	( STEMSIDE_RIGHT(gs_p) && STEMMED(gs_p) )
+#define	HAS_STEM_ON_LEFT(gs_p)	( STEMSIDE_LEFT(gs_p)  && STEMMED(gs_p) )
 
 /*
  * This macro is to be used as in this example:

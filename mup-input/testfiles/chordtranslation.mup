@@ -1,0 +1,47 @@
+//!Mup-Arkkra
+
+header
+        title bold (18) "chordtranslation.mup"
+        paragraph (14) "This file tests the chordtranslation parameter"
+
+score
+	scale=1.4
+	chordtranslation="German"
+music
+
+1: b;b&;c;g;
+rom above all: 1 "chordtranslation=\"German\"";
+rom chord above all: 1 "B"; 2 "B&"; 3 "C"; 4 "G";
+bar
+
+1: b&&;b#;bx;bn;
+rom chord above all: 1 "B&&"; 2 "B#"; 3 "Bx"; 4 "B";
+bar
+
+newscore
+score
+	chordtranslation="DO RE MI FA SOL LA SI"
+music
+
+1: c;d;e;f;
+rom above all: 1 "chordtranslation=\"DO RE MI FA SOL LA SI\"";
+rom chord above all: 1 "C"; 2 "D"; 3 "E"; 4 "F";
+bar
+
+1: g;a;b;c+;
+rom chord above all: 1 "G"; 2 "A"; 3 "B"; 4 "C";
+bar
+newscore
+
+score
+	chordtranslation="\f(HX)\(alpha)do \(afii10020)re mi\(angle) f\(bullet)a so\(a104) la\(dn4n)la ti\(e')"
+music
+
+1: c;d;e;f;
+rom above all: 1 "with non-ascii characters";
+rom chord above all: 1 "C"; 2 "D"; 3 "E"; 4 "F";
+bar
+
+1: g;a;b;c+;
+rom chord above all: 1 "G"; 2 "A"; 3 "B"; 4 "C";
+bar

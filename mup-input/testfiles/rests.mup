@@ -27,13 +27,22 @@ music
 
 	newscore
 
-	rom 1: 1 "double whole rest";
-	mussym 1: 1 "ferm";
-	1: 1/2r;
+score
+	time = 8/1
+music
+	rom 1: 1 "octuple whole rest";
+	1: 1/8 r;
 	bar
 
-	rom 1: 1 "other rests in order; 2 1/256 rests";
-	mussym 1: 1 "ferm";
+	rom 1: 1 "quadruple whole rest";
+	rom 1: 5 "double whole rests";
+	1: 1/4 r; 1/2; ;
+	bar
+score
+	time = 8/4
+music
+
+	rom 1: 1 "other rests in order; two 1/256 rests";
 	1: 1r; 2; 4; 8; 16; 32; 64; 128; 256; ;
 	dblbar
 

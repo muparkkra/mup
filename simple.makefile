@@ -201,6 +201,7 @@ MUP_SRC =  \
 	src/mup/ytab.c
 
 MUP_HDRS = \
+	src/include/allocdebug.h \
 	src/include/defines.h \
 	src/include/extchar.h \
 	src/include/globals.h \

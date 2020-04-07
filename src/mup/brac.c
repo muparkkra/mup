@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -125,6 +125,21 @@ struct LABELLIST {
 };
 static struct LABELLIST Labellist[MAXSTAFFS + 1];
 
+/* This structure is used to save away information about labels
+ * in a linked list, so that they can be left justified or centered
+ * if the user wants that (as specified via the "alignlabels" parameter).
+ * We need to know the widest width at each nesting level to be able to do that,
+ * so have to wait till all are placed.
+ */
+struct LABEL_JUSTIFY_INFO {
+	struct LABELINFO *label_p;		/* the label */
+	int level;				/* nesting level */
+	int is_group;				/* YES for brace/bracket, NO for staff */
+	double scale;				/* staffscale or grpscale */
+	struct LABEL_JUSTIFY_INFO *next;	/* linked list */
+};
+static struct LABEL_JUSTIFY_INFO *Label_justify_info_list;
+
 static short Numvis;		/* how many staffs currently visible */
 static short Maxlevels;		/* maximum number of nesting levels */
 
@@ -156,6 +171,10 @@ static char * label4group P((struct MAINLL *mll_p, struct BRAC_INFO *brac_p,
 		struct MAINLL *prev_feed_mll_p));
 static double dflt_label_width P((struct MAINLL *mll_p,
 		struct MAINLL *prev_feed_mll_p));
+static void save_label_justify_info P((int level, struct LABELINFO *label_p,
+		int is_group, double scale));
+static void free_label_justify_info_list P((void));
+static void justify_labels P((void));
 
 
 
@@ -391,7 +410,6 @@ struct MAINLL *prev_feed_mll_p;	/* actual or proposed location of prev FEED */
 		/* if there was a label, save info about it */
 		if (lab_p != (struct LABELINFO *) 0) {
 
-			/* staff labels always go as far east as possible */
 			/* Adjust by staffscale, but get from SSV, since
 			 * Stepsize won't be up to date. */
 			if (lab_p->width == 0.0) {
@@ -400,8 +418,12 @@ struct MAINLL *prev_feed_mll_p;	/* actual or proposed location of prev FEED */
 				lab_p->west = 0.0;
 			}
 			else {
+				double staffscale;
+
+				staffscale = svpath(s, STAFFSCALE)->staffscale;
 				lab_p->west = (-(lab_p->width) - STEPSIZE)
-					* svpath(s, STAFFSCALE)->staffscale;
+								* staffscale;
+				save_label_justify_info(0, lab_p, NO, staffscale);
 				count++;
 			}
 
@@ -438,6 +460,9 @@ struct MAINLL *prev_feed_mll_p;	/* actual or proposed location of prev FEED */
 	for (s = 1; s <= Score.staffs; s++) {
 		grouplabel(Brac_info_p[s], NO, mll_p, prev_feed_mll_p);
 	}
+
+	/* Adjust for justification if necessary */
+	justify_labels();
 }
 
 
@@ -524,6 +549,7 @@ struct MAINLL *prev_feed_mll_p;	/* actual or proposed previous FEED */
 					 * label should go */
 	struct LABELINFO *lab_p;	/* information about group label */
 	struct LABELINFO **lab_p_p;	/* where to insert label info */
+	double scale;			/* effective staffscale for group */
 
 
 	if (brac_p == (struct BRAC_INFO *) 0) {
@@ -600,7 +626,10 @@ struct MAINLL *prev_feed_mll_p;	/* actual or proposed previous FEED */
 		 * effective staffscale factor. */
 		lab_p->west = (-(lab_p->width) - STEPSIZE);
 		lab_p->west -= Labellist[labindex].pad * LABELPAD;
-		lab_p->west *= grpscale(lab_p);
+		scale = grpscale(lab_p);
+		lab_p->west *= scale;
+		/* Save information for in case we need to justify */
+		save_label_justify_info(brac_p->nestlevel + 1, lab_p, YES, scale);
 	}
 	else {
 		/* all staffs in group are invisible */
@@ -965,7 +994,7 @@ double adj;			/* To adjust for margin and all label widths */
 
 	for (  ; lab_p != 0; lab_p = lab_p->next) {
 		/* Have to adjust by staffscale.
-		 * We can't change the labelin the SSV itself because that
+		 * We can't change the label in the SSV itself because that
 		 * would cause problems, so make a copy and adjust that,
 		 * then free it when we are done with it.
 		 * Have to get size out of SSV, because Staffscale won't be
@@ -1016,9 +1045,9 @@ struct LABELINFO *lab_p;	/* return how much to scale this label */
 
 {
 	int s;
-	double factor = 1.0;
+	double factor;
 
-
+	factor = Score.staffscale;
 	for (s = lab_p->top; s <= lab_p->bot; s++) {
 		if (svpath(s, VISIBLE)->visible == NO) {
 			continue;
@@ -1306,4 +1335,120 @@ set_staff_x()
 			}
 		}
 	}
+}
+
+
+/* When place_labels() or grouplabel() add a label, 
+ * they call this to save away information about the label,
+ * so that when all have been placed,
+ * that information can be used to justify the labels.
+ */
+
+static void
+save_label_justify_info(level, label_p, is_group, scale)
+
+int level;			/* nesting level */
+struct LABELINFO *label_p;	/* the label to save info about */
+int is_group;			/* YES or NO */
+double scale;			/* staffscale or grpscale */
+
+{
+	struct LABEL_JUSTIFY_INFO *jinfo_p;
+
+	/* We only actually need this if not the default right justification */
+	if (Score.alignlabels == J_RIGHT) {
+		return;
+	}
+
+	MALLOC(LABEL_JUSTIFY_INFO, jinfo_p, 1);
+	jinfo_p->level = level;
+	jinfo_p->label_p = label_p;
+	jinfo_p->is_group = is_group;
+	jinfo_p->scale = scale;
+	jinfo_p->next = Label_justify_info_list;
+	Label_justify_info_list = jinfo_p;
+}
+
+
+/* This function frees up the current list of information that is saved
+ * regarding labels, to be able to justify them.
+ */
+
+static void
+free_label_justify_info_list()
+{
+	struct LABEL_JUSTIFY_INFO *jinfo_p;
+	struct LABEL_JUSTIFY_INFO *tmp_jinfo_p;
+
+	for (jinfo_p = Label_justify_info_list; jinfo_p != 0;
+						jinfo_p = tmp_jinfo_p) {
+		tmp_jinfo_p = jinfo_p->next;
+		FREE(jinfo_p);
+	}
+	Label_justify_info_list = 0;
+}
+
+
+/* Once all the labels have been placed, this function is called to justify
+ * them, if "center" or "left" is desired (default is "right").
+ */
+
+static void
+justify_labels()
+
+{
+	struct LABEL_JUSTIFY_INFO *jinfo_p;
+	int level;			/* nesting level */
+	double width;
+	double widest;
+	double extra;			/* widest minus current label's width */
+	int more_to_do;			/* YES or NO */
+
+
+	/* If justification is center or left, go through all the group labels
+	 * for each nesting level, adjusting the west appropriately.
+	 */
+	if (Score.alignlabels != J_RIGHT) {
+		more_to_do = YES;
+		for (level = 0; more_to_do == YES; level++) {
+			/* Assume for now that this is the last time
+			 * we'll need to go through this loop. */
+			more_to_do = NO;
+
+			/* Find widest at this nesting level */
+			widest = 0.0;
+			for (jinfo_p = Label_justify_info_list; jinfo_p != 0;
+						jinfo_p = jinfo_p->next) {
+				if (jinfo_p->level != level) {
+					continue;
+				}
+				width = jinfo_p->label_p->width * jinfo_p->scale;
+				if (width > widest) {
+					widest = width;
+				}
+				more_to_do = YES;
+			}
+
+			if (more_to_do == NO) {
+				break;
+			}
+
+			/* Adjust all labels at this nesting level */
+			for (jinfo_p = Label_justify_info_list; jinfo_p != 0;
+						jinfo_p = jinfo_p->next) {
+				if (jinfo_p->level != level) {
+					continue;
+				}
+				extra = widest - (jinfo_p->label_p->width * jinfo_p->scale);
+				if (Score.alignlabels == J_LEFT) {
+					jinfo_p->label_p->west -= extra;
+				}
+				if (Score.alignlabels == J_CENTER) {
+					jinfo_p->label_p->west -= extra / 2.0;
+				}
+			}
+		}
+	}
+	/* We won't need the information list anymore. */
+	free_label_justify_info_list();
 }

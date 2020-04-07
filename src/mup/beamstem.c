@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -378,12 +378,12 @@ int vno;			/* voice we're to deal with, 0 to MAXVOICES-1 */
 		}
 
 		/*
-		 * Only half notes and shorter have stems, but whole and double
-		 * whole notes still need to have a pseudo stem length set if
+		 * Whole notes and double whole notes have no stems, but
+		 * they still need to have a pseudo stem length set if
 		 * alternation beams are to be drawn between two neighboring
 		 * groups, or the group has slashes.
 		 */
-		if (gs_p->basictime <= 1 && gs_p->slash_alt == 0)
+		if (STEMLESS(gs_p) && gs_p->slash_alt == 0)
 			continue;	/* no stem and no pseudo stem */
 
 		/*
@@ -478,6 +478,7 @@ int vno;			/* voice we're to deal with, 0 to MAXVOICES-1 */
 		 * Real (printed) stems must reach the center line for normal
 		 * groups, though they need not for cue groups or voice 3 or
 		 * when the stem direction has been forced the "wrong way" or
+		 * for quad or oct notes or
 		 * when all the notes are on another staff.
 		 */
 		if (gs_p->basictime >= 2 && gs_p->grpsize == GS_NORMAL &&
@@ -2268,11 +2269,12 @@ struct GRPSYL *ogs_p;		/* point to first group in other linked list */
 			 * long the stems will be and we don't want to include
 			 * them in the group boundary anyway, since it would
 			 * prevent stem overlapping that we want).  That means
+			 * quad note and oct notes and
 			 * half notes or shorter (excluding grace quarter
 			 * notes), or anything with slash/alternations.
 			 */
 			if (gs_p->beamto == CS_SAME &&
-			   (gs_p->basictime >= 2 || gs_p->slash_alt != 0) &&
+			   (STEMMED(gs_p) || gs_p->slash_alt != 0) &&
 			    gs_p->stemlen != 0.0) {
 
 				outstem = gs_p->stemlen

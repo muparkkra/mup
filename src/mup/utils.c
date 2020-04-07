@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -49,7 +49,7 @@
 
 static int prev_has_tie P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 static void chk_tie_out_oct P((struct GRPSYL *gs_p, RATIONAL total_time,
-	float oct_end_count, char *filename, int lineno));
+	double oct_end_count, char *filename, int lineno));
 static void grp_octave_adjust P((struct GRPSYL *gs_p, int adj, struct MAINLL *mll_p));
 static void set_height_blockhead P((struct BLOCKHEAD *blockhead_p,
 		UINT32B context, struct MAINLL *mll_p));
@@ -894,16 +894,17 @@ struct GRPSYL *gs_p;	/* return x of stem of this group */
 		pfatal("bad group passed to find_x_stem");
 	}
 
-	/* if called with something longer than a half note, then there
+	/* If called with a whole or double whole, then there
 	 * is no real stem. We must be being called for printing slashes,
 	 * so in that case, the x of the "stem" is the x of the group */
-	if (gs_p->basictime < 2) {
+	if (STEMLESS(gs_p)) {
 		return(gs_p->c[AX]);
 	}
 
 	/* move stem by half of stem width so edge lines up with edge of note */
 	stem_adjust = W_NORMAL / PPI / 2.0;
-	if (gs_p->stemdir == UP) {
+	if (gs_p->stemdir == UP || gs_p->basictime == BT_QUAD
+					|| gs_p->basictime == BT_OCT) {
 		stem_adjust = -stem_adjust;
 	}
 	return(gs_p->c[AX] + (gs_p->stemx + stem_adjust) * Staffscale);
@@ -1428,7 +1429,7 @@ int normdir;		/* YES if should move note pitches up for above and
 	}
 
 	if ( (staff_p->groups_p[vno] != 0) &&
-				(staff_p->groups_p[vno]->basictime < -1) ) {
+				(staff_p->groups_p[vno]->is_multirest == YES) ) {
 		/* Multirest. Since the basictime is the negative of
 		 * the number of measure of multirest,
 		 * and we need to reduce the number of measures
@@ -1491,7 +1492,7 @@ chk_tie_out_oct(gs_p, total_time, oct_end_count, filename, lineno)
 
 struct GRPSYL *gs_p;	/* check this group */
 RATIONAL total_time;	/* count at which the group ends */
-float oct_end_count;	/* count at which the octave mark ends */
+double oct_end_count;	/* count at which the octave mark ends */
 char *filename;		/* for error message */
 int lineno;		/* for error message */
 

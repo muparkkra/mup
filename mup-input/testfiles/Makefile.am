@@ -26,6 +26,7 @@ XFAIL_TESTS = bad-input/chordinput_err.mup \
 SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
 	beaming.mup beamstem.mup bulge.mup \
 	cancelkey.mup cancelkey2.mup chordinput.mup chordtrans.mup \
+	chordtranslation.mup \
 	circledtext.mup clefsig.mup coord.mup \
 	crossbeams.mup css.mup curves.mup \
 	emptymeas.mup endings.mup extchar.mup fonts.mup \

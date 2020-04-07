@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -632,7 +632,7 @@ int place;			/* above or below? */
 			continue;
 
 		if (place == PL_ABOVE && (
-			(gs_p->basictime < -1 && svpath(staff_p->staffno,
+			(gs_p->is_multirest && svpath(staff_p->staffno,
 					PRINTMULTNUM)->printmultnum == YES) ||
 			(is_mrpt(gs_p) && svpath(staff_p->staffno,
 					NUMBERMRPT)->numbermrpt == YES)
@@ -656,7 +656,7 @@ int place;			/* above or below? */
 		}
 
 		/* for "below", no rectangles are needed for multirests */
-		if (gs_p->basictime < -1)
+		if (gs_p->is_multirest)
 			continue;
 
 		/*
@@ -878,15 +878,13 @@ struct GRPSYL *gs_p;		/* initially points to first group */
 
 	stemshift = getstemshift(gs_p);
 
-	if (gs_p->basictime >= 2) {
-		/* the groups have stems (if first one does, others must too)*/
-		if (gs_p->stemdir == UP) {
-			x1 += stemshift;
-			x2 += stemshift;
-		} else {
-			x1 -= stemshift;
-			x2 -= stemshift;
-		}
+	/* just check the first group; if it has a stem, the others must too */
+	if (HAS_STEM_ON_RIGHT(gs_p)) {
+		x1 += stemshift;
+		x2 += stemshift;
+	} else if (HAS_STEM_ON_LEFT(gs_p)) {
+		x1 -= stemshift;
+		x2 -= stemshift;
 	}
 
 	/* make zero or more rectangles for this beam/alt */

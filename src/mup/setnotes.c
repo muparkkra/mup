@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -835,7 +835,7 @@ register struct GRPSYL *gs2_p;	/* starts at first GRPSYL in voice 2 list */
 		favorstemdir(gs1_p, UP);
 	}
 
-	/* mark first voice's stems down unless the user forced them up */
+	/* mark second voice's stems down unless the user forced them up */
 	for ( ; gs2_p != 0; gs2_p = gs2_p->next) {
 		favorstemdir(gs2_p, DOWN);
 	}
@@ -1086,6 +1086,7 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 	int insum;		/* sum of offsets of inner notes from center */
 	int n;			/* loop counter */
 	int stemdir;		/* answer of where stems should point */
+	int div_pt;		/* dividing point between prefering up/down */
 
 
 	/*
@@ -1100,7 +1101,11 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 	 * While doing this, also keep track of whether the user requested a
 	 * specific stem direction on any of these groups.  If so, there must
 	 * not be any contradictions between what they asked for.
+	 * Note: for quad and oct notes, we favor stem-down, so instead of the
+	 * center line being the dividing place, the bottom line is.
 	 */
+	/* if first group is quad/oct, it will be the only group (no beams) */
+	div_pt = start_p->basictime <= BT_QUAD ? -4 : 0;
 	lonesum = topsum = botsum = insum = 0;
 	stemdir = UNKNOWN;	/* user hasn't asked for anything yet */
 	for (gs_p = start_p; gs_p != end_p; gs_p = gs_p->next) {
@@ -1117,16 +1122,16 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 			}
 
 			if (gs_p->nnotes == 1) {
-				lonesum += gs_p->notelist[0].stepsup;
+				lonesum += gs_p->notelist[0].stepsup - div_pt;
 			} else if (gs_p->nnotes > 1) {
-				topsum += gs_p->notelist[0].stepsup;
+				topsum += gs_p->notelist[0].stepsup - div_pt;
 				botsum += gs_p->notelist[ gs_p->nnotes - 1 ].
-						stepsup;
+						stepsup - div_pt;
 			}
 
 			/* this loop happens only if >= 3 notes in the group */
 			for (n = 1; n < gs_p->nnotes - 1; n++ ) {
-				insum += gs_p->notelist[n].stepsup;
+				insum += gs_p->notelist[n].stepsup - div_pt;
 			}
 		}
 	}

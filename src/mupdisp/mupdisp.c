@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -123,7 +123,7 @@ char *Gs_errfile = "mupdispg.err";      /* ghostscript error file */
 int Bits_per_line = 612; 	/* pixels per line */
 int Bytes_per_line = 77;	/* pixels per line divided by 8 rounded up */
 int Lines_per_page = 792;	/* vertical pixels */
-char *Version = "6.7";
+char *Version = "6.8";
 
 /* misc function declarations */
 static void parsePS P((FILE *file));

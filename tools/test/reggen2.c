@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -100,6 +100,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/stat.h>
 #include "rational.h"
 
@@ -159,6 +160,7 @@ short rehmnum;		/* % of time to use reh mnum */
 short rehstr;		/* % of time to use reh "string" */
 short multirest;	/* % of time to use multirest */
 short restsymmult;	/* % of time to use restsymmult */
+short printedtime;	/* % of time to use printedtime */
 short additive_time;	/* % of time to use additive time */
 short cross_staff_stems; /* % of time to use cross-staff stems */
 short phrase;		/* % of time to generate phrase marks */
@@ -166,6 +168,7 @@ short octavesbeyond;	/* how many octave beyond default to use for notes */
 short alt;		/* % of time to use alt */
 short numalt;		/* argument to alt */
 short custombeam;	/* % of time to do custom beaming */
+short autobeaming;	/* % of time to do abm / eabm */
 short esbm;		/* % of time to do esbm */
 short ph_eph;		/* % of time to do ph - eph */
 short slope;		/* % of time to specify slope on beam */
@@ -191,10 +194,12 @@ short repeatdots;	/* % of time to specify repeatdots */
 short withfont;		/* % of time to specify with font/familly/size */
 short pack;		/* % of time to specify packfact or packexp */
 short transpose;	/* % of time to transpose */
+short chordtranslation; /* % of time to use chordtranslation */
 short useaccs;		/* % of time to use useaccs */
 short carryaccs;	/* % of time to use carryaccs */
 short emptymeas;	/* % of time to use emptymeas */
 short alignped;		/* % of time to use alignped */
+short alignlabels;	/* % of time to use alignlabels */
 short extendlyrics;	/* % of time to use extendlyrics */
 short tag;		/* % of time to add tag */
 short abstag;		/* % of time to use absolute tag */
@@ -325,6 +330,8 @@ RATIONAL Five_fourths = { 5, 4 };
 RATIONAL Eighth = { 1, 8 };
 RATIONAL One = { 1, 1 };
 RATIONAL Two = { 2, 1 };
+RATIONAL Four = { 4, 1 };
+RATIONAL Eight = { 8, 1 };
 RATIONAL Zero = { 0, 1};
 RATIONAL N64 = { 1, 64 };
 RATIONAL N128 = { 1, 128 };
@@ -336,6 +343,7 @@ struct GRP {
 	int		do_alt;	/* 0 = no alt, 1 = first of alt, 2 = second */
 	int		custbeam;	/* 0 = no custom beam, 1 = bm, 2 =
 					 * inside, 3 = ebm, 4 = esbm */
+	int		autobeam;	/* 0 = none, 1 = abm, 2 = eabm */
 	struct GRP	*next;
 };
 
@@ -570,6 +578,13 @@ struct LIST Xposelist[] = {
 	{ "aug 7", 0 }
 };
 
+struct LIST Chordtranslationlist[] = {
+	{ "", 0 },
+	{ "\"German\"", 0 },
+	{ "\"do re mi fa sol la si\"", 0 },
+	{ "\"foo Hjk zz89 345k+ o9ee MMMuy qw\"", 0 }
+};
+
 struct LIST Printcmdslist[] = {
 	{ "print", 0 },
 	{ "center", 0 },
@@ -582,6 +597,7 @@ struct LIST Paramlist[] = {
 	{ "aboveorder", 0 },
 	{ "acctable", 0 },
 	{ "addtranspose", 0 },
+	{ "alignlabels", 0 },
 	{ "alignped", 0 },
 	{ "barstyle", 0 },
 	{ "beamslope", 0 },
@@ -594,6 +610,7 @@ struct LIST Paramlist[] = {
 	{ "bracketrepeats", 0 },
 	{ "cancelkey", 0 },
 	{ "chorddist", 0 },
+	{ "chordtranslation", 0 },
 	{ "clef", 0 },
 	{ "cue", 0 },
 	{ "defaultkeymap", 0 },
@@ -764,6 +781,8 @@ struct LIST Noteheadlist[] = {
 };
 
 struct LIST Noteshapeslist[] = {
+	{ "octwhole", 0 },
+	{ "quadwhole", 0 },
 	{ "dblwhole", 0 },
 	{ "1n", 0 },
 	{ "2n", 0 },
@@ -848,6 +867,7 @@ int Numtags = 3;
 
 /* statistics */
 int num_killed, num_core_dumped, num_exited_nonzero, num_midi_nonzero, num_nans;
+int num_huge_nums;
 int num_non_midi_tests, num_midi_tests;
 
 short savenonzero = NO;	/* if to save files than cause non-zero exit */
@@ -980,6 +1000,10 @@ main(int argc, char **argv)
 	/* seed random number generator */
 	srand(time((long *) 0));
 
+	/* Turn on malloc flag to make certain error blatant that might
+	 * otherwise get through. */
+	setenv("MALLOC_PERTURB_", "29", 1);
+
 
 	/* run as many tests as specified */
 	for (index = 1; index <= iterations; index++) {
@@ -998,9 +1022,9 @@ main(int argc, char **argv)
 	}
 
 #ifndef GENONLY
-	fprintf(stderr, "\n%d non-midi and %d midi tests run.\n %d core dumps, %d killed, %d contained 'nan',\n%d exited non-zero (%d non-midi / %d midi)\n",
+	fprintf(stderr, "\n%d non-midi and %d midi tests run.\n %d core dumps, %d killed, %d contained 'nan', %d contained huge numbers,\n%d exited non-zero (%d non-midi / %d midi)\n",
 		num_non_midi_tests, num_midi_tests, num_core_dumped,
-		num_killed, num_nans, num_exited_nonzero,
+		num_killed, num_nans, num_huge_nums, num_exited_nonzero,
 		num_exited_nonzero - num_midi_nonzero, num_midi_nonzero);
 #endif
 	unlink("RegGen2.out");
@@ -1173,6 +1197,13 @@ gen_score_ssv()
 		newline();
 	}
 
+	if (sometimes(chordtranslation)) {
+		out("chordtranslation=");
+		out(picklist(Chordtranslationlist,
+			sizeof(Chordtranslationlist) / sizeof(struct LIST), -1));
+		newline();
+	}
+
 	if (sometimes(useaccs)) {
 		out("useaccs=");
 		out(picklist(Useaccslist, sizeof(Useaccslist) / sizeof(struct LIST), -1));
@@ -1191,6 +1222,11 @@ gen_score_ssv()
 		newline();
 	}
 	
+	if (sometimes(alignlabels)) {
+		out("alignlabels=");
+		out(sometimes(50) ? "left" : "center");
+		newline();
+	}
 	if (sometimes(extendlyrics)) {
 		out("extendlyrics=");
 		out(sometimes(75) ? "y" : "n");
@@ -1555,6 +1591,15 @@ gen()
 		newline();
 	}
 
+	if (sometimes(printedtime)) {
+		out("printedtime=");
+		genstring(4);
+		if (myrandom(1, 10) > 3) {
+			genstring(4);
+		}
+		newline();
+	}
+
 	if (sometimes(vcombine)) {
 		outfmt("vcombine = %s", picklist(Vcombinelist,
 			sizeof(Vcombinelist) / sizeof(struct LIST), -1));
@@ -1906,6 +1951,7 @@ int staff;
 	char * clefname;
 	int need_comma;		/* if did an inter-group thing */
 	int need_eph = 0;	/* did a ph that needs a matching eph */
+	int doing_autobeam;	/* abm / eadm */
 	
 
 	/* sometimes do measure rest or space or rpt */
@@ -1975,6 +2021,26 @@ int staff;
 					}
 				}
 				g_p->custbeam = 3;
+			}
+		}
+	}
+
+	doing_autobeam = NO;
+	for (g_p = grplist_p; g_p != (struct GRP *) 0; g_p = g_p->next) {
+		if (doing_autobeam == YES) {
+			/* Need to stop if at end of measure, or will be
+			 * hitting custom beam in next group,
+			 * or sometimes stop, even if we could go on */
+			if (g_p->next == 0 || g_p->next->custbeam != 0 || sometimes(20)) {
+				g_p->autobeam = 2;
+				doing_autobeam = NO;
+			}
+		}
+		else if (sometimes(autobeaming)) {
+			if (g_p->next != 0 && g_p->next->custbeam == 0) {
+				/* We can do autobeaming */
+				g_p->autobeam = 1;
+				doing_autobeam = YES;
 			}
 		}
 	}
@@ -2184,6 +2250,13 @@ int staff;
 				}
 				need_comma = 1;
 				out(" esbm ");
+			}
+
+			if (g_p->autobeam == 1) {
+				out("abm");
+			}
+			else if (g_p->autobeam == 2) {
+				out("eabm");
 			}
 
 			/* This will only test non-nested ph - eph inside a
@@ -2456,10 +2529,10 @@ RATIONAL remtime;
 	struct GRP *grp_p;
 
 
-	/* start with double whole note, optionally with dots.
+	/* Start with oct whole note, optionally with dots.
 	 * Go shorter from there if necessary to fit in the remaining
 	 * time in the measure. */
-	fulltime = basictime = Two;
+	fulltime = basictime = Eight;
 	dots = 0;
 	if (sometimes(dotted)) {
 		dots = 1;
@@ -2915,6 +2988,12 @@ struct GRP *g_p;
 	if (EQ(Two, g_p->basictime)) {
 		out("1/2");
 	}
+	else if (EQ(Four, g_p->basictime)) {
+		out("1/4");
+	}
+	else if (EQ(Eight, g_p->basictime)) {
+		out("1/8");
+	}
 	else {
 		outfmt("%d", g_p->basictime.d);
 	}
@@ -2978,6 +3057,7 @@ run_test(int index, char *command, char *suffix, char *prefix, int timeout, int 
 	num_non_midi_tests++;
 
 	if (WIFEXITED(exitval) && strcmp(command, "mup") == 0) {
+		int ret2;
 		/* run mup with MIDI option */
 		if (sometimes(xoption)) {
 			int start, end;
@@ -2988,10 +3068,10 @@ run_test(int index, char *command, char *suffix, char *prefix, int timeout, int 
 		else {
 			sprintf(cmd, "mup -m /dev/null %s", filename);
 		}
-		ret = exectest(cmd, timeout, verbose, 1, &exitval);
+		ret2 = exectest(cmd, timeout, verbose, 1, &exitval);
 		num_midi_tests++;
 
-		if (ret == YES) {
+		if (ret == YES && ret2 == YES) {
 			unlink(filename);
 		}
 	}
@@ -3043,7 +3123,9 @@ exectest(char *cmd, int timeout, int verbose, int doing_midi, int *ret_p)
 		/* we don't remove the file if
 		 * 1) if produced a core dump
 		 * 2) was killed
-		 * 3) exited non-zero and user asked to save those
+		 * 3) exited non-zero or output contained things that
+		 *    look suspiciously like floating float overflows,
+		 *    and user asked to save failures.
 		 */
 		if (WCOREDUMP(ret) || stat("core", &statinfo) == 0) {
 			if (verbose) {
@@ -3082,7 +3164,15 @@ exectest(char *cmd, int timeout, int verbose, int doing_midi, int *ret_p)
 								if (addr[n] == 'n' &&
 										strncmp(addr+n, "nan ", 4) == 0) {
 									num_nans++;
+									code = 1;
 									break;
+								}
+								else if (isdigit(addr[n])) {
+									if (strspn(addr+n, "0123456789") > 15) {
+										num_huge_nums++;
+										code = 1;
+										break;
+									}
 								}
 							}
 							munmap(addr, info.st_size);
@@ -3762,6 +3852,7 @@ initvals()
 	rehstr = myrandom(0, 20);
 	multirest = myrandom(0, 15);
 	restsymmult = myrandom(0, 15);
+	printedtime = myrandom(0, 10);
 	additive_time = myrandom(0, 8);
 	cross_staff_stems = myrandom(0, 2);
 	maxnotes = myrandom(1, 11);
@@ -3771,7 +3862,8 @@ initvals()
 	numalt = myrandom(1, 3);
 	custombeam = myrandom(0, 25);
 	esbm = myrandom(0, 15);
-	ph_eph = myrandom(0, 10);
+	autobeaming = myrandom(0, 2);
+	ph_eph = myrandom(2, 15);
 	slope = myrandom(0, 8);
 	compoundts = myrandom(0, 5);
 	comments = myrandom(0, 10);
@@ -3796,9 +3888,11 @@ initvals()
 	emptymeas = myrandom(0, 20);
 	pack = myrandom(0, 40);
 	transpose = myrandom(0, 20);
+	chordtranslation = myrandom(0, 10);
 	useaccs = myrandom(0, 8);
 	carryaccs = myrandom(0, 7);
 	alignped = myrandom(0, 20);
+	alignlabels = myrandom(0, 10);
 	extendlyrics = myrandom(0, 60);
 	tag = 0;	/*** tags don't really work yet **/
 	abstag = myrandom(0,20);

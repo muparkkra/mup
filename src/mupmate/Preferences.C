@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -136,11 +136,7 @@ const char * const Help_window_height = "help_window_height";
 // Name of User's Guide directory and index file
 // relative to Mup documentation directory.
 const char * uguide_directory = "uguide";
-#ifdef OS_LIKE_WIN32
-const char * uguide_filename = "index.htm";
-#else
 const char * uguide_filename = "index.html";
-#endif
 
 // Don't use un-readable tiny font, but especially avoid size of zero,
 // which could happen if preferences file contains a bad number, so that
@@ -421,6 +417,7 @@ users_guide_index_file(const char * const doc_dir)
 // List of old versions of Mupmate preference files to potentially check,
 // listed most recent to oldest, and ending with null.
 const char * const oldversions [] = {
+	"mupmate67",
 	"mupmate66",
 	"mupmate65",
 	"mupmate64",

@@ -252,3 +252,24 @@ newscore
 medium curve (m.x, m.s - 2) to (n.x, n.s - 4) to (o.x, o.s - 2) \
 	 to (z.x, z.s - 2) to (p.x, p.s - 2) to (q.x, q.s - 5) to (r.x, r.s - 2)
 bar
+
+newpage
+
+score time=8/1
+music
+
+1: 1/4c ph;g eph;
+2: 1/4c ph;1g eph;r;1/2g;
+bar
+
+1: 1/4c+ ph; b eph;
+2: 1/4c+ ph;1g eph;r;1/2g;
+bar
+
+1: 1/8c<>;
+2: 2c ph;e;1f;1/2g;1/4g eph;
+bar
+
+1: 1/8c+;
+2: 2c+ ph;b;1a;1/2g;1/4g eph;
+bar

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2019  by Arkkra Enterprises.
+ Copyright (c) 1995-2020  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -101,8 +101,7 @@ static int Subbeam_index;		/* Index into Curr_subbeamstyle where
 					 * no pending unmatched parenthesis. */
 static char *parmformat = "%s parameter";	/* for error messages */
 
-/* functions to do all the various checks. They check the context,
- * range, power_of2, etc, and
+/* functions to do all the various checks. They check the context, range, etc.
  * mark the variable as used if everything passes the checks. The first
  * is for int variables (actually short) in SSV, the second for floats */
 static int do_assign P((int var, int value, int min, int max,
@@ -224,6 +223,14 @@ struct MAINLL *mainll_item_p;	/* where to store SSV info in main list */
 				C_SCORE | C_STAFF,
 				NO, name, mainll_item_p,
 				&(mainll_item_p->u.ssv_p->sylposition) );
+		break;
+
+	case ALIGNLABELS:
+		/* actually yacc already guarantees will be in range */
+		(void) do_assign(var, value, J_LEFT, J_CENTER,
+				C_SCORE,
+				NO, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->alignlabels) );
 		break;
 
 	case DEFOCT:
@@ -516,10 +523,9 @@ struct MAINLL *mainll_item_p;	/* where to store SSV info in main list */
 /* do all the error checks for an int variable. If it passes all checks,
  * set the used flag to YES and return YES. If something fails, return NO. */
 /* Checks are: must be within range, must be in valid context, the MAINLL
- * struct passed must be non-NULL, and if the pow2 flag is YES, the value
- * must be a power of two. Also give warning if field already used.  Getting
- * a null pointer is not fatal--it can happen if user tried to do something
- * in the wrong context. */
+ * struct passed must be non-NULL. Also give warning if field was already used.
+ * Getting a null pointer is not fatal--it can happen if user tried to do
+ * something in the wrong context. */
 
 static int
 do_assign(var, value, min, max, cont, empty_value, name, mainll_item_p, ptr2dest)
@@ -2803,6 +2809,7 @@ int param;	/* #define name from ssvused.h */
 	 * parameter is handled by this function */
 	case A4FREQ:		return("a4freq");
 	case ACCTABLE:		return("acctable");
+	case ALIGNLABELS:	return("alignlabels");
 	case ALIGNPED:		return("alignped");
 	case ALIGNRESTS:	return("alignrests");
 	case BEAMSHORT:		return("stemshorten for beamed notes");
@@ -2813,6 +2820,7 @@ int param;	/* #define name from ssvused.h */
 	case CANCELKEY:		return("cancelkey");
 	case CARRYACCS:		return("carryaccs");
 	case CHORDDIST:		return("chorddist");
+	case CHORDTRANSLATION:	return("chordtranslation");
 	case CUE:		return("cue");
 	case DEFAULTKEYMAP:	return("defaultkeymap");
 	case DEFOCT:		return("defoct");
