@@ -465,6 +465,35 @@ int vidx;			/* voice index, 0 to MAXVOICES-1 */
 		}
 	}
 
+	/*
+	 * Because we may have combined some groups, we might have lost the
+	 * STARTITEM or ENDITEM for autobeam.  So find this situation and fix.
+	 * Grace groups are not a problem; treat same as nongrace.
+	 */
+	for (ngs_p = nstaff_p->groups_p[vidx]; ngs_p != 0; ngs_p = ngs_p->next){
+		if (ngs_p->autobeam == NOITEM) {
+			continue;
+		}
+		/* the current group is autobeamed */
+
+		if ((ngs_p->prev == 0 || ngs_p->prev->autobeam == NOITEM) &&
+		    (ngs_p->next != 0 && ngs_p->next->autobeam != NOITEM)) {
+			/* prev is not autobeamed, next is autobeamed */
+			ngs_p->autobeam = STARTITEM;
+		}
+		if ((ngs_p->prev != 0 && ngs_p->prev->autobeam != NOITEM) &&
+		    (ngs_p->next == 0 || ngs_p->next->autobeam == NOITEM)) {
+			/* prev is autobeamed, next is not autobeamed */
+			ngs_p->autobeam = ENDITEM;
+		}
+		if ((ngs_p->prev == 0 || ngs_p->prev->autobeam == NOITEM) &&
+		    (ngs_p->next == 0 || ngs_p->next->autobeam == NOITEM)) {
+			/* prev is not autobeamed, next is not autobeamed */
+			/* can't have an isolated autobeam, wipe it out */
+			ngs_p->autobeam = NOITEM;
+		}
+	}
+
 	/* do beaming of tabnote staff based on beamstyle */
 	if (needs_auto_beaming(nstaff_p->groups_p[vidx]) == YES) {
 		do_beaming(nstaff_p->groups_p[vidx], GS_NORMAL,

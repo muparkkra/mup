@@ -2642,6 +2642,16 @@ opt_n:
 	};
 
 printed_timesig:
+	{
+		if (Currstruct_p != 0 && Currstruct_p->u.ssv_p != 0) {
+			Currstruct_p->u.ssv_p->prtime_str1 = 0;
+			Currstruct_p->u.ssv_p->prtime_str2 = 0;
+			Currstruct_p->u.ssv_p->prtime_is_arbitrary = NO;
+			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = NO;
+		}
+	}
+
+	|
 	meas_tsig
 	{
 		tsig_item(TSR_END);

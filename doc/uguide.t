@@ -11249,6 +11249,8 @@ alignlabels
 This parmaeter specifies how to align labels for staffs,
 including those for brace and brackets group.
 Each nesting level will be aligned independently.
+This applies to labels relative to each other,
+not to lines within a single multi-line label.
 .Va
 center, left, or right
 .Df
@@ -13927,7 +13929,10 @@ The second format is a single string. One usage might be to set it to "3"
 and assume the reader can deduce what the time unit is. The third format is
 two strings, which will be centered one on top of the other. A possible usage
 would be to put a "3" for the numerator, and an actual note symbol
-for the "denominator."
+for the "denominator." It is also possible to set to nothing, to revert
+to using the actual time signature.
+Default size and font are set to match what normal time signatures would be;
+you can change those inside the string(s) if you wish.
 .Df
 nothing
 .Cn
@@ -13940,7 +13945,9 @@ printedtime = 3/4+4/4
 .br
 printedtime = "3"
 .br
-printedtime = "4" "dn4n"
+printedtime = "4" "\(dn4n)"
+.br
+printedtime =      // revert to actual time signature
 .Sa
 .Hr param.html#time
 time
@@ -15064,7 +15071,8 @@ time
 This parameter
 sets the time signature. Music data for each measure is checked to ensure
 that the total time in the measure for each voice and verse
-adds up to exactly the time signature. Setting the time parameter will
+adds up to exactly the time signature, though supplying too little will
+be allowed with a warning. Setting the time parameter will
 also reinitialize
 .Hr param.html#timeunit
 the timeunit parameter
@@ -15074,6 +15082,10 @@ the beamstyle parameter
 to their most recent values for the same time signature
 (which would be their default values if they had never been explicitly
 set for this time signature), unless they are also set in the same context.
+The
+.Hr param.html#printedtime
+printedtime parameter
+value is not reset.
 .Va
 either a ratio of the form \fIN/D\fP or the word "cut" or "common." If the ratio
 form is used, \fIN\fP must be between 1 and 99 inclusive,
