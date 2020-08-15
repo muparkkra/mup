@@ -373,7 +373,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 6.8
+Mup Version 6.8.1
 .ps
 .vs
 .ev
@@ -387,7 +387,7 @@ Mup Version 6.8
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 6.8
+Mup Music Publisher User's Guide \(em Mup Version 6.8.1
 .sp 0.5
 \(co Copyright 1995-2020 by Arkkra Enterprises
 .sp 0.5
@@ -842,7 +842,7 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 6.8.
+This User's Guide is for Mup version 6.8.1.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
@@ -1729,7 +1729,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 6.8.
+Mup will then exit. This document is for version 6.8.1.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -1981,7 +1981,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-6.8
+//!Mup-Arkkra-6.8.1
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -13945,7 +13945,7 @@ printedtime = 3/4+4/4
 .br
 printedtime = "3"
 .br
-printedtime = "4" "\(dn4n)"
+printedtime = "4" "\e(dn4n)"
 .br
 printedtime =      // revert to actual time signature
 .Sa

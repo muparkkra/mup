@@ -386,7 +386,7 @@ About_dialog::About_dialog(void)
 			"   for the Mup music publisher\n"
 			"   program.\n"
 			"\n"
-			"     This is Version 6.8");
+			"     This is Version 6.8.1");
 	// Hide the cursor by making same color as background
 	message_p->cursor_color(message_p->color());
 

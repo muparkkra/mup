@@ -2662,6 +2662,7 @@ struct MAINLL *mll_p;	/* points to a STAFF */
 			 * so just set to NO here. */
 			for (g_p = staff_p->groups_p[v]; g_p != 0; g_p = g_p->next) {
 				g_p->breakbeam = NO;
+				g_p->autobeam = NOITEM;
 			}
 		}
 		staff_p->stuff_p = prevmll_p->u.staff_p->stuff_p;

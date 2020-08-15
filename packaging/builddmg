@@ -1,7 +1,7 @@
 # This script creates an Apple .dmg disk image of Mup.
 
-version=6.8
-version_no_dot=68
+version=6.8.1
+version_no_dot=681
 
 srcdir=src
 docdir=doc

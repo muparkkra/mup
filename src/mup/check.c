@@ -1381,6 +1381,7 @@ int min_combine;	/* minimum number to combine, or NORESTCOMBINE */
 			if (vvpath(s, 1, VISIBLE)->visible == NO &&
 					vvpath(s, 2, VISIBLE)->visible == YES) {
 				new_p->u.staff_p->groups_p[1]->grpcont = GC_REST;
+				new_p->u.staff_p->groups_p[1]->is_multirest = YES;
 			}
 		}
 		if (numvoices > 2) {
@@ -1393,6 +1394,8 @@ int min_combine;	/* minimum number to combine, or NORESTCOMBINE */
 					vvpath(s, 2, VISIBLE)->visible == NO &&
 					vvpath(s, 3, VISIBLE)->visible == YES) {
 				new_p->u.staff_p->groups_p[2]->grpcont = GC_REST;
+				new_p->u.staff_p->groups_p[2]->is_multirest = YES;
+
 			}
 		}
 		new_p->u.staff_p->staffno = s;

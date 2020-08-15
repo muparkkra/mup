@@ -22,7 +22,7 @@
 .ps +1
 .ce
 .ft B
-Mup Version 6.8 Statement Summary
+Mup Version 6.8.1 Statement Summary
 .sp
 \fIcontext\fR
 \fIstaffs voices & staffs voices\fB:\fI chord \fB; \fI....\fR

@@ -138,7 +138,7 @@ extern FILE *yyout;	/* lex could try to write error output here */
 
 static char **Arglist;		/* global pointer to argv */
 static int Num_args;		/* global copy of argc */
-static char Version[] = "6.8";	/* Mup version number */
+static char Version[] = "6.8.1";	/* Mup version number */
 static int Quiet = NO;		/* -q option */
 
 /* The different kinds of things that can be argument to -o option.

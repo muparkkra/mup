@@ -1,6 +1,6 @@
 # Maintainer: Arkkra Enterprises <support at arkkra dot com>
 pkgname=mup
-pkgver=6.8
+pkgver=6.8.1
 pkgrel=1
 epoch=
 pkgdesc="music publisher, creates PostScript printed music or MIDI"
@@ -18,7 +18,7 @@ replaces=()
 backup=()
 options=()
 install=
-source=(mup-6.8.tar.gz)
+source=(mup-6.8.1.tar.gz)
 noextract=()
 # Update the next line with the correct checksum
 md5sums=('e854cdce2be15902d799a1c09efac10a')

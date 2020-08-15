@@ -762,7 +762,7 @@ main(int argc, char **argv, const char **arge)
 
 	// Get the user's preferences that persists across sessions
 	Preferences_p = new Fl_Preferences(Fl_Preferences::USER,
-					"arkkra.com", "mupmate68");
+					"arkkra.com", "mupmate681");
 
 	// If user is upgrading from earlier version,
 	// we want to migrate their non-version-specific preferences.

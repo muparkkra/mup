@@ -80,7 +80,7 @@ char *PS_script_file = "mkmupfnt.ps";
 char *GS_output = "mkmupfnt.tmp";
 #endif
 
-char Version[] = "6.8";
+char Version[] = "6.8.1";
 
 void usage(char *program_name);
 void verify_valid_Mup_name(char *Mup_name);
