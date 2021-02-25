@@ -1,0 +1,53 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-nonspace.mup"
+	paragraph (13) "The file tests that the measures following a mrpt must be all space."
+
+score
+	vscheme=2f
+
+music
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quad m rpt;
+bar
+
+1: ms;
+bar
+
+1: 1d;
+bar
+
+1: 1c;
+bar
+
+1: dblmrpt;
+1 2: mr;
+bar 
+
+1: ms;
+1 2: 1c;
+bar
+
+1: 1e;
+bar
+
+1: 1f;
+bar
+
+1: dblmrpt;
+bar
+
+1: mrpt;
+bar

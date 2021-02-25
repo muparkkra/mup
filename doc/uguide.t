@@ -1,6 +1,7 @@
 .\"  .if \n(.g .warn \n[.warn]-512
 .\" turning off warnings doesn't seem to work on all versions
 .\" of groff, so explicitly initialize null strings to pacify it.
+.sp -3
 .\" This also avoids ignoring valid warnings
 .ds aA 
 .ds aB 
@@ -296,6 +297,7 @@
 .de HZ
 .if \\n(.g \X'ps: exec 0 0 0 setrgbcolor'
 ..
+.nr Nn 1
 .de Pt
 .if \\n(.g \{
 .sp -3.7
@@ -304,7 +306,7 @@
 .nr pict-offset \\n[.l]-\\n[.i]-\\n[pict-width]p/2
 .nr pict-height \\n[ury]-\\n[lly]
 .nr ps-pict-width \\n[pict-width]p
-.ne \\n[pict-height]p
+.if \\n[Nn] .ne \\n[pict-height]p
 \h'\\n[pict-offset]u'
 .if \\n[Boxpict] \X'ps: exec gsave 0 0.25 0.75 setrgbcolor 0 \\n[pict-height] rlineto \\n[pict-width] 0 rlineto 0 \\n[pict-height] neg rlineto closepath stroke grestore'
 \v'\\n[pict-height]p'\h'-6p'
@@ -373,7 +375,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 6.8.1
+Mup Version 6.9
 .ps
 .vs
 .ev
@@ -387,9 +389,9 @@ Mup Version 6.8.1
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 6.8.1
+Mup Music Publisher User's Guide \(em Mup Version 6.9
 .sp 0.5
-\(co Copyright 1995-2020 by Arkkra Enterprises
+\(co Copyright 1995-2021 by Arkkra Enterprises
 .sp 0.5
 All rights reserved.
 .sp
@@ -643,7 +645,7 @@ Lines and curves
 <HR>
 .H 2 "Miscellaneous Mup features"
 .Hr newscore.html
-Newscore and newpage
+Newscore and newpage, samescore and samepage
 .br
 .Hr headfoot.html
 Page headers and footers
@@ -760,6 +762,9 @@ Generating blank staff paper
 .Hr pscoord.html
 Passing multiple coordinates to PostScript
 .br
+.Hr brace.html
+Printing braces
+.br
 .Hr pstools.html
 Converting Mup files to other formats
 <HR>
@@ -789,7 +794,7 @@ http://www.arkkra.com
 </P>
 <HR>
 <P>
-Copyright (c) 1995-2020 by Arkkra Enterprises
+Copyright (c) 1995-2021 by Arkkra Enterprises
 </P>
 ..
 .Ht Introduction to Mup
@@ -842,11 +847,11 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 6.8.1.
+This User's Guide is for Mup version 6.9.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
-\(co Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020 by Arkkra Enterprises
+\(co Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 by Arkkra Enterprises
 .FE
 .He
 .ig
@@ -1729,7 +1734,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 6.8.1.
+Mup will then exit. This document is for version 6.9.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -1981,7 +1986,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-6.8.1
+//!Mup-Arkkra-6.9
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -2674,7 +2679,7 @@ to be able to allow space for some special notation. In that case,
 .Ix iX
 you prefix the "s" with a "u" to indicate an uncollapsible space.
 For
-.H midi.html
+.Hr midi.html
 MIDI,
 normal space is squeezed out to take no time, whereas uncollapsible space
 essentially becomes a rest.
@@ -2734,6 +2739,21 @@ bar
 1: mrpt;
 bar
 .Ee
+.P
+.Hm multrpt
+It is also possible to specify "dbl m rpt" for a double measure repeat,
+or "quad m rpt" for a quad measure repeat.
+The subsequent measures that are part of a multi-measure repeat must be
+either all spaces ("ms" or "mus") or not specified at all.
+There must, of course, be at least two measures of music before a dbl and
+at least four before a quad, as well as at least one measure after a dbl
+and at least three measures after a quad.
+.P
+The measures associated with a mprt are not allowed to contain
+changes in time signature, key, clef, transpose, addtranspose, or vscheme,
+and the number of staffs cannot be reduced to eliminate the staff with the mrpt.
+For the purposes of counting measures, invisbar counts just like visible ones.
+Bar types of repeatstart, repeatend, or repeatboth are not allowed.
 .Hh acc
 .H 4 "Accidentals"
 .P
@@ -3592,12 +3612,14 @@ other parameters that can be changed inside a measure:
 .Hr param.html#alignrst
 alignrests,
 .Hr param.html#defoct
-defoct
+defoct,
 .Ix cU
-and
 .Hr param.html#release
-release.
+release,
 .Ix jE
+and
+.Hr param.html#vcombine
+vcombine.
 The change is enclosed in double angle brackets.
 After the opening angle bracket is the
 .Hr contexts.html
@@ -4175,6 +4197,13 @@ one or more
 .Hr chrdattr.html#slashes
 slashes.
 .Ix cA
+.P
+The final item that can optionally be specified is the word "slope," followed
+by an angle in degrees, for the the angle of the tuplet bracket, if any. If
+that is omitted, the angle is calculated based on the
+.Hr param.html#tupslope
+tupletslope parameter.
+.P
 Nested tuplets are not allowed.
 .P
 Here are some examples of tuplets:
@@ -4204,8 +4233,12 @@ bar
 1: { 8c; b-; c; e; d; f; a; } below 7;
 bar
 
-// single chord tuplet
+// A single chord tuplet
 1:  { [slash 1] 4.ceg;}3; 4;
+bar
+
+// Forcing a tuplet bracket to be flat
+1: {g-;c+;a+;}3 slope 0;
 bar
 .Ee
 .Ht Chord-at-a-time input style
@@ -6334,11 +6367,21 @@ misc	ferm	fermata
 .Ix dZ
 .Ix hE
 .Ix bO
+	dblmeasrpt	double measure repeat
+	quadmeasrpt	quadruple measure repeat
 	copyright	C-in-circle copyright symbol
 	dim	diminished
 .Ix iQ
 	halfdim	half diminished
 	triangle	triangle
+	perfmaior	perfectum maior
+	perfminor	perfectum minor
+	imperfmaior	imperfectum maior
+	imperfminor	imperfectum minor
+	perfmaiordim	perfectum maior diminutum
+	perfminordim	perfectum minor diminutum
+	imperfmaiordim	imperfectum maior diminutum
+	imperfminordim	imperfectum minor diminutum
 .TE
 .He
 .ig
@@ -6449,42 +6492,51 @@ invturn     inverted turn
 </PRE>
 .H 3 Miscellaneous
 <PRE>
-ferm        fermata
-uferm       upside-down fermata
-acc_gt      accent like a greater-than sign
-acc_hat     accent like a "hat" or ^ (circumflex or "up-arrow")
-acc_uhat    accent like an upside-down hat
-leg         legato mark
-dot         dot
-wedge       wedge
-uwedge      upside-down wedge
-sign        sign for D. S.
-coda        coda mark
-upbow       up bow
-dnbow       down bow
-rr          "railroad tracks" or caesura (2 slanted lines sometimes put
-            at the top of a staff to indicate the end of a musical thought)
-measrpt     measure repeat
-copyright   C-in-circle copyright symbol
-dim         diminished
-halfdim     half diminished
-triangle    triangle
+ferm           fermata
+uferm          upside-down fermata
+acc_gt         accent like a greater-than sign
+acc_hat        accent like a "hat" or ^ (circumflex or "up-arrow")
+acc_uhat       accent like an upside-down hat
+leg            legato mark
+dot            dot
+wedge          wedge
+uwedge         upside-down wedge
+sign           sign for D. S.
+coda           coda mark
+upbow          up bow
+dnbow          down bow
+rr             "railroad tracks" or caesura (2 slanted lines sometimes put
+               at the top of a staff to indicate the end of a musical thought)
+measrpt        measure repeat
+dblmeasrpt     double measure repeat
+quadmeasrpt    quadruple measure repeat
+copyright      C-in-circle copyright symbol
+dim            diminished
+halfdim        half diminished
+triangle       triangle
+perfmaior      perfectum maior
+perfminor      perfectum minor
+imperfmaior    imperfectum maior
+imperfminor    imperfectum minor
+perfmaiordim   perfectum maior diminutum
+perfminordim   perfectum minor diminutum
+imperfmaiordim imperfectum maior diminutum
+imperfminordim imperfectum minor diminutum
 </PRE>
 ..
 .Hi
 .SK
-\ \ \  
-.sp 2
 .if \n(.P \{
 .ie \n(.g \{
 .nr Boxpict 0
+.nr Nn 0
 .Pt muschar.ps
 .nr Boxpict 1
+.nr Nn 1
 .nop \}
 .el \{
 \!x X PI:\n(.o:\n(.i:\n(.l:\n(.t:muschar.ps:9,6.3,0,0:t:
 \ \ \ \}
-.SK
 .He
 .ig
 <BR>
@@ -7191,7 +7243,11 @@ For all the other mark_types, the \fIplace\fP is optional. For
 .Hr phrase.html
 phrase,
 if \fIplace\fP is not specified, Mup determines it
-on a case-by-case basis depending on the location of the notes. 
+on a case-by-case basis, depending on the location of the notes,
+unless the
+.Hr param.html#defphside
+defaultphraseside parameter
+is set to force a side.
 .P
 As with musical data or lyrics, the \fIstaff\fP can be a single
 number or may include lists and ranges. In the case of "between",
@@ -9209,9 +9265,9 @@ bar
 .Hi
 .H 1 "MISCELLANEOUS FEATURES"
 .He
-.Ht Newscore and newpage
+.Ht Newscore and newpage, samescore and samepage
 .Hd newscore.html
-.H 2 "Newscore and newpage"
+.H 2 "Newscore and newpage, samescore and samepage"
 .P
 Normally, Mup determines how many measures to put on each score and how many
 .Ix hG
@@ -9336,6 +9392,24 @@ To do this, at the place you would like to allow the break to occur,
 put this line:
 .Ex
         newscore scoresep = 0
+.Ee
+.P
+Sometimes it may be useful to tell Mup where you do \fInot\fP want a new
+score to begin. This is done by:
+.Ex
+	samescorebegin
+	// ... two or more measures of Mup input
+	samescoreend
+.Ee
+.P
+Similarly, to specify that certain measures and/or
+.Hr prnttext.html#block
+blocks
+should all be kept on the same page:
+.Ex
+	samepagebegin
+	// ... two or more measures of Mup input or blocks
+	samepageend
 .Ee
 .Ht Mup header and footers
 .Hd headfoot.html
@@ -10869,6 +10943,11 @@ Unsetting a parameter in voice context will cause it
 to revert to its value in staff context if that is set,
 otherwise to its value in score context.
 .P
+There are a few parameter that can be changed
+.Hr midmeas.html
+mid-measure.
+That is noted in their descriptions.
+.P
 .Hm saverest
 It is possible to take a "snapshot" of the current state of all the parameters,
 and then restore that state later. This is done in the "control" context.
@@ -11421,6 +11500,9 @@ score, staff, voice
 .eX
 beamslope=0.8,20
 .Ix jJ
+.Sa
+.Hr param.html#tupslope
+tupletslope
 .eP
 .\"------------------------------------------
 .bP
@@ -12038,6 +12120,27 @@ textkeymap,
 .Hr param.html#withkmap
 withkeymap
 .Ix jL
+.eP
+.\"------------------------
+.bP
+.Na
+.Hm defphside
+defaultphraseside
+.De
+For cases where the side on which to place a phrase mark is not otherwise
+already determined (and thus Mup would normally choose the side that seemed
+best), this parameter can be set to force choosing above or below.
+.Va
+above, below, or not set
+.Df
+not set
+.Cn
+score, staff, voice
+.Im
+.eS
+defaultphraseside=above
+.br
+defaultphraseside=   // Let Mup choose
 .eP
 .\"------------------------
 .bP
@@ -13429,6 +13532,30 @@ rehstyle
 .\"---------------
 .bP
 .Na
+.Hm midline
+midlinestemfloat
+.De
+This parameter controls the stem direction of chords whose notes are centered
+on the middle line of the staff, for cases where it is free to point in
+either direction. It is not free (and thus midlinestemfloat does not apply) when
+the direction is forced by the user, or by the vscheme, or another voice,
+or for chords that are part of a beamed set of chords, or for grace notes
+or for voice 3. When midlinestemfloat applies, if it is set to n, the stem
+will always be down.  When set to y, the stem will be up in the case where
+the neighboring chords on either side, if any, have stems up.
+.Va
+y or n
+.Df
+n
+.Cn
+score, staff, voice
+.Im
+.eX
+midlinestemfloat=y
+.eP
+.\"---------------
+.bP
+.Na
 .Hm minalign
 minalignscale
 .De
@@ -13584,6 +13711,29 @@ score, staff
 .Nm
 .eX
 numbermrpt = n
+.eP
+.\"---------------
+.bP
+.Na
+.Hm nummultrpt
+numbermultrpt
+.De
+If set to "y"
+.Hr chordinp.html#multrpt
+dbl and quad measure repeats
+are numbered with "2" or "4" respectively,
+printed above the middle bar line of the group;
+if set to "n" they aren't.
+The number will be printed in the same font as a time signature.
+.Va
+y or n
+.Df
+y
+.Cn
+score, staff
+.Nm
+.eX
+numbermulrpt = n
 .eP
 .\"-------------------
 .bP
@@ -15334,6 +15484,38 @@ acctable
 .\"----------------------------
 .bP
 .Na
+.Hm tupslope
+tupletslope
+.De
+This parameter allows you to control the slope of tuplet brackets.
+Two values must be given, separated by a comma.
+Mup calculates an appropriate slope for tuplet brackets by applying a linear
+regression algorithm. The first value supplied for the beamslope parameter
+is a factor by which to multiply the default slope that Mup calculates.
+The minimum value of 0.0 would cause all brackets to be horizontal,
+whereas the maximum value of 1.0 will use the slope Mup calculates.
+Intermediate values will yield brackets that are less slanted than the
+default slope calculation. The second value given to the tupletslope parameter
+is the maximum angle for the bracket, in degrees.
+If the originally calculated value multiplied by the
+factor yields an angle of greater than this maximum angle,
+the maximum angle will be used.
+.Va
+0.0 to 1.0 for the factor, and 0.0 to 45.0 for the maximum angle
+.Df
+0.7, 20
+.Cn
+score, staff, voice
+.Im
+.eX
+tupletslope=0.5,15
+.Sa
+.Hr param.html#beamslp
+beamslope
+.eP
+.\"----------------------------
+.bP
+.Na
 .Hm units
 units
 .De
@@ -15452,7 +15634,11 @@ how the voices overlap. For the purpose of the qualifier, voice 1 is assumed
 to be the highest voice, voice 3 the middle voice, and voice 2 the lowest.
 If the qualifier is "restsonly", notes will never be combined, but rests
 will be combined whenever possible.
-If no qualifier is specified, the default is nooverlap. While the vcombine
+If no qualifier is specified, the default is nooverlap.
+Finally, an independent qualifier of "bymeas" can be specified,
+in which case combining will only be done in measures
+where the combining can be done on all chords in the measure.
+While the vcombine
 parameter is allowed to be used with any
 .Hr param.html#vscheme
 vscheme parameter
@@ -15467,14 +15653,16 @@ tied in one voice but not another. In such cases,
 the usual non-combined format will be used.
 .Va
 comma-separated list of voices or voice ranges, or nothing,
-optionally followed by nooverlap, stepsapart, shareone, overlap, or restsonly
+optionally followed by nooverlap, stepsapart, shareone, overlap, or restsonly,
+optionally followed by bymeas
 .Df
 not set
 .Cn
 score, staff
+.mM
 .Nm
 .eS
-vcombine=3,1-2 shareone
+vcombine=3,1-2 shareone bymeas
 .br
 vcombine=   // turn off combining
 .Sa
@@ -15799,10 +15987,11 @@ individually in various sections of this document, but this section tries to
 pull things together.
 .P
 .Hr newscore.html
-The "newscore" or "newpage" commands
+The "newscore," "newpage," "samescorebegin / samescoreend,"
+and "samepagebegin / samepageend" commands
 .Ix cC
 .Ix cD
-can be used to force where breaks occur.
+can be used to force where breaks do or do not occur.
 This may be useful for ensuring a section ends at the end of a score or page.
 .P
 If you want to get a little more or less on each page, it is usually best
@@ -17231,6 +17420,61 @@ postscript (e.x - 3, e.y) "
 bar 
 .Ee
 .vs +1
+.Ht Printing braces
+.Hd brace.html
+.H 2 "Printing braces"
+.P
+Mup prints braces to the left of scores via the
+brace parameter,
+but it may sometimes be desired to print a brace somewhere else,
+and have it scale appropriately for its height.
+This can be done using an escape to PostScript.
+Here is a macro definition that can be used to print a brace,
+and an example of how to use it:
+.Ex 1
+// brace expects an x value and bottom and top y values
+define BRACE(TOP, BOTTOM)
+       postscript (TOP.w - 1, BOTTOM.s) with _top.y = TOP.n  "
+           currentpoint Mup_top.y brace"
+@
+
+score
+.\" leftmargin=2 ; rightmargin=2
+   staffs=2
+music
+
+1: c+ =_t;;;;
+2: c =_b;;;;
+BRACE(_t, _b)
+bar
+.Ee
+.P
+A somewhat more complicated version, which would print a string before the
+brace, might be:
+.Ex 1
+define BRACE(TOP, BOTTOM, STRING)
+       postscript (TOP.w - 1, BOTTOM.s) with _top.y = TOP.n  "
+        currentpoint /yloc exch def /xloc exch def
+        currentpoint Mup_top.y brace
+        /TimesRoman findfont 12 scalefont setfont
+        xloc 7.5 sub (" + STRING + ") stringwidth pop sub
+        yloc Mup_top.y add 2 div 1.5 sub moveto (" + STRING +") show"
+@
+
+score
+.\" leftmargin=1.7 ; rightmargin=1.7
+  staffs=2
+music
+
+1: [pad 10] c+ =_t;;;;
+2: c =_b;;;;
+BRACE(_t, _b, "Label")
+bar
+.Ee
+.P
+That still wouldn't handle things like special characters in the string,
+or different font sizes, but could handle simple cases, and be a starting
+point for more complicated ones.
 .Ht Converting Mup files to other formats
 .Hd pstools.html
 .H 2 "Converting Mup files to other formats"

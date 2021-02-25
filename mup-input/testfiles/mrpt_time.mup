@@ -1,0 +1,30 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "time_err.mup"
+	paragraph (13) "This files tests that it is allowed to \"change\" time during a mrpt to its current value."
+
+music
+
+1: c;;;;
+bar
+
+score time=4/4
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+bar
+score time=4/4
+music
+bar
+bar

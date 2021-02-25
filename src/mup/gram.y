@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -114,6 +114,9 @@ static struct GRPSYL *Prev_grpsyl_p;	/* Like Last_grpsyl_p except in the
 static int Extra_basictime;		/* for saving basictime, when doing
 					 * additive times */
 static int Doing_timeunit = NO;		/* YES if gathering timeunit param */
+static short Doing_vcombine;		/* YES if gathering vcombine param */
+static short Doing_samescore = NO;	/* YES if after samescorebegin */
+static short Doing_samepage = NO;	/* YES if after samepagebegin */
 static struct GRPSYL *Lyrics_p;		/* pointer to current list of lyrics */
 static struct WITH_ITEM *Curr_marklist;	/* current "with" list */
 static int Mark_start;			/* Index into Curr_marklist at which
@@ -135,6 +138,7 @@ static int Plus_minus;			/* if 1 add, if -1 subtract offset */
 static int Defining_multiple = NO;	/* if defining multiple voices at once */
 static int Chord_at_a_time = NO;	/* YES for chord-at-a-time,
 					 * NO for voice-at-a-time */
+static short Meas_rpt_type;		/* Current MRT_* value */
 static int EM_staff;			/* Staff number of most recent
 					 * emptymeas parameter usage */
 static short Endingloc;			/* if current bar starts or ends an
@@ -276,6 +280,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_BLOCKHEAD
 %token		T_BM
 %token <intval>	T_BULGE
+%token		T_BYMEAS
 %token		T_CENTS
 %token <intval>	T_CHORDTRANSLATION
 %token <intval>	T_CLEF
@@ -288,8 +293,10 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_CURVE
 %token		T_CUT
 %token		T_DASH
+%token		T_DBL
 %token		T_DBLFLAT
 %token		T_DIAM
+%token <intval>	T_DEFAULTPHRASESIDE
 %token		T_DOT
 %token		T_DOWN
 %token		T_DRUM
@@ -384,6 +391,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_PRINTEDTIME
 %token <intval> T_PSHOOKLOC
 %token		T_PSVAR
+%token		T_QUAD
 %token		T_QUESTION
 %token <intval>	T_RANGELISTVAR
 %token <intval>	T_RATNUMLISTVAR
@@ -399,6 +407,8 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_RPT
 %token		T_R_ANGLE
 %token		T_R_DBLANGLE
+%token <intval>	T_SAMEPAGE
+%token <intval>	T_SAMESCORE
 %token		T_SAVEPARMS
 %token		T_SCORE
 %token <intval>	T_SCOREFEED
@@ -468,6 +478,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <intval> between
 %type <intval> ch_tran_type
 %type <intval> crossbeam
+%type <intval> opt_dbl_or_quad
 %type <intval> dir
 %type <intval> direction
 %type <intval> dots
@@ -505,6 +516,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <intval> octave
 %type <intval> opt_accidental
 %type <stringval> opt_bend
+%type <intval> opt_bymeas
 %type <stringval> opt_decimal_part
 %type <intval> opt_dir
 %type <intval> opt_file
@@ -529,6 +541,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <ratval> opt_time
 %type <intval> opt_to_voice
 %type <intval> opt_ts_visibility
+%type <floatval> opt_tuplet_slope;
 %type <intval> opt_vcombine_qualifier
 %type <intval> orderitem
 %type <intval> orientation
@@ -980,9 +993,14 @@ blockhead_context:	T_BLOCKHEAD opt_pageside
 				}
 				break;
 			case C_BLOCK:
+				if (Doing_samescore == YES) {
+					l_yyerror(Curr_filename, yylineno,
+						"cannot have a block inside a samescore zone");
+				}
 				insertMAINLL(newMAINLLstruct(S_BLOCKHEAD, yylineno),
 						Mainlltc_p);
 				Mainlltc_p->u.blockhead_p = Currblock_p;
+				Currblock_p->samepage = Doing_samepage;
 				if ($2 != PGSIDE_NOT_SET) {
 					l_warning(Curr_filename, yylineno,
 						"leftpage/rightpage cannot be used on blocks; ignoring");
@@ -1357,7 +1375,7 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 	}
 
 	|
-	T_VCOMBINE T_EQUAL { begin_range(PL_UNKNOWN);  } vcombine_value
+	T_VCOMBINE T_EQUAL vcombine_clause
 	{ }
 
 	|
@@ -1442,6 +1460,16 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 
 	|
 	T_PRINTEDTIME T_EQUAL printed_timesig
+
+	|
+	T_DEFAULTPHRASESIDE T_EQUAL ph_opt_place
+	{
+		if (contextcheck(C_SCORE|C_STAFF|C_VOICE, "defaultphraseside") == YES
+					&& Currstruct_p != 0) {
+			Currstruct_p->u.ssv_p->defaultphraseside = $3;
+			Currstruct_p->u.ssv_p->used[DEFAULTPHRASESIDE] = YES;
+		}
+	}
 
 	|
 	T_STAFFLINES T_EQUAL stafflinedef
@@ -2022,7 +2050,7 @@ time_item: basic_time_val dots opt_more_time opt_m
 	}
 
 	|
-	T_LET_M
+	opt_dbl_or_quad T_LET_M
 	{
 		$$.n = (svpath(1, TIME))->time.n;
 		$$.d = (svpath(1, TIME))->time.d;
@@ -2031,6 +2059,7 @@ time_item: basic_time_val dots opt_more_time opt_m
 			/* use whole note symbol as default */
 			Curr_grpsyl_p->basictime = 1;
 			Curr_grpsyl_p->is_meas = YES;
+			Meas_rpt_type = $1;
 			User_meas_time = NO;
 		}
 		else {
@@ -3083,17 +3112,38 @@ orientation:
 	}
 	;
 
+vcombine_clause:
+	{ VCrange_p = 0; Doing_vcombine = YES; } vcombine_value { Doing_vcombine = NO; }
+	;
+
 vcombine_value:
 	/* empty */
 	{
-		assign_vcombine(VC_NOOVERLAP, Currstruct_p);
+		assign_vcombine(VC_NOOVERLAP, NO, Currstruct_p, Curr_tssv_p);
 	}
 
 	|
-	voice_spec opt_vcombine_qualifier
+	voice_spec vcombine_quals
 	{
-		assign_vcombine($2, Currstruct_p);
 		Defining_multiple = NO;
+	}
+	;
+
+vcombine_quals:
+	{
+		assign_vcombine(VC_NOOVERLAP, NO, Currstruct_p, Curr_tssv_p);
+	}
+
+	|
+	T_VCOMBVAL opt_bymeas
+	{
+		assign_vcombine($1, $2, Currstruct_p, Curr_tssv_p);
+	}
+
+	|
+	T_BYMEAS opt_vcombine_qualifier
+	{
+		assign_vcombine($2, YES, Currstruct_p, Curr_tssv_p);
 	}
 	;
 
@@ -3107,6 +3157,19 @@ opt_vcombine_qualifier:
 	T_VCOMBVAL
 	{
 		$$ = $1;
+	}
+	;
+
+opt_bymeas:
+	/* empty */
+	{
+		$$ = NO;
+	}
+
+	|
+	T_BYMEAS
+	{
+		$$ = YES;
 	}
 	;
 
@@ -3505,6 +3568,9 @@ paramname:
 	T_ALIGNLABELS
 
 	|
+	T_DEFAULTPHRASESIDE
+
+	|
 	T_RATNUMLISTVAR
 
 	|
@@ -3569,6 +3635,7 @@ music_input:	noteinfo T_NEWLINE
 		Good_till_canceled = NO;
 		free_extra_time();
 		Prev_grpsyl_p = 0;
+		Meas_rpt_type = MRT_NONE;
 	};
 
 noteinfo:	init_staff sv_spec notecolon groupinfo
@@ -3757,7 +3824,12 @@ voice_spec:
 	{
 		/* note data applies to a single voice */
 		if (rangecheck($1, MINVOICES, MAXVOICES, "voice") == YES) {
-			save_vno_range($1, $1);
+			if (Doing_vcombine == YES) {
+				save_vcombine_range($1, $1);
+			}
+			else {
+				save_vno_range($1, $1);
+			}
 			$$ = YES;
 		}
 		else {
@@ -3777,8 +3849,13 @@ voice_spec:
 				$$ = NO;
 			}
 			else {
-				save_vno_range($1, $3);
-				Defining_multiple = YES;
+				if (Doing_vcombine == YES) {
+					save_vcombine_range($1, $3);
+				}
+				else {
+					save_vno_range($1, $3);
+					Defining_multiple = YES;
+				}
 				$$ = YES;
 			}
 		}
@@ -3793,7 +3870,9 @@ voice_tail:
 	|
 	T_COMMA voice_spec
 	{
-		Defining_multiple = YES;
+		if (Doing_vcombine == NO) {
+			Defining_multiple = YES;
+		}
 	};
 
 groupinfo:	groupdata
@@ -3803,7 +3882,7 @@ groupinfo:	groupdata
 	;
 
 groupdata:
-	ntuplet
+	mid_meas_param ntuplet
 
 	|
 	mid_meas_param grp_attributes group other_attr T_SEMICOLON
@@ -3939,6 +4018,11 @@ mm_param_item:
 				"parameter type cannot be changed mid-measure; ignoring");
 			break;
 		}
+	}
+
+	|
+	T_VCOMBINE T_EQUAL vcombine_clause
+	{
 	}
 	;
 
@@ -4701,7 +4785,7 @@ alloc_timelist:
 		/* Add to end of linked list */
 		timelist_p->next = 0;
 		/* Init fulltime to something to avoid garbage if there
-		 * in a user input error */
+		 * is a user input error */
 		timelist_p->fulltime = Zero;
 		if (Extra_time_p == 0) {
 			Last_alloced_timelist_p = Extra_time_p = timelist_p;
@@ -4726,11 +4810,30 @@ opt_m:
 					&& Getting_tup_dur == NO) {
 			Curr_grpsyl_p->is_meas = YES;
 			User_meas_time = YES;
+			Meas_rpt_type = MRT_SINGLE;
 		}
 		else {
 			yyerror("'m' is not valid here");
 		}
 	};
+
+opt_dbl_or_quad:
+	{
+		$$ = MRT_SINGLE;
+	}
+
+	|
+	T_DBL
+	{
+		$$ = MRT_DOUBLE;
+	}
+
+	|
+	T_QUAD
+	{
+		$$ = MRT_QUAD;
+	}
+	;
 
 dots:
 	{
@@ -5049,6 +5152,9 @@ notedata:	notedata1
 	{
 		add_note(Curr_grpsyl_p, (int) PP_REST, No_accs,
 				USE_DFLT_OCTAVE, 0, NO, (char *) 0);
+		if (Meas_rpt_type == MRT_DOUBLE || Meas_rpt_type == MRT_QUAD) {
+			l_yyerror(Curr_filename, yylineno, "cannot use dbl/quad with mr");
+		}
 	}
 
 	|
@@ -5062,6 +5168,9 @@ notedata:	notedata1
 			l_warning(Curr_filename, yylineno,
 				"specifying time value on measure space is pointless; ignoring");
 		}
+		if (Meas_rpt_type == MRT_DOUBLE || Meas_rpt_type == MRT_QUAD) {
+			l_yyerror(Curr_filename, yylineno, "cannot use dbl/quad with ms");
+		}
 	}
 
 	|
@@ -5074,6 +5183,9 @@ notedata:	notedata1
 		if (Curr_grpsyl_p->is_meas == YES && User_meas_time == YES) {
 			l_warning(Curr_filename, yylineno,
 				"specifying time value on measure uncollapsible space is pointless; ignoring");
+		}
+		if (Meas_rpt_type == MRT_DOUBLE || Meas_rpt_type == MRT_QUAD) {
+			l_yyerror(Curr_filename, yylineno, "cannot use dbl/quad with mus");
 		}
 	}
 
@@ -5091,6 +5203,8 @@ notedata:	notedata1
 		}
 		add_note(Curr_grpsyl_p, (int) PP_RPT, No_accs, USE_DFLT_OCTAVE,
 							0, NO, (char *) 0);
+		Mrptused = YES;
+		Curr_grpsyl_p->meas_rpt_type = Meas_rpt_type;
 	}
 
 	|
@@ -5643,9 +5757,9 @@ arraytag:
 	};
 
 
-ntuplet:	start_tuplet groupinfo rbrace opt_side num printtup opt_time T_SEMICOLON
+ntuplet:	start_tuplet groupinfo rbrace opt_side num printtup opt_time opt_tuplet_slope T_SEMICOLON
 	{
-		end_tuplet($5, $7, $6, $4);
+		end_tuplet($5, $7, $6, $4, $8);
 		Getting_tup_dur = NO;
 	};
 
@@ -5718,6 +5832,24 @@ opt_time:
 	{
 		$$ = $2;
 	};
+
+opt_tuplet_slope:
+	/* empty */
+	{
+		$$ = NOTUPLETANGLE;
+	}
+
+	| T_SLOPE opt_minus floatnum
+	{
+		$3 *= $2;
+		if (frangecheck($3, MINTUPLETANGLE, MAXTUPLETANGLE, "slope") == YES) {
+			$$ = $3;
+		}
+		else {
+			$$ = NOTUPLETANGLE;
+		}
+	}
+	;
 
 lyricinfo:	T_LYRICS lyric_id using T_COLON lyricdata
 	{
@@ -5955,7 +6087,7 @@ lyr_tm:	alloc_lyr_grpsyl time_val opt_space
 
 lyrtuplet:	start_tuplet lyrics_timelist rbrace num opt_time
 	{
-		end_tuplet($4, $5, NO, PL_UNKNOWN);
+		end_tuplet($4, $5, NO, PL_UNKNOWN, NOTUPLETANGLE);
 		Getting_tup_dur = NO;
 	};
 
@@ -6116,7 +6248,7 @@ os_directive:	barinfo bar_items
 		char *name;
 
 
-		name = (yylval.intval == YES ? "newpage" : "newscore");
+		name = ($1 == YES ? "newpage" : "newscore");
 
 		(void) contextcheck(C_MUSIC | C_BLOCK, name);
 		if (Mainlltc_p != 0 && Mainlltc_p->str == S_FEED) {
@@ -6184,7 +6316,22 @@ os_directive:	barinfo bar_items
 				break;
 			}
 		}
-		/* Add to main list, unless reuing the tail cell FEED */
+
+		/* If inside a "samescore" zone, doing a feed is contradictory */
+		if (Doing_samescore == YES) {
+			l_yyerror(Curr_filename, yylineno,
+				"cannot have a %s inside a samescore zone",
+				name);
+		}
+
+		/* If inside a "samepage" zone, doing a page feed
+		 * is contradictory, though a scorefeed is okay. */
+		if ( (Doing_samepage == YES) && ($1 == YES) ) {
+			l_yyerror(Curr_filename, yylineno,
+				"cannot have a pagefeed inside a samepage zone");
+		}
+
+		/* Add to main list, unless reusing the tail cell FEED */
 		if (Currstruct_p != Mainlltc_p) {
 			insertMAINLL(Currstruct_p, Mainlltc_p);
 		}
@@ -6206,6 +6353,78 @@ os_directive:	barinfo bar_items
 	scorefeed_options
 	{
 		Currstruct_p = (struct MAINLL *) 0;
+	}
+
+	|
+	T_SAMESCORE
+	{
+		char *name;
+
+		name = ($1 == YES ? "samescorebegin" : "samescoreend");
+		(void) contextcheck(C_MUSIC, name);
+
+		if ( ($1 == YES) && (Doing_samescore == YES) ) {
+			l_yyerror(Curr_filename, yylineno,
+				"cannot nest samescorebegin zones");
+		}
+		if ( ($1 == NO) ) {
+			if (Doing_samescore == NO) {
+				l_yyerror(Curr_filename, yylineno,
+					"cannot have samescoreend without previous matching samescorebegin");
+			}
+			else {
+				/* Need to undo the samescore setting on the
+				 * most recent bar. */
+				struct MAINLL *mll_p;
+
+				for (mll_p = Mainlltc_p; mll_p != 0;
+							mll_p = mll_p->prev) {
+					if (mll_p->str == S_BAR) {
+						mll_p->u.bar_p->samescore = NO;
+						break;
+					}
+				}
+			}
+		}
+		Doing_samescore = $1;
+	}
+
+	|
+	T_SAMEPAGE
+	{
+		char *name;
+
+		name = ($1 == YES ? "samepagebegin" : "samepageend");
+		(void) contextcheck(C_MUSIC | C_BLOCK, name);
+
+		if ( ($1 == YES) && (Doing_samepage == YES) ) {
+			l_yyerror(Curr_filename, yylineno,
+				"cannot nest samepagebegin zones");
+		}
+		if ( ($1 == NO) ) {
+			if (Doing_samepage == NO) {
+				l_yyerror(Curr_filename, yylineno,
+					"cannot have samepageend without previous matching samespagebegin");
+			}
+			else {
+				/* Need to undo the samescore setting on the
+				 * most recent bar or block. */
+				struct MAINLL *mll_p;
+
+				for (mll_p = Mainlltc_p; mll_p != 0;
+							mll_p = mll_p->prev) {
+					if (mll_p->str == S_BAR) {
+						mll_p->u.bar_p->samepage = NO;
+						break;
+					}
+					else if (mll_p->str == S_BLOCKHEAD) {
+						mll_p->u.blockhead_p->samepage = NO;
+						break;
+					}
+				}
+			}
+		}
+		Doing_samepage = $1;
 	}
 
 	|
@@ -6348,6 +6567,8 @@ barinfo:	linetype precbartype barline
 			Currstruct_p = add_bar($3, $1, Endingloc,
 						Endending_type, Mainlltc_p);
 			Got_ending = NO;
+			Currstruct_p->u.bar_p->samescore = Doing_samescore;
+			Currstruct_p->u.bar_p->samepage = Doing_samepage;
 		}
 		if ($3 == RESTART && Endingloc != NOITEM) {
 			yyerror("restart cannot be used inside an ending");
@@ -8620,5 +8841,26 @@ char *str;	/* Typically "do re mi fa sol la si" */
 			Currstruct_p->u.ssv_p->doremi_syls[nsyl] =
 				copy_string(" ", FONT_TR, DFLT_SIZE);
 		}
+	}
+}
+
+
+/* Give warning if user forgot to add an end to match a samescorebegin
+ * or samepagebeing. It doesn't really hurt anything, but might mean they
+ * included more in the zone than intended, so seems worth a warning,
+ * but not a error.
+ */
+
+void
+check_same_ended()
+
+{
+	if (Doing_samescore == YES) {
+		l_warning(Curr_filename, yylineno,
+			"missing samescoreend");
+	}
+	if (Doing_samepage == YES) {
+		l_warning(Curr_filename, yylineno,
+			"missing samepageend");
 	}
 }

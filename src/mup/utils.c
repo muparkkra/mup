@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1841,7 +1841,7 @@ int *topfret_p; /* the fret number of the top line of the grid */
 	}
 
 	/* set the values to defaults, then calculate actuals if needed */
-	*frets_p = mingridheight = svpath(staff, MINGRIDHEIGHT)->mingridheight;
+	*frets_p = mingridheight = svpath(staff == -1 ? 0 : staff, MINGRIDHEIGHT)->mingridheight;
 	*fretnum_p = 0;
 	*numvert_p = 0;
 	if (minfret <= MAXFRET) {

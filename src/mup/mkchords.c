@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -584,8 +584,11 @@ combine_voices()
 {
 	struct MAINLL *mll_p;	/* point along main linked list */
 	struct MAINLL *staffmll_p; /* point a group's staff's MLL struct */
+	struct MAINLL *mll2_p;	/* for finding the next bar line */
 	struct CHORD *ch_p;	/* point along a chord list */
 	struct GRPSYL *gs1_p;	/* point along the GRPSYL list of a chord */
+	struct TIMEDSSV *tssv_p;/* point along a timed SSV list */
+	RATIONAL offset;	/* current chord's offset into meas */
 	int staff;		/* staff number we are working on */
 	int pass;		/* the three passes we must make */
 
@@ -599,8 +602,7 @@ combine_voices()
 
 			switch (mll_p->str) {
 			case S_SSV:
-				/* keep SSVs up to date (but midmeasure SSVs
-				 * don't matter for what we're doing here) */
+				/* keep MLL SSVs up to date */
 				asgnssv(mll_p->u.ssv_p);
 				continue;
 			case S_CHHEAD:
@@ -609,11 +611,32 @@ combine_voices()
 				continue;	/* ignore everything else */
 			}
 
+			/* find the bar line at the end of this measure */
+			for (mll2_p = mll_p; mll2_p != 0 &&
+			     mll2_p->str != S_BAR; mll2_p = mll2_p->next) {
+				;
+			}
+			if (mll2_p == 0) {
+				pfatal("no bar line at end of measure");
+			}
+			tssv_p = mll2_p->u.bar_p->timedssv_p;
+
+			offset = Zero;	/* first chord's time offset into meas*/
 			/*
 			 * Loop through each chord in this list.
 			 */
 			for (ch_p = mll_p->u.chhead_p->ch_p; ch_p != 0;
 						ch_p = ch_p->ch_p) {
+
+				/* apply midmeasure SSVs up to this chord */
+				while (tssv_p != 0 &&
+						LE(tssv_p->time_off, offset)) {
+					asgnssv(&tssv_p->ssv);
+					tssv_p = tssv_p->next;
+				}
+				/* update offset to be to the following chord */
+				offset = radd(offset, ch_p->duration);
+
 				/*
 				 * Loop through the linked list of GRPSYLs
 				 * hanging off this chord.  Skip the syllables;
@@ -1220,9 +1243,8 @@ struct MAINLL *mll_p;		/* MLL struct for this group */
  * Returns:     YES or NO: should any further combining be attempted?
  *
  * Description: This function checks whether the two groups should be combined,
- *		by looking at neighboring groups if beaming or ties/slurs
- *		are involved.  It stores the answer in the COMB field of all
- *		the groups.
+ *		by looking at neighboring groups.  It stores the answer in the
+ *		COMB field of all the groups.
  *
  *		We return YES if the caller can call again with a different
  *		pair, or NO if not.  (Only two combinings can be done per hand.)
@@ -1243,7 +1265,10 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 	short mask;			/* to be applied to "COMB" */
 	short comb;			/* hold combineability bits */
 	int keep_going;			/* return code */
+	int vcombinemeas;		/* keep consistent within measure? */
 
+
+	vcombinemeas = svpath(gs1_p->staffno, VCOMBINE)->vcombinemeas;
 
 	/*
 	 * Set up the bit that we must check in each chord to see if these two
@@ -1253,7 +1278,7 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 
 	/*
 	 * Start at this chord, and keep looking to the right as long as the
-	 * groups are beamed or tied/slurred.
+	 * there is a need to be consistent with the neighboring groups.
 	 */
 	mll2s_p = mll2d_p = mll_p;
 	for (d2_p = dest_p, s2_p = src_p; d2_p != 0 && s2_p != 0;
@@ -1266,6 +1291,17 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 		 */
 		if ((d2_p->COMB & mask) == 0) {
 			return (YES);
+		}
+
+		/*
+		 * If we are supposed to keep the combining consistent
+		 * throughout the measure, and we are not yet at the edge of
+		 * the measure, keep going.  We don't have to check both the
+		 * source and the dest; they would give the same answer,
+		 * as long as we made it through pass 1 as combineable.
+		 */
+		if (vcombinemeas == YES && nextnongrace(d2_p) != 0) {
+			continue;
 		}
 
 		/*
@@ -1284,7 +1320,7 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 
 	/*
 	 * Start at this chord, and keep looking to the left as long as the
-	 * groups are beamed or tied/slurred.
+	 * there is a need to be consistent with the neighboring groups.
 	 */
 	mll2s_p = mll2d_p = mll_p;
 	for (d2_p = dest_p, s2_p = src_p; d2_p != 0 && s2_p != 0;
@@ -1293,6 +1329,10 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 
 		if ((d2_p->COMB & mask) == 0) {
 			return (YES);
+		}
+
+		if (vcombinemeas == YES && prevnongrace(d2_p) != 0) {
+			continue;
 		}
 
 		mll3_p = mll2s_p;	/* don't alter mll2s_p */

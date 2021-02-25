@@ -2,7 +2,7 @@
 % 2008, 2009, 2012 by Arkkra Enterprises
 % All rights reserved
 
-% Mup PostScript Prolog 6.8.1 for use with Mup 6.8.1
+% Mup PostScript Prolog 6.9 for use with Mup 6.9
 
 % lwid is used as the width of a standard (thin) line in the music
 % character definitions.
@@ -822,8 +822,8 @@ mfont0 begin
 
 		% measrpt
 		/period {
-			newpath -450 400 150 0 360 arc fill
-			newpath 450 -400 150 0 360 arc fill
+			newpath -450 350 150 0 360 arc fill
+			newpath 450 -350 150 0 360 arc fill
 			200 setlinewidth
 			-550 -600 moveto 550 600 lineto stroke
 		} def
@@ -1147,6 +1147,82 @@ mfont1 begin
 		/V {
 			%print nothing
 		} def
+
+		% perfmaior
+		/W {
+			lwid setlinewidth
+			newpath 0 0 510 0 360 arc stroke
+			newpath 0 0 170 0 360 arc fill
+		} def
+
+		% perfminor
+		/X {
+			lwid setlinewidth
+			newpath 0 0 510 0 360 arc stroke
+		} def
+
+		% imperfmaior
+		/Y {
+			lwid setlinewidth
+			newpath 0 0 510 55 305 arc stroke
+			newpath 0 0 170 0 360 arc fill
+		} def
+
+		% imperfminor
+		/Z {
+			lwid setlinewidth
+			newpath 0 0 510 55 305 arc stroke
+		} def
+
+		% perfmaiordim
+		/a {
+			lwid setlinewidth
+			newpath 0 0 510 0 360 arc stroke
+			newpath 0 0 170 0 360 arc fill
+			newpath 0 -700 moveto 0 700 lineto stroke
+		} def
+
+		% perfminordim
+		/b {
+			lwid setlinewidth
+			newpath 0 0 510 0 360 arc stroke
+			newpath 0 -700 moveto 0 700 lineto stroke
+		} def
+
+		% imperfmaiordim
+		/c {
+			lwid setlinewidth
+			newpath 0 0 510 55 305 arc stroke
+			newpath 0 0 170 0 360 arc fill
+			newpath 0 -700 moveto 0 700 lineto stroke
+		} def
+
+		% imperfminordim
+		/d {
+			lwid setlinewidth
+			newpath 0 0 510 55 305 arc stroke
+			newpath 0 -700 moveto 0 700 lineto stroke
+		} def
+
+		% dblmeasrpt
+		/e {
+			newpath -700 350 150 0 360 arc fill
+			newpath 700 -350 150 0 360 arc fill
+			200 setlinewidth
+			-800 -600 moveto 300 600 lineto stroke
+			-300 -600 moveto 800 600 lineto stroke
+		} def
+
+		% quadmeasrpt
+		/f {
+			newpath -1200 350 150 0 360 arc fill
+			newpath 1200 -350 150 0 360 arc fill
+			200 setlinewidth
+			-1300 -600 moveto -200 600 lineto stroke
+			-800 -600 moveto 300 600 lineto stroke
+			-300 -600 moveto 800 600 lineto stroke
+			200 -600 moveto 1300 600 lineto stroke
+		} def
 	end
 
 	/BuildChar {
@@ -1291,6 +1367,16 @@ end
 /slashhead		{ (T) printmchar1 } def
 /fillslashhead		{ (U) printmchar1 } def
 /blankhead		{ (V) printmchar1 } def
+/perfmaior		{ (W) printmchar1 } def
+/perfminor		{ (X) printmchar1 } def
+/imperfmaior		{ (Y) printmchar1 } def
+/imperfminor		{ (Z) printmchar1 } def
+/perfmaiordim		{ (a) printmchar1 } def
+/perfminordim		{ (b) printmchar1 } def
+/imperfmaiordim		{ (c) printmchar1 } def
+/imperfminordim		{ (d) printmchar1 } def
+/dblmeasrpt		{ (e) printmchar1 } def
+/quadmeasrpt		{ (f) printmchar1 } def
 
 
 % Define routines for Mup output other than music characters.

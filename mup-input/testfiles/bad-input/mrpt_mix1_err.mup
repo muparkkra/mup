@@ -1,0 +1,29 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-mix_err.mup"
+	paragraph (13) "This file tests that a mixture of mrpt and other things is not allowed."
+
+score vscheme=2f
+music
+
+1: c;;;;
+bar
+
+1: e;;;;
+bar
+
+1: 2e;;
+1 2: dblmrpt;
+bar 
+
+bar
+
+1: f;;;;
+bar
+
+1: dblmrpt;
+1 2: mr;
+bar
+
+bar

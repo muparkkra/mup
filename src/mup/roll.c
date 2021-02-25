@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -372,6 +372,10 @@ struct ROLLOFFSET *offset_p;	/* count offset at which to place roll */
 			}
 		}
 
+		if (staffno > Score.staffs) {
+			pfatal("could not find bottom roll staff");
+		}
+
 		/* if no more voices on staff, no reason to check more */
 		if (voice > vscheme_voices(svpath(staffno, VSCHEME)->vscheme))  {
 			continue;
@@ -379,6 +383,11 @@ struct ROLLOFFSET *offset_p;	/* count offset at which to place roll */
 
 		/* find relevant group */
 		gs_p = mll_p->u.staff_p->groups_p[ voice - 1];
+		if (gs_p == (struct GRPSYL *) 0) {
+			l_yyerror(roll_p->inputfile, roll_p->lineno,
+					"no chord associated with roll");
+			return;
+		}
 		roll_grp_p = closestgroup(offset_p->offset, gs_p, Score.timeden);
 
 
@@ -386,12 +395,6 @@ struct ROLLOFFSET *offset_p;	/* count offset at which to place roll */
 							top_staffscale) {
 			l_yyerror(roll_p->inputfile, roll_p->lineno,
 				"roll cannot span staffs with differing staffscale values");
-			return;
-		}
-
-		if (roll_grp_p == (struct GRPSYL *) 0) {
-			l_yyerror(roll_p->inputfile, roll_p->lineno,
-					"no chord associated with roll");
 			return;
 		}
 
@@ -437,6 +440,10 @@ struct ROLLOFFSET *offset_p;	/* count offset at which to place roll */
 				}
 			}
 
+			else if (roll_grp_p->grpcont != GC_NOTES) {
+				l_yyerror(roll_p->inputfile, roll_p->lineno,
+					"bottom of roll must not be rest or space");
+			}
 			else if (lastvisgrp_p->roll == STARTITEM) {
 				/* all but the last were invisible */
 				roll_grp_p->roll = LONEITEM;

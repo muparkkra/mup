@@ -4,6 +4,61 @@
 </HEAD>
 <BODY>
 <H1>New Mup Features</H1>
+<H2>New Features in Mup and Mupmate Version 6.9 (released in 2021)</H2>
+<P>
+<UL>
+<LI>
+There are new
+<A HREF="uguide/textstr.html">music symbols</A>
+for perfectum maior, perfectum minor,
+imperfectum maior, imperfectum minor, perfectum maior diminutum,
+perfectum minor diminutum, imperfectum maior diminutum,
+and imperfectum minor diminutum.
+<LI>
+Two or more measures can be placed between
+<A HREF="uguide/newscore.html">&quot;samescorebegin&quot; and &quot;samescoreend&quot; lines</A> to force them to all be keep on the same score.
+Similarly, &quot;samepagebegin&quot; and &quot;samepageend&quot; lines
+can be used to force several measures and/or
+<A HREF="uguide/prnttext.html#block">blocks</A> to be kept on the same page.
+<LI>
+<A HREF="uguide/chordinp.html#multrpt">Double and quad measure repeats</A>
+are now supported. There is a new
+<A HREF="uguide/param.html#nummultrpt">numbermultrpt parameter</A>,
+that controls whether a number (&quot;2&quot; or &quot;4&quot; as appropriate)
+is printed above the middle bar line of multiple measure repeats.
+<LI>
+The <A HREF="uguide/param.html#vcombine">vcombine parameter</A> accepts
+an additional optional qualifier of &quot;bymeas,&quot;
+which will cause combining to only be done in measures where combining can be
+done on all chords in the measure.
+<LI>
+The <A HREF="uguide/param.html#vcombine">vcombine parameter</A> can now
+be set mid-measure.
+<LI>
+There is a new <A HREF="uguide/param.html#defphside">defaultphraseside
+parameter</A>, which will force Mup to use the specific side (above or
+below) for any phrase marks for which it would otherwise would have been
+free to make a choice.
+<LI>
+<A HREF="uguide/midmeas.html">Mid-measure parameter changes</A>
+at the first group of a
+<HREF="uguide/tuplets.html">tuplet</A>
+can now be entered either before or after the opening brace,
+rather than being required to be after it.
+<LI>
+There is a new <A HREF="uguide/param.html#tupslope">tupletslope parameter</A>,
+which controls how slanted tuplet brackets are allowed to be,
+similar to the control of beams given by the
+<A HREF="uguide/param.html#beamslp">beamslope parameter</A>.
+The angle can be overridden on a specific
+<A HREF="uguide/tuplets.html">tuplet</A>.
+<LI>
+There is a new
+<A HREF="uguide/param.html#midline">midlinestemfloat parameter</A>,
+which can be set to make chords that are centered on the middle line of the
+staff to have stem up in cases where the neighboring chords haves stems up.
+</UL>
+</P>
 <H2>Mup and Mupmate Version 6.8.1 (released in 2020)</H2>
 <P>
 6.8.1 includes bug fixes for combining of rests into multirests,

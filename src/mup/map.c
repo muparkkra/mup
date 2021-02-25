@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -538,6 +538,7 @@ short allocated[MAXSTAFFS][MAXVOICES];	/* tracks whether to allocate a new
 		to_gs_p->vno = voice;
 		to_gs_p->basictime = from_gs_p->basictime;
 		to_gs_p->is_multirest = from_gs_p->is_multirest;
+		to_gs_p->meas_rpt_type = from_gs_p->meas_rpt_type;
 		to_gs_p->fulltime = from_gs_p->fulltime;
 		to_gs_p->dots = from_gs_p->dots;
 		to_gs_p->is_meas = from_gs_p->is_meas;

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -100,6 +100,7 @@ static int nextacc P((struct NOTE *n_p[MAXVOICES][MAXHAND], int numgrps,
 static void css_alter_vert P((struct NOTE *note_p));
 static void setwithside P((struct GRPSYL *gs_p, struct GRPSYL *ogs_p,
 		struct GRPSYL *v3gs_p));
+static void fixrollroom(struct CHORD *ch_p);
 
 /*
  * Name:        setgrps()
@@ -175,6 +176,9 @@ setgrps()
 				/* set gs1_p to after this staff's groups */
 				gs1_p = procallvoices(mstaff_p, gs1_p);
 			}
+
+			/* make sure there is room for cross group rolls */
+			fixrollroom(ch_p);
 		}
 	}
 
@@ -724,12 +728,6 @@ int contra;		/* do any groups have contradictory accidentals? */
 			if (gs2_p->roll != NOITEM)
 				gs2_p->c[RW] -= ROLLPADDING;
 
-			/* if both are in the same roll, set both to leftmost */
-			if (gs1_p->roll == STARTITEM || gs1_p->roll == INITEM) {
-				gs1_p->c[RW] = MIN(gs1_p->c[RW], gs2_p->c[RW]);
-				gs2_p->c[RW] = gs1_p->c[RW];
-			}
-
 			procgrace(noteptrs, mll_p, staff_p, gs1_p, gs2_p);
 			return;
 		}
@@ -752,12 +750,6 @@ int contra;		/* do any groups have contradictory accidentals? */
 			gs1_p->c[RW] -= ROLLPADDING;
 		if (gs2_p->roll != NOITEM)
 			gs2_p->c[RW] -= ROLLPADDING;
-
-		/* if both are in the same roll, set both to leftmost */
-		if (gs1_p->roll == STARTITEM || gs1_p->roll == INITEM) {
-			gs1_p->c[RW] = MIN(gs1_p->c[RW], gs2_p->c[RW]);
-			gs2_p->c[RW] = gs1_p->c[RW];
-		}
 
 		procgrace(noteptrs, mll_p, staff_p, gs1_p, gs2_p);
 		return;
@@ -4192,6 +4184,71 @@ struct GRPSYL *v3gs_p;	/* voice 3 (used only when gs_p is v1 or v2) */
 	for (idx = 0; idx < gs_p->nwith; idx++) {
 		if (gs_p->withlist[idx].place == PL_UNKNOWN) {
 			gs_p->withlist[idx].place = place;
+		}
+	}
+}
+
+/*
+ * Name:	fixrollroom()
+ *
+ * Abstract:	Make sure each GRPSYL.c[RW] has room for cross group rolls.
+ *
+ * Returns:	void
+ *
+ * Description:	This function is called after all groups in this chord have
+ *		had their RW adjusted when a roll is present.  But if a roll
+ *		goes across multiple groups, the RW of all those groups must be
+ *		set to the westernmost's RW.
+ */
+
+static void
+fixrollroom(ch_p)
+
+struct CHORD *ch_p;
+{
+	struct GRPSYL *gs_p;		/* any group in this chord */
+	struct GRPSYL *startgs_p;	/* STARTITEM of a roll */
+	struct GRPSYL *endgs_p;		/* ENDITEM of a roll */
+	struct GRPSYL *rollgs_p;	/* any group in a roll */
+	float farwest;			/* farthest west RW for a roll */
+
+
+	/* loop through every group in this chord */
+	for (gs_p = ch_p->gs_p; gs_p != 0; gs_p = gs_p->gs_p) {
+		if (gs_p->grpsyl == GS_SYLLABLE) {
+			continue;
+		}
+		if (gs_p->roll != STARTITEM) {
+			continue;
+		}
+
+		/* start of a multigroup roll (single would be LONEITEM) */
+
+		/* find westernmost GRPSYL boundary in roll */
+		startgs_p = gs_p;
+		farwest = 0.0;
+		endgs_p = startgs_p;	/* set laster, but keep lint happy */
+		for (rollgs_p = startgs_p; rollgs_p != 0;
+					rollgs_p = rollgs_p->gs_p) {
+			if (rollgs_p->grpsyl == GS_SYLLABLE) {
+				continue;
+			}
+			if (rollgs_p->c[RW] < farwest) {
+				farwest = rollgs_p->c[RW];
+			}
+			if (rollgs_p->roll == ENDITEM) {
+				endgs_p = rollgs_p;
+				break;
+			}
+		}
+
+		/* set all the roll's GRPSYLs' boundaries to westernmost */
+		for (rollgs_p = startgs_p; rollgs_p != endgs_p->gs_p;
+					rollgs_p = rollgs_p->gs_p) {
+			if (rollgs_p->grpsyl == GS_SYLLABLE) {
+				continue;
+			}
+			rollgs_p->c[RW] = farwest;
 		}
 	}
 }

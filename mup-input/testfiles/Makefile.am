@@ -14,6 +14,24 @@ XFAIL_TESTS = bad-input/chordinput_err.mup \
 	bad-input/input10_err.mup \
 	bad-input/input11_err.mup \
 	bad-input/macparm_err.mup \
+	bad-input/mrpt_defoct_err.mup \
+	bad-input/mrpt_midmeas_err.mup \
+	bad-input/mrpt_mix1_err.mup \
+	bad-input/mrpt_mix2_err.mup \
+	bad-input/mrpt_multirest_err.mup \
+	bad-input/mrpt_nonspace_err.mup \
+	bad-input/mrpt_numstaffs1_err.mup \
+	bad-input/mrpt_numstaffs2_err.mup \
+	bad-input/mrpt_numstaffs3_err.mup \
+	bad-input/mrpt_params_err.mup \
+	bad-input/mrpt_repeat_err.mup \
+	bad-input/mrpt_time1_err.mup \
+	bad-input/mrpt_time2_err.mup \
+	bad-input/mrpt_toofewa2_err.mup \
+	bad-input/mrpt_toofewa4_err.mup \
+	bad-input/mrpt_toofewb1_err.mup \
+	bad-input/mrpt_toofewb2_err.mup \
+	bad-input/mrpt_toofewb4_err.mup \
 	bad-input/restart_err.mup \
 	bad-input/restart_err.mup \
 	bad-input/roll_err.mup \
@@ -35,6 +53,8 @@ SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
 	labels.mup latin1.mup ledger.mup lyrics.mup \
 	macros.mup marks.mup measnum.mup miditest.mup \
 	multcontext.mup multistuff.mup muschar.mup \
+	mrpt_defoct.mup mrpt_numstaffs.mup  mrpt_params1.mup \
+	mrpt_params2.mup mrpt_row.mup mrpt_time.mup \
 	oneline.mup ontheline.mup optsemi.mup \
 	packexp.mup paper_a4.mup paper_a5.mup paper_a6.mup paper_flsa.mup \
 	paper_halfletter.mup paper_legal.mup \

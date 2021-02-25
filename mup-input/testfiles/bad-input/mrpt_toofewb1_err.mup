@@ -1,0 +1,9 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-toofewb1_err.mup"
+	paragraph (13) "This files tests error case of no measure before a mrpt."
+music
+
+1: mrpt;
+bar

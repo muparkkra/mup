@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -206,7 +206,7 @@ print_mainll()
 			break;
 
 		case S_BLOCKHEAD:
-			debug(128, "height %f\n", mll_p->u.blockhead_p->height);
+			debug(128, "height %f, samepage %d\n", mll_p->u.blockhead_p->height, mll_p->u.blockhead_p->samepage);
 			print_printdata(mll_p->u.blockhead_p->printdata_p);
 			break;
 		default:
@@ -332,6 +332,8 @@ struct STAFF *staff_p;		/* which to report on */
 
 	debug(128, "\tstaffno = %d, visible = %s", staff_p->staffno,
 					staff_p->visible == YES ? "y" : "n");
+	debug(128, "\t\tmrptnum = %d, mult_rpt_measnum = %d",
+					staff_p->mrptnum, staff_p->mult_rpt_measnum);
 
 	/* print each group */
 	for ( i = 0; i < MAXVOICES; i++) {
@@ -388,6 +390,8 @@ int vno;		/* voice number or verse number */
 					g_p->fulltime.n, g_p->fulltime.d);
 		(void) fprintf(stderr, "\t\tis_meas = %d, is_multirest = %d\n",
 					g_p->is_meas, g_p->is_multirest);
+		(void) fprintf(stderr, "\t\tmeas_rpt_type = %d\n",
+					g_p->meas_rpt_type);
 		(void) fprintf(stderr, "\t\tc[AN] = %f, c[RN] = %f\n",
 					g_p->c[AN], g_p->c[RN]);
 		(void) fprintf(stderr, "\t\tc[AY] = %f, c[RY] = %f\n",
@@ -448,6 +452,9 @@ int vno;		/* voice number or verse number */
 				(void) fprintf(stderr, "\t\tprinttup=%d, tupside=%s, tupextend=%f\n",
 					g_p->printtup, xlate_place(g_p->tupside),
 					g_p->tupextend);
+				if (g_p->tupletslope != NOTUPLETANGLE) {
+					(void) fprintf(stderr, "\t\ttupletslope=%f\n", g_p->tupletslope);
+				}
 			}
 
 			/* print a bit about "with" lists */
@@ -748,8 +755,10 @@ struct BAR *bar_p;
 		break;
 	}
 
-	debug(128, "\tbartype = %d (%s), endingloc=%d", bar_p->bartype, type,
-				bar_p->endingloc);
+	debug(128, "\tbartype = %d (%s), endingloc=%d, samescore=%d, samepage=%d",
+				bar_p->bartype, type,
+				bar_p->endingloc, bar_p->samescore,
+				bar_p->samepage);
 	debug(128, "\tx = %f, y = %f, mnum = %d",  bar_p->c[AX], bar_p->c[AY],
 				bar_p->mnum);
 	if (bar_p->reh_string != 0) {
@@ -1262,9 +1271,20 @@ char *acclist;
 			}
 		}
 
-		name = get_charname(acclist[a], acclist[a+1]);
-		len = MAX(strlen(name), MAX_ACC_NAME_LEN);
-		strncpy(result + i, name, len);
+		name = get_charname(acclist[a+1], acclist[a]);
+		/* Normally would do a strncpy here, but some compilers warn
+		 * that the len is based on the source size rather than the
+		 * destination size. While that is true, is it done in a way
+		 * that is safe. The author of the warning even agrees
+		 * there are cases that are actually safe, but difficult
+		 * for the warning code to realize they are safe.
+		 * So use memcpy to avoid the warning.
+		 */
+		len = strlen(name);
+		if (len > MAX_ACC_NAME_LEN) {
+			len = MAX_ACC_NAME_LEN;
+		}
+		memcpy(result + i, name, len);
 		i += len;
 	}
 	result[i] = '\0';

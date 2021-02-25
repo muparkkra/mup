@@ -1,0 +1,33 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "numstaffs.mup"
+	paragraph (13) "This files tests that it is allwoed to change the number of staffs in the source and destination of a mprt, as long as the it isn't reduced to the point of eliminating the staff with the mrpt."
+
+score staffs=3
+music
+
+1-3: d;;;;
+bar
+
+1-3: c;;;;
+bar
+
+score staffs=2
+music
+
+1-2: a;;;;
+bar
+
+1-2: g;;;;
+bar
+
+1: quadmrpt;
+bar
+
+score staffs=1
+music
+
+bar
+bar
+bar

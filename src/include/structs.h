@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -174,6 +174,12 @@ struct BLOCKHEAD {
 	struct PRINTDATA *printdata_p;	/* point at first item in list */
 	float c[NUMCTYPE];		/* for _win */
 	float height;			/* of the context instance in inches */
+	/*
+	 * This flag is set to YES if the score/block before where this is and
+	 * after where this is must be kept on the same page due to
+	 * samepagebegin/end.
+	 */
+	short samepage;
 };
 
 /*
@@ -511,12 +517,14 @@ struct SSV {
 	short gridfret;		/* min fret to print next to chord grid */
 	short mingridheight;	/* min number of frets to print in chord grid*/
 	short numbermrpt;	/* should mrpt have number printed above? */
+	short numbermultrpt;	/* should multiple meas rpt have number above?*/
 	short printmultnum;	/* should multirests have no. printed above? */
 	short restsymmult;	/* draw multirests using rest chars? (YES/NO)*/
 	short vscheme;		/* voice scheme */
 	short vcombine[MAXVOICES]; /* voices to be combined if possible, in the
 				    * order to try the combining */
 	short vcombinequal;	/* vcombine qualifer (see definition of VC_*) */
+	short vcombinemeas;	/* vcombine qualifer, consistent across meas? */
 	char *prtime_str1;	/* printedtime: first arbitrary string */
 	char *prtime_str2;	/* printedtime: second arbitrary string */
 	short prtime_is_arbitrary; /* YES = arbitrary, NO = use timerep */
@@ -633,6 +641,10 @@ struct SSV {
 	float beamfact;		/* beam angle = this * regression angle */
 	float beammax;		/* maximum beam angle allowed (degrees) */
 
+	/* these are controlled by TUPLETSLOPE */
+	float tupletfact;	/* bracket angle = this * regression angle */
+	float tupletmax;	/* maximum bracket angle allowed (degrees) */
+
 	float pad;		/* apply on left of each group (stepsizes) */
 				/* internal value = external - 1/3 */
 	float stemlen;		/* stem length in inches */
@@ -652,6 +664,7 @@ struct SSV {
 	short begproshort;
 	short endproshort;
 
+	short midlinestemfloat;	/* stems of notes on middle line float? YES/NO*/
 	short defoct;		/* default octave number, 0 to 9 */
 	short noteinputdir;	/* UP/DOWN/UNKNOWN: how to set notes' octaves */
 	RATIONAL timeunit;	/* note length to use when none specified */
@@ -668,6 +681,7 @@ struct SSV {
 	char *emptymeas;	/* input to use when no voice info is given */
 	short extendlyrics;	/* automatically put "_" on syllables? */
 	short cue;		/* should this voice be all cues? */
+	short defaultphraseside;/* PL_ABOVE/PL_BELOW/PL_UNKNOWN */
 };
 
 /*
@@ -773,6 +787,19 @@ struct BAR {
 	short mnum;		/* measure number, 0 unless set by the user */
 
 	short endending_type;	/* closed or open at end: values are EE_* */
+
+	/*
+	 * This flag is set to YES if the measures before and after this bar
+	 * line must be kept on the same score due on samescorebegin/end.
+	 */
+	short samescore;
+
+	/*
+	 * This flag is set to YES if the score/block before where this is and
+	 * after where this is must be kept on the same page due to
+	 * samepagebegin/end.
+	 */
+	short samepage;
 
 	/*
 	 * These start linked lists, one structure for each staff at this
@@ -1023,6 +1050,8 @@ struct STAFF {
 	 * measures it is 0.
 	 */
 	short mrptnum;
+
+	short mult_rpt_measnum;	/* counts which measure of dblmrpt or quadmrpt*/
 };
 
 
@@ -1355,19 +1384,27 @@ struct GRPSYL {
 	 * 
 	 * For is_meas==YES groups, basictime is the same as the preceding for
 	 * measure rests, where it just tells which rest to draw, but for ms
-	 * and mrpt it is arbitrarily set to -1.
+	 * and all measures of measure repeats of any kind it is arbitrarily
+	 * set to -1.
 	 */
 	short basictime;
 
 	/*
 	 * is_meas tells whether an "m" was used with the time in the input.
 	 * This is used for "measure" rests, spaces, or repeats (mr, ms, mrpt).
+	 * It is also used for all measures of a dblmrpt and quadmrpt.
 	 * (Only mr can have a normal time value in addition to the "m"; it is
 	 * stored as the basictime (defaults to 1) and tells which rest to
 	 * draw.)  Their fulltime is the time signature.  mr and mrpt are
 	 * centered in the measure.
 	 */
 	short is_meas;
+
+	/*
+	 * MRT_NONE, MRT_SINGLE, MRT_DOUBLE, MRT_QUAD.  Note that in the
+	 * double and quad cases, it is set to that in every measure of it.
+	 */
+	short meas_rpt_type;	/* MRT_* */
 
 	short is_multirest;	/* is this a multirest, YES or NO */
 
@@ -1400,6 +1437,7 @@ struct GRPSYL {
 
 	short beamloc;		/* none, start, inner, end (only note groups)*/
 	float beamslope;	/* user specified angle of beam in degrees */
+	float tupletslope;	/* user specified angle of bracket in degrees */
 	short autobeam;		/* if autobeaming applies to this group, value
 				 * can be NOITEM, STARITEM, INITEM, or ENDITEM*/
 

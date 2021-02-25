@@ -1,0 +1,120 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-defoct_err.mup"
+	paragraph (13) "This files tests that defoct during a mrpt is allowed, if it is not relevant."
+
+score
+	staffs=2
+music
+
+// On a different staff
+1: c;;;;
+bar
+
+staff 2 defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+staff 2 defoct=4
+music
+bar
+bar
+
+// Changed at score level but overridden at staff
+staff 1 defoct=4
+music
+
+1: c;;;;
+bar
+
+score defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+score defoct=4
+music
+bar
+bar
+
+// Changed at score level but overridden at voice
+voice 1 1 defoct=4
+music
+
+1: c;;;;
+bar
+
+score defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+score defoct=4
+music
+bar
+bar
+
+music
+// Changed at staff level, but overridden at voice
+
+voice 1 1 defoct=4
+music
+
+1: c;;;;
+bar
+
+staff 1 defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+staff 1 defoct=4
+music
+bar
+bar

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -151,3 +151,13 @@
 #define C_SLASHHEAD		(%)	/* hollow slash note head */
 #define C_FILLSLASHHEAD		(%)	/* filled slash note head */
 #define C_BLANKHEAD		(%)	/* blank note head */
+#define C_PERFMAIOR		(%)	/* perfectum maior */
+#define C_PERFMINOR		(%)	/* perfectum minor */
+#define C_IMPERFMAIOR		(%)	/* imperfectum maior */
+#define C_IMPERFMINOR		(%)	/* imperfectum minor */
+#define C_PERFMAIORDIM		(%)	/* perfectum maior diminutum */
+#define C_PERFMINORDIM		(%)	/* perfectum minor diminutum */
+#define C_IMPERFMAIORDIM	(%)	/* imperfectum maior diminutum */
+#define C_IMPERFMINORDIM	(%)	/* imperfectum minor diminutum */
+#define C_DBLMEASRPT		(%)	/* double measure repeat */
+#define C_QUADMEASRPT		(%)	/* quadruple measure repeat */

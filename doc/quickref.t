@@ -22,7 +22,7 @@
 .ps +1
 .ce
 .ft B
-Mup Version 6.8.1 Statement Summary
+Mup Version 6.9 Statement Summary
 .sp
 \fIcontext\fR
 \fIstaffs voices & staffs voices\fB:\fI chord \fB; \fI....\fR
@@ -33,6 +33,8 @@ Mup Version 6.8.1 Statement Summary
 \fBmultirest \fInum\fR
 \fBnewscore leftmargin=\fInum\fB rightmargin=\fInum\fR 
 \fBnewpage leftmargin=\fInum\fB rightmargin=\fInum\fR
+\fBsamescorebegin  \fI....measures of input... \fBsamescoreend\fR
+\fBsamepagebegin  \fI....measures of input or blocks... \fBsamepageend\fR
 \fIfontfamily font \fB(\fIsize\fB) \fImodifier place staffs \fBdist\fI num \fB! \fBalign \fInum \fB: \fIbeat \fB"\fItext\fB" til \fItil_value\fB; \fI....
 \fBmussym (\fIsize\fR) \fIplace staffs \fB: \fIbeat \fB"\fImus_symbol\fB" til \fItil_value\fB; \fI....\fR
 \fIlinetype \fBphrase \fIplace staffs \fB: \fIbeat \fBtil \fItil_value\fB; \fI....\fR
@@ -73,7 +75,7 @@ Mup Version 6.8.1 Statement Summary
 	by how many grace notes to back up from there, as a negative number in parentheses,
 	and an offset as a signed number in square brackets
 \fIchord	\fB<<\fIparm_contxt parameter=value\fB>> [\fIchord_style\fB] \fItime_value pitch(es) note_attributes inter-chord_attr\fR
-	Tuplets specified by   \fB{ \fIchord \fB; \fI.... \fB} \fIside num tupstyle, time_value \fB;\fR
+	Tuplets specified by   \fB{ \fIchord \fB; \fI.... \fB} \fIside num tupstyle, time_value \fBslope \fInum\fB;\fR
 	On tablature staff, the \fIpitch\fR is: \fIstring fret \fB"\fIbend\fB"\fR
 \fIbend	\fBfull\fR, or \fInum\fR and/or a fraction as \fInum\fB/\fInum\fR
 \fIchord_style	\fRone or more (semicolon-separated) from the following:\fR
@@ -159,6 +161,7 @@ Mup Version 6.8.1 Statement Summary
 \fItext	\fRarbitrary text; use \fB\e"\fR to include quotes, \fB\ef(\fIfontfamily font\fB)\fR to change font, \fB\es(\fInum\fB)\fR to change size,
 	\fB\e(\fIxx\fB)\fR to include special characters, \fB\ev(\fInum\fB)\fR for vertical motion, \fB\e:\fR to toggle piling, \fB\e|\fP or \fB\e^\fR for alignment
 \fItime_value	\fB1/8\fR, \fB1/4\fR, \fB1/2\fR, \fB1\fR, \fB2\fR, \fB4\fR, \fB8\fR, \fB16\fR, \fB32\fR, \fB64\fR, \fB128\fR, or \fB256\fR with optional dots, \fB+\fR or \fB-\fR; or \fBm\fR (measure)
+	or (only with rpt) \fBdbl m\fR or \fBquad m\fP
 \fItieslur_style	\fBdotted\fR, \fBdashed\fR, or omitted
 \fItil_value	num \fRor\fI num\fBm+\fInum\fR, plus optional \fB(-\fInum\fB)\fR and/or signed \fIsteps\fR in square brackets
 \fItuplet	\fRSee \fIchord\fR
@@ -238,7 +241,7 @@ _
 .ce
 \fBMup Parameters\fR
 .ll +0.5i
-.sp 2
+.sp
 .ps -2
 .vs +2
 .TS
@@ -272,6 +275,7 @@ clef	\(bu	\(bu			T{
 T}	treble
 cue	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 defaultkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
+defaultphraseside	\(bu	\(bu	\(bu		\fBabove\fP, \fBbelow\fP, or nothing	
 defoct	\(bu	\(bu	\(bu		0 to 9	based on clef
 dist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	2.0
 division	\(bu				MIDI division, 1 to 1536 (ticks per quarter note)	192
@@ -323,11 +327,13 @@ measnumfontfamily	\(bu				T{
 T}	times
 measnumsize	\(bu				1 to 100 (points)	11
 measnumstyle	\(bu				\fBboxed\fR, \fBcircled\fR, or \fBplain\fR	plain
+midlinestemfloat	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 minalignscale	\(bu	\(bu			0.1 to 1.0	0.667
 mingridheight	\(bu	\(bu			2 to 99	4
 noteheads	\(bu	\(bu	\(bu		string containing 1 or 7 headshape names	"norm"
 noteinputdir	\(bu	\(bu	\(bu		\fBup\fP, \fBdown\fR, or \fBany\fP	any
 numbermrpt	\(bu	\(bu			\fBy\fR or \fBn\fR	y
+numbermultrpt	\(bu	\(bu			\fBy\fR of \fBn\fR	y
 ontheline	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	y
 packexp	\(bu				0.0 to 1.0	0.8
 packfact	\(bu				0.0 to 10.0	1.0
@@ -376,10 +382,11 @@ timeunit	\(bu	\(bu	\(bu		\fItime_value\fR (can include dots)	\fID\fR of time sig
 topmargin	\(bu				0.0 to pageheight minus 0.5 inches	0.5 inches
 transpose	\(bu	\(bu			\fBup\fR or \fBdown\fR, followed by \fIinterval\fR and \fInum\fR, then optional \fBnotes\fR or \fBchords\fR	up perfect 1
 tuning	\(bu				\fBequal\fR, \fBpythagorean\fR, or \fBmeantone\fR	equal
+tupletslope	\(bu	\(bu	\(bu		0.1 to 1.0 for factor, 0.0 to 45.0 for max slope	0.7, 20.0
 units	\(bu				\fBinches\fR or \fBcm\fR	inches
 useaccs	\(bu	\(bu			\fBn\fR, \fBy none\fR, \fBy all\fR, \fBy nonnat\fR, \fBy noneremuser\fR, \fBy nonnatremuser\fR	n
 visible	\(bu	\(bu	\(bu		\fBy\fR, \fBn\fR, or \fBwhereused\fR	y
-vcombine	\(bu	\(bu			voice list plus \fBnooverlap\fR, \fBshareone\fR, \fBstepsapart\fR, \fBoverlap\fR, \fBrestsonly\fR, or nothing	nothing
+vcombine	\(bu	\(bu			\s-1\fIvoices\fR then optional \fBnooverlap\fR, \fBshareone\fR, \fBstepsapart\fR, \fBoverlap\fR, or \fBrestsonly\fR, and \fBbymeas\fR\s+1	nothing
 vscheme	\(bu	\(bu			\fB1\fR, \fB2o\fR, \fB2f\fR, \fB3o\fR, or \fB3f\fR	1
 warn	\(bu				\fBy\fR or \fBn\fR	y
 withfont	\(bu	\(bu	\(bu		\fBrom\fR, \fBbold\fR, \fBital\fR, or \fBboldital\fR	rom
@@ -398,7 +405,7 @@ Music symbols can be used in text strings by using \fB\e(\fIsymbol_name\fB)\fR. 
 .if \n(.P .PSPIC -L muschar.ps
 .po -0.5i
 .ps +1
-.sp 0.5
+.sp -4
 .ce 5 \}
 .el \{
 .sp

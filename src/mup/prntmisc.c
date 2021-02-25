@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1817,12 +1817,24 @@ pr_atend()
 	space = gridspace(staff);
 	column = 0;
 
-	/* Find the last FEED. We use that to get top/bottom blocks */
-	for (main_feed_p = Mainlltc_p; main_feed_p->str != S_FEED;
-					main_feed_p= main_feed_p->prev) {
-		;
+ 	/* Find the last page feed. We use that to get top/bottom blocks.
+	 * Note that if there is only a single page, that FEED will not
+	 * have pagefeed set, so we use the last one we find, which since we
+	 * are going backwards in the list, will be the first in the list. */
+ 	feed_p = 0;
+ 	for (main_feed_p = Mainlltc_p; main_feed_p != 0 ;
+ 				main_feed_p = main_feed_p->prev) {
+ 		if (main_feed_p->str == S_FEED) {
+ 			feed_p = main_feed_p->u.feed_p;
+ 			if (main_feed_p->u.feed_p->pagefeed == YES) {
+ 				break;
+ 			}
+ 		}
+ 	}
+ 	if (feed_p == 0) {
+ 		pfatal("Unable to find page feed in pr_atend");
 	}
-	feed_p = main_feed_p->u.feed_p;
+
 	for (g = 0; g < Atend_info.grids_used; g++) {
 		grid_p = Atend_info.grid_p[g];
 		gridsize(grid_p, staff, &north, (float *) 0, (float *) 0, (float *) 0);

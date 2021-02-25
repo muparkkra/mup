@@ -1,0 +1,12 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-toofewb2_err.mup"
+	paragraph (13) "This files tests error case of too few measures before a dbl mrpt."
+music
+
+1: c;;;;
+bar
+
+1: dblmrpt;
+bar

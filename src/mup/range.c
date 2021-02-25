@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -54,6 +54,7 @@
 
 
 static void free_rangelist P((struct RANGELIST *list_p));
+static void save_vno_common P((int begin, int end, struct RANGELIST **list_p_p));
 
 
 
@@ -150,13 +151,39 @@ int begin;	/* first vno */
 int end;	/* last vno */
 
 {
+	save_vno_common(begin, end, &Vnorange_p);
+}
+
+/* This is just like save_vno_range(), but for vcombine range. Originally,
+ * that re-used the same list, but now it can be changed mid-measure,
+ * so a separate list must be used. */
+
+void
+save_vcombine_range(begin, end)
+
+int begin;
+int end;
+
+{
+	save_vno_common(begin, end, &VCrange_p);
+}
+
+
+static void
+save_vno_common(begin, end, list_p_p)
+
+int begin;
+int end;
+struct RANGELIST **list_p_p;
+
+{
 	struct RANGELIST *new_p;	/* to store vno info */
 
 
 	/* allocate a new struct and link onto head of list */
 	CALLOC(RANGELIST, new_p, 1);
-	new_p->next = Vnorange_p;
-	Vnorange_p = new_p;
+	new_p->next = *list_p_p;
+	*list_p_p = new_p;
 
 	/* fill in other fields */
 	new_p->begin = (short) begin;
@@ -186,6 +213,15 @@ free_vnorange()
 	Vnorange_p = (struct RANGELIST *) 0;
 }
 
+
+/* free vcombine range list */
+
+void
+free_vcombine_range()
+{
+	free_rangelist(VCrange_p);
+	VCrange_p = (struct RANGELIST *) 0;
+}
 
 
 

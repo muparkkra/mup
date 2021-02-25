@@ -1,0 +1,29 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "numsaffs3_err.mup"
+	paragraph (13) "This files tests that it is an error if there are too few staffs coming into a mrpt, even if the number if increased to enough during it."
+
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+score staffs=2
+music
+
+1-2: e;;;;
+bar
+
+1-2: f;;;;
+bar
+
+2: quadmrpt;
+bar
+bar
+1-2: ms;
+bar
+bar

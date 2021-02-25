@@ -1,0 +1,29 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "numstaffs2_err.mup"
+	paragraph (13) "This files tests that it is not allowed to change the number of staffs during the destination of a mrpt to less than the staff the mrpt is on."
+
+score
+	staffs=2
+music
+
+1-2: c;;;;
+bar
+
+1-2: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1-2: f;;;;
+bar
+
+2: quadmrpt;
+bar
+bar
+bar
+score staffs=1
+music
+bar

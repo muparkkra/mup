@@ -1,0 +1,40 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-key1_err.mup"
+	paragraph (13) "This file tests that it is not allowed to change key, clef, transpose, addtranpose, or vscheme during a mrpt."
+
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+score
+	key=3&
+	clef=tenor
+	vscheme=2o
+	transpose=up perfect 4
+	addtranspose=down perfect 5
+music
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+bar
+score
+	key=2&
+	clef=alto
+	vscheme=2f
+	transpose=up perfect 5
+	addtranspose=down perfect 4
+music
+bar
+bar

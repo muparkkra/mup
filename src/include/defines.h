@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -321,6 +321,21 @@
 #define	MINBEAMANGLE	(-MAXBEAMMAX)
 #define	MAXBEAMANGLE	(MAXBEAMMAX)
 #define	NOBEAMANGLE	(2 * MAXBEAMANGLE)	/* something out of range */
+
+/* number to multiply linear regression slope by to get tup bracket's slope */
+#define MINTUPLETFACT	(0.0)
+#define MAXTUPLETFACT	(1.0)
+#define DEFTUPLETFACT	(0.7)
+
+/* maximum tuplet bracket angle allowed, in degrees */
+#define MINTUPLETMAX	(0.0)
+#define MAXTUPLETMAX	(45.0)
+#define DEFTUPLETMAX	(20.0)
+
+/* angle of bracket specified by the "slope" tuplet attribute */
+#define	MINTUPLETANGLE	(-MAXTUPLETMAX)
+#define	MAXTUPLETANGLE	(MAXTUPLETMAX)
+#define	NOTUPLETANGLE	(2 * MAXTUPLETANGLE)	/* something out of range */
 
 /* padding to be applied on the left of every group (and the right of the */
 /* last group in the measure), in stepsizes */
@@ -695,6 +710,14 @@
 #define	GC_NOTES	(0)
 #define	GC_REST		(1)
 #define	GC_SPACE	(2)
+
+/*
+ * Define the types of measure repeats.
+ */
+#define	MRT_NONE	(0)	/* not a measure repeat */
+#define	MRT_SINGLE	(1)	/* mrpt */
+#define	MRT_DOUBLE	(2)	/* dblmrpt */
+#define	MRT_QUAD	(4)	/* quadmrpt */
 
 /*
  * Define the time values a group can have.  Only note groups can be other than
@@ -1729,6 +1752,11 @@
  */
 #define	HAS_STEM_ON_RIGHT(gs_p)	( STEMSIDE_RIGHT(gs_p) && STEMMED(gs_p) )
 #define	HAS_STEM_ON_LEFT(gs_p)	( STEMSIDE_LEFT(gs_p)  && STEMMED(gs_p) )
+
+#define HALF_BEAM_THICKNESS(gs_p)				\
+	((W_WIDE * POINT / 2.0) *				\
+	(gs_p->grpsize == GS_NORMAL ? 1.0 : SM_FACTOR) *	\
+	svpath(gs_p->staffno, STAFFSCALE)->staffscale)
 
 /*
  * This macro is to be used as in this example:

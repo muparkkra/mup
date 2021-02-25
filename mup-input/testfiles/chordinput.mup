@@ -79,6 +79,31 @@ bar
 [1 & 2; 1 & 3]: m rpt rpt;
 bar
 
+
+newscore
+
+rom above all: 1 "test dbl and quad";
+[1& 2; 1 & 3]: 2cg;;
+bar
+
+[1 & 2; 1 & 3]: dblm rpt rpt;
+bar
+
+1-3: ms;
+bar
+
+[1 & 2; 1 & 3]: quad m rpt rpt;
+bar
+
+1-3: ms;
+bar
+
+1-3: ms;
+bar
+
+1-3: ms;
+bar
+
 newscore
 
 [1 & 2; 1 & 3]: c<e>cdashed<e>;ee;c<e>cdotted<e>;ee;

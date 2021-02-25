@@ -1,0 +1,81 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-defoct_err.mup"
+	paragraph (13) "This files tests that changing defoct during a mrpt is not allowed."
+
+music
+
+1: c;;;;
+bar
+
+score defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+score defoct=4
+music
+bar
+bar
+
+// now at staff level
+1: c;;;;
+bar
+
+staff 1 defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+staff 1 defoct=4
+music
+bar
+bar
+
+// now at voice level
+1: c;;;;
+bar
+
+voice 1 1 defoct=3
+music
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+
+bar
+voice 1 1 defoct=4
+music
+bar
+bar

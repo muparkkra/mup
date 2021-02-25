@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1223,7 +1223,15 @@ Run::Run_Mup(bool midi, Action action)
 		len = strlen(mup_output);
 		// Need one byte for null and one because pdf is longer than ps
 		pdf_filename = (char *) malloc(len + 2);
-		strncpy(pdf_filename, mup_output, len - 2);
+		/* Normally would do a strncpy here, but some compilers warn
+		 * that the len is based on the source size rather than the
+		 * destination size. While that is true, is it done in a way
+		 * that is safe. The author of the warning even agrees
+		 * there are cases that are actually safe, but difficult
+		 * for the warning code to realize they are safe.
+		 * So use memcpy to avoid the warning.
+		 */
+		memcpy(pdf_filename, mup_output, len - 2);
 		strcpy(pdf_filename + len - 2, "pdf");
 
 		// Get the name of the directory where the input file is.

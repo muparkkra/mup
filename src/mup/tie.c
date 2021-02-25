@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -568,13 +568,13 @@ char *type;		/* "tie", "slur", "slide", or "bend",
 						return(0);
 					}
 
-					/* We treat bends like accidentals,
-					 * since they too "alter" the pitch,
-					 * albeit only in sharp direction.
-					 * So target of tie cannot have bend. */
+					/* Ties and bends are sort of the
+					 * same thing, so having both seems
+					 * redundant, so give a warning
+					 * for that. */
 					if (HASBEND(*note2_p) ){
 						l_warning(gs_p->inputfile, gs_p->inputlineno,
-						"second note of tie not allowed to have a bend");
+						"should not have both tie and bend");
 						return(0);
 					}
 				}

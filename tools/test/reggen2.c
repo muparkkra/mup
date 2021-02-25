@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -145,6 +145,8 @@ short scorefeed;	/* % of time to use newscore */
 short pagefeed;		/* % of time to use newpage */
 short marginoverride;	/* % of time to override margin on feeds */
 short restart;		/* % of time to use restart */
+short samescore;	/* % of time to use samescore zone */
+short samepage;		/* % of time to use samepage zone */
 short dotted;		/* % of time to use dotted notes */
 short dbldotted;	/* % of time to use double dotted notes */
 short timedflt;		/* % of time to use time default value if possible */
@@ -240,6 +242,11 @@ short saveparms;	/* % of time to use saveparms */
 short restoreparms;	/* % of time to use restoreparms */
 short barstyle;		/* % of time to generate barstyle parameter */
 short subbarstyle;	/* % of time to generate subbarstyle parameter */
+short midlinestemfloat; /* % of the time to generate midlinestemfloat parameter */
+short beamslope;	/* % of the time to generate beamslope parameter */
+short tupletslope;	/* % of the time to generate tupletslope parameter */
+short numbermultrpt;	/* % of the time to generate numbermultrpt parameter */
+short defaultphraseside; /* % of the time to generate defaultphraseside param */
 
 short maxnotes;		/* notes per voice */
 short maxsize;		/* maxsize to actually use */
@@ -614,6 +621,7 @@ struct LIST Paramlist[] = {
 	{ "clef", 0 },
 	{ "cue", 0 },
 	{ "defaultkeymap", 0 },
+	{ "defaultphraseside", 0 },
 	{ "defoct", 0 },
 	{ "dist", 0 },
 	{ "division", 0 },
@@ -647,9 +655,11 @@ struct LIST Paramlist[] = {
 	{ "measnumfont", 0 },
 	{ "measnumfontfamily", 0 },
 	{ "measnumsize", 0 },
+	{ "midlinestemfloat", 0 },
 	{ "minalignscale", 0 },
 	{ "mingridheight", 0 },
 	{ "numbermrpt", 0 },
+	{ "numbermultrpt", 0 },
 	{ "ontheline", 0 },
 	{ "packexp", 0 },
 	{ "packfact", 0 },
@@ -687,6 +697,7 @@ struct LIST Paramlist[] = {
 	{ "topmargin", 0 },
 	{ "transpose", 0 },
 	{ "tuning", 0 },
+	{ "tupletslope", 0 },
 	{ "units", 0 },
 	{ "useaccs", 0 },
 	{ "carryaccs", 0 },
@@ -707,6 +718,14 @@ struct LIST Vcombinelist[] = {
 	{ "3, 2, 1 ", 0 },
 	{ "2,1,3", 0 },
 	{ "2", 0 }
+};
+
+struct LIST Vcombquallist[] = {
+	{ "", 0 },
+	{ "nooverlap", 0 },
+	{ "shareone", 0 },
+	{ "overlap", 0 },
+	{ "restsonly", 0 }
 };
 
 struct LIST Pagesizelist[] = {
@@ -875,6 +894,8 @@ int child;		/* PID of child process */
 FILE *outf;		/* output file */
 int In_ending;		/* if currently doing an ending */
 short Pedstate[MAXSTAFFS + 1];	/* ped state, 0 off, 1 on */
+short Samescore_inprog = NO;
+short Samepage_inprog = NO;
 
 /* argv processing globals */
 extern int optind;
@@ -1364,6 +1385,31 @@ gen_score_ssv()
 	if (sometimes(subbarstyle)) {
 		gen_subbarstyle();
 	}
+	if (sometimes(midlinestemfloat)) {
+		out("midlinestemfloat=");
+		out(sometimes(50) ? "y" : "n");
+		newline();
+	}
+	if (sometimes(beamslope)) {
+		out("beamslope=");
+		outfmt("0.%d, %d", myrandom(1, 9), myrandom(0, 45));
+		newline();
+	}
+	if (sometimes(tupletslope)) {
+		out("tupletslope=");
+		outfmt("0.%d, %d", myrandom(1, 9), myrandom(0, 45));
+		newline();
+	}
+	if (sometimes(numbermultrpt)) {
+		out("numbermultrpt=");
+		out(sometimes(50) ? "y" : "n");
+		newline();
+	}
+	if (sometimes(defaultphraseside)) {
+		out("defaultphraseside=");
+		out(sometimes(50) ? "above" : "below");
+		newline();
+	}
 }
 
 
@@ -1603,6 +1649,11 @@ gen()
 	if (sometimes(vcombine)) {
 		outfmt("vcombine = %s", picklist(Vcombinelist,
 			sizeof(Vcombinelist) / sizeof(struct LIST), -1));
+		outfmt(" %s ", picklist(Vcombquallist,
+			sizeof(Vcombquallist) / sizeof(struct LIST), -1));
+		if (sometimes(10)) {
+			out(" bymeas");
+		}
 		newline();
 
 	}
@@ -1964,6 +2015,12 @@ int staff;
 		return(0);
 	}
 	if (sometimes(measrpt)) {
+		if (sometimes(20)) {
+			out("dbl");
+		}
+		else if (sometimes(15)) {
+			out("quad");
+		}
 		out("mrpt;");
 		return(0);
 	}
@@ -2436,8 +2493,18 @@ genbar(int feed_ok)
 	newline();
 
 	if (feed_ok) {
-		/* adds feeds sometimes */
-		if (sometimes(scorefeed)) {
+		/* adds feeds and similar things sometimes */
+		if (Samescore_inprog == YES && sometimes(55)) {
+			out("samescoreend");
+			newline();
+			Samescore_inprog = NO;
+		}
+		if (Samepage_inprog == YES && sometimes(55)) {
+			out("samepageend");
+			newline();
+			Samepage_inprog = NO;
+		}
+		else if (sometimes(scorefeed)) {
 			out("newscore");
 			if (sometimes(marginoverride)) {
 				outfmt(" rightmargin %d.%d", myrandom(0, 2), myrandom(0,100) );
@@ -2466,6 +2533,18 @@ genbar(int feed_ok)
 		else if (sometimes(restart)) {
 			out("restart");
 			newline();
+		}
+		else {
+			if (sometimes(samescore)) {
+				out("samescorebegin");
+				newline();
+				Samescore_inprog = YES;
+			}
+			if (sometimes(samepage)) {
+				out("samepagebegin");
+				newline();
+				Samepage_inprog = YES;
+			}
 		}
 	}
 
@@ -3935,6 +4014,15 @@ initvals()
 	restoreparms = myrandom(40, 60);
 	barstyle = myrandom(10, 25);
 	subbarstyle = myrandom(5, 15);
+	midlinestemfloat = myrandom(2, 10);
+	beamslope = myrandom(3, 12);
+	tupletslope = myrandom(3, 12);
+	numbermultrpt = myrandom(3, 12);
+	defaultphraseside = myrandom(5, 15);
+	samescore = myrandom(2, 7);
+	samepage = myrandom(2, 7);
+	Samescore_inprog = NO;
+	Samepage_inprog = NO;
 
 	for (n = 1; n <= MAXSTAFFS; n++) {
 		Pedstate[n] = 0;

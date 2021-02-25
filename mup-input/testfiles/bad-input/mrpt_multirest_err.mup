@@ -1,0 +1,27 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-multirest_err.mup"
+	paragraph (13) "It is not allowed to have a multirest in the source of aa mrpt."
+music
+
+multirest 5
+bar
+
+1: mrpt;
+bar
+
+1: c;;;;
+bar
+
+multirest 2
+bar
+
+1: d;;;;
+bar
+
+1: quad m rpt;
+bar
+bar
+bar
+bar

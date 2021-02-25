@@ -1,0 +1,23 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-toofewa1_err.mup"
+	paragraph (13) "This files tests error case of too few measures after a quad mrpt."
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+bar
+bar

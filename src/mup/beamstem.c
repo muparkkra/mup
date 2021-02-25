@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1085,7 +1085,7 @@ struct GRPSYL *ogs_p;		/* first group in other voice's GRPSYL list */
 	if (slope_forced) {
 		b1 = forced_slope;
 	} else {
-		b1 = adjslope(start_p, b1, NO);
+		b1 = adjslope(start_p, b1, NO, BEAMSLOPE);
 	}
 
 	/*
@@ -2740,16 +2740,35 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 	float numeast, numwest;	/* horizontal coords of the tuplet number */
 	float numvert;		/* vertical edge of number closest to staff */
 	float height;		/* height of the tuplet number */
+	float mindist;		/* min distance from center line to bracket */
+	int slope_forced;	/* is the slope of the bracket forced? */
 	int halfstaff;		/* half the height of staff, in stepsizes */
 	float vert[2];		/* vertical coords of two groups */
 	int n;			/* loop variable */
 
 
+	slope_forced = NO;	/* default internal forcing to NO */
+
 	if (forcehorz == YES || num <= 1) {
-		/* there's one group or none, so simply force horizontal */
+		/*
+		 * Either the caller wants to force horizontal, or there's one
+		 * group or none so only horizontal makes sense.
+		 */
 		b1 = 0.0;
+		slope_forced = YES;
+	} else if (fabs(start_p->tupletslope - NOTUPLETANGLE) >= 0.001) {
+		/*
+		 * The user is forcing the angle, so use that.  Note: this won't
+		 * conflict with the above zero forcing because:  1) forcehorz
+		 * is YES only when previous calls returned opposite signed
+		 * slope or zero, and that can't happen if the user is forcing
+		 * nonzero slope, and 2) for <= 1 group we must go with the 0
+		 * regardless of the user.
+		 */
+		b1 = tan(brackstart_p->tupletslope * PI / 180.0);
+		slope_forced = YES;
 	} else if (tupconcave(&b1, coord, num, start_p, last_p, nextfunc_p)) {
-		; /* use the b1 that was returned */
+		; /* try to use the b1 that was returned, but don't force it */
 	} else {
 		/*
 		 * Use linear regression to find the best-fit line through the
@@ -2795,6 +2814,7 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 		if (b1 * b1_note <= 0.0) {
 			/* signs are different, or one of them is zero */
 			b1 = 0.0;	/* force horizontal */
+			slope_forced = YES;
 		} else {
 			/* take the average of the slopes */
 			b1 = (b1 + b1_note) / 2.0;
@@ -2811,6 +2831,7 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 		/* if first and last groups are equal, force horizontal */
 		if (start_p->c[coord] == last_p->c[coord]) {
 			b1 = 0.0;
+			slope_forced = YES;
 		}
 
 		/* if repeating pattern of two coords, force horizontal */
@@ -2824,6 +2845,7 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 			}
 			if (n == num) {
 				b1 = 0.0;
+				slope_forced = YES;
 			}
 		}
 	}
@@ -2841,13 +2863,11 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 
 	/*
 	 * The original line derived by linear regression must be adjusted in
-	 * certain ways.  First, don't let the slope exceed plus or minus 0.7,
+	 * certain ways, but only if it is not being forced.
 	 * since that would look bad.
 	 */
-	if (b1 > 0.7) {
-		b1 = 0.7;
-	} else if (b1 < -0.7) {
-		b1 = -0.7;
+	if (slope_forced == NO) {
+		b1 = adjslope(start_p, b1, NO, TUPLETSLOPE);
 	}
 
 	/*
@@ -2892,19 +2912,45 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 			? 4 : 1;
 
 	if (tupgetsbrack(brackstart_p)) {
-		if (coord == RN) {
-			if (starty < halfstaff * Stepsize + Tupheight) {
-				starty = halfstaff * Stepsize + Tupheight;
+		/* how close a bracket can come to the center staff line */
+		mindist = halfstaff * Stepsize + Tupheight;
+
+		if (slope_forced) {
+			/* move both ends the same amount to preserve slope */
+			if (coord == RN) {
+				if (starty < mindist) {
+					endy += mindist - starty;
+					starty = mindist;
+				}
+				if (endy < mindist) {
+					starty += mindist - endy;
+					endy = mindist;
+				}
+			} else if (coord == RS) {
+				if (starty > -mindist) {
+					endy -= starty + mindist;
+					starty = -mindist;
+				}
+				if (endy > -mindist) {
+					starty -= endy + mindist;
+					endy = -mindist;
+				}
 			}
-			if (endy < halfstaff * Stepsize + Tupheight) {
-				endy = halfstaff * Stepsize + Tupheight;
-			}
-		} else if (coord == RS) {
-			if (starty > -halfstaff * Stepsize - Tupheight) {
-				starty = -halfstaff * Stepsize - Tupheight;
-			}
-			if (endy > -halfstaff * Stepsize - Tupheight) {
-				endy = -halfstaff * Stepsize - Tupheight;
+		} else {
+			if (coord == RN) {
+				if (starty < mindist) {
+					starty = mindist;
+				}
+				if (endy < mindist) {
+					endy = mindist;
+				}
+			} else if (coord == RS) {
+				if (starty > -mindist) {
+					starty = -mindist;
+				}
+				if (endy > -mindist) {
+					endy = -mindist;
+				}
 			}
 		}
 	}
@@ -2912,8 +2958,10 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 	/*
 	 * If y at the ends of the bracket only differs by less than 2 points,
 	 * set end equal to the start to avoid a jagged look.
+	 * But don't do it if the slope is forced.
 	 */
-	if (endy - starty < 2 * POINT && endy - starty > -2 * POINT) {
+	if (slope_forced == NO && endy - starty <  2 * POINT &&
+				  endy - starty > -2 * POINT) {
 		endy = (starty + endy) / 2.;
 		starty = endy;
 	}
@@ -3087,13 +3135,15 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 	/* check every group we care about */
 	for (n = 0, gs_p = start_p; n < num; n++, gs_p = (*nextfunc_p)(gs_p)) {
 		if (coord == RN || coord == AN) {
-			/* if above the line, not concave */
-			if (gs_p->c[coord] > b1 * gs_p->c[AX] + b0) {
+			/* if above the line, not concave, but allow a fudge */
+			/* factor so that roundoff error won't force "NO" */
+			if (gs_p->c[coord] - 0.001 > b1 * gs_p->c[AX] + b0) {
 				return (NO);
 			}
 		} else {	/* RS or AS */
-			/* if below the line, not concave */
-			if (gs_p->c[coord] < b1 * gs_p->c[AX] + b0) {
+			/* if below the line, not concave, but allow a fudge */
+			/* factor so that roundoff error won't force "NO" */
+			if (gs_p->c[coord] + 0.001 < b1 * gs_p->c[AX] + b0) {
 				return (NO);
 			}
 		}

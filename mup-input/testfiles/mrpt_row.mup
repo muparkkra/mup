@@ -1,0 +1,44 @@
+//!Mup-Arkkra
+header
+	title bold (17) "mrpt-row.mup"
+	paragraph (13) "This files tests having various combinatios of mrpts in a row."
+music
+
+1: c;d;e;f;
+bar
+
+1: mrpt;
+bar
+
+1: mrpt;
+bar
+
+1: mrpt;
+bar
+
+1: dblmrpt;
+bar
+bar
+
+1: dblmrpt;
+bar
+bar
+
+1: quadmrpt;
+bar
+bar
+bar
+bar
+
+1: quadmrpt;
+bar
+bar
+bar
+bar
+
+1: dblmrpt;
+bar
+bar
+
+1: mrpt;
+bar

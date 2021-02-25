@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -78,7 +78,7 @@ static int pr_grid P((struct STUFF *stuff_p, int staffnum));
 static void pr_tieslur P((struct STUFF *stuff_p, struct MAINLL *mll_p,
 		int staffno));
 static int get_ts_style P((struct STUFF *stuff_p, struct MAINLL *mll_p));
-static void pr_rest P((struct GRPSYL *gs_p, struct STAFF *staff_p));
+static void pr_rest P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 static double mr_y_loc P((int staffno));
 static void pr_note_dots P((struct NOTE *noteinfo_p, int numdots,
 		double xdotr, double group_x, double group_y, int size));
@@ -290,13 +290,13 @@ struct MAINLL *mll_p;	/* which main list struct holds the STAFF struct */
 			}
 
 			if (grpsyl_p->grpcont == GC_REST) {
-				pr_rest(grpsyl_p, staff_p);
+				pr_rest(grpsyl_p, mll_p);
 				pr_withlist(grpsyl_p);
 				continue;
 			}
 
 			if (is_mrpt(grpsyl_p) == YES) {
-				pr_mrpt(grpsyl_p, staff_p);
+				pr_mrpt(grpsyl_p, mll_p);
 				continue;
 			}
 
@@ -795,12 +795,13 @@ struct MAINLL *mll_p;
 /* print a rest symbol */
 
 static void
-pr_rest(gs_p, staff_p)
+pr_rest(gs_p, mll_p)
 
 struct GRPSYL *gs_p;	/* information about the rest to be printed */
-struct STAFF *staff_p;
+struct MAINLL *mll_p;
 
 {
+	struct STAFF *staff_p;
 	int muschar;	/* which type of rest character to print */
 	int d;		/* number of dots */
 	float adjust;	/* to space dots properly */
@@ -810,9 +811,11 @@ struct STAFF *staff_p;
 
 	if (gs_p->is_multirest == YES) {
 		/* multirest are a special case */
-		pr_multirest(gs_p, staff_p);
+		pr_multirest(gs_p, mll_p);
 		return;
 	}
+
+	staff_p = mll_p->u.staff_p;
 
 	/* draw the rest */
 	muschar = restchar(gs_p->basictime);
@@ -863,31 +866,65 @@ struct STAFF *staff_p;
 }
 
 
-/* print a measure repeat */
+/* print a measure repeat, single, double, or quad */
 
 void
-pr_mrpt(gs_p, staff_p)
+pr_mrpt(gs_p, mainll_p)
 
 struct GRPSYL *gs_p;
-struct STAFF *staff_p;
+struct MAINLL *mainll_p;
 
 {
 	double x;		/* horizontal position of number string */
 	double y, y_offset;	/* vertical location */
 	double height, width;	/* of meas num string */
 	char *numstr;		/* ASCII version of numbers of measures */
+	unsigned char rptchar;	/* measure repeat music character */
+	unsigned char rptfont;
+	short print_number;	/* YES or NO */
 
 
-	/* measure repeat has to be moved to the middle of the measure */
-	pr_muschar( (gs_p->c[AW] + gs_p->c[AE]) / 2.0,
-		mr_y_loc(gs_p->staffno), C_MEASRPT, DFLT_SIZE, FONT_MUSIC);
+	numstr = mr_num(mainll_p, &x, &y_offset, &height, &width);
+	if (numstr == (char *) 0) {
+		/* must be a measure of a double or quad that doesn't
+		 * get a symbol at its ending bar line */
+		return;
+	}
 
-	if (svpath(gs_p->staffno, NUMBERMRPT)->numbermrpt == YES) {
+	rptchar = C_MEASRPT;
+	rptfont = FONT_MUSIC;
+	if (gs_p->meas_rpt_type == MRT_DOUBLE) {
+		rptchar = C_DBLMEASRPT;
+		rptfont = FONT_MUSIC2;
+	}
+	else if (gs_p->meas_rpt_type == MRT_QUAD) {
+		rptchar = C_QUADMEASRPT;
+		rptfont = FONT_MUSIC2;
+	}
+
+	print_number = NO;
+	if ( (gs_p->meas_rpt_type == MRT_SINGLE) &&
+			(svpath(gs_p->staffno, NUMBERMRPT)->numbermrpt == YES )) {
+		print_number = YES;
+	}
+	if ( (gs_p->meas_rpt_type != MRT_SINGLE) &&
+			(svpath(gs_p->staffno, NUMBERMULTRPT)->numbermultrpt == YES )) {
+		print_number = YES;
+	}
+	if (print_number == YES) {
 		/* print number above the staff */
 		y = Staffs_y[gs_p->staffno];
-		numstr = mrnum(staff_p, &x, &y_offset, &height, &width);
 		pr_string(x, y + y_offset, numstr, J_LEFT, (char *) 0, -1);
 	}
+	if (gs_p->meas_rpt_type == MRT_SINGLE) {
+		/* put symbol in middle of measure */
+		x = (gs_p->c[AW] + gs_p->c[AE]) / 2.0;
+	}
+	else {
+		/* x is currently left edge of number, so adjust to middle */
+		x += strwidth(numstr) / 2.0;
+	}
+	pr_muschar(x, mr_y_loc(gs_p->staffno), rptchar, DFLT_SIZE, rptfont);
 }
 
 
@@ -1069,7 +1106,7 @@ int side;	/* PL_ABOVE or PL_BELOW */
 			/* beamed notes stems effective stick out a little
 			 * farther, so compensate for that */
 			if (gs_p->beamloc != NOITEM) {
-				y -= POINT;
+				y -= HALF_BEAM_THICKNESS(gs_p);
 			}
 		}
 		else {
@@ -1078,7 +1115,7 @@ int side;	/* PL_ABOVE or PL_BELOW */
 				y = gs_p->notelist[0].c[AN];
 			}
 			if (gs_p->beamloc != NOITEM) {
-				y += POINT;
+				y += HALF_BEAM_THICKNESS(gs_p);
 			}
 		}
 		x = gs_p->c[AX];
@@ -3604,10 +3641,10 @@ struct GRPSYL *thisgs_p;	/* the GRPSYL we are working on */
 /* print a multirest */
 
 void
-pr_multirest(gs_p, staff_p)
+pr_multirest(gs_p, mll_p)
 
 struct GRPSYL *gs_p;	/* info about the multirest */
-struct STAFF *staff_p;
+struct MAINLL *mll_p;
 
 {
 	double x;		/* horizontal position of number string */
@@ -3615,6 +3652,7 @@ struct STAFF *staff_p;
 	double height, width;	/* of meas num string */
 	float east, west;	/* edges of the multirest */
 	char *numstr;		/* ASCII version of numbers of measures */
+	struct STAFF *staff_p;
 
 
 	/* avoid core dumps */
@@ -3622,6 +3660,8 @@ struct STAFF *staff_p;
 		pfatal("can't do multirest: no feed");
 		return;
 	}
+
+	staff_p = mll_p->u.staff_p;
 
 	/* determine where to place the multirest */
 	y = mr_y_loc(gs_p->staffno);
@@ -3695,29 +3735,41 @@ struct STAFF *staff_p;
 
 	if (svpath(staff_p->staffno, PRINTMULTNUM)->printmultnum == YES) {
 		/* print number of measures */
-		numstr = mrnum(staff_p, &x, &y_offset, &height, &width);
+		numstr = mr_num(mll_p, &x, &y_offset, &height, &width);
 		pr_string(x, y + y_offset, numstr, J_LEFT, (char *) 0, -1);
 	}
 }
 
 
-/* Given a STAFF pointing to a multirest or measure repeat GRPSYL,
- * return a string for its number of measures,
- * and return via pointers its x, relative y, height, and width */
+/* Given a MAINLL that point to a STAFF that  points to a multirest
+ * or single/double/quad measure repeat GRPSYL,
+ * return a string for its number of measures, to be printed,
+ * and return via pointers its x, relative y, height, and width
+ * In the case of dbl or quad measure repeats, a NULL is returned if
+ * the STAFF for a measure which is not the one for which the following
+ * bar line gets the symbol, and the pointer values are not valid.
+ */
 
 char *
-mrnum(staff_p, x_p, y_offset_p, height_p, width_p)
+mr_num(mainll_p, x_p, y_offset_p, height_p, width_p)
 
-struct STAFF *staff_p;
+struct MAINLL *mainll_p;
 double *x_p;		/* return where number starts horizontally */
 double *y_offset_p;	/* return y relative to staff */
 double *height_p;	/* return height of string */
 double *width_p;	/* return width of string */
 
 {
+	struct STAFF *staff_p;
 	struct GRPSYL *gs_p = 0;/* initialize to avoid compiler warning */
 	char *numstr;		/* ASCII version of number of measures */
 	int v;			/* voice index */
+
+
+	if (mainll_p->str != S_STAFF) {
+		pfatal("mr_num passed incorrect struct type %d", mainll_p->str);
+	}
+	staff_p = mainll_p->u.staff_p;
 
 	/* skip over invisible voices */
 	for (v = 0; v < MAXVOICES; v++) {
@@ -3727,13 +3779,31 @@ double *width_p;	/* return width of string */
 		}
 	}
 	if (v == MAXVOICES) {
-		pfatal("no visible voice found by mrnum");
+		pfatal("no visible voice found by mr_num");
 	}
-	if (gs_p->grpcont == GC_NOTES) {
+
+	/* Return null for multi repeat bars not having the symbol */
+	if ( (gs_p->meas_rpt_type == MRT_DOUBLE)
+				&& (staff_p->mult_rpt_measnum != 1) ) {
+		return (char *) 0;
+	}
+	if ( (gs_p->meas_rpt_type == MRT_QUAD)
+				&& (staff_p->mult_rpt_measnum != 2) ) {
+		return (char *) 0;
+	}
+
+	if (gs_p->meas_rpt_type != MRT_NONE) {
 		/* this is a measure repeat */
-		numstr = num2str(staff_p->mrptnum);
-		numstr[0] = FONT_TR;
-		numstr[1] = 11;
+		if (gs_p->meas_rpt_type == MRT_SINGLE) {
+			numstr = num2str(staff_p->mrptnum);
+			numstr[0] = FONT_TR;
+			numstr[1] = 11;
+		}
+		else {
+			numstr = num2str(gs_p->meas_rpt_type == MRT_DOUBLE ? 2 : 4);
+			numstr[0] = FONT_NB;
+			numstr[1] = 16;
+		}
 	}
 	else if (gs_p->grpcont == GC_REST) {
 		/* this is a multi-rest */
@@ -3745,7 +3815,7 @@ double *width_p;	/* return width of string */
 		numstr[1] = 16;
 	}
 	else {
-		pfatal("wrong group type (%d) passed to mrnum, line %d, staff %d, voice %d", gs_p->grpcont, gs_p->inputlineno, gs_p->staffno, gs_p->vno);
+		pfatal("wrong group type (%d) passed to mr_num, line %d, staff %d, voice %d", gs_p->grpcont, gs_p->inputlineno, gs_p->staffno, gs_p->vno);
 		/*NOTREACHED*/
 		return (char *) 0;	/* to shut up bogus compiler warning */
 	}
@@ -3754,9 +3824,30 @@ double *width_p;	/* return width of string */
 	*width_p = strwidth(numstr);
 	*height_p = strheight(numstr);
 
-	/* x is middle of measure minus 1/2 of number string width */
+	if ( (gs_p->meas_rpt_type == MRT_DOUBLE)
+				|| (gs_p->meas_rpt_type == MRT_QUAD) ) {
+		struct MAINLL *m_p;	/* for finding next bar line */
+
+		/* search forward in main list for next bar line */
+		for (m_p = mainll_p->next; m_p != 0; m_p = m_p->next) {
+			if (m_p->str == S_BAR) {
+				break;
+			}
+		}
+		if (m_p == 0) {
+			pfatal("could not find the following bar in mr_num");
+		}
+
+		/* x is the x of the next bar line,
+		 *  minus 1/2 of number string width */
+		*x_p = m_p->u.bar_p->c[AX] - (*width_p / 2.0);
+	}
+	else {
+		/* x is middle of measure minus 1/2 of number string width */
+		*x_p = ((gs_p->c[AE] + gs_p->c[AW]) / 2.0) - (*width_p / 2.0);
+	}
+
 	/* y offset is just above staff */
-	*x_p = ((gs_p->c[AE] + gs_p->c[AW]) / 2.0) - (*width_p / 2.0);
 	*y_offset_p = halfstaffhi(gs_p->staffno) + Stepsize;
 	return(numstr);
 }

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -815,7 +815,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			 * for the half of the note head that protrudes
 			 * beyond its Y. Actually, depending on the head shape
 			 * and size, one Stepsize may not be exactly right,
-			 * but it probably close enough,
+			 * but it is probably close enough,
 			 * since we may well need to adjust
 			 * where we start the phase mark vertically anyway,
 			 * and the "halfway" is just a reasonably guess of
@@ -1231,6 +1231,30 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			}
 
 			endlist_p->y = endnote_p->c[RY];
+
+			/* If the RW and RE of the end note are both zero,
+			 * that means placement must not have been done on it,
+			 * which implies the user made the voice invisible
+			 * in the middle of the curve! 
+			 * If we did nothing, the end of the curve would end up
+			 * at the middle line, since that is what RY would
+			 * be initialized to. For slurs, we really don't know
+			 * where the curve would go to if it was visible,
+			 * and it would be a lot of work to figure that out
+			 * for something the user probably really shouldn't
+			 * be doing anyway. So we leave that be. However,
+			 * for ties, the curve should be horizontal (except for
+			 * the rare case of a clef change), so we force it
+			 * horizontal. Because of other adjustments made below,
+			 * it may not end up being precisely horizontal, but
+			 * it should be close, and since this would
+			 * essentially be a carryout, that is good enough.
+			 */
+			if  ( (endnote_p->c[RW] == 0.0)
+					&& (endnote_p->c[RE] == 0.0)
+					&& (stuff_p->curveno == -1) ) {
+				endlist_p->y = begnote_p->c[RY];
+			}
 
 			y2_adj = 0.0;
 
@@ -1903,6 +1927,10 @@ struct TRYBULGE *info_p;
 	double clearance;
 	double leftsteps;
 	double rightsteps;
+	struct GRPSYL *ngs_p;	/* next group to the right */
+	double tie_vert;	/* approx, highest Y point of a tie */
+	double tie_mid_horz;	/* The X where the tie_vert occurs */
+	double ph_y;		/* y of the phrase at tie_mid_horz */
 
 
 	begin_gs_p = info_p->begin_gs_p;
@@ -2007,6 +2035,80 @@ struct TRYBULGE *info_p;
 					((gs_p->phraseside & WEST_SIDE) == 0)) ) {
 				yg += gs_p->c[AN];
 			}
+
+			/* If there is a tie on a top note of a stem-down
+			 * group, we try to reduce the chances that
+			 * the tie will hit the phrase above it.
+			 * The actual point of any collision would be
+			 * to the right of this group, halfway to the next,
+			 * so we attempt to do a stick-out check there.
+			 * Since we don't have enough info here to call
+			 * nextgrpsyl(), and it would be a lot of work
+			 * for very minimal benefit to pass enough info,
+			 * we only do this within the same measure.
+			 * When we can't do that smarter check, we
+			 * do a simple thing of making the tied-from group
+			 * appear a little taller, which may indirectly push
+			 * the phrase outward, which will usually be enough
+			 * to then miss the high point of the tie, if it
+			 * wouldn't already have been missed.
+			 */
+			if (gs_p->nnotes > 0 && gs_p->notelist[0].tie == YES
+					&& gs_p->stemdir == DOWN
+					&& gs_p != end_gs_p) {
+
+				ngs_p = gs_p->next;
+				if (ngs_p != 0 && ngs_p->nnotes > 0
+						&& ngs_p->stemdir == DOWN
+						&& ngs_p->notelist[0].letter
+						==  gs_p->notelist[0].letter
+						&& ngs_p->notelist[0].octave
+						== gs_p->notelist[0].octave
+						&& ngs_p->c[AX]
+						> gs_p->c[AX] + 0.2) {
+					/* Calculate the approximate coord of
+					 * the high point of the tie. This
+					 * simplified calculation may be off
+					 * slightly from the actual, but close
+					 * enough for our purposes here.
+					 */
+					tie_vert = gs_p->notelist[0].c[RN] + 4.0 * Stepsize;
+					tie_mid_horz = (ngs_p->c[AX] + gs_p->c[AX]) / 2.0;
+					/* Check if the high point of the tie
+					 * sticks out beyond the currently
+					 * proposed curve. */
+					ph_y = curve_y_at_x(curvelist_p, tie_mid_horz);
+					if (ph_y < tie_vert) {
+						/* It did stick out */
+						stickout = tie_vert - ph_y;
+						worst_stickout = MAX(stickout, worst_stickout);
+						set_protrusion(info_p, tie_mid_horz, stickout);
+					}
+				}
+				else {
+					/* We couldn't do the sophisticated
+					 * check. That could be because the
+					 * tied-to group is in the next
+					 * measure, where it isn't worth the
+					 * effort. Or maybe tied-to note was
+					 * below the top of the following group,
+					 * in which case this adjustment
+					 * probably isn't necessary, but is
+					 * unlikely to make anything worse.
+					 * In any case, we'll
+					 * pretend the current group is just
+					 * little taller than it really is,
+					 * which will likely be just enough to
+					 * push the phrase curve out
+					 * far enough to avoid hitting the tie.
+					 * Worse case, it may be pushed out
+					 * a little farther than it really
+					 * needs to be.
+					 */
+					yg += Stepsize;
+				}
+			}
+
 			if (yleft > yg && yright > yg) {
 				/* Good. It's inside */
 				continue;
@@ -2048,6 +2150,34 @@ struct TRYBULGE *info_p;
 					((gs_p->phraseside & WEST_SIDE) == 0)) ) {
 				yg += gs_p->c[AS];
 			}
+			if (gs_p->nnotes > 0 && gs_p->notelist[gs_p->nnotes-1].tie == YES
+					&& gs_p->stemdir == UP
+					&& gs_p != end_gs_p) {
+
+				ngs_p = gs_p->next;
+				if (ngs_p != 0 && ngs_p->nnotes > 0
+						&& ngs_p->stemdir == UP
+						&& ngs_p->notelist[ngs_p->nnotes-1].letter
+						==  gs_p->notelist[gs_p->nnotes-1].letter
+						&& ngs_p->notelist[ngs_p->nnotes-1].octave
+						== gs_p->notelist[gs_p->nnotes-1].octave
+						&& ngs_p->c[AX]
+						> gs_p->c[AX] + 0.2) {
+					tie_vert = gs_p->notelist[gs_p->nnotes-1].c[RS] - 4.0 * Stepsize;
+					tie_mid_horz = (ngs_p->c[AX] + gs_p->c[AX]) / 2.0;
+					ph_y = curve_y_at_x(curvelist_p, tie_mid_horz);
+					if (ph_y > tie_vert) {
+						/* It did stick out */
+						stickout = ph_y - tie_vert;
+						worst_stickout = MAX(stickout, worst_stickout);
+						set_protrusion(info_p, tie_mid_horz, stickout);
+					}
+				}
+				else {
+					yg -= Stepsize;
+				}
+			}
+
 			if (yleft < yg && yright < yg) {
 				continue;
 			}

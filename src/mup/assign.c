@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -112,6 +112,7 @@ static int do_fassign P((int var, double value, double min,
 		double max, UINT32B cont, char *name,
 		struct MAINLL *mainll_item_p, float *ptr2dest));
 static void chg_too_late P((char *var_name));
+static void set_vcombine_fields P((int qualifier, int bymeas, struct SSV *ssv_p));
 
 /* comparison functions to be passed to qsort */
 static int comp_staffset P((const void *item1_p,
@@ -356,6 +357,11 @@ struct MAINLL *mainll_item_p;	/* where to store SSV info in main list */
 				&(mainll_item_p->u.ssv_p->maxmeasures) );
 		break;
 
+	case MIDLINESTEMFLOAT:
+		(void) do_assign(var, value, 0, 1,
+				C_SCORE|C_STAFF|C_VOICE, NO, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->midlinestemfloat) );
+		break;
 
 	case DIVISION:
 		chg_too_late(name);
@@ -493,6 +499,12 @@ struct MAINLL *mainll_item_p;	/* where to store SSV info in main list */
 		(void) do_assign(var, value, 0, 1,
 				C_SCORE | C_STAFF, NO, name, mainll_item_p,
 				&(mainll_item_p->u.ssv_p->numbermrpt) );
+		break;
+
+	case NUMBERMULTRPT:
+		(void) do_assign(var, value, 0, 1,
+				C_SCORE | C_STAFF, NO, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->numbermultrpt) );
 		break;
 
 	case PRINTMULTNUM:
@@ -938,6 +950,28 @@ struct MAINLL *mainll_item_p;	/* where to store info */
 		}
 		break;
 
+	case TUPLETSLOPE:
+		/* This is just like BEAMSLOPE, but just with the tuplet
+		 * defines and fields. */
+		if (do_fassign(var, (double) value1,
+			(double) MINTUPLETFACT,
+			(double) MAXTUPLETFACT,
+			C_SCORE | C_STAFF | C_VOICE, "tupletslope factor",
+			mainll_item_p,
+			&(mainll_item_p->u.ssv_p->tupletfact) ) == YES) {
+
+			mainll_item_p->u.ssv_p->used[var] = NO;
+
+			(void) do_fassign(var, value2,
+					(double) MINTUPLETMAX,
+					(double) MAXTUPLETMAX,
+					C_SCORE | C_STAFF | C_VOICE,
+					"tupletslope maximum slope angle",
+					mainll_item_p,
+					&(mainll_item_p->u.ssv_p->tupletmax) );
+		}
+		break;
+
 	case LEFTSPACE:
 		/* First float value is the fraction of room to put on left */
 		if (do_fassign(var, (double) value1,
@@ -1132,10 +1166,50 @@ struct MAINLL *mainll_item_p;	/* where to assign it */
 /* assign value to voicecombine parameter */
 
 void
-assign_vcombine(qualifier, mainll_p)
+assign_vcombine(qualifier, bymeas, mainll_p, tssv_p)
 
-int qualifier;
-struct MAINLL * mainll_p;
+int qualifier;			/* VC_* */
+int bymeas;			/* YES or NO */
+struct MAINLL * mainll_p;	/* A normal SSV */
+struct TIMEDSSV * tssv_p;	/* Used instead of mainll_p for mid-measure */
+
+{
+	if ( (mainll_p != 0) && (mainll_p->str == S_SSV) ) {
+		/* Most common case of setting in a normal SSV */
+		if (contextcheck(C_SCORE | C_STAFF, "voicecombine parameter") == NO) {
+			return;
+		}
+		used_check(mainll_p, VCOMBINE, "voicecombine");
+		set_vcombine_fields(qualifier, bymeas, mainll_p->u.ssv_p);
+	}
+	else if (tssv_p != 0) {
+		/* being set via mid-measure. */
+		if (tssv_p->ssv.used[VCOMBINE] == YES) {
+			l_warning(Curr_filename, yylineno, "vcombine specified more than once in mid-measure change; using last");
+		}
+		if (tssv_p->ssv.context == C_VOICE) {
+			l_yyerror(Curr_filename, yylineno, "vcombine cannot be set at voice level");
+		}
+		set_vcombine_fields(qualifier, bymeas, &(tssv_p->ssv));
+	}
+	else if ( (mainll_p == 0) && (tssv_p == 0) ) {
+		/* must be being called from an invalid context */
+		return;
+	}
+	else {
+		pfatal("assign_vcombine called with unexpected struct");
+	}
+}
+
+
+/* Set the vcombine fields in an SSV. */
+
+static void
+set_vcombine_fields(qualifier, bymeas, ssv_p)
+
+int qualifier;	/* VC_* */
+int bymeas;	/* YES or NO */
+struct SSV *ssv_p;
 
 {
 	short listed[MAXVOICES + 1];	/* If user mentioned the voice */
@@ -1144,26 +1218,18 @@ struct MAINLL * mainll_p;
 	int offset;			/* index into vcombine array */
 
 
-	if (contextcheck(C_SCORE | C_STAFF, "voicecombine parameter") == NO) {
-		return;
-	}
-	if (mainll_p == 0) {
-		return;
-	}
-	used_check(mainll_p, VCOMBINE, "voicecombine");
-
 	/* Clear list of voices mentioned by user,
 	 * and initialize list of voices to combine to none. */
 	for (v = 1; v <= MAXVOICES; v++) {
 		listed[v] = NO;
-		mainll_p->u.ssv_p->vcombine[v-1] = 0;
+		ssv_p->vcombine[v-1] = 0;
 	}
 
 	/* We start filling in at beginning of vcombine array */
 	offset = 0;
 
 	/* Add the specified voices in input order to SSV vcombine array */
-	for (curr_p = Vnorange_p; curr_p != 0; curr_p = curr_p->next) {
+	for (curr_p = VCrange_p; curr_p != 0; curr_p = curr_p->next) {
 		/* add voices into voice combine list after error checks */
 		for (v = curr_p->begin; v <= curr_p->end; v++) {
 			if (listed[v] == YES) {
@@ -1180,14 +1246,15 @@ struct MAINLL * mainll_p;
 				 */
 				break;
 			}
-			mainll_p->u.ssv_p->vcombine[offset++] = v;
+			ssv_p->vcombine[offset++] = v;
 			listed[v] = YES;
 		}
 	}
 
-	free_vnorange();
-	mainll_p->u.ssv_p->vcombinequal = (short) qualifier;
-	mainll_p->u.ssv_p->used[VCOMBINE] = YES;
+	free_vcombine_range();
+	ssv_p->vcombinequal = (short) qualifier;
+	ssv_p->vcombinemeas = (short) bymeas;
+	ssv_p->used[VCOMBINE] = YES;
 	/* Since voicecombine is relatively rare, we set a flag if it is
 	 * ever used. If flag is not set, all the voicecombine placement
 	 * code can be skipped entirely. If turning off or only a
@@ -2857,6 +2924,7 @@ int param;	/* #define name from ssvused.h */
 	case MEASNUMFAMILY:	return("measnumfontfamily");
 	case MEASNUMFONT:	return("measnumfont");
 	case MEASNUMSIZE:	return("measnumsize");
+	case MIDLINESTEMFLOAT:	return("midlinestemfloat");
 	case MINALIGNSCALE:	return("minalignscale");
 	case MINGRIDHEIGHT:	return("mingridheight");
 	case MINSCPAD:		return("minimum scorepad");
@@ -2864,6 +2932,7 @@ int param;	/* #define name from ssvused.h */
 	case MINSTSEP:		return("staffsep");
 	case NOTEINPUTDIR:	return("noteinputdir");
 	case NUMBERMRPT:	return("numbermrpt");
+	case NUMBERMULTRPT:	return("numbermultrpt");
 	case NUMSTAFF:		return("staffs");
 	case ONTHELINE:		return("ontheline");
 	case PACKEXP:		return("packexp");
@@ -2890,6 +2959,7 @@ int param;	/* #define name from ssvused.h */
 	case TEXTKEYMAP:	return("textkeymap");
 	case TOPMARGIN:		return("topmargin");
 	case TUNING:		return("tuning");
+	case TUPLETSLOPE:	return("tupletslope");
 	case USEACCS:		return("useaccs");
 	case VISIBLE:		return("visible");
 	case WARN:		return("warn");

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -715,7 +715,16 @@ int both;		/* will there be a phrase both above and below? */
 
 	/*
 	 * If we don't know yet whether the phrase should be drawn above or
-	 * below the staff, decide that now.  We will put it on the side that
+	 * below the staff, first set it to the parameter.  If that is
+	 * PL_UNKNOWN, we'll apply the algorithm below.
+	 */
+	if (stuff_p->place == PL_UNKNOWN) {
+		stuff_p->place = vvpath(beggrp_p->staffno, beggrp_p->vno,
+				DEFAULTPHRASESIDE)->defaultphraseside;
+	}
+
+	/*
+	 * If that didn't help, apply the algorithm.  Put it on the side that
 	 * has more note heads than stems, usually based on nongraces but in
 	 * case of a tie considering graces, etc.
 	 */

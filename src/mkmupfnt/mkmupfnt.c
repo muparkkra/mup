@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -80,7 +80,7 @@ char *PS_script_file = "mkmupfnt.ps";
 char *GS_output = "mkmupfnt.tmp";
 #endif
 
-char Version[] = "6.8.1";
+char Version[] = "6.9";
 
 void usage(char *program_name);
 void verify_valid_Mup_name(char *Mup_name);

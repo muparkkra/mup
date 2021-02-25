@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -96,6 +96,7 @@ int Tuning_used = NO;	/* used a4freq/tuning/acctable parms, or multiple accs
 			 * on a note other than the special case of nat plus
 			 * one of the other standard four; and thus we need
 			 * to generate special MIDI (using miditune.c) */
+int Mrptused = NO;	/* was some type of mrpt used? */
 
 /*
  * Because of look-ahead, an error message could often have the line number
@@ -238,6 +239,7 @@ float _Staff[MAXSTAFFS][NUMCTYPE];
  */
 struct RANGELIST *Staffrange_p;
 struct RANGELIST *Vnorange_p;
+struct RANGELIST *VCrange_p;
 
 /*
  * During parse phase, this keeps track of the place (PL_ABOVE, PL_BELOW,

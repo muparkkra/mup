@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -62,6 +62,11 @@ static int this_is_restart P((struct MAINLL *mainll_p));
 static int countable_measure P((struct MAINLL *mainll_p));
 static double adjust_measwid4mrpt P((double oldmeaswid, struct CHORD *ch_p));
 static void fillclefsig P((struct CLEFSIG *clefsig_p, struct MAINLL *feed_p));
+static struct MAINLL *trymeasset P((struct MAINLL *mainll_p, double scale,
+		float *measwidth_p, float *adjust_p, int *ressv_p,
+		int *num_measures_p));
+static int must_keep_next_meas_on_score(struct MAINLL *startmll_p,
+		struct MAINLL *endmll_p);
 static struct MAINLL *trymeasure P((struct MAINLL *mainll_p, double scale,
 		float *measwidth_p, float *adjust_p, int *ressv_p));
 static void setabs P((struct MAINLL *start_p, int scores, short measinscore[]));
@@ -1244,6 +1249,7 @@ short measinscore[];		/* return number of measures in each score */
 	float measwidth;	/* width needed by one measure */
 	float adjust;		/* bar line adjust if last measure in score */
 	int maxmeasures;	/* remember value at start of this score */
+	int num_in_set;		/* no. of measures in a set from trymeasset */
 	int countable_measures;	/* on one score, limit this by maxmeasures */
 	int ressv;		/* do we have to re-initstructs() and re-SSV?*/
 	int must_set_right_margin;  /* did user say "rightmargin = auto"? */
@@ -1330,15 +1336,19 @@ short measinscore[];		/* return number of measures in each score */
 	old_measinscore = 0;
 	old_countable_measures = 0;
 
-	/* loop through chunk, once per measure, finding where FEEDs would go*/
+	/*
+	 * Loop through this chunk, once per set of measures that must be kept
+	 * on the same score, finding where FEEDs would go.
+	 */
 	for (;;) {
-		/* get width of this measure, and where next one starts */
-		new_p = trymeasure(mainll_p, scale, &measwidth, &adjust,&ressv);
+		/* get width of this set of measures, & where next one starts */
+		new_p = trymeasset(mainll_p, scale, &measwidth, &adjust,
+			&ressv, &num_in_set);
 
 		atend = endchunk(new_p);	/* last measure of chunk? */
 
 		/*
-		 * This measure will be put on this score (line) if the
+		 * This set of measures will be put on this score (line) if the
 		 * following conditions are met:
 		 */
 		    /* There are no measures here yet (so we better force this
@@ -1352,9 +1362,9 @@ short measinscore[];		/* return number of measures in each score */
 
 		    /* we haven't reached the max number of measures allowed
 		     * on a score, AND */
-		    countable_measures < maxmeasures &&
+		    countable_measures + num_in_set <= maxmeasures &&
 
-		    /* there is enough room remaining for this measure to fit */
+		    /* there is enough room remaining for these to fit */
 		    ((!atend && (measwidth - adjust) <= remwidth) ||
 		      (atend && (measwidth - adjust) <= remwidth - userdelta)))){
 
@@ -1372,14 +1382,16 @@ short measinscore[];		/* return number of measures in each score */
 			}
 
 			/*
-			 * Subtract this measure's width from what's left on
+			 * Subtract these measures' widths from what's left on
 			 * this score, and increment the number of measures on
 			 * it.  Point at the next measure.
 			 */
 			remwidth -= measwidth;
-			measinscore[*scores_p]++;
-			if (countable_measure(mainll_p)) {
-				countable_measures++;
+			measinscore[*scores_p] += num_in_set;
+			countable_measures += num_in_set;
+			if (countable_measure(mainll_p) == NO) {
+				/* first preceded by invisbar, don't count it */
+				countable_measures--;
 			}
 			mainll_p = new_p;
 
@@ -1424,8 +1436,8 @@ short measinscore[];		/* return number of measures in each score */
 			}
 		} else {
 			/*
-			 * We will not put this measure on this score.  Before
-			 * dealing with this measure, check indentrestart.  If
+			 * We will not put these measures on this score.  Before
+			 * dealing with these measures, check indentrestart.  If
 			 * that is set, and the previous measure was a "restart"
 			 * measure, we need to also force that measure onto the
 			 * the new score.  (Although we can't do that if this
@@ -1503,17 +1515,17 @@ short measinscore[];		/* return number of measures in each score */
 			countable_measures = 0;
 
 			/*
-			 * If the measure we just figured is too wide for the
+			 * If the measures we just figured are too wide for the
 			 * new score we are about to begin, it must be that
 			 * we are just padding things too much.  (If there
-			 * really is too much stuff in the measure, we'll fail
+			 * really is too much stuff in the measures, we'll fail
 			 * later.)  So assume we'll cram in it anyway, set up
 			 * 0 width remaining, and prepare for next measure.
 			 * We have to reapply the SSVs we removed above, since
 			 * we won't be calling trymeasure() again for that
 			 * measure.
 			 *
-			 * If the measure fits, don't do any of this.  Just let
+			 * If the measures fit, don't do any of this.  Just let
 			 * trymeasure figure the same one over again, next
 			 * time around.
 			 */
@@ -1527,9 +1539,10 @@ short measinscore[];		/* return number of measures in each score */
 					}
 				}
 				remwidth = 0;
-				measinscore[*scores_p] = 1;
-				if (countable_measure(mainll_p)) {
-					countable_measures = 1;
+				measinscore[*scores_p] = num_in_set;
+				countable_measures = num_in_set;
+				if (countable_measure(mainll_p) == NO) {
+					countable_measures--;
 				}
 				mainll_p = new_p;
 
@@ -1892,6 +1905,135 @@ struct MAINLL *feed_p;		/* points at a FEED in the MAINLL */
 			clefsig_p->bar_p->bartype = INVISBAR;
 		}
 	}
+}
+
+/*
+ * Name:        trymeasset()
+ *
+ * Abstract:    Find trial width of a set of measures that must be on same score
+ *
+ * Returns:     Pointer to the first MAINLL structure of the measure after the
+ *		set, or 0 if we hit the end of MAINLL.
+ *
+ * Description: This function, given a pointer to the first MAINLL structure
+ *		in a measure (or the FEED preceding), finds and fills in the
+ *		width of that measure; or if this the first of a set of measures
+ *		that have to be on the same score, the width of all of them.
+ */
+
+static struct MAINLL *
+trymeasset(mainll_p, scale, measwidth_p, adjust_p, ressv_p, num_measures_p)
+
+struct MAINLL *mainll_p;	/* points first thing in meas, or FEED */
+double scale;			/* inches per "whole" unit of time */
+float *measwidth_p;		/* width of measures to be filled in */
+float *adjust_p;		/* bar line adjust, to be filled in; if last
+				 * meas in score, bar shouldn't be padded on
+				 * right, so subtract this for measwidth */
+int *ressv_p;			/* did we apply a CLEFSIG-causing SSV? */
+int *num_measures_p;		/* how many measures we scanned */
+
+{
+	struct MAINLL *prevmll_p; /* previous MLL item */
+	float measwidth;	/* the width of one measure */
+	int ressv;		/* value for one measure */
+
+
+	*num_measures_p = 0;	/* none done yet */
+	*ressv_p = NO;		/* no SSVs yet */
+	*measwidth_p = 0.0;	/* accumulate width of all measures */
+
+	/* keep doing measures until we are allowed to have a score feed */
+	for (;;) {
+		prevmll_p = mainll_p;
+		mainll_p = trymeasure(mainll_p, scale, &measwidth, adjust_p,
+				&ressv);
+		*measwidth_p += measwidth;
+		if (ressv) {
+			*ressv_p = YES;
+		}
+
+		(*num_measures_p)++;
+
+		/* if we hit the end, obviously we can't go on */
+		if (mainll_p == 0) {
+			return (0);
+		}
+
+		/* stop now if we are allowed to */
+		if (must_keep_next_meas_on_score(prevmll_p, mainll_p) == NO) {
+			return (mainll_p);
+		}
+	}
+}
+
+/*
+ * Name:        must_keep_next_meas_on_score()
+ *
+ * Abstract:    After the given measure, must the next on be on the same score?
+ *
+ * Returns:     YES or NO
+ *
+ * Description: This function is given the MLL for the start and end of a
+ *		measure.  It decides whether the next measure must be put on
+ *		the same score, or can be allowed not to be.
+ */
+
+static int
+must_keep_next_meas_on_score(startmll_p, endmll_p)
+
+struct MAINLL *startmll_p;	/* start of this measure */
+struct MAINLL *endmll_p;	/* end of this measure */
+
+{
+	struct MAINLL *mll_p;	/* for looping */
+	struct STAFF *staff_p;
+
+
+	/* search back from the end for the bar line */
+	for (mll_p = endmll_p; mll_p != startmll_p; mll_p = mll_p->prev) {
+		if (mll_p->str == S_BAR) {
+			break;
+		}
+	}
+	/* if we are in a samescorebegin/end section, must stay on same score */
+	if (mll_p->u.bar_p->samescore == YES) {
+		return (YES);
+	}
+
+	for (mll_p = startmll_p; mll_p != endmll_p; mll_p = mll_p->next) {
+		if (mll_p->str != S_STAFF) {
+			continue;
+		}
+		staff_p = mll_p->u.staff_p;
+		if (svpath(staff_p->staffno, VISIBLE)->visible == NO) {
+			continue;
+		}
+		if (staff_p->mult_rpt_measnum == 0) {
+			continue;
+		}
+
+		/*
+		 * This is a visible STAFF that is part of a multi mrpt.  Check
+		 * whether we are inside a multiple meas repeat, which must not
+		 * be broken up.  Check the first voice, since it always exists
+		 * and the field is marked in all voices.
+		 */
+		switch (staff_p->groups_p[0]->meas_rpt_type) {
+		case MRT_DOUBLE:
+			if (staff_p->mult_rpt_measnum < 2) {
+				return (YES);
+			}
+			break;
+		case MRT_QUAD:
+			if (staff_p->mult_rpt_measnum < 4) {
+				return (YES);
+			}
+			break;
+		}
+	}
+
+	return (NO);
 }
 
 /*
@@ -3575,7 +3717,8 @@ setsubbars()
 			}
 
 			if (ch_p == 0) {
-				/* no chord at this time value, forget subbar */				continue;
+				/* no chord at this time value, forget subbar */
+				continue;
 			}
 
 			subbar_ax = -1.0; 	/* invalid value */

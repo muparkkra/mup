@@ -37,7 +37,7 @@ fontdata.c:	prolog.ps ../../tools/mup/getfontinfo.ps ../../LICENSE
 	echo "/*" > fontdata.c
 	$(CAT) ../../LICENSE >> fontdata.c
 	echo " */" >> fontdata.c
-	$(GS) -sDEVICE=nullpage -sOutputFile=/dev/null -dQUIET - < ../../tools/mup/getfontinfo.ps | $(SED) -e "/Warning:/d" >> fontdata.c
+	$(GS) -dNOSAFER -sDEVICE=nullpage -sOutputFile=/dev/null -dQUIET - < ../../tools/mup/getfontinfo.ps | $(SED) -e "/Warning:/d" >> fontdata.c
 	$(CAT) charnames fontinit >> fontdata.c
 	rm charnames fontinit
 

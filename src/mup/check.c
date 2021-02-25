@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -67,6 +67,15 @@ static void addped P((struct STUFF *pedal_p, struct MAINLL *mll_p));
 static void set_leftright P((int flag_nonsided, int flag_left, int flag_right,
 		struct BLOCKHEAD *nonsided_p, struct BLOCKHEAD *left_p,
 		struct BLOCKHEAD *right_p));
+static void set_mrpt P((struct STAFF *staff_p, int mrpt_type, int count));
+static int is_unprocessed_mrpt P((struct MAINLL *mll_p));
+static int mrpt_number P((int mrpt_type));
+static char *mrt2name P((int mrt_type));
+static int voices_override P((int staff, int field));
+static int mult_rpt_ssv_ok P((struct SSV *ssv_p, int staff, int param,
+		char *desc, char *inputfile, int inputlineno));
+static int proc_multrpt P((struct MAINLL *mll_p));
+static void do_midi_mrpt_copy P((struct MAINLL *mll_p));
 
 
 
@@ -932,7 +941,7 @@ char *name;		/* name of variable, for warning message */
 
 /* Go through list and combine multiple consecutive rests into multi-rests.
  * This also allocates space for the restc array for any rests groups that
- * didn't have loaction tags. This may not be the most intuitive place to
+ * didn't have location tags. This may not be the most intuitive place to
  * do that, but seems like a safe place. Nothing should use restc before
  * placement, but with all the code for mapping and cloning groups, it
  * might be possible to miss a place, so this runs in between, after all
@@ -1894,6 +1903,10 @@ int end;	/* Play only through this measure number.
 	mrbars = 0;
 	next_p = 0;
 	in_endings = NO;
+	/* In case the very first thing in the input is a multirest, we might
+	 * have to go back to that, and it will not have a bar line before it,
+	 * so we would need to use the beginning of the main list. */
+	most_recent_multi_p = Mainllhc_p;
 	for (bars = 0; bars < start; mll_p = next_p) {
 		if (mll_p == 0) {
 			pfatal("got null mll_p when finding starting measure");
@@ -2160,6 +2173,7 @@ int end;	/* Play only through this measure number.
 					    }
 					}
 					bars -= bars - end;
+					mrbars = 0;
 				}
 				/* multi-rest has been handled; skip over
 				 * the rest of the staffs in this measure */
@@ -2170,19 +2184,33 @@ int end;	/* Play only through this measure number.
 			}
 		}
 		if (mll_p != 0) {
+			/* If not at the end of the list, we need to be at
+			 * a BAR, but there are a few cases where we might
+			 * not be, like if ending in the middle of a multirest
+			 * followed by an invisbar. So fix those,
+			 * by going to just beyond the next bar */
+			for (  ; mll_p != 0; mll_p = mll_p->next) {
+				if (mll_p->str == S_BAR) {
+					mll_p = mll_p->next;
+					break;
+				}
+			}
+
 			/* Peek ahead. If the next thing is a score feed,
 			 * and it contains a margin override, then probably
 			 * the user wanted that override to still be used.
 			 */
-			if (mll_p->str == S_FEED) {
+			if (mll_p != 0 && mll_p->str == S_FEED) {
 				mll_p = mll_p->next;
 			}
 			/* If didn't get all the way to end of main list,
 			 * chop off the rest.
 			 * We don't bother to free the space.
 			 */
-			mll_p->prev->next = 0;
-			Mainlltc_p = mll_p->prev;
+			if (mll_p != 0) {
+				mll_p->prev->next = 0;
+				Mainlltc_p = mll_p->prev;
+			}
 		}
 
 		/* Remove ties/slurs going into the chopped-off part. */
@@ -2606,5 +2634,724 @@ struct BLOCKHEAD *right_p;	/* address of Rightheader/Rightfooter, etc */
 	}
 	if ( (Gotheadfoot & flag_right) == 0) {
 		memcpy(right_p, nonsided_p, sizeof(struct BLOCKHEAD));
+	}
+}
+
+
+/* Loop through the main list, processing multi measure repeats.
+ * This is mostly doing error checks */
+
+void
+set_mrpt_info()
+
+{
+	struct MAINLL *mll_p;
+
+
+	/* Loop through main list looking for multi-rpts */
+	initstructs();
+	for (mll_p = Mainllhc_p; mll_p != 0; mll_p = mll_p->next) {
+		if (mll_p->str == S_STAFF) {
+			if (is_unprocessed_mrpt(mll_p) == YES) {
+				if (proc_multrpt(mll_p) == YES) {
+					if (Doing_MIDI == YES) {
+						do_midi_mrpt_copy(mll_p);
+					}
+				}
+			}
+		}
+		else if (mll_p->str == S_SSV) {
+			asgnssv(mll_p->u.ssv_p);
+		}
+	}
+}
+
+
+/* In a measure with a mult rpt, we want all voices to be set to that,
+ * even if some are currently space. This function does that. */
+
+static void
+set_mrpt(staff_p, mrpt_type, count)
+
+struct STAFF *staff_p;
+int mrpt_type;		/* MRT_* */
+int count;		/* which measure into the mult rpt this is */
+
+{
+	int v;
+
+	for (v = 0; v < MAXVOICES; v++) {
+		if (staff_p->groups_p[v] == 0) {
+			break;
+		}
+		staff_p->groups_p[v]->grpcont = GC_NOTES;
+		staff_p->groups_p[v]->grpvalue = GV_NORMAL;
+		staff_p->groups_p[v]->nnotes = 0;
+		staff_p->groups_p[v]->meas_rpt_type = mrpt_type;
+		staff_p->groups_p[v]->is_meas = YES;
+		staff_p->groups_p[v]->basictime = -1;
+		staff_p->groups_p[v]->fulltime.n = Score.time.n;
+		staff_p->groups_p[v]->fulltime.d = Score.time.d;
+		staff_p->groups_p[v]->dots = 0;
+
+		/* In case user did something like 2s;; instead of ms,
+		 * free any extra GRPSYLS. */
+		free_grpsyls(staff_p->groups_p[v]->next);
+		staff_p->groups_p[v]->next = 0;
+	}
+	staff_p->mult_rpt_measnum = count;
+}
+
+
+/* This checks if given STAFF pointed to by the given mll_p
+ * is the start of a valid mult rpt (single, double, or quad).
+ * If it is, it sets all voices to mrpt,
+ * even if they had been space  before, and returns YES.
+ * If it isn't the start of a mrpt,
+ * or at least not a valid one (not all voices have same mrpt length,
+ * or some have non-space), it returns NO.
+ */
+
+static int
+is_unprocessed_mrpt(mll_p)
+
+struct MAINLL *mll_p;
+
+{
+	short hasrpt;		/* bitmap of MRT values found */
+	short hasnonspace;	/* YES or NO */
+	int v;			/* voice index */
+	RATIONAL meas_dur;
+	struct STAFF *staff_p;
+
+
+	staff_p = mll_p->u.staff_p;
+	if (staff_p->mult_rpt_measnum != 0) {
+		/* This is not the beginning, it is a part of one
+		 * that has already been handled when we saw its beginning. */
+		return(NO);
+	}
+
+	/* See if any of the voices are meas repeats */
+	hasrpt = 0;
+	hasnonspace = NO;
+	meas_dur.n = Score.time.n + 1;
+	meas_dur.d = Score.time.d;
+	for (v = 0; v < MAXVOICES; v++) {
+		if (staff_p->groups_p[v] == 0) {
+			/* no more voices */
+			break;
+		}
+		if (staff_p->groups_p[v]->meas_rpt_type != MRT_NONE) {
+			/* Note: this depends on MRT_NONE being zero and the
+			 * other MRT_* values each being their own bit. */
+			hasrpt |= staff_p->groups_p[v]->meas_rpt_type;
+
+			/* This is the first measure of the mrpt */
+			staff_p->mult_rpt_measnum = 1;
+		}
+		else if (hasspace(staff_p->groups_p[v], Zero, meas_dur) == NO) {
+			hasnonspace = YES;
+		}
+	}
+
+	if ( (hasrpt & MRT_SINGLE) && (hasrpt & MRT_DOUBLE) ) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+				"cannot mix mrpt and dbl mrpt on a staff");
+		return(NO);
+	}
+	if ( (hasrpt & MRT_SINGLE) && (hasrpt & MRT_QUAD) ) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+				"cannot mix mrpt and quad mrpt on a staff");
+		return(NO);
+	}
+	if ( (hasrpt & MRT_DOUBLE) && (hasrpt & MRT_QUAD) ) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+				"cannot mix dbl mrpt and quad mrpt on a staff");
+		return(NO);
+	}
+	if (hasnonspace == YES && hasrpt != MRT_NONE) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+				"cannot mix mrpt with nonspace on a staff");
+		return(NO);
+	}
+	if (hasrpt == MRT_NONE) {
+		return(NO);
+	}
+	set_mrpt(staff_p, hasrpt, 1);
+	return(YES);
+
+}
+
+
+/* This maps an MRT_* value to the number of measures that represents.
+ * Currently, the MRT_* value is deliberately made to match
+ * the number of measures, so it is a trivial mapping,
+ * but in case that would ever become untrue some day, having this function
+ * should reduce the impact.
+ */
+
+static int
+mrpt_number(mrpt_type)
+
+int mrpt_type;	/* MRT_* */
+
+{
+	return(mrpt_type);
+}
+
+
+/* Given an MRT_* value, return its name, for error messages */
+
+static char *
+mrt2name(mrt_type)
+
+int mrt_type;	/* MRT_* */
+
+{
+	switch(mrt_type) {
+	case MRT_SINGLE:
+		return("single");
+	case MRT_DOUBLE:
+		return("dbl");
+	case MRT_QUAD:
+		return("quad");
+	default:
+		pfatal("invalid mrt_type arg %d to mrt2name()", mrt_type);
+		/*NOTREACHED*/
+		return("invalid");
+	}
+}
+
+
+/* Returns YES if the given SSV field is overriden by all voices
+ * on the given staff, NO if not. */
+
+static int
+voices_override(staff, field)
+
+int staff;	/* check this staff */
+int field;	/* check this field */
+
+{
+	int numvoices;
+	int v;
+
+	numvoices = vscheme_voices(svpath(staff, VSCHEME)->vscheme);
+	for (v = 1; v <= numvoices; v++) {
+		if (voice_field_used(field, staff, v) == NO) {
+			/* this voice does not override */
+			return(NO);
+		}
+	}
+	return(YES);
+}
+
+
+/* Returns YES if the SSV pointed to by the given mll_p
+ * does not contain setting of the given parameter,
+ * which should be a parameter type that is illegal 
+ * during a mult rpt (either what it is repeating, or the rpt itself).
+ * Returns NO if the SSV contains a problematic change for the staff.
+ */
+
+static int
+mult_rpt_ssv_ok(ssv_p, staff, param, desc, inputfile, inputlineno)
+
+struct SSV *ssv_p;
+int staff;
+int param;		/* which parameter to check */
+char *desc;		/* name of parameter, for error message */
+char *inputfile;
+int inputlineno;
+
+{
+	int retval = YES; /* assume good till proven otherwise */
+
+
+	if (ssv_p->used[param] == NO) {
+		/* No change to this parameter, so no problem */
+		return(YES);
+	}
+	if (ssv_p->staffno != 0 && ssv_p->staffno != staff) {
+		/* staff/voice level change for some other staff; irrelevant */
+		return(YES);
+	}
+
+	if (ssv_p->staffno == staff) {
+		/* defoct can be overridden at voice level */
+		if (param == DEFOCT) {
+			if (ssv_p->voiceno != 0) {
+				/* Is changed at voice level, so is bad */
+				retval = NO;
+			}
+			else {
+				/* Is changed at staff level, so is bad 
+				 * unless the voices override */
+				if (voices_override(staff, param) == YES) {
+					retval = YES;
+				}
+				else {
+					retval = NO;
+				}
+			}
+		}
+		else { 
+			/* Changed on this staff, so that is bad */
+			retval = NO;
+		}
+	}
+
+
+	if (ssv_p->staffno == 0) {
+		/* score level change */
+		switch (param) {
+
+		case TIME:
+			/* Cannot be overridden at staff, so definitely bad,
+			 * unless "changing" to what it already is */
+			if ( (Score.timenum != ssv_p->timenum)
+					|| (Score.timeden != ssv_p->timeden) ) {
+				retval = NO;
+			}
+			break;
+
+		case NUMSTAFF:
+			/* If the number of staffs was or is changing
+			 * to less than the staff number we are concerned with,
+			 * that would be a problem. */
+			if (Score.staffs < staff || ssv_p->staffs < staff) {
+				retval = NO;
+			}
+			break;
+
+		case SHARPS:
+		case CLEF:
+		case TRANSPOSITION:
+		case ADDTRANSPOSITION:
+		case VSCHEME:
+			/* If this item is overridden on this staff
+			 * then a change at score level is irrelevant,
+			 * but if it is only set globally,
+			 * and that is changing, that is a problem. */
+			if (Staff[staff-1].used[param] == NO) {
+				retval = NO;
+			}
+			break;
+		case DEFOCT:
+			/* Like above, plus check if any per voice
+			 * on this staff overrides. */
+			if (Staff[staff-1].used[param] == NO) {
+				if (voices_override(staff, param)) {
+					retval = YES;
+				}
+				else {
+					retval = NO;
+				}
+			}
+			break;
+
+		default:
+			pfatal("Unexpected parameter %d in mult_rpt_ssv_ok()", param);
+			/*NOTREACHED*/
+			break;
+		}
+	}
+	if (retval == NO) {
+		l_yyerror(inputfile, inputlineno,
+				"cannot change %s during a mrpt", desc);
+	}
+	return(retval);
+}
+
+
+/* Given a main list entry that points to a staff that begins a mult rpt,
+ * do error checks on it. Returns YES is all goes well; NO if not. */
+
+static int
+proc_multrpt(mll_p)
+
+struct MAINLL *mll_p;
+
+{
+	int window_size;	/* how many bars on either side to deal with */
+	struct MAINLL *begin_mll_p;	/* portion of main list to check */
+	struct MAINLL *end_mll_p;
+	struct MAINLL *m_p;
+	struct TIMEDSSV *tssv_p;
+	int barcount;
+	int staff;
+	int v;				/* voice */
+	int mrpt_type;			/* MRT_* */
+	char *mrt_name; 		/* single, dbl, quad */
+	RATIONAL meas_dur;		/* for checking all space */
+	int retval;			/* return value, YES or NO */
+
+
+	mrpt_type = mll_p->u.staff_p->groups_p[0]->meas_rpt_type;
+	window_size = mrpt_number(mrpt_type);
+	mrt_name = mrt2name(mrpt_type);
+	staff = mll_p->u.staff_p->staffno;
+	retval = YES;
+
+	/* Back up in main list to where the repeated music begins,
+	 * which is one more bar line than the window_size. */
+	barcount = 0;
+	for (begin_mll_p = mll_p->prev; begin_mll_p != 0;
+					begin_mll_p = begin_mll_p->prev) {
+		if (begin_mll_p->str == S_BAR) {
+			barcount++;
+			if (barcount >= window_size + 1) {
+				/* backed up far enough */
+				break;
+			}
+			/* Don't allow repeats/restart in the source area */
+			switch (begin_mll_p->u.bar_p->bartype) {
+			case REPEATSTART:
+			case REPEATEND:
+			case REPEATBOTH:
+				l_yyerror(begin_mll_p->inputfile,
+				begin_mll_p->inputlineno,
+				"repeats are not allowed in what a mrpt (line %d) is repeating",
+				mll_p->inputlineno);
+				retval = NO;
+				break;
+			case RESTART:
+				l_yyerror(begin_mll_p->inputfile,
+				begin_mll_p->inputlineno,
+				"restart is not allowed in what a mrpt (line %d) is repeating",
+				mll_p->inputlineno);
+				retval = NO;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	if (begin_mll_p == 0) {
+		/* Back to beginning of song, where there is the beginning
+		 * of a measure, so effectively another bar. */
+		barcount++;
+		begin_mll_p = Mainllhc_p;
+	}
+	else {
+		/* start just beyond the bar */
+		begin_mll_p = begin_mll_p->next;
+	}
+
+	/* We need to start past any SSVs. */
+	for (  ; begin_mll_p != 0; begin_mll_p = begin_mll_p->next) {
+		if (begin_mll_p->str != S_SSV) {
+			break;
+		}
+	}
+	if (begin_mll_p == 0) {
+		pfatal("could not find beginning of song in proc_multrpt()");
+	}
+
+	if (barcount != window_size + 1) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+			"need at least %d measure%s before a %s mrpt",
+			window_size, (mrpt_type == MRT_SINGLE ? "" : "s"),
+			mrt_name);
+		return(NO);
+	}
+
+	/* Similarly, search forward for window_size bar lines for
+	 * the time covered by the mrpt itself. */
+	barcount = 0;
+	for (end_mll_p = mll_p->next; end_mll_p != 0;
+					end_mll_p = end_mll_p->next) {
+		if (end_mll_p->str == S_BAR) {
+			barcount++;
+			if (barcount >= window_size) {
+				/* forward far enough */
+				break;
+			}
+			/* Don't allow repeats / restart in the rpt area */
+			switch (end_mll_p->u.bar_p->bartype) {
+			case REPEATSTART:
+			case REPEATEND:
+			case REPEATBOTH:
+				l_yyerror(end_mll_p->inputfile,
+				end_mll_p->inputlineno,
+				"repeats are not allowed inside a mrpt (line %d)",
+				mll_p->inputlineno);
+				retval = NO;
+				break;
+			case RESTART:
+				l_yyerror(end_mll_p->inputfile,
+				end_mll_p->inputlineno,
+				"restart is not allowed inside a mrpt (line %d)",
+				mll_p->inputlineno);
+				retval = NO;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	if (end_mll_p == 0) {
+		l_yyerror(mll_p->inputfile, mll_p->inputlineno,
+			"not enough measures after a %s mrpt", mrt_name);
+		return(NO);
+	}
+
+	if (retval == NO) {
+		/* We had kept going to try to catch multiple "bar" errors,
+		 * but if there were problems there, safer not to go on. */
+		return(retval);
+	}
+
+	/* We need to include the last BAR, for its timed SSVs. */
+	end_mll_p = end_mll_p->next;
+
+	/* Save the current SSV state and set it to what is should be at
+	 * begin_mll_p.  When we are done checking, we'll restore */
+	savessvstate();
+	setssvstate(begin_mll_p);
+
+	/* Since we need to restore the SSV state later, don't return
+	 * from this function without doing that. So we assume we will get
+	 * through cleanly, but set this to NO is something bad is found. */
+	retval = YES;
+
+	/* Loop through the window on both sides, looking for illegal things. */
+	/* When barcount gets above zero, we are to measures beyond where
+	 * the mrpt beings, and thus should check for all space. */
+	barcount = - window_size;
+	for (m_p = begin_mll_p; m_p != end_mll_p; m_p = m_p->next) {
+		if (m_p == 0) {
+			pfatal("failed to find end_mll_p in proc_multrpt");
+		}
+
+		/* Things like clef, time, and key changes are not allowed. */
+		if (m_p->str == S_SSV) {
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, SHARPS,
+						"key signature",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, TIME,
+						"time signature",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, NUMSTAFF,
+						"number of staffs to less than the staff of the mrpt",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, CLEF,
+						"clef",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, TRANSPOSITION,
+						"transpose",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, ADDTRANSPOSITION,
+						"addtranspose",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, DEFOCT,
+						"defoct",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+			if (mult_rpt_ssv_ok(m_p->u.ssv_p, staff, VSCHEME,
+						"vscheme",
+						m_p->inputfile,
+						m_p->inputlineno) == NO) {
+				retval = NO;
+			}
+
+			/* Now apply it, so we are up to date. */
+			asgnssv(m_p->u.ssv_p);
+		}
+		else if (m_p->str == S_BAR) {
+			barcount++;
+			/* Loop though any timed SSVs, looking for problems */
+			for (tssv_p = m_p->u.bar_p->timedssv_p; tssv_p != 0;
+						tssv_p = tssv_p->next) {
+				/* If there were user input errors,
+				 * tssv_p->grpsyl_p may not have been set. */
+				if (tssv_p->grpsyl_p == 0) {
+					continue;
+				}
+				if (mult_rpt_ssv_ok( &(tssv_p->ssv),
+						staff, CLEF,
+						"clef (midmeasure)",
+						tssv_p->grpsyl_p->inputfile,
+						tssv_p->grpsyl_p->inputlineno)
+						== NO) {
+					retval = NO;
+				}
+				if (mult_rpt_ssv_ok(&(tssv_p->ssv),
+						staff, DEFOCT,
+						"defoct (midmeasure)",
+						tssv_p->grpsyl_p->inputfile,
+						tssv_p->grpsyl_p->inputlineno)
+						== NO) {
+					retval = NO;
+				}
+			}
+		}
+		else if (m_p->str == S_STAFF
+					&& m_p->u.staff_p->staffno == staff) {
+			if (barcount <= 0) {
+				/* In preceeding measures, check for
+				 * multirests, which are not allowed */
+				if (m_p->u.staff_p->groups_p[0]->is_multirest == YES) {
+					l_yyerror(m_p->inputfile, m_p->inputlineno,
+					"can't use multirest in the source of an mrpt (line %d)",
+					mll_p->inputlineno);
+				}
+
+				/* On a single mrpt need to fill in the
+				 * mrptnum field of which in a row of mrpt */
+				if (barcount == -1 && mrpt_type == MRT_SINGLE) {
+					if (m_p->u.staff_p->groups_p[0]->meas_rpt_type == MRT_SINGLE) {
+						mll_p->u.staff_p->mrptnum =
+							m_p->u.staff_p->mrptnum + 1;
+					}
+					else {
+						/* the first mrpt is labeled 2 */
+						mll_p->u.staff_p->mrptnum = 2;
+					}
+				}
+			}
+			else if (barcount >= 1) {
+				/* In subsequent measure; need to check for all space */
+				int is_allspace;
+
+				meas_dur.n = Score.time.n + 1;
+				meas_dur.d = Score.time.d;
+				is_allspace = YES;
+				for (v = 0; v < MAXVOICES; v++) {
+					if (m_p->u.staff_p->groups_p[v] == 0) {
+						break;
+					}
+					if (hasspace(m_p->u.staff_p->groups_p[v],
+						Zero, meas_dur) == NO) {
+						l_yyerror(m_p->inputfile, m_p->inputlineno,
+						"subsequent measure%s of %s mrpt (line %d) must be all space",
+						(mrpt_type == MRT_QUAD ? "s" : "" ),
+						mrt_name, mll_p->inputlineno);
+						is_allspace = NO;
+					}
+				}
+				if (is_allspace == YES) {
+					set_mrpt(m_p->u.staff_p, mrpt_type, barcount + 1);
+				}
+			}
+		}
+	}
+
+	/* Restore the SSV state to what is should be for where we are
+	 * in processing the main list. */
+	restoressvstate();
+
+	return(retval);
+}
+
+
+/* Copy multi-rest measures for MIDI purposes. */
+
+static void
+do_midi_mrpt_copy(mll_p)
+
+struct MAINLL *mll_p; /* points to first STAFF of a mrpt */
+
+{
+	struct MAINLL *from_mll_p;	/* copy from this main list staff */
+	struct GRPSYL *from_grpsyl_p;	/* copy from this grpsyl */
+	struct GRPSYL *grpsyl_p;	/* copy to this grpsyl */
+	int m;				/* count of measures copied */
+	int mrpt_type;			/* MRT_* */
+
+
+	mrpt_type = mll_p->u.staff_p->groups_p[0]->meas_rpt_type;
+
+	/* Back up to find the beginning of the section to be repeated. */
+	from_mll_p = mll_p;
+	from_grpsyl_p = mll_p->u.staff_p->groups_p[0];
+	for (m = 0; m < mrpt_type; m++) {
+		from_grpsyl_p = prevgrpsyl(from_mll_p->u.staff_p->groups_p[0],
+							&from_mll_p);
+		if (from_grpsyl_p == 0) {
+			pfatal("unable to find first measure to copy mprt from");
+		}
+	}
+
+	/* Copy as many measures as appropriate */
+	grpsyl_p = mll_p->u.staff_p->groups_p[0];
+	for (m = 0; m < mrpt_type; m++) {
+		int v;
+
+		/* For each voice, discard the mrpt or ms that is there
+		 * and replace with the prior measure to be repeated. */
+		for (v = 0; v < MAXVOICES; v++) {
+			struct GRPSYL *g_p;
+
+			if (mll_p->u.staff_p->groups_p[v] == 0) {
+				break;
+			}
+			free_grpsyls(mll_p->u.staff_p->groups_p[v]);
+			/* Note that the notelist does need to be copied,
+			 * (arg 2 == YES) because even though coords
+			 * are not used in MIDI, vcombine code may delete
+			 * the list, so it cannot be shared across groups.
+			 */
+			mll_p->u.staff_p->groups_p[v] = clone_gs_list(
+					from_mll_p->u.staff_p->groups_p[v], YES);
+			/* The cloned list may already have breakbeam set,
+			 * which will confuse has_cust_beaming(). For MIDI
+			 * purposes, we don't care about beams anyway,
+			 * much less subbeams, and breakbeam will get set
+			 * properly later anyway on these groups,
+			 * so just set to NO here. Similar for autobeam. */
+			for (g_p = mll_p->u.staff_p->groups_p[v]; g_p != 0;
+							g_p = g_p->next) {
+				g_p->breakbeam = NO;
+				g_p->autobeam = NOITEM;
+			}
+		}
+		if (m == mrpt_type - 1) {
+			/* We've copied enough */
+			break;
+		}
+
+		/* Move to the next measure to copy from */
+		for (from_grpsyl_p = from_mll_p->u.staff_p->groups_p[0];
+				from_grpsyl_p->next != 0;
+				from_grpsyl_p = from_grpsyl_p->next) {
+
+			;
+		}
+		if ((from_grpsyl_p = nextgrpsyl(from_grpsyl_p, &from_mll_p)) == 0) {
+			pfatal("unable to find measure to copy mprt from");
+		}
+
+		/* Move to the next measure to copy to */
+		for (grpsyl_p = mll_p->u.staff_p->groups_p[0];
+				grpsyl_p->next != 0;
+				grpsyl_p = grpsyl_p->next) {
+			;
+		}
+		if ((grpsyl_p = nextgrpsyl(grpsyl_p, &mll_p)) == 0) {
+			l_yyerror(0, -1, "song ends with an mrpt in progress");
+			return;
+		}
 	}
 }

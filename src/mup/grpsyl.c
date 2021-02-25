@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -94,9 +94,9 @@ static void clone_notelist P((struct GRPSYL *new_p, struct GRPSYL *old_p,
 static void finish_bar P((void));
 static void restart_bar P((void));
 static void fix_grpsyl_list P((struct MAINLL *mainll_item_p));
-static void fix_a_group_list P((struct GRPSYL *grpsyllist_p, int staffno,
-		int vno, char *fname, int lineno, int mrptnum,
-		struct TIMEDSSV * tssv_p));
+static void fix_a_group_list P((struct GRPSYL *grpsyllist_p,
+		struct MAINLL *mll_p, int staffno, int vno, char *fname,
+		int lineno, int mrptnum, struct TIMEDSSV * tssv_p));
 static void add_space_padding P((struct GRPSYL *grpsyllist_p, int grpsyl,
 			RATIONAL used_time));
 static void chk_a_syl_list P((struct GRPSYL *grpsyl_p, char *fname,
@@ -109,18 +109,12 @@ static void fix_frets P((struct GRPSYL *grpsyl_item_p));
 static int string_number P((struct STRINGINFO *stringinfo_p, int nstrings,
 		int letter, int accidental, int nticks));
 
-static void check_grace P((struct GRPSYL *grpsyl_item_p, char *fname,
-		int lineno));
+static void check_grace P((struct MAINLL *mll_p,struct GRPSYL *grpsyl_item_p,
+		char *fname, int lineno));
 static void fix_strlist P((struct GRPSYL *gs_p, int font, int size,
 		char *fname, int lineno));
 static void check4missing_voices P((struct MAINLL *list_p));
 static int replace_emptymeas P((int staffno, int vno));
-static void fix_mrpt P((struct MAINLL *mll_p));
-static int chk_mrpt_ssv_interactions P((struct SSV *ssv_p, struct GRPSYL *gs_p,
-		int staffno));
-static int chk_midmeas P((struct MAINLL *mll_bar_p));
-static int is_ms P((struct GRPSYL *gs_p));
-static int voices_override P((int staff, int field));
 static void sort_notes P((struct GRPSYL *grpsyl_p, char *fname, int lineno));
 static int parse_bend_string P((char *bendstring));
 static void check_bends P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
@@ -151,6 +145,8 @@ int grp_or_syl;		/* GS_GROUP or GS_SYLLABLE */
 	new_p->tuploc = NOITEM;
 	new_p->grpsyl = (short) grp_or_syl;
 	new_p->is_multirest = NO;
+	new_p->is_meas = NO;
+	new_p->meas_rpt_type = MRT_NONE;
 	new_p->roll = NOITEM;
 	new_p->inputfile = Curr_filename;
 	new_p->inputlineno = (short) yylineno;
@@ -172,6 +168,7 @@ int grp_or_syl;		/* GS_GROUP or GS_SYLLABLE */
 	new_p->beamslope = NOBEAMANGLE;
 	/* assume no explicit abm/eabm */
 	new_p->autobeam = NOITEM;
+	new_p->tupletslope = NOTUPLETANGLE;
 	/* everything else zero-ed is proper default */
 
 	return(new_p);
@@ -1049,6 +1046,7 @@ struct MAINLL *mainll_item_p;
 				setssvstate(mainll_item_p);
 			}
 			fix_a_group_list(staff_p->groups_p[v],
+				mll_p,
 				staff_p->staffno, v + 1,
 				staff_p->groups_p[v]->inputfile,
 				staff_p->groups_p[v]->inputlineno,
@@ -1076,14 +1074,15 @@ struct MAINLL *mainll_item_p;
 }
 
 
-/* walk through a list of GRPSYLs (GROUPs, not SYLLABLESs), and fix up things
+/* walk through a list of GRPSYLs (GROUPs, not SYLLABLEs), and fix up things
  * like octaves, etc */
 
 
 static void
-fix_a_group_list(grpsyllist_p, staffno, vno, fname, lineno, mrptnum, tssv_p)
+fix_a_group_list(grpsyllist_p, mll_p, staffno, vno, fname, lineno, mrptnum, tssv_p)
 
-struct GRPSYL *grpsyllist_p;
+struct GRPSYL *grpsyllist_p;	/* which list to fix */
+struct MAINLL *mll_p;		/* the grpsyl list hangs off of this */
 int staffno;
 int vno;		/* voice number */
 char *fname;		/* file name for error messages */
@@ -1165,9 +1164,6 @@ struct TIMEDSSV *tssv_p;	/* points to any timed SSVs in this measure */
 		 * but otherwise strings need to be put in internal format */
 		if (mrptnum == 0) {
 			fix_strlist(grpsyl_p, font, size, fname, lineno);
-		}
-
-		if (mrptnum == 0) {
 			if (Doing_tab_staff == YES) {
 				/* determine proper STRINGNO and FRETNO information */
 				fix_frets(grpsyl_p);
@@ -1348,7 +1344,7 @@ struct TIMEDSSV *tssv_p;	/* points to any timed SSVs in this measure */
 			grpsyl_p->fulltime = Zero;
 
 			/* do some error checks */
-			check_grace(grpsyl_p, fname, lineno);
+			check_grace(mll_p, grpsyl_p, fname, lineno);
 
 			/* if more than one grace note in a row, beam them */
 			if (grpsyl_p->beamloc == NOITEM
@@ -1889,8 +1885,9 @@ int basictime;
 /* make sure all the GRPSYL fields for a grace group are valid */
 
 static void
-check_grace(grpsyl_item_p, fname, lineno)
+check_grace(mll_p, grpsyl_item_p, fname, lineno)
 
+struct MAINLL *mll_p;
 struct GRPSYL *grpsyl_item_p;	/* which grace group to check */
 char *fname;			/* file name for error messages */
 int lineno;			/* in input, for error messages */
@@ -1934,19 +1931,22 @@ int lineno;			/* in input, for error messages */
 	if (is_tab_staff(grpsyl_item_p->staffno) == YES) {
 		for (n = 0; n < grpsyl_item_p->nnotes; n++) {
 			if (HASBEND(grpsyl_item_p->notelist[n])) {
-				l_yyerror(fname, lineno,
+				l_warning(fname, lineno,
 					"can't have bend on grace note");
 				break;
 			}
 		}
 	}
-	else if (grpsyl_item_p->prev != (struct GRPSYL *) 0) {
-		
-		for (n = 0; n < grpsyl_item_p->prev->nnotes; n++) {
-			if (grpsyl_item_p->prev->notelist[n].is_bend) {
-				l_yyerror(fname, lineno,
-					"can't have bend on grace note");
-				break;
+	else {
+		struct GRPSYL * prevgs_p;
+
+		if ((prevgs_p = prevgrpsyl(grpsyl_item_p, &mll_p)) != 0) {
+			for (n = 0; n < prevgs_p->nnotes; n++) {
+				if (prevgs_p->notelist[n].is_bend) {
+					l_warning(fname, lineno,
+						"can't have bend on grace note");
+					break;
+				}
 			}
 		}
 	}
@@ -2050,7 +2050,7 @@ begin_tuplet()
 /* once we reach the end of a tuplet, adjust all the time values */
 
 void
-end_tuplet(tupcont, tuptime, printtup, tupside)
+end_tuplet(tupcont, tuptime, printtup, tupside, tupslope)
 
 int tupcont;		/* number to print on top of tuplet */
 RATIONAL tuptime;	/* what time value to stuff tuplet into. If 0,
@@ -2058,6 +2058,8 @@ RATIONAL tuptime;	/* what time value to stuff tuplet into. If 0,
 int printtup;		/* one of the PT_* values, specifying whether to print
 			 * number and bracket */
 int tupside;		/* side at which to print number/bracket */
+double tupslope;	/* forced slope of tuplet bracket,
+			 * or (usually) NOTUPLETSLOPE */
 
 {
 	RATIONAL mult_factor;	/* how much to adjust due to tuplet */
@@ -2164,6 +2166,11 @@ int tupside;		/* side at which to print number/bracket */
 		}
 	}
 
+	/* Store the tuplet bracket slope in the first group of the tuplet */
+	if (Tuplet_list_p != 0) {
+		Tuplet_list_p->tupletslope = tupslope;
+	}
+
 	/* go through the list, filling in tupcont, tuptime, and adjusting
 	 * fulltime of each note */
 	for (  ; Tuplet_list_p != (struct GRPSYL *) 0;
@@ -2263,9 +2270,6 @@ struct MAINLL *list_p;	/* list of STAFFs */
 							s, v + 1);
 			}
 		}
-
-		/* fix up any measure repeats */
-		fix_mrpt(list_p);
 
 		if (list_p->next != (struct MAINLL *) 0) {
 			list_p = list_p->next;
@@ -2508,321 +2512,6 @@ char *severity;	/* "error" or "warning" */
 	}
 }
 
-/* given a MAINLL that points to a STAFF, check if that staff is a measure
- * repeat, and if so, validate and normalize it
- */
-
-static void
-fix_mrpt(mll_p)
-
-struct MAINLL *mll_p;	/* points to a STAFF */
-
-{
-	struct GRPSYL *gs_voice_p[MAXVOICES];	/* groups for each voice */
-	struct GRPSYL *prevgrp_p;
-	struct STAFF *staff_p;
-	struct MAINLL *prevmll_p;		/* measure being repeated */
-	int voice_is_mrpt[MAXVOICES];		/* boolean for each voice */
-	int found_mrpt;
-	int found_non_mrpt;			/* something other than mrpt or ms */
-	int staff;
-	int v;
-
-
-	/* find out if any voice is a measure repeat */
-	found_mrpt = NO;
-	found_non_mrpt = NO;
-	for (v = 0; v < MAXVOICES; v++) {
-		gs_voice_p[v] = mll_p->u.staff_p->groups_p[v];
-		voice_is_mrpt[v] = is_mrpt(gs_voice_p[v]);
-		if (voice_is_mrpt[v] == YES) {
-			found_mrpt = YES;
-		}
-		else if (is_ms(gs_voice_p[v]) == NO) {
-			found_non_mrpt = YES;
-		}
-	}
-
-	/* if none are a measure repeat, we are done */
-	if (found_mrpt == NO) {
-		return;
-	}
-
-	/* At least one must be a meas repeat. If the others aren't
-	 * either also a measure repeat or a measure space, user error. */
-	if (found_non_mrpt == YES) {
-		l_yyerror(gs_voice_p[0]->inputfile, gs_voice_p[0]->inputlineno,
-			"if one voice is mrpt, other voices cannot contain notes or rests");
-		return;
-	}
-
-	staff_p = mll_p->u.staff_p;
-	staff = staff_p->staffno;
-
-	/* At this point, we have at least one voice that is mrpt, and
-	 * any other voices that exist are either mrpt or ms.
-	 * Find the previous measure to find out how many measures of
-	 * mrpt we have in a row, to fill in the mrptnum field.
-	 * But before calling prevgrpsyl(), need to make sure the staffno and
-	 * vno are filled in on the GRSPYL we pass to it, since we're so early
-	 * in parsing that hasn't happened yet, but prevgrpsyl() needs them.
-	 * We use the GRPSYL for voice 1, since we know that always exists.
-	 */
-	gs_voice_p[0]->staffno = staff;
-	gs_voice_p[0]->vno = 1;
-	prevmll_p = mll_p;
-	if ((prevgrp_p = prevgrpsyl(gs_voice_p[0], &prevmll_p)) == (struct GRPSYL *) 0) {
-		/* We fell off the top of the main list */
-		l_yyerror(gs_voice_p[0]->inputfile, gs_voice_p[0]->inputlineno,
-				"mrpt cannot be used on the first measure");
-
-		/* Force to measure space, so that if there are subsequent
-		 * mrpt measures, they don't give more errors; no reason
-		 * to complain more than once */
-		for (v = 0; v < MAXVOICES; v++) {
-			if (gs_voice_p[v] != (struct GRPSYL *) 0) {
-				gs_voice_p[v]->grpcont = GC_SPACE;
-			}
-		}
-		return;
-	}
-
-	/* Having a mrpt after a multirest doesn't make sense. At best,
-	 * it is ambiguous: should we repeat the multirest or the last
-	 * measure of rest? If the former, we have big problems if one
-	 * staff has a mrpt and another doesn't. If it's the latter, why
-	 * doesn't the user just use mr? That would be smaller and clearer. */
-	if (prevgrp_p->is_multirest == YES) {
-		l_yyerror(gs_voice_p[0]->inputfile, gs_voice_p[0]->inputlineno,
-				"mrpt cannot be used in measure after multirest");
-		for (v = 0; v < MAXVOICES; v++) {
-			if (gs_voice_p[v] != (struct GRPSYL *) 0) {
-				gs_voice_p[v]->grpcont = GC_SPACE;
-			}
-		}
-		return;
-	}
-
-	if (is_mrpt(prevgrp_p) == YES) {
-		/* Our current one must be numbered
-		 * one more than the previous one */
-		staff_p->mrptnum = prevmll_p->u.staff_p->mrptnum + 1;
-	}
-	else {
-		/* if this happens to be the first mrpt, it is numbered "2" */
-		staff_p->mrptnum = 2;
-	}
-
-	/* Certain parameter changes are not allowed in the middle of
-	 * runs of measure repeats because they cause the contents of 
-	 * the measure to be too different to make sense. These
-	 * include changes in time signature, defoct, transpose.
-	 * So back up from the mrpt measure to its preceding measure,
-	 * checking for any SSVs that might have something illegal in them.
-	 * And a mid-measure changes in a measure that is used as the 
-	 * template for a mrpt is dubious enough that we always block that.
-	 */
-	for (mll_p = mll_p->prev; mll_p != prevmll_p; mll_p = mll_p->prev) {
-
-		if ( (mll_p->str == S_SSV &&
-				chk_mrpt_ssv_interactions(
-				mll_p->u.ssv_p, gs_voice_p[0], staff) == NO) ||
-				(mll_p->str == S_BAR && chk_midmeas(mll_p) == NO) ) {
-			/* Force to measure space,
-			 * so that if there are subsequent mrpt measures,
-			 * they don't give more errors;
-			 * no reason to complain more than once. */
-			for (v = 0; v < MAXVOICES; v++) {
-				if (gs_voice_p[v] != (struct GRPSYL *) 0) {
-					gs_voice_p[v]->grpcont = GC_SPACE;
-				}
-			}
-			return;
-		}
-	}
-
-	/* If doing MIDI, expand the measure repeat to what it is repeating */
-	if (Doing_MIDI == YES) {
-		for (v = 0; v < MAXVOICES; v++) {
-			struct GRPSYL *g_p;
-
-			free_grpsyls(staff_p->groups_p[v]);
-			/* Note that the notelist does need to be copied,
-			 * (arg 2 == YES) because even though coords
-			 * are not used in MIDI, vcombine code may delete
-			 * the list, so it cannot be shared across groups.
-			 */
-			staff_p->groups_p[v] = clone_gs_list(
-					prevmll_p->u.staff_p->groups_p[v], YES);
-			/* The cloned list may already have breakbeam set,
-			 * which will confuse has_cust_beaming(). For MIDI
-			 * purposes, we don't care about beams anyway,
-			 * much less subbeams, and breakbeam will get set
-			 * properly later anyway on these groups,
-			 * so just set to NO here. */
-			for (g_p = staff_p->groups_p[v]; g_p != 0; g_p = g_p->next) {
-				g_p->breakbeam = NO;
-				g_p->autobeam = NOITEM;
-			}
-		}
-		staff_p->stuff_p = prevmll_p->u.staff_p->stuff_p;
-	}
-	else {
-		/* We force all to GC_NOTES to make sure they are all mrpt,
-		 * even if some were originally ms. */
-		for (v = 0; v < MAXVOICES; v++) {
-			if (gs_voice_p[v] != (struct GRPSYL *) 0) {
-				gs_voice_p[v]->grpcont = GC_NOTES;
-			}
-		}
-	}
-}
-
-
-/* given an SSV found while searching up the main list for a measure repeat
- * defining measure, figure out whether having a measure repeat is valid or
- * not. Some SSV changes alter things so much that a measure repeat no longer
- * makes sense, so we block it. Return YES if all seems well, NO if not.
- */
-
-/* Here is the list of things we do NOT allow user to change between a
- * mrpt and the (earlier) measure that defines it */
-static struct Disallowed_ssv_fields {
-	int	field;		/* index of the field in SSV "used" array */
-	char *	name;		/* to use in error message */
-} mrpt_ssv_list[] = {
-	{ TIME,			"time" },
-	{ DEFOCT,		"defoct" },
-	{ CLEF,			"clef" },
-	{ TRANSPOSITION,	"transpose" },
-	{ ADDTRANSPOSITION,	"addtranspose" },
-	{ NUMSTAFF,		"staffs" },
-	{ 0,			(char *) 0 }	/* end the list */
-};
-
-static int
-chk_mrpt_ssv_interactions(ssv_p, gs_p, staffno)
-
-struct SSV *ssv_p;
-struct GRPSYL *gs_p;
-int staffno;
-
-{
-	int ret = YES;	/* return value after all checks */
-	int err = NO;	/* did we find error this time through loop? */
-	int field;	/* index into used array in SSV */
-	int i;		/* loop through list of disallowed things */
-
-
-	/* check all possible thing that we don't allow. Complain about
-	 * as many errors as we find. Some of these things only occur in
-	 * score or score/staff context, but it's easier to just make
-	 * the code very general; if the field isn't used, things will still
-	 * work just fine.
-	 */
-	for (i = 0; mrpt_ssv_list[i].name != (char *) 0; i++) {
-		field = mrpt_ssv_list[i].field;
-		err = NO;
-
-		switch (ssv_p->context) {
-
-		case C_SCORE:
-			/* for things that can be overriden on staff
-			 * and/or voice, the score one will only apply
-			 * if there isn't an override in effect */
-			if (ssv_p->used[field] == YES) {
-				if (staff_field_used(field, staffno) == YES) {
-					/* overridden by staff, so ignore */
-					break;
-				}
-				if (voices_override(staffno, field) == YES) {
-					/* overridden by all voices; ignore */
-					break;
-				}
-				err = YES;
-			}
-			break;
-
-		case C_STAFF:
-		case C_VOICE:
-			if (ssv_p->staffno != staffno) {
-				/* This applies to some other staff. Since this
-				 * SSV is totally irrrelevant, we can return,
-				 * rather than loop through checking for other
-				 * possible errors. */
-				return(YES);
-			}
-			if (ssv_p->used[field] == YES) {
-				if (ssv_p->context == C_STAFF &&
-						voices_override(staffno, field) == YES) {
-					/* overridden on all voices, so ignore */
-					break;
-				}
-				err = YES;
-			}
-			break;
-
-		default:
-			pfatal("bad context in mrpt/ssv check");
-			break;
-		}
-
-		if (err == YES) {
-			/* this field change not allowed */
-			l_yyerror(gs_p->inputfile, gs_p->inputlineno,
-				"can't use mrpt after %s change",
-				mrpt_ssv_list[i].name);
-			ret = NO;
-		}
-	}
-
-	return(ret);
-}
-
-
-/* Given a MAINLL for a BAR that is between a mrpt and the measure before it,
- * returns YES if it is free of any mid-measure changes that would be trouble.
- * If there are mid-measure changes, prints error message and returns NO.
- */
-
-static int
-chk_midmeas(mll_bar_p)
-
-struct MAINLL *mll_bar_p;	/* BAR that that we hope does not have mid-meas changes */
-
-{
-	if (mll_bar_p->u.bar_p->timedssv_p != 0) {
-		l_yyerror(mll_bar_p->inputfile, mll_bar_p->inputlineno,
-			"can't use mrpt after a measure containing a mid-measure parameter change");
-		return(NO);
-	}
-	return(YES);
-}
-
-
-/* Returns YES if the given SSV field is overriden by all voices
- * on the given staff, NO if not. */
-
-static int
-voices_override(staff, field)
-
-int staff;	/* check this staff */
-int field;	/* check this field */
-
-{
-	int numvoices;
-	int v;
-
-	numvoices = vscheme_voices(svpath(staff, VSCHEME)->vscheme);
-	for (v = 1; v <= numvoices; v++) {
-		if (voice_field_used(field, staff, v) == NO) {
-			/* this voice does not override */
-			return(NO);
-		}
-	}
-	return(YES);
-}
-
 
 /* return YES if given GRPSYL represents a measure repeat */
 
@@ -2832,23 +2521,14 @@ is_mrpt(gs_p)
 struct GRPSYL *gs_p;
 
 {
-	return (gs_p != (struct GRPSYL *) 0 && gs_p->is_meas == YES 
-		&& gs_p->grpcont == GC_NOTES && gs_p->nnotes == 0) ? YES : NO;
-}
-
-/* return YES if given GRPSYL represents a measure space */
-
-static int
-is_ms(gs_p)
-struct GRPSYL *gs_p;
-
-{
-	/* non-existent is like measure space */
-	if (gs_p == (struct GRPSYL *) 0) {
+	if ((gs_p != 0) && (gs_p->meas_rpt_type != MRT_NONE)) {
 		return(YES);
 	}
-	return (gs_p->is_meas == YES && gs_p->grpcont == GC_SPACE) ? YES : NO;
+	else {
+		return(NO);
+	}
 }
+
 
 
 /* sort the notes to be top to bottom */
@@ -3151,6 +2831,7 @@ char *item2_p;
  * Also does error checks on any FEED at the end of the piece.
  * It does a similar check on any FEED at the beginning. (It doesn't
  * really fit the name of the function, but keeps the checks together.)
+ * Similarly, checks to unclosed samescore or samepage zones.
  */
 
 void
@@ -3185,6 +2866,9 @@ check4barline_at_end()
 			 */
 		}
 	}
+
+	/* Check for unclosed samescore/samepage zones */
+	check_same_ended();
 
 	for (list_p = Mainlltc_p; list_p != (struct MAINLL *) NULL;
 				list_p = list_p->prev) {

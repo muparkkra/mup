@@ -1,0 +1,16 @@
+header
+	title bold (17) "mrpt-midmeas_err.mup"
+	paragraph (13) "The file test that mid-measure changes are not allowed during a mrpt."
+
+music
+
+1: c;;;;
+bar
+
+1: c;;<<staff clef=bass>>d;;
+bar
+
+1: dblmrpt;
+bar
+1: <<staff defoct=5>>mr;
+bar

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -205,6 +205,7 @@ initstructs()
 	Score.gridfret = DEFGRIDFRET;
 	Score.mingridheight = DEFGRIDFRET;
 	Score.numbermrpt = YES;
+	Score.numbermultrpt = YES;
 	Score.printmultnum = YES;
 	Score.restsymmult = NO;
 	Score.vscheme = V_1;
@@ -212,6 +213,7 @@ initstructs()
 		Score.vcombine[v] = 0;
 	}
 	Score.vcombinequal = VC_NOOVERLAP;
+	Score.vcombinemeas = NO;
 	Score.prtime_str1 = 0;
 	Score.prtime_str2 = 0;
 	Score.prtime_is_arbitrary = NO;
@@ -267,12 +269,15 @@ initstructs()
 	Score.nsubbeam = 0;
 	Score.beamfact = DEFBEAMFACT;
 	Score.beammax = DEFBEAMMAX;
+	Score.tupletfact = DEFTUPLETFACT;
+	Score.tupletmax = DEFTUPLETMAX;
 	Score.pad = DEFPAD;
 	Score.stemlen = DEFSTEMLEN;
 	Score.beamshort = DEFBEAMSHORT;
 	Score.maxproshort = DEFMAXPROSHORT;
 	Score.begproshort = DEFBEGPROSHORT;
 	Score.endproshort = DEFENDPROSHORT;
+	Score.midlinestemfloat = NO;
 	Score.defoct = DEFOCTAVE;
 	Score.noteinputdir = UNKNOWN;
 	Score.timeunit.n = 1;
@@ -293,6 +298,7 @@ initstructs()
 	Score.emptymeas = 0;
 	Score.extendlyrics = NO;
 	Score.cue = NO;
+	Score.defaultphraseside = PL_UNKNOWN;
 
 	for (n = 0; n < NUMFLDS; n++) {
 		Score.used[n] = YES;	/* all items will be set in Score */
@@ -1102,6 +1108,8 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 
 	SETPARM(numbermrpt, NUMBERMRPT)
 
+	SETPARM(numbermultrpt, NUMBERMULTRPT)
+
 	SETPARM(printmultnum, PRINTMULTNUM)
 
 	SETPARM(restsymmult, RESTSYMMULT)
@@ -1148,6 +1156,7 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 			f_p->vcombine[v] = i_p->vcombine[v];
 		}
 		f_p->vcombinequal = i_p->vcombinequal;
+		f_p->vcombinemeas = i_p->vcombinemeas;
 		f_p->used[VCOMBINE] = YES;
 		break;
 	case UNSET:
@@ -1398,6 +1407,17 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 		break;
 	}
 
+	switch (i_p->used[TUPLETSLOPE]) {
+	case YES:
+		f_p->tupletfact = i_p->tupletfact;
+		f_p->tupletmax = i_p->tupletmax;
+		f_p->used[TUPLETSLOPE] = YES;
+		break;
+	case UNSET:
+		f_p->used[TUPLETSLOPE] = NO;
+		break;
+	}
+
 	SETPARM(pad, PAD)
 
 	SETPARM(stemlen, STEMLEN)
@@ -1409,6 +1429,8 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 	SETPARM(begproshort, BEGPROSHORT)
 
 	SETPARM(endproshort, ENDPROSHORT)
+
+	SETPARM(midlinestemfloat, MIDLINESTEMFLOAT)
 
 	SETPARM(defoct, DEFOCT)
 
@@ -1457,6 +1479,8 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 	SETPARM(extendlyrics, EXTENDLYRICS)
 
 	SETPARM(cue, CUE)
+
+	SETPARM(defaultphraseside, DEFAULTPHRASESIDE)
 }
 
 /*

@@ -6,9 +6,9 @@
 
 cat - > muschar.ps <<!
 %!PS-Adobe-1.0
-%%BoundingBox: 70 157 513 746
-/boxheight 62 def
-/boxwidth 43 def
+%%BoundingBox: 64 47 597 728
+/boxheight 60 def
+/boxwidth 47 def
 /nameheight 10 def
 /tmpstring 50 string def
 /flagsep 1.6 300 mul def
@@ -61,10 +61,12 @@ cat - > muschar.ps <<!
 	/col col 1 add def
 	% go to next column when current one is full
 	col 11 ge { /col 0 def /row row 1 sub def } if
-	% a couple rows have to be extra tall
-	row 5 eq { /extra 4 def } if
-	row 4 eq { /extraoffset 4 def /extra 30 def } if
-	row 3 eq { /extraoffset 34 def /extra 0 def } if
+	% a couple rows have to be extra tall, others shorter
+	row 7 eq { /extra -15 def } if
+	row 6 eq { /extraoffset -15 def } if
+	row 5 eq { /extraoffset -30 def /extra 6 def } if
+	row 4 eq { /extraoffset -24 def /extra 32 def } if
+	row 3 eq { /extraoffset 8 def /extra 0 def } if
 } def
 
 !

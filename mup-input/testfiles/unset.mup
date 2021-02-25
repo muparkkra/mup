@@ -28,6 +28,7 @@ unset chordtranslation
 unset clef
 unset cue
 unset defaultkeymap
+unset defaultphraseside
 unset defoct
 unset dist
 unset division
@@ -65,11 +66,13 @@ unset measnumfont
 unset measnumfontfamily
 unset measnumsize
 unset measnumstyle
+unset midlinestemfloat
 unset minalignscale
 unset mingridheight
 unset noteheads
 unset noteinputdir
 unset numbermrpt
+unset numbermultrpt
 unset ontheline
 unset packexp
 unset packfact
@@ -110,6 +113,7 @@ unset timeunit
 unset topmargin
 unset transpose
 unset tuning
+unset tupletslope
 unset units
 unset useaccs
 unset vcombine

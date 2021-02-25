@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -107,6 +107,7 @@ extern int CSSused;
 extern int CSSpass;
 extern int Keymap_used;
 extern int Tuning_used;
+extern int Mrptused;
 
 extern int yylineno;
 /* This 8192 must agree with YYLMAX in lex.c.  We shouldn't have to specify
@@ -152,6 +153,7 @@ extern float _Staff[MAXSTAFFS][NUMCTYPE];
 
 extern struct RANGELIST *Staffrange_p;
 extern struct RANGELIST *Vnorange_p;
+extern struct RANGELIST *VCrange_p;
 
 extern short Place;
 
@@ -289,7 +291,8 @@ extern void chkmargin P((double topmargin, double botmargin, double leftmargin,
 extern double adjust2inches P((double value));
 extern void begin_subbeam P((void));
 extern void end_subbeam P((void));
-extern void assign_vcombine P((int qualifier, struct MAINLL * mainll_p));
+extern void assign_vcombine P((int qualifier, int bymeas,
+		struct MAINLL *mainll_p, struct TIMEDSSV *tssv_p));
 extern int has_tab_staff P((void));
 extern void chk_tab P((struct MAINLL *mll_p));
 extern void set_keymap P((int which, char *name, struct MAINLL *mll_p));
@@ -397,6 +400,7 @@ extern void set_all_default_acc_offsets P((void));
 extern int set_firstpageside P((int p_option_side));
 extern void chk4matching_repeatends P((void));
 extern void expand_repeats P((void));
+extern void set_mrpt_info P((void));
 
 /* debug.c */
 extern char *stype_name P((int stype));
@@ -434,6 +438,7 @@ extern void init_psfont_metrics P((void));
 /* gram.y */
 extern int yyparse P((void));
 extern int yyerror P((char *msg));
+extern void check_same_ended P((void));
 
 /* grpsyl.c */
 extern struct GRPSYL *newGRPSYL P((int grp_or_syl));
@@ -461,7 +466,7 @@ extern char *format_string_name P((int letter, int accidental,
 extern void do_bar P((int bartype));
 extern void begin_tuplet P((void));
 extern void end_tuplet P((int tupcont, RATIONAL tuptime, int printtup,
-		int tupside));
+		int tupside, double tupslop));
 extern void check4barline_at_end P((void));
 extern void add_multirest P((int nummeas));
 extern struct GRPSYL *clone_gs_list P((struct GRPSYL *list_p,
@@ -737,7 +742,8 @@ extern struct MAINLL *chmgrp2staffm P((struct MAINLL *mll_p,
 extern void shiftgs P((struct GRPSYL *gs_p, double shift));
 extern double nearestline P((double offset));
 extern void vfyoffset P((struct GRPSYL *g_p[]));
-extern double adjslope P((struct GRPSYL *g_p, double oldslope, int betweencsb));
+extern double adjslope P((struct GRPSYL *g_p, double oldslope, int betweencsb,
+		int param));
 extern double eos_bar_adjust P((struct BAR *bar_p));
 extern double curve_y_at_x P((struct CRVLIST *first_p, double x));
 extern double findcubic P((struct CRVLIST *left_p, struct CRVLIST *right_p,
@@ -806,7 +812,7 @@ extern void print_blank_page P((void));
 extern void pr_staff P((struct MAINLL *mll_p));
 extern int tupdir P((struct GRPSYL *gs_p, struct STAFF *staff_p));
 extern char *num2str P((int num));
-extern char *mrnum P((struct STAFF *staff_p, double *x_p, double *y_offset_p,
+extern char *mr_num P((struct MAINLL *mll_p, double *x_p, double *y_offset_p,
 		double *height_p, double *width_p));
 extern int tupgetsbrack P((struct GRPSYL *gs_p));
 extern char *tupnumsize P((struct GRPSYL *gs_p, float *west_p,
@@ -822,8 +828,8 @@ extern void pr_slashes P((struct GRPSYL *grpsyl_p, double x, double y,
 		double sign, double offset, double y_tilt));
 extern void pr_tab_groups P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 extern void pr_withlist P((struct GRPSYL *gs_p));
-extern void pr_mrpt P((struct GRPSYL *gs_p, struct STAFF *staff_p));
-extern void pr_multirest P((struct GRPSYL *gs_p, struct STAFF *staff_p));
+extern void pr_mrpt P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
+extern void pr_multirest P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 extern double extwidth P((struct STUFF *stuff_p));
 extern struct GRPSYL *next_bm_grp_w_rests P((struct GRPSYL *gs_p,
 		struct GRPSYL *first_p, struct GRPSYL *endnext_p));
@@ -872,6 +878,8 @@ extern int leadstaff P((int *place_p));
 extern void add_to_sv_list P((void));
 extern void free_sv_list P((struct SVRANGELIST *svlist_p));
 extern void begin_sv_list P((void));
+extern void save_vcombine_range P((int begin, int end));
+extern void free_vcombine_range P((void));
 
 /* relvert.c */
 extern void relvert P((void));

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -63,6 +63,7 @@ static void set1freestem P((struct GRPSYL *this_p, struct GRPSYL *other_p,
 		int stemdir));
 static void favorstemdir P((struct GRPSYL *start_p, int stemdir));
 static void dobunch P((struct GRPSYL *start_p, struct GRPSYL *end_p));
+static void setmidlinestem P((struct GRPSYL *start_p));
 static void dograce P((struct GRPSYL *gs1_p, struct GRPSYL *gs2_p));
 static int setv3stem P((struct GRPSYL *gs_p, int stemdir));
 static int dov3bunch P((struct GRPSYL *start_p, struct GRPSYL *end_p,
@@ -804,6 +805,9 @@ struct GRPSYL *gs_p;	/* starts pointing at the first GRPSYL in a list */
 		dobunch(start_p, end_p->next);
 		start_p = end_p->next;
 	}
+
+	/* go through list again, setting groups affected by midlinestemfloat */
+	setmidlinestem(gs_p);
 }
 
 /*
@@ -962,6 +966,9 @@ int stemdir;		/* which way the stem must point if forced */
 		vtime = vtime2;
 		start_p = end_p->next;
 	}
+
+	/* go through list again, setting groups affected by midlinestemfloat */
+	setmidlinestem(this_p);
 }
 
 /*
@@ -1070,6 +1077,9 @@ int stemdir;		/* which way we will try to point the stems */
  *		of them that will be beamed together, for the case where
  *		the stems are allowed to go either way.  It decides which
  *		way is best, and sets the result.
+ *		Exception:  If parameter midlinestemfloat == YES, it will leave
+ *		the direction UNKNOWN in cases where it has to look at the
+ *		neighboring group(s)' settings, done later in setmidlinestem().
  */
 
 static void
@@ -1087,7 +1097,11 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 	int n;			/* loop counter */
 	int stemdir;		/* answer of where stems should point */
 	int div_pt;		/* dividing point between prefering up/down */
+	int midlinestemfloat;	/* look at neighbors for notes on middle line?*/
 
+
+	midlinestemfloat = vvpath(start_p->staffno, start_p->vno,
+			MIDLINESTEMFLOAT)->midlinestemfloat;
 
 	/*
 	 * Loop through all (nongrace) notes in these group(s), adding up
@@ -1168,8 +1182,19 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 					stemdir = DOWN;
 				else if (lonesum + topsum + botsum < 0)
 					stemdir = UP;
+				else if (insum > 0)
+					stemdir = DOWN;
+				else if (insum < 0)
+					stemdir = UP;
+				/* it's tied (0); beamed and non-notes go DOWN*/
+				else if (start_p->beamloc == STARTITEM ||
+						 start_p->grpcont != GC_NOTES)
+					stemdir = DOWN;
+				/* if parm is NO, default to DOWN */
+				else if (midlinestemfloat == NO)
+					stemdir = DOWN;
 				else
-					stemdir = insum >= 0 ? DOWN : UP;
+					return;	/* bail out, set in later */
 				break;
 			}
 		}
@@ -1190,6 +1215,102 @@ struct GRPSYL *end_p;	/* starts pointing after the last GRPSYL in a bunch */
 		if (gs_p->grpcont != GC_SPACE && gs_p->grpvalue == GV_NORMAL) {
 			gs_p->stemdir = (short)stemdir;
 		}
+	}
+}
+
+/*
+ * Name:        setmidlinestem()
+ *
+ * Abstract:    Sets stem direction for groups affected by midlinestemfloat.
+ *
+ * Returns:     void
+ *
+ * Description:	This function sets stem directions for groups that would
+ *		normally have been handled by dobunch(), but could not be,
+ *		because they are centered and the midlinestemfloat parm makes
+ *		it necessary to look at the group's neighbor(s)' settings.
+ *		We scan one measure of one voice, setting the stem directions
+ *		that have not yet been set.
+ */
+
+static void
+setmidlinestem(start_p)
+
+struct GRPSYL *start_p;	/* starts pointing at the first GRPSYL in a bunch */
+
+{
+	struct GRPSYL *gs_p;
+	struct GRPSYL *nextgs_p;
+	int prev_dir, next_dir;
+	int prev_exists, next_exists;
+	int result;
+
+
+	/*
+	 * As we loop left to right, we have to remember our left neighbor's
+	 * original stemdir, since its value may be changed.  But our right
+	 * neighbor is no problem, since we haven't changed it yet.
+	 */
+	prev_exists = NO;
+	prev_dir = UNKNOWN;
+
+	/* skip any leading graces; all graces are ignored in this function */
+	gs_p = start_p;
+	if (gs_p->grpvalue == GV_ZERO) {
+		gs_p = nextnongrace(gs_p);
+	}
+
+	for ( ; gs_p != 0; gs_p = nextnongrace(gs_p)) {
+
+		if (gs_p->grpcont != GC_NOTES) {
+			/* rest/space means there is no neighboring note */
+			prev_exists = NO;
+			prev_dir = UNKNOWN;
+			continue;
+		}
+		if (gs_p->stemdir != UNKNOWN) {
+			/* already known; nothing to do but remember it */
+			prev_exists = YES;
+			prev_dir = gs_p->stemdir;
+			continue;
+		}
+
+		/*
+		 * Okay, we found one that needs to be set.  First get info on
+		 * its right neighbor, if any.
+		 */
+		nextgs_p = nextnongrace(gs_p);
+		if (nextgs_p != 0 && nextgs_p->grpcont == GC_NOTES) {
+			next_exists = YES;
+			next_dir = nextgs_p->stemdir;
+		} else {
+			next_exists = NO;
+			next_dir = UNKNOWN;
+		}
+
+		/* find result, but don't overwrite stemdir yet */
+		result = DOWN;	/* the default if neighbors are inconclusive */
+		if (prev_exists == YES && next_exists == YES) {
+			/* both neighbors exist; follow if known and agree */
+			if (prev_dir != UNKNOWN && next_dir != UNKNOWN) {
+				if (prev_dir == next_dir) {
+					result = prev_dir;
+				}
+			}
+		} else if (prev_exists == YES && prev_dir != UNKNOWN) {
+			/* only prev exists; it is known, so use it */
+			result = prev_dir;
+		} else if (next_exists == YES && next_dir != UNKNOWN) {
+			/* only next exists; it is known, so use it */
+			result = next_dir;
+		}
+
+		/* remember the original state for the next loop */
+		prev_exists = YES;
+		prev_dir = gs_p->stemdir;
+
+		/* update this group to what we decided above */
+		gs_p->stemdir = result;
 	}
 }
 

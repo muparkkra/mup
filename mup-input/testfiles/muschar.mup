@@ -14,7 +14,7 @@ header2
 	title rom (12) "" "page \%"
 
 score
-	scale = 1.4
+	scale = 1.3
 music
 1: [=k] 1d;
 bar
@@ -27,6 +27,8 @@ print (k.x - 29, k.y - 50) "|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)|\(dn1
 print (k.x - 29, k.y - 65) "|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)|"
 
 print (k.x - 29, k.y - 80) "|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+print (k.x - 29, k.y - 95) "|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
 
 newpage
 
@@ -61,7 +63,12 @@ bar
 "\(fillpiewedge)","X", "\(dwhsemicircle)","X", \
 "\(semicircle)","X", "\(fillsemicircle)","X", \
 "\(dwhslashhead)","X", "\(slashhead)","X", \
-"\(fillslashhead)","X", "\(blankhead)","X"] 2f;
+"\(fillslashhead)","X", "\(blankhead)","X"] 4f; \
+[with "\(perfmaior)","X", "\(perfminor)","X", \
+"\(imperfmaior)","X", "\(imperfminor)", "X", \
+"\(perfmaiordim)","X", "\(perfminordim)","X", \
+"\(imperfmaiordim)","X", "\(imperfminordim)","X", \
+"\(dblmeasrpt)","X", "\(quadmeasrpt)","X"] 4f;
 bar
 
 newpage
@@ -77,6 +84,8 @@ print (k.x - 15, k.y - 50) "\f(TI)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)
 print (k.x - 15, k.y - 65) "\f(TI)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
 
 print (k.x - 15, k.y - 80) "\f(TI)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+print (k.x - 15, k.y - 95) "\f(TI)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
 
 newpage
 
@@ -111,7 +120,12 @@ bar
 "\f(TI)\(fillpiewedge)","X", "\f(TI)\(dwhsemicircle)","X", \
 "\f(TI)\(semicircle)","X", "\f(TI)\(fillsemicircle)","X", \
 "\f(TI)\(dwhslashhead)","X", "\f(TI)\(slashhead)","X", \
-"\f(TI)\(fillslashhead)","X", "\f(TI)\(blankhead)","X"] 2f;
+"\f(TI)\(fillslashhead)","X", "\(blankhead)","X"] 4f; \
+[with "\(perfmaior)","X", "\f(TI)\(perfminor)","X", \
+"\f(TI)\(imperfmaior)","X", "\f(TI)\(imperfminor)", "X", \
+"\f(TI)\(perfmaiordim)","X", "\f(TI)\(perfminordim)","X", \
+"\f(TI)\(imperfmaiordim)","X", "\f(TI)\(imperfminordim)","X", \
+"\f(TI)\(dblmeasrpt)","X", "\f(TI)\(quadmeasrpt)","X"] 4f;
 bar
 
 newpage
@@ -129,6 +143,8 @@ print (k.x - 15, k.y - 65) "\f(TB)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(in
 print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
 
 print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+print (k.x - 15, k.y - 95) "\f(TB)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
 
 newpage
 
@@ -163,7 +179,12 @@ bar
 "\f(TB)\(fillpiewedge)","X", "\f(TB)\(dwhsemicircle)","X", \
 "\f(TB)\(semicircle)","X", "\f(TB)\(fillsemicircle)","X", \
 "\f(TB)\(dwhslashhead)","X", "\f(TB)\(slashhead)","X", \
-"\f(TB)\(fillslashhead)","X", "\f(TB)\(blankhead)","X"] 2f;
+"\f(TB)\(fillslashhead)","X", "\(blankhead)","X"] 4f; \
+[with "\(perfmaior)","X", "\f(TB)\(perfminor)","X", \
+"\f(TB)\(imperfmaior)","X", "\f(TB)\(imperfminor)", "X", \
+"\f(TB)\(perfmaiordim)","X", "\f(TB)\(perfminordim)","X", \
+"\f(TB)\(imperfmaiordim)","X", "\f(TB)\(imperfminordim)","X", \
+"\f(TB)\(dblmeasrpt)","X", "\f(TB)\(quadmeasrpt)","X"] 4f;
 bar
 
 newpage
@@ -179,6 +200,8 @@ print (k.x - 15, k.y - 50) "\f(TX)|\(up32n)|\(dn32n)|\(up64n)|\(dn64n)|\(up128n)
 print (k.x - 15, k.y - 65) "\f(TX)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)|\(acc_gt)|\(acc_hat)|\(acc_uhat)|\(tr)|\(leg)|\(rr)|\(measrpt)|\(copyright)|\(triangle)|\(dim)|\(halfdim)|\(qwhrest)|\(ll1rest)|\(ll2rest)|\(altdblwhole)"
 
 print (k.x - 15, k.y - 80) "\f(TX)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
+
+print (k.x - 15, k.y - 95) "\f(TX)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
 
 newpage
 
@@ -213,6 +236,11 @@ bar
 "\f(TX)\(fillpiewedge)","X", "\f(TX)\(dwhsemicircle)","X", \
 "\f(TX)\(semicircle)","X", "\f(TX)\(fillsemicircle)","X", \
 "\f(TX)\(dwhslashhead)","X", "\f(TX)\(slashhead)","X", \
-"\f(TX)\(fillslashhead)","X", "\f(TX)\(blankhead)","X"] 2f;
+"\f(TX)\(fillslashhead)","X", "\(blankhead)","X"] 4f; \
+[with "\(perfmaior)","X", "\f(TX)\(perfminor)","X", \
+"\f(TX)\(imperfmaior)","X", "\f(TX)\(imperfminor)", "X", \
+"\f(TX)\(perfmaiordim)","X", "\f(TX)\(perfminordim)","X", \
+"\f(TX)\(imperfmaiordim)","X", "\f(TX)\(imperfminordim)","X", \
+"\f(TX)\(dblmeasrpt)","X", "\f(TX)\(quadmeasrpt)","X"] 4f;
 bar
 

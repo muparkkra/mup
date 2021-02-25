@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -65,7 +65,7 @@ struct PHRINFO {
 static void procstaff P((struct MAINLL *mainll_p, int s)); 
 static void dostaff P((int s, int place));
 static void dogroups P((struct MAINLL *start_p, int s, int place));
-static void llgrps P((struct STAFF *staff_p, struct GRPSYL *gs_p, int place));
+static void llgrps P((struct MAINLL *mll_p, struct GRPSYL *gs_p, int place));
 static void dobeamalt P((struct MAINLL *start_p, int s, int place));
 static void onebeamalt P((struct GRPSYL *gs_p));
 static double getstemendvert P((struct GRPSYL *gs_p));
@@ -584,7 +584,7 @@ int place;			/* above or below? */
 				mainll_p->u.staff_p->staffno == s) {
 
 			for (v = 0; v < MAXVOICES; v++)
-				llgrps(mainll_p->u.staff_p,
+				llgrps(mainll_p,
 				       mainll_p->u.staff_p->groups_p[v], place);
 		}
 	}
@@ -605,19 +605,22 @@ int place;			/* above or below? */
  */
 
 static void
-llgrps(staff_p, first_p, place)
+llgrps(mll_p, first_p, place)
 
-struct STAFF *staff_p;		/* point to the staff */
+struct MAINLL *mll_p;		/* point to the staff */
 struct GRPSYL *first_p;		/* point to first group */
 int place;			/* above or below? */
 
 {
+	struct STAFF *staff_p;		/* point to the staff */
 	struct GRPSYL *gs_p;		/* point at a group */
 	struct NOTE *note_p;		/* point at a note */
 	double mx, my_offset, mheight, mwidth;	/* multirest number coords */
 	int n;				/* loop through notelist */
 	float asc, des, wid;		/* ascent, descent, and width of acc */
 
+
+	staff_p = mll_p->u.staff_p;
 
 	/*
 	 * For each group that is notes or a rest, put a rectangle into Rectab.
@@ -634,8 +637,13 @@ int place;			/* above or below? */
 		if (place == PL_ABOVE && (
 			(gs_p->is_multirest && svpath(staff_p->staffno,
 					PRINTMULTNUM)->printmultnum == YES) ||
-			(is_mrpt(gs_p) && svpath(staff_p->staffno,
-					NUMBERMRPT)->numbermrpt == YES)
+			(gs_p->meas_rpt_type == MRT_SINGLE &&
+					svpath(staff_p->staffno,
+					NUMBERMRPT)->numbermrpt == YES) ||
+			((gs_p->meas_rpt_type == MRT_DOUBLE ||
+					gs_p->meas_rpt_type == MRT_QUAD) &&
+					svpath(staff_p->staffno,
+					NUMBERMULTRPT)->numbermultrpt == YES)
 		)) {
 			/*
 			 * Special case for multirests and measure repeats.
@@ -644,8 +652,11 @@ int place;			/* above or below? */
 			 * make a rectangle for the number, if the number is
 			 * to be printed.
 			 */
-			(void)mrnum(staff_p, &mx, &my_offset, &mheight,
-					&mwidth);
+			if (mr_num(mll_p, &mx, &my_offset, &mheight,
+					&mwidth) == 0) {
+				/* dbl or quad mrpt measure that has no number*/
+				continue;
+			}
 			Rectab[Reclim].w = mx;
 			Rectab[Reclim].e = mx + mwidth;
 			Rectab[Reclim].n = my_offset + mheight;

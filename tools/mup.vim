@@ -2,7 +2,7 @@
 " Language:	Mup music notation language
 " Maintainer:	Arkkra Enterprises <support@arkkra.com>
 " URL:		ftp://www.arkkra.com/pub/unix/user.pgms/mup.vim
-" Last Change:  18 October 2016 ( Mup 6.5 )
+" Last Change:  02 January 2021 ( Mup 6.9 )
 
 " Quit when a syntax file was already loaded
 if exists("b:current_syntax")
@@ -39,6 +39,7 @@ syn keyword Type bass bass8 8bass subbass treble 8treble treble8 alto soprano me
 syn keyword Type cue grace xnote dotted dashed
 syn keyword Type blank diam isostri norm pie rect righttri semicirc slash allslash x allx
 syn keyword Type 4n 2n 1n dblwhole altdblwhole filldiamond diamond dwhdiamond
+syn keyword Type dbl quad
 syn keyword Type fillisostriangle isostriangle dwhisostriangle
 syn keyword Type fillpiewedge piewedge dwhpiewedge
 syn keyword Type fillrectangle rectangle dwhrectangle
@@ -47,7 +48,7 @@ syn keyword Type fillurighttriangle urighttriangle dwhurighttriangle
 syn keyword Type fillsemicircle semicircle dwhsemicircle
 syn keyword Type fillslashhead slashhead dwhslashhead blankhead
 syn keyword Type hs
-syn keyword Type nooverlap shareone overlap stepsapart cut common
+syn keyword Type nooverlap shareone overlap stepsapart bymeas cut common
 syn keyword Type letter legal flsa halfleter
 syn keyword Type portrait landscape
 syn keyword Type equal pythagorean meantone cents
@@ -55,6 +56,7 @@ syn keyword Type equal pythagorean meantone cents
 syn keyword Function midi rom ital bold boldital
 syn keyword Function title left center right print nl paragraph ragged justified
 syn keyword Function newscore newpage
+syn keyword Function samescorebegin samescoreend samepagebegin samepageend
 syn keyword Function reh rehearsal num let mnum exit
 syn keyword Function ending endending openendending closedendending hidechanges
 syn keyword Function line curve to bulge
@@ -78,9 +80,10 @@ syn keyword Statement size staffsep scorepad staffpad chorddist dist dyndist
 syn keyword Statement division panelsperpage  gridfret restcombine restsymmult firstpage
 syn keyword Statement leftpage rightpage
 syn keyword Statement scoresep stafflines ontheline warn numbermrpt printmultnum
+syn keyword Statement midlinestemfloat numbermultrpt defaultphraseside
 syn keyword Statement gridswhereused gridsatend mingridheight tabwhitebox timeunit
 syn keyword Statement topmargin bottommargin botmargin leftmargin rightmargin units
-syn keyword Statement packfact packexp staffscale gridscale scale beamslope slope
+syn keyword Statement packfact packexp staffscale gridscale scale beamslope slope tupletslope
 syn keyword Statement transpose addtranspose lyricsalign pageheight pagewidth pagesize
 syn keyword Statement endingstyle rehstyle pedstyle release
 syn keyword Statement brace bracket barstyle subbarstyle aboveorder beloworder betweenorder

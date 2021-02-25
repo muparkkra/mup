@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1859,9 +1859,7 @@ struct GRPSYL *gs_p;	/* group whose stemlen should be adjusted */
 	 * Decr the length by half the thickness of the beam, but don't let it
 	 * get less than the distance between the outer notes of the group.
 	 */
-	gs_p->stemlen -= (W_WIDE * POINT / 2.0) *
-			(gs_p->grpsize == GS_NORMAL ? 1.0 : SM_FACTOR) *
-			svpath(gs_p->staffno, STAFFSCALE)->staffscale;
+	gs_p->stemlen -= HALF_BEAM_THICKNESS(gs_p);
 	gs_p->stemlen = MAX(gs_p->stemlen, stepdiff);
 }
 
@@ -2072,50 +2070,59 @@ struct GRPSYL *g_p[];		/* array of pointers to two groups */
 /*
  * Name:        adjslope()
  *
- * Abstract:    Adjust the slope of a beam.
+ * Abstract:    Adjust the slope of a beam or a tuplet bracket.
  *
  * Returns:     the new slope
  *
- * Description: This function is given the slope of a beam as determined by
- *		linear regression.  It adjusts it according to the "beamslope"
- *		parameter.
+ * Description: This function is given the slope of a beam or tuplet bracket
+ *		as determined by linear regression.  It adjusts it according
+ *		to the given parameter.
  */
 
 double
-adjslope(g_p, oldslope, betweencsb)
+adjslope(g_p, oldslope, betweencsb, param)
 
 struct GRPSYL *g_p;	/* pointer to GRPSYL to get staff and voice from */
 double oldslope;	/* the given slope */
 int betweencsb;		/* is this beam CSB and between the staffs? */
+int param;		/* BEAMSLOPE or TUPLETSLOPE */
 
 {
 	struct SSV *ssv_p;	/* for getting fact and max */
-	float beamfact;		/* to multiply by */
-	float beammax;		/* max angle in degrees */
+	float fact;		/* to multiply by */
+	float max;		/* max angle in degrees */
 	float newangle;		/* the adjusted angle */
 
 
 	/* find parameter values */
-	ssv_p = vvpath(g_p->staffno, g_p->vno, BEAMSLOPE);
-	beamfact = ssv_p->beamfact;
-	beammax  = ssv_p->beammax;
+	ssv_p = vvpath(g_p->staffno, g_p->vno, param);
+	if (param == BEAMSLOPE) {
+		fact = ssv_p->beamfact;
+		max  = ssv_p->beammax;
+	} else {
+		fact = ssv_p->tupletfact;
+		max  = ssv_p->tupletmax;
+	}
 
 	/*
 	 * If cross staff beaming and the beam is between the staffs, we allow
 	 * a somewhat bigger angle, because it may be necessary to avoid
-	 * collisions.
+	 * collisions.  (Tuplet brackets don't get printed for CSB so this code
+	 * won't run for them.)
 	 */
-	if (betweencsb == YES)
-		beammax *= 1.4;
+	if (betweencsb == YES) {
+		max *= 1.4;
+	}
 
-	/* new angle = old angle * beamfact */
-	newangle = (atan(oldslope) * 180.0 / PI) * beamfact;
+	/* new angle = old angle * fact */
+	newangle = (atan(oldslope) * 180.0 / PI) * fact;
 
 	/* force it to stay within the limit */
-	if (newangle > beammax)
-		newangle = beammax;
-	else if (newangle < -beammax)
-		newangle = -beammax;
+	if (newangle > max) {
+		newangle = max;
+	} else if (newangle < -max) {
+		newangle = -max;
+	}
 
 	/* return as slope */
 	return (tan(newangle * PI / 180.0));

@@ -1,0 +1,26 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "repeat_err.mup"
+	paragraph (13) "This files tests that repeat bars are not allowed with a mrpt."
+
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+repeatstart
+
+1: e;;;;
+//repeatend
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+repeatstart
+repeatboth
+repeatend
+bar

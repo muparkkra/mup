@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -525,10 +525,14 @@ posscores()
 	struct MAINLL *ppage_p;	/* point at first FEED of previous page */
 	struct MAINLL *gridpage_p; /* point at FEED for grids-at-end */
 	struct MAINLL *origpage_p; /* remember original page_p */
+	struct MAINLL *cfeedmll_p; /* remember the current FEED */
+	struct MAINLL *spfeedmll_p;/* FEED at start of current "samepage" zone*/
 	struct FEED *cfeed_p;	/* point at current scorefeed */
 	struct FEED *pfeed_p;	/* point at previous scorefeed */
 	float availheight;	/* available height on page (middle window) */
 	float remheight;	/* remaining height on page */
+	float spremheight;	/* remaining height when samepage started */
+	float prevremheight;	/* remaining after previous score */
 	float y_start;		/* where y begins (at top of _win) */
 	float limit;		/* smallest distance allowed between scores */
 	int prevclef;		/* clef on last visible staff of prev score */
@@ -547,6 +551,7 @@ posscores()
 	int pageside;		/* PGSIDE_* */
 	int totscores;		/* number of scores on a page */
 	int maxscores;		/* maximum number of scores allowed */
+	int spscores;		/* number of scores in current samepage zone */
 	int measnum;		/* measure number */
 
 	/* the following are all in inches, unlike scorepad/scoresep parms */
@@ -608,6 +613,11 @@ posscores()
 	/* just to prevent useless 'used before set' warnings */
 	page_p = 0;
 	ppage_p = 0;
+	spfeedmll_p = 0;
+	cfeedmll_p = 0;
+	spremheight = 0;
+	prevremheight = 0;
+	spscores = 0;
 	remheight = 0;
 	y_start = 0;
 	totscores = 0;
@@ -647,6 +657,32 @@ posscores()
 				asgnssv(&tssv_p->ssv);
 			}
 			measnum += measnumdelta(mainll_p);
+			/*
+			 * If this bar is to be in a samepage zone, and we have
+			 * not already set spfeedmll_p, this will be the first
+			 * score in the zone, so remember that the zone starts
+			 * with the current score.
+			 */
+			if (mainll_p->u.bar_p->samepage == YES &&
+					spfeedmll_p == 0) {
+				spfeedmll_p = cfeedmll_p;
+				spscores = 1;
+				spremheight = prevremheight;
+			} else if (mainll_p->u.bar_p->samepage == NO) {
+				spfeedmll_p = 0;
+			}
+			mainll_p = mainll_p->next;
+			continue;
+		case S_BLOCKHEAD:
+			/* same logic as for BAR */
+			if (mainll_p->u.blockhead_p->samepage == YES &&
+					spfeedmll_p == 0) {
+				spfeedmll_p = cfeedmll_p;
+				spscores = 1;
+				spremheight = prevremheight;
+			} else if (mainll_p->u.blockhead_p->samepage == NO) {
+				spfeedmll_p = 0;
+			}
 			mainll_p = mainll_p->next;
 			continue;
 		default:
@@ -659,7 +695,26 @@ posscores()
 			break;
 		}
 
+		cfeedmll_p = mainll_p;	/* remember for future loops */
 		cfeed_p = mainll_p->u.feed_p;	/* set convenient pointer */
+
+		if (spfeedmll_p == 0) {
+			/*
+			 * We are not in a samepage zone, as far as we know yet.
+			 * But following this FEED, there could be a BAR or
+			 * BLOCKHEAD that says a zone should start at this FEED.
+			 * So we need to save the SSV states in case that
+			 * happens and we later need to move the zone to the
+			 * next page.  This could also be the FEED at the end
+			 * of a zone, but in that case, we don't need the old
+			 * saved version anymore, and we need to save here in
+			 * case a new zone will be starting.
+			 */
+			spscores = 0;
+			savessvstate();
+		} else {
+			spscores++;	/* found other FEED in samepage zone */
+		}
 
 		/*
 		 * If firstpage is set, normally there would be no pagefeed,
@@ -969,6 +1024,9 @@ posscores()
 						cfeed_p->pagefeed == NO) {
 
 				/* this score will go on this page */
+				/* unless samepage later needs to undo it */
+
+				prevremheight = remheight;
 
 				if (SEP_IS_VALID(cfeed_p->scoresep)) {
 					remheight -= cfeed_p->scoresep* STEPSIZE
@@ -983,6 +1041,7 @@ posscores()
 					maxsep[totscores] = curmaxsep;
 					curpad[totscores] = padding;
 					maxpad[totscores] = curmaxpad;
+					forcesep[totscores] = NO;
 				}
 				totscores++;
 				pfeed_p = cfeed_p;
@@ -993,6 +1052,26 @@ posscores()
 					prevclef = CLEF2PRINT(pfeed_p->lastvis);
 			} else {
 				/* the score must go on the following page */
+				/* but if we are in a samepage zone we will */
+				/* need to move the whole zone */
+				if (spscores > 0) {
+					if (spscores == 1) {
+						pfatal("error in samepage logic");
+					}
+					if (spfeedmll_p == page_p) {
+						ufatal("group of samepage scores does not fit on physical page %d",
+							physpage - 1);
+					}
+					/*
+					 * Restore everything to what it was
+					 * before we entered the samepage zone.
+					 */
+					totscores -= spscores - 1;
+					remheight = spremheight;
+					mainll_p = spfeedmll_p;
+					restoressvstate();
+				}
+
 				/*
 				 * Set pad below the bottom score.  If there is
 				 * a footer or bottom, use the values from
@@ -1874,7 +1953,8 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 			Atend_info.left.firstgrid_y = EFF_BOTMARGIN +
 					totalheight - farnorth;
 
-			downheight = (physpage == 1 ?
+			/* if music page's number is 1, use the first footer */
+			downheight = (physpage == 2 ?
 					&Leftfooter : &Leftfooter2)->height +
 				(mfeed_p->leftbot_p != 0 ?
 					mfeed_p->leftbot_p->height : 0.0);
@@ -1888,7 +1968,8 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 			Atend_info.right.firstgrid_y = EFF_BOTMARGIN +
 					totalheight - farnorth;
 
-			downheight = (physpage == 1 ?
+			/* if music page's number is 1, use the first footer */
+			downheight = (physpage == 2 ?
 					&Rightfooter : &Rightfooter2)->height +
 				(mfeed_p->rightbot_p != 0 ?
 					mfeed_p->rightbot_p->height : 0.0);
@@ -3605,7 +3686,7 @@ double forced_slope;		/* slope that the user forced */
 	if (slope_forced) {
 		b1 = forced_slope;
 	} else {
-		b1 = adjslope(start1_p, b1, NO);
+		b1 = adjslope(start1_p, b1, NO, BEAMSLOPE);
 	}
 
 	/*
@@ -3836,7 +3917,7 @@ double forced_slope;		/* slope that the user forced */
 	if (slope_forced) {
 		b1 = forced_slope;
 	} else {
-		b1 = adjslope(start1_p, b1, YES);
+		b1 = adjslope(start1_p, b1, YES, BEAMSLOPE);
 	}
 
 	/*

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -868,6 +868,28 @@ int slash;		/* if YES, return any STR_SLASH's found,
 			prev_str_p = *str_p_p;
 			if (slash == YES) {
 				return(STR_SLASH);
+			}
+			break;
+
+		case STR_TAG:
+			/* We normally shouldn't be here. The only time that
+			 * "should" happen is if the user tried to use a tag
+			 * in a no-lyrics string, and we're just forging ahead.
+			 * So if we're going to be bailing out eventually,
+			 * just not quite yet, we can just skip by the tag.
+			 */
+			if (Errorcount > 0) {
+				while (**str_p_p != '\0' &&
+						((**str_p_p) & 0xff)
+						!= (STR_END_TAG & 0xff)) {
+					++(*str_p_p);
+				}
+				if ( ((**str_p_p) & 0xff) == (STR_END_TAG & 0xff)) {
+					++(*str_p_p);
+				}
+			}
+			else {
+				pfatal("unexpected STR_TAG in nxt_str_ch()");
 			}
 			break;
 

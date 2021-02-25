@@ -1,0 +1,46 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-params1.mup"
+	paragraph (13) "This file tests that it is allowed to change key, clef, transpose, addtranspose, and csheme in score context during mrpt, as long as they are overridden in staff context, and those don't change."
+
+staff 1
+	key=3#
+	clef=tenor
+	transpose=up min 3
+	addtranspose=down min 2
+	vscheme=2o
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+score
+	key=3&
+	clef=alto
+	transpose=up per 4
+	addtranspose=down min 7
+	vscheme=2f
+music
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+bar
+bar
+score
+	key=2#
+	clef=soprano
+	transpose=up per 5
+	addtranspose=down min 6
+	vscheme=2f
+music
+bar

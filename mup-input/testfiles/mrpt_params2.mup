@@ -1,0 +1,42 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-params2.mup"
+	paragraph (13) "The file tests that it is allowed to change key, clef, transpose, addtranspose, and vscheme on a different staff than the one where a mrpt is."
+score
+	staffs=2
+
+music
+
+1: c;;;;
+bar
+
+1: d;;;;
+bar
+
+staff 2
+	key=3&
+	clef=baritone
+	transpose=up min 3
+	addtranspose=down min 3
+	vscheme=3f
+music
+
+1: e;;;;
+bar
+
+1: f;;;;
+bar
+
+1: quadmrpt;
+bar
+bar
+bar
+staff 2
+	key=4#
+	clef=bass
+	transpose=up min 3
+	addtranspose=down maj 6
+	vscheme=3o
+music
+bar

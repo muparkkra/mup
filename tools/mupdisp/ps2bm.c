@@ -1,5 +1,5 @@
 char * license_text = 
-" Copyright (c) 1995-2020  by Arkkra Enterprises.\n\
+" Copyright (c) 1995-2021  by Arkkra Enterprises.\n\
  All rights reserved.\n\
 \n\
  Redistribution and use in source and binary forms,\n\

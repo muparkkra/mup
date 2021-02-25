@@ -1,0 +1,25 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt_type_err.mup"
+	paragraph (13) "This files tests that dbl and quad are not allowed on ms, mr, or mus."
+
+music
+
+1: dbl ms;
+bar
+
+1: quad ms;
+bar
+
+1: dbl mus;
+bar
+
+1: quad mus;
+bar
+
+1: dbl m r;
+bar
+
+1: quad m r;
+bar

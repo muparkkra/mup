@@ -1,0 +1,28 @@
+//!Mup-Arkkra
+
+header
+	title bold (17) "mrpt-time1_err.mup"
+	paragraph (13) "This files tests that it is not allowed to change time during the source of a mrpt."
+
+music
+
+1: c;;;;
+bar
+
+score time=2/2
+music
+
+1: d;;
+bar
+
+1: e;;
+bar
+
+1: f;;
+bar
+
+1: quadmrpt;
+bar
+bar
+bar
+bar

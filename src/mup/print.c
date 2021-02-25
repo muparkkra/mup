@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -486,7 +486,7 @@ init4print()
 	initstructs();
 
 	printf("%%!PS-Adobe-1.0\n");
-	printf("%%%%Creator: Mup (Version 6.8.1)\n");
+	printf("%%%%Creator: Mup (Version 6.9)\n");
 	printf("%%%%Title: music: %s from %s\n", Outfilename, Curr_filename);
 	clockinfo = time((time_t *)0);
 	timeinfo_p = localtime(&clockinfo);

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -195,8 +195,16 @@ int value;
 			}
 			break;
 
+		case VCOMBINE:
+			timedssv_p->ssv.vcombinequal = value;
+			/* Note that vcombine has additional fields.
+			 * Since so far, that is the only mid-measure changeable
+			 * parameter that is not a single values,
+			 * those other fields are handled by the caller. */
+			break;
+
 		default:
-			yyerror("only alignrests, clef, defoct, and release parameters can be changed mid-measure");
+			yyerror("only alignrests, clef, defoct, vcombine, and release parameters can be changed mid-measure");
 			return;
 		}
 		if (timedssv_p->ssv.used[param] == YES) {

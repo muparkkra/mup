@@ -1,3 +1,16 @@
+* Mon Feb 15 2021 ArkkraEnterprises <support@arkkra.com> 6.9
+- New music symbols for perfectum/imperfectum
+- New samepage and samescore zones
+- Double and quad measure repeats
+- New "bymeas" qualifier for vcombine parameter
+- The vcombine parameter can be set mid-measure
+- New defaultphraseside parameter
+- Mid-measure parameter changes can be entered before or after tuplet brace
+- New tupletslope parameter
+- New midlinestemfloat parameter
+* Fri Aug 14 2020 ArkkraEnterprises <support@arkkra.com> 6.8.1
+- Bug fix for combination of rests into multirests
+- Bug fix for auto-beaming
 * Fri Feb 21 2020 ArkkraEnterprises <support@arkkra.com> 6.8
 - Quadruple whole notes, and octuple whole notes and rests
 - New printedtime parameter

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -84,7 +84,7 @@ struct MAINLL *mll_p;
 
 		/* measure repeats are special */
 		if (is_mrpt(gs_p) == YES) {
-			pr_mrpt(gs_p, mll_p->u.staff_p);
+			pr_mrpt(gs_p, mll_p);
 			continue;
 		}
 
@@ -92,7 +92,7 @@ struct MAINLL *mll_p;
 		 * corresponding tabnote staff is not printed */
 		if (gs_p->is_multirest == YES) {
 			if (svpath(gs_p->staffno - 1, VISIBLE)->visible == NO) {
-				pr_multirest(gs_p, mll_p->u.staff_p);
+				pr_multirest(gs_p, mll_p);
 			}
 			continue;
 		}
@@ -571,6 +571,7 @@ double y_adjust;
 			pr_arrowhead(&tempgs, 0.0, C_WEDGE);
 			do_rotate(-90);
 			Last_x_arrow[staffno] = gs_p->c[AX];
+			Last_y_arrow[staffno] = gs_p->c[AN] - y_adjust;
 		}
 	}
 }

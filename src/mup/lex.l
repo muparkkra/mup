@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2020  by Arkkra Enterprises.
+ Copyright (c) 1995-2021  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -216,6 +216,11 @@ control		return(T_CONTROL);
 saveparms	return(T_SAVEPARMS);
 restoreparms	return(T_RESTOREPARMS);
 
+samescorebegin	{ yylval.intval = YES; return(T_SAMESCORE); };
+samescoreend	{ yylval.intval = NO; return(T_SAMESCORE); };
+samepagebegin	{ yylval.intval = YES; return(T_SAMEPAGE); };
+samepageend	{ yylval.intval = NO; return(T_SAMEPAGE); };
+
 afterprolog	{ yylval.intval = PU_AFTERPROLOG; return(T_PSHOOKLOC); }
 beforetrailer	{ yylval.intval = PU_BEFORETRAILER; return(T_PSHOOKLOC); }
 atpagebegin	{ yylval.intval = PU_ATPAGEBEGIN; return(T_PSHOOKLOC); }
@@ -334,6 +339,8 @@ n		return(T_LET_N);
 x		return(T_LET_X);
 [h-lopqtvwyz]	return(T_LETTER);	/* all letters not used for something special */
 rpt		return(T_RPT);
+dbl		return(T_DBL);
+quad		return(T_QUAD);
 "_"[A-Za-z0-9_]+	{
 			if (strcmp(yytext, "_staff") == 0) {
 				return(T_ARRAYVAR);
@@ -428,6 +435,7 @@ shareone	{ yylval.intval = VC_SHAREONE; return(T_VCOMBVAL); }
 overlap		{ yylval.intval = VC_OVERLAP; return(T_VCOMBVAL); }
 restsonly	{ yylval.intval = VC_RESTSONLY; return(T_VCOMBVAL); }
 stepsapart	{ yylval.intval = VC_STEPSAPART; return(T_VCOMBVAL); }
+bymeas		{ return(T_BYMEAS); }
 defoct		{ yylval.intval = DEFOCT; return(T_NUMVAR); }
 lyricssize	{ yylval.intval = LYRICSSIZE; return(T_NUMVAR); }
 sylposition	{ yylval.intval = SYLPOSITION; return(T_NUMVAR); }
@@ -455,9 +463,11 @@ flipmargins	{ yylval.intval = FLIPMARGINS; return(T_YESNOVAR); }
 scoresep	{ yylval.intval = MINSCSEP; return(T_SCORESEP); }
 stafflines	{ yylval.intval = STAFFLINES; return(T_STAFFLINES); }
 ontheline	{ yylval.intval = ONTHELINE; return(T_YESNOVAR); }
+midlinestemfloat	{ yylval.intval = MIDLINESTEMFLOAT; return(T_YESNOVAR); }
 indentrestart	{ yylval.intval = INDENTRESTART; return(T_YESNOVAR); }
 warn		{ yylval.intval = WARN; return(T_YESNOVAR); }
 numbermrpt	{ yylval.intval = NUMBERMRPT; return(T_YESNOVAR); }
+numbermultrpt	{ yylval.intval = NUMBERMULTRPT; return(T_YESNOVAR); }
 bracketrepeats	{ yylval.intval = BRACKETREPEATS; return(T_YESNOVAR); }
 repeatdots	{ yylval.intval = REPEATDOTS; return(T_REPEATDOTS); }
 standard	{ return(T_STANDARD); }
@@ -488,6 +498,7 @@ stemshorten	{ yylval.intval = BEAMSHORT; return(T_SHORTEN); }
 leftspace	{ yylval.intval = LEFTSPACE; return(T_2FNUMVAR); }
 noteinputdir	{ yylval.intval = NOTEINPUTDIR; return(T_INPUTDIR); }
 beamslope	{ yylval.intval = BEAMSLOPE; return(T_2FNUMVAR); }
+tupletslope	{ yylval.intval = TUPLETSLOPE; return(T_2FNUMVAR); }
 transpose	{ yylval.intval = TRANSPOSITION; return(T_TRANSPOSE); }
 addtranspose	{ yylval.intval = ADDTRANSPOSITION; return(T_TRANSPOSE); }
 chordtranslation { yylval.intval = CHORDTRANSLATION ; return(T_CHORDTRANSLATION); }
@@ -537,6 +548,7 @@ nonnatremuser	{ yylval.intval = UA_Y_NONNATREMUSER; return(T_NONE); }
 nonnat		{ return(T_NONNAT); }
 time		{ yylval.intval = TIME; return(T_TIME); }
 printedtime	{ yylval.intval = PRINTEDTIME; return(T_PRINTEDTIME); }
+defaultphraseside	{ yylval.intval = DEFAULTPHRASESIDE; return(T_DEFAULTPHRASESIDE); }
 beamstyle	{ yylval.intval = BEAMSTLIST; return(T_RATNUMLISTVAR); }
 visible		{ yylval.intval = VISIBLE; return(T_VISVAR); }
 whereused	{ return(T_WHEREUSED); }
