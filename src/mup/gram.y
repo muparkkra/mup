@@ -2676,7 +2676,7 @@ printed_timesig:
 			Currstruct_p->u.ssv_p->prtime_str1 = 0;
 			Currstruct_p->u.ssv_p->prtime_str2 = 0;
 			Currstruct_p->u.ssv_p->prtime_is_arbitrary = NO;
-			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = NO;
+			Currstruct_p->u.ssv_p->used[PRINTEDTIME] = YES;
 		}
 	}
 
