@@ -1,7 +1,9 @@
 # This script creates an Apple .dmg disk image of Mup.
+# Any arguments will be passed as options to the C / C++ compiler commands,
+# so can be used for things like adding -arch options.
 
-version=6.9
-version_no_dot=69
+version=7.0
+version_no_dot=70
 
 srcdir=src
 docdir=doc
@@ -25,13 +27,23 @@ fi
 tar zxf ../../mup-$version.tar.gz
 cd mup-$version
 
+# Try to deduce where X11 files are. In older Macs, it would be /usr/X11,
+# which is the default in simple.makefile. In newer Macs with XQuartz,
+# it is /opt/X11. So if /opt/X11 is there, arrange to use that.
+if [ -d /opt/X11/include ] && [ -d /opt/X11/lib ]
+then
+	X_location="/opt/X11"
+else
+	X_location="/usr/X11"
+fi
+
 # Edit in the makefile changes
 orig_makefile=simple.makefile
 osx_makefile=makefile.osx
-sed -e "/^X_LIBS/s/^/#/" -e "/Carbon/s/# //" -e "/CFLAG.*mac/s/# //" -e "/optflags)/s/^/#/ " -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" -e "s/-l -Tps/-t/" $orig_makefile > $osx_makefile
+sed -e "/^X_LOCATION/s|=.*|= $X_location|" -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" -e "s/-lz/-lfltk_z/" $orig_makefile > $osx_makefile
 
 # Build the products
-make -f $osx_makefile
+make APPLE=yes optflags="$*" -f $osx_makefile
 
 # clean up the OS-X specific makefile
 rm $osx_makefile
@@ -83,8 +95,7 @@ cp $docdir/uguide/* $staging_dir/MupMate/MupMate.app/Contents/Resources/doc/pack
 # Create Mac disk image that user can then drag-and-drop to install
 diskimage=../MupMate-${version_no_dot}.dmg
 rm -f $diskimage
-hdiutil create -srcfolder $staging_dir -volname "MupMate-$version" -uid 99 -gid 99 $diskimage
-hdiutil internet-enable -yes $diskimage
+hdiutil create -srcfolder $staging_dir -volname "MupMate-$version" -ov $diskimage
 
 # Clean up the staging directory
 rm -rf $staging_dir

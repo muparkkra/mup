@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -49,6 +49,10 @@
 
 #include <string.h>
 #include <fcntl.h>
+#include <errno.h>
+#ifndef __DJGPP__
+#include <fenv.h>
+#endif
 #include "globals.h"
 
 #ifdef VMS
@@ -66,6 +70,10 @@
  * other macros. */
 #define MAX_CONCAT_NAME_LEN 1000
 
+/* States for "eval" macro: not an eval macro at all, parsing, or setting */
+#define NOT_EXPR	(0)
+#define PARSING_EXPR	(1)
+#define SETTING_EXPR	(2)
 /* A macro without parameters is defined without a following parenthesis,
  * and is different than a macro with zero parameters. This value must not be
  * a valid value for number of parameters, so must be negative. */
@@ -112,7 +120,7 @@ static struct MACRO *Mactable[MTSIZE];
  */
 static struct MACRO ***Saved_mac_tables;
 /* How many saved macros tables there are. If this is zero, we know
- * the user hasn't ever called saveamcros. In that case we will
+ * the user hasn't ever called savemacros. In that case we will
  * free memory hanging off of MACRO structs when a macro is redefined or
  * undefined, because we know there is no chance they will get restored.
  * Once it becomes nonzero, we don't do that, to be safe.  */
@@ -184,6 +192,12 @@ static struct FILESTACK Filestack[MAXFSTK];
 
 static int Fstkptr = -1;		/* stack pointer for Filestack */
 static char quote_designator[] = "`";
+/* We save information about an "eval" expression in a temporary macro
+ * while evaluating it. This hold info about that temporary macro.
+ * Since they cannot be nested, we can re-use this for each. */
+static struct MACRO Curr_expr_macro;
+/* This is the final result of current "eval" expression */
+extern struct VALUE Expr_result;
 
 extern int unlink();			/* to remove temp file */
 extern char *tmpnam();		/* generate temp file name */
@@ -199,10 +213,12 @@ static FILE *find_with_suffix P((char **filename_p, char *searchpath,
 static int is_absolute_path P((char *filename));
 static struct MACRO *findMacro P((char *macname));
 static int hashmac P(( char *macname));
-static struct MACRO *setup_macro P((char *macname, int has_params));
+static struct MACRO *setup_macro P((char *macname, int has_params, int expr_state));
+static void prepare_mac_write P((struct MACRO *mac_p));
+static void finish_mac_write P((void));
+static void begin_macro_read P((struct MACRO *mac_p, char *macname));
 static void free_parameters P((struct MAC_PARAM *param_p, char *macname,
 		int values_only));
-static char *dupstring P((char *string));
 static char *mkmacparm_name P((char *macname, char *param_name));
 static struct MACRO *resolve_mac_name P((char *macname));
 static int has_quote_designator P((char *macname));
@@ -215,9 +231,10 @@ static void stringify P((struct MACRO *mac_p));
 /* add macro name to hash table and arrange to save its text in temp file */
 
 void
-define_macro(macname)
+define_macro(macname, is_expression)
 
 char *macname;		/* name of macro to be defined */
+int is_expression;	/* YES if is expression to be evaluated */
 
 {
 	int has_params = NO;
@@ -226,7 +243,8 @@ char *macname;		/* name of macro to be defined */
 				 * names */
 	struct MACRO *mac_p;
 
-	debug (4, "define_macro macname=%s\n", macname);
+	debug (4, "define_macro macname=%s, is_expression=%d\n",
+						macname, is_expression);
 
 	/* there might be some leading white space in front of macro name,
 	 * if so, ignore that */
@@ -241,7 +259,8 @@ char *macname;		/* name of macro to be defined */
 		has_params = YES;
 	}
 
-	mac_p = setup_macro(macname, has_params);
+	mac_p = setup_macro(macname, has_params,
+			(is_expression ? PARSING_EXPR : NOT_EXPR) );
 	mac_name = mac_p->macname;
 
 	if (has_params == YES) {
@@ -257,18 +276,21 @@ char *macname;		/* name of macro to be defined */
 	 * when we discover we actually need it. */
 	(void) save_macro(Mactmp_write);
 
+	if (is_expression == YES) {
+		/* Add special terminator to signal lex */
+		fputs(":=:", Mactmp_write);
+	}
+
 	/* terminate the macro with a NULL, so that when lex hits it when
 	 * the macro is called, it will think it hit EOF */
 	putc('\0', Mactmp_write);
 
-	/* make sure macro has really been written and not still buffered */
-	(void) fflush(Mactmp_write);
+	finish_mac_write();
 
-#ifndef UNIX_LIKE_FILES
-	/* on non-unix system, multiple opens on the same file may not work,
-	 * so open and close each time */
-	fclose(Mactmp_write);
-#endif
+	if (is_expression == YES) {
+		/* Make lex/exprgram evaluate it. */
+		begin_macro_read(mac_p, mac_p->macname);
+	}
 }
 
 
@@ -276,39 +298,43 @@ char *macname;		/* name of macro to be defined */
  * set up and ready to use */
 
 static struct MACRO *
-setup_macro(macname, has_params)
+setup_macro(macname, has_params, expr_state)
 
 char *macname;		/* name of macro being defined */
 int has_params;		/* YES or NO */
+int expr_state;		/* *_EXPR value */
 
 {
 	struct MACRO *mac_p;	/* info about current macro */
 	int h;			/* hash number */
-	static int have_mac_file = NO;
-#ifdef UNIX_LIKE_FILES
-	int filedesc;		/* of tmp file for storing macros */
-#endif
 
 
-	/* if macro has not been defined before, add to hash table */
-	if ((mac_p = findMacro(macname)) == (struct MACRO *) 0) {
-
-		MALLOC(MACRO, mac_p, 1);
-		h = hashmac(macname);
-		mac_p->next = Mactable[h];
-		Mactable[h] = mac_p;
-
-		mac_p->macname = dupstring(macname);
-		mac_p->recursion = 0;
+	if (expr_state == PARSING_EXPR) {
+		mac_p = &Curr_expr_macro;
+		mac_p->macname = strdup(macname);
 	}
 	else {
-		l_warning(Curr_filename, yylineno,
+		/* if macro has not been defined before, add to hash table */
+		if ((mac_p = findMacro(macname)) == (struct MACRO *) 0) {
+
+			MALLOC(MACRO, mac_p, 1);
+			h = hashmac(macname);
+			mac_p->next = Mactable[h];
+			Mactable[h] = mac_p;
+
+			mac_p->macname = strdup(macname);
+			mac_p->recursion = 0;
+		}
+		else if (expr_state != SETTING_EXPR) {
+			l_warning(Curr_filename, yylineno,
 					"macro '%s' redefined", macname);
-		/* Free space used if we are sure it is safe to do so */
-		if (Num_mac_tables == 0) {
-			free_parameters(mac_p->parameters_p, macname, NO);
+			/* Free space used if we are sure it is safe to do so */
+			if (Num_mac_tables == 0) {
+				free_parameters(mac_p->parameters_p, macname, NO);
+			}
 		}
 	}
+
 	mac_p->parameters_p = (struct MAC_PARAM *) 0;
 	/* We don't know how many parameters there will be yet,
 	 * only whether there are some. If there will be some,
@@ -331,6 +357,22 @@ int has_params;		/* YES or NO */
 		mac_p->filename = Curr_filename;
 		mac_p->lineno = yylineno;
 	}
+
+	prepare_mac_write(mac_p);
+	return(mac_p);
+}
+
+
+static void
+prepare_mac_write(mac_p)
+
+struct MACRO *mac_p;
+
+{
+	static int have_mac_file = NO;
+#ifdef UNIX_LIKE_FILES
+	int filedesc;		/* of tmp file for storing macros */
+#endif
 
 	/* if we don't yet have a temp file to store macro info, open one */
 	if (have_mac_file == NO) {
@@ -415,8 +457,17 @@ int has_params;		/* YES or NO */
 	mac_p->offset = ftell(Mactmp_write);
 	/* We may make a quoted copy of it later, but only if needed */
 	mac_p->quoted_offset = 0;
+}
+
 
-	return(mac_p);
+static void
+finish_mac_write()
+
+{
+	(void) fflush(Mactmp_write);
+#ifndef UNIX_LIKE_FILES
+	fclose(Mactmp_write);
+#endif
 }
 
 
@@ -574,6 +625,20 @@ char *macname;		/* which macro to call */
 		}
 	}
 
+	begin_macro_read(mac_p, macname);
+	return(YES);
+}
+
+
+/* Prepare to read macro text from the macro temp file. */
+
+static void
+begin_macro_read(mac_p, macname)
+
+struct MACRO *mac_p;
+char *macname;
+
+{
 #ifndef UNIX_LIKE_FILES
 	if ((Mactmp_read = fopen(Macfile, Read_mode)) == (FILE *) 0) {
 		pfatal("can't open macro file for reading (maybe out of memory?)");
@@ -589,7 +654,6 @@ char *macname;		/* which macro to call */
 			SEEK_SET) != 0) {
 		pfatal("fseek failed in macro_call");
 	}
-	return(YES);
 }
 
 
@@ -727,6 +791,10 @@ mac_error()
 {
 	struct MACRO *mac_p;
 
+	/* Don't want this while evaluating an "eval" expression */
+	if (Curr_expr_macro.macname != 0) {
+		return;
+	}
 	if (Fstkptr >= 0 && (mac_p = Filestack[Fstkptr].mac_p)
 						!= (struct MACRO *) 0) {
 		(void) fprintf(stderr, "note: previous error found while expanding macro %s'%s' from %s: line %d:\n",
@@ -766,7 +834,7 @@ char *fname;	/* name of file to include */
 	}
 
 	/* need to make copy of file name */
-	fnamecopy = dupstring(fname);
+	fnamecopy = strdup(fname);
 
 	/* arrange to connect yyin to the included file, save info, etc */
 	pushfile(file, fnamecopy, 1, (struct MACRO *) 0);
@@ -1111,17 +1179,14 @@ char *macdef;	/* MACRO=definition */
 	}
 
 	Curr_filename = "Command line argument";
-	/* command line macros can never have parameters */
-	(void) setup_macro(macdef, NO);
+	/* command line macros can never have parameters or be expressions */
+	(void) setup_macro(macdef, NO, NOT_EXPR);
 
 	/* copy the macro to the macro temp file */
 	do {
 		putc(*def, Mactmp_write);
 	} while ( *def++ != '\0');
-	(void) fflush(Mactmp_write);
-#ifndef UNIX_LIKE_FILES
-	fclose(Mactmp_write);
-#endif
+	finish_mac_write();
 }
 
 
@@ -1214,29 +1279,10 @@ char *param_name;		/* name of parameter to add */
 	}
 
 	/* fill in the info */
-	new_p->param_name = dupstring(param_name);
+	new_p->param_name = strdup(param_name);
 	new_p->next = (struct MAC_PARAM *) 0;
 
 	(macinfo_p->num_params)++;
-}
-
-
-/* given a string to duplicate, allocate space for a copy and return pointer
- * to the copy. Caller is responsible for freeing if it needs to be freed */
-
-static char *
-dupstring(string)
-
-char *string;	/* what to duplicate */
-
-{
-	char *newstr;	/* the duplicate */
-
-	/* get space and copy the old to new */
-	MALLOCA(char, newstr, strlen(string) + 1);
-	(void) strcpy(newstr, string);
-
-	return(newstr);
 }
 
 
@@ -1285,22 +1331,19 @@ int argnum;	/* which argument. 1 for the first, 2 for second, etc */
 	/* if argbuff is null, there is no argument, which really means the
 	 * argument is the null string. */
 	if (argbuff == (char *) 0) {
-		argbuff = dupstring("");
+		argbuff = strdup("");
 	}
 
 	/* now associate the value with the parameter */
 	mp_name = mkmacparm_name(macname, param_p->param_name);
 	/* A parameter cannot itself have parameters */
-	(void)setup_macro(mp_name, NO);
+	(void)setup_macro(mp_name, NO, NOT_EXPR);
 
 	/* Copy the parameter text to the macro temp file. */
 	fprintf(Mactmp_write, "%s", argbuff);
 	putc('\0', Mactmp_write);
 
-	(void) fflush(Mactmp_write);
-#ifndef UNIX_LIKE_FILES
-	fclose(Mactmp_write);
-#endif
+	finish_mac_write();
 
 	/* temp space no longer needed */
 	FREE(mp_name);
@@ -1587,7 +1630,7 @@ struct MACRO **dest_tbl;	/* ... to this table. */
  *	define A RE@
  *	define B SU@
  *	define C LT@
-	define RESULT This is the final result.@
+ *	define RESULT This is the final result.@
  *	print `A##B##C`
  * would  yield
  *	print "This is the final result."
@@ -1815,11 +1858,47 @@ struct MACRO *mac_p;
 	/* Add the final quote */
 	putc('"', Mactmp_write);
 	putc('\0', Mactmp_write);
-	(void) fflush(Mactmp_write);
-#ifndef UNIX_LIKE_FILES
-	fclose(Mactmp_write);
-#endif
+	finish_mac_write();
 
 	/* put the input back where it was */
 	popfile();
+}
+
+
+/* Save the result of an "eval" macro. */
+
+void
+do_eval()
+
+{
+	/* Write the evaulated result into the macro tmp file */
+	setup_macro(Curr_expr_macro.macname, NO, SETTING_EXPR);
+	if (Expr_result.type == TYPE_INT) {
+		fprintf(Mactmp_write, "%d", Expr_result.intval);
+	}
+	else if (Expr_result.type == TYPE_FLOAT) {
+		if ( isnan(Expr_result.floatval)
+				|| isinf(Expr_result.floatval)
+#ifndef __DJGPP__
+		 		|| fetestexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW | FE_UNDERFLOW)
+#endif
+				) {
+			yyerror("expression resulted in invalid floating point number");
+			/* Force to something valid to try to avoid any
+			 * future issues. */
+			Expr_result.floatval = 1.0;
+		}
+		fprintf(Mactmp_write, "%f", Expr_result.floatval);
+	}
+	else {
+		pfatal("invalid value type %d\n", Expr_result.type);
+	}
+	putc('\0', Mactmp_write);
+	finish_mac_write();
+	/* We no longer need the "temporary" macro that was the expression
+	 * before evaluation. The text of the expression will still in the
+	 * temp file, but we never bother to try to reclaim anything in there.
+	 */
+	FREE(Curr_expr_macro.macname);
+	Curr_expr_macro.macname = 0;
 }

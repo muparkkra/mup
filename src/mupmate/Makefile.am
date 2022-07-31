@@ -1,6 +1,9 @@
 bin_PROGRAMS = mupmate
 BUILT_SOURCES = template.C
 EXTRA_DIST = MupMate.icns.b64 MupMateDoc.icns.b64
+if ! OSX
+  EXTRA_DIST += apple.mm
+endif
 PIXMAPS = mup16.xpm mup32.xpm mup48.xpm
 mup_pixmap_dir = $(datadir)/pixmaps/$(PACKAGE)
 mup_pixmap__DATA = mup32.xpm
@@ -9,6 +12,9 @@ mupmate_SOURCES = Config.C Config.H Edit.C Edit.H File.C File.H \
 	globals.H Help.C Help.H Main.C Main.H \
 	Preferences.C Preferences.H Run.C Run.H template.C utils.C utils.H \
 	../include/defines.h $(PIXMAPS) resource.h mupmate.rc
+if OSX
+  mupmate_SOURCES += apple.mm
+endif
 AM_CXXFLAGS = -I../include $(FLTK_CXXFLAGS) @EXTRA_CFLAGS@ $(optflags)
 
 mupmate_LDFLAGS =
@@ -19,7 +25,7 @@ if WINDOWS
    mupmate_LDADD += icon.o -lcomdlg32 -lgdi32 -luuid -lole32 -lws2_32
 endif
 if OSX
-   mupmate_LDFLAGS += -framework Carbon -L/usr/X11/lib
+   mupmate_LDFLAGS += -framework Cocoa -L/usr/X11/lib -L/opt/X11/lib
    mupmate_LDADD += -lX11
 endif
 if LINUX

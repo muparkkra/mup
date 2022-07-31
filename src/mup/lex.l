@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -57,6 +57,12 @@
 #define IT_IFNDEF	(1)
 #define IT_IF		(2)
 
+/* How many slots to allocate at a time, for Dbls_table and Ints_table.
+ * Space will only be allocated if the user has "eval" macros that use
+ * floats or ints. */
+#define EXPR_TBL_SIZE 32
+/* How much to allocate to Expr_buff at a time */
+#define EXPR_SIZE 1024
 
 /* In order to reduce the number of terminal symbols so yacc wouldn't blow
  * up, we mapped several similar tokens to the same return code. The
@@ -114,15 +120,29 @@ static YY_BUFFER_STATE Eof_newline = 0;
  * arithmetic operators */
 static int Expr_mode = NO;
 
-/* The compressed form of an "if" clause is stored here,
- * then passed to a mini-parser. */
-unsigned char Ifclause_buff[1024];
-int If_length;			/* how much of Ifclause_buffer is used */
-static void add_ifclause P((int token));
-static void addnum_ifclause P((int value));
-static void addnumstr_ifclause P((char *numtoken));
-extern void set_ifclause_buffer P((unsigned char * buffer, int length));
-extern int ifparse P((void));
+/* The compressed form of an "if" clause or "eval" arithmetic expression
+ * is stored here, then passed to a mini-parser. */
+static char *Expr_buff;
+static int Expr_size;
+static int Expr_length;		/* how much of Expr_buffer is used */
+/* Since sizeof and alignment of double or int could vary by machine,
+ * we keep expression numbers in tables. The size is the currently
+ * allocated size, and the index is the curent slot. */
+double *Dbls_table = 0;
+int Dbls_index;
+static int Dbls_size;
+int *Ints_table = 0;
+int Ints_index;
+static int Ints_size;
+
+static void add2expr P((int token));
+static void addnum2expr P((int value));
+static void addnumstr2expr P((char *numtoken));
+static void addfloat2expr P((char *numtoken));
+static void addfunc2expr P((int whichfunc));
+extern void set_expr_buffer P((char * buffer, int length));
+extern int exprparse P((void));
+extern void do_eval P((void));
 static void bad_input P((char *where));
 static struct Lexbuffer *add_lexbuff P((void));
 
@@ -152,7 +172,7 @@ static char *if_type_name P((int if_type));
 
 %array
 
-%x IF_CLAUSE STRING
+%x IF_CLAUSE STRING ARITHMETIC
 
 %%
 
@@ -244,6 +264,7 @@ atscoreend	{ yylval.intval = PU_ATSCOREEND; return(T_PSHOOKLOC); }
 "("		return(T_LPAREN);
 ")"		return(T_RPAREN);
 "!"		return(T_EXCLAM);
+"_"		return(T_UNDERSCORE);
 
 \"		{ BEGIN STRING; yymore(); }
 <STRING>[^"]*\"	{
@@ -282,6 +303,8 @@ atscoreend	{ yylval.intval = PU_ATSCOREEND; return(T_PSHOOKLOC); }
 				return(T_PLUS);
 			}
 		}
+string		{ return(T_STRINGFUNC); }
+
 "%"		{ yylval.intval = OP_MOD; return(T_MULDIV_OP); }
 
 cue		{ yylval.intval= CUE; return(T_CUE); }
@@ -560,6 +583,7 @@ cancelkey	{ yylval.intval = CANCELKEY; return(T_YESNOVAR); }
 label		{ yylval.intval = LABEL; return(T_STRVAR); }
 label2		{ yylval.intval = LABEL2; return(T_STRVAR); }
 noteheads	{ yylval.intval = NOTEHEADS; return(T_STRVAR); }
+shapes		{ yylval.intval = SHAPES; return(T_SHAPES); }
 acctable	{ yylval.intval = ACCTABLE; return(T_OPTSTRVAR); }
 tuning		{ yylval.intval = TUNING; return(T_TUNINGVAR); }
 equal		{ yylval.intval = TU_EQUAL; return(T_TUNINGTYPE); }
@@ -587,6 +611,9 @@ measnumstyle	{ yylval.intval = MEASNUMSTYLE; return(T_REH_STYLE); }
 withsize	{ yylval.intval = WITHSIZE; return(T_NUMVAR); }
 withfont	{ yylval.intval = WITHFONT; return(T_FONTVAR); }
 withfontfamily	{ yylval.intval = WITHFAMILY; return(T_FAMILY); }
+noteleftsize	{ yylval.intval = NOTELEFTSIZE; return(T_NUMVAR); }
+noteleftfont	{ yylval.intval = NOTELEFTFONT; return(T_FONTVAR); }
+noteleftfontfamily	{ yylval.intval = NOTELEFTFAMILY; return(T_FAMILY); }
 clef		{ yylval.intval = CLEF; return(T_CLEFVAR); }
 unset		{ return(T_UNSET); }
 
@@ -663,7 +690,9 @@ ystemoffset	{ return(T_STEMOFFSET); }
 "//"		to_eol();
 
 if			{
-				If_length = 0;
+				Expr_length = 0;
+				Ints_index = 0;
+				add2expr('i');
 				If_errs = 0;
 				BEGIN IF_CLAUSE;
 				push_if_line(IT_IF);
@@ -675,8 +704,8 @@ if			{
 				 * have just gotten
 				 */
 				BEGIN 0;
-				set_ifclause_buffer(Ifclause_buff, If_length);
-				if (ifparse() == YES) {
+				set_expr_buffer(Expr_buff, Expr_length);
+				if (exprparse() == YES) {
 					If_count++;
 				}
 				else {
@@ -689,17 +718,31 @@ if			{
 					 * we just continue */
 				}
 			}
-<IF_CLAUSE>"&&"		{ add_ifclause('a'); }
-<IF_CLAUSE>"||"		{ add_ifclause('o'); }
-<IF_CLAUSE>[!()+-/*%<>~&|^:?]	{ add_ifclause(yytext[0]); }
-<IF_CLAUSE>"<<"		{ add_ifclause('l'); }
-<IF_CLAUSE>">>"		{ add_ifclause('r'); }
-<IF_CLAUSE>"<="		{ add_ifclause('L'); }
-<IF_CLAUSE>">="		{ add_ifclause('G'); }
-<IF_CLAUSE>"=="		{ add_ifclause('E'); }
-<IF_CLAUSE>"!="		{ add_ifclause('N'); }
-<IF_CLAUSE>0x[0-9A-Fa-f]+	|
-<IF_CLAUSE>[0-9]+	{ addnumstr_ifclause(yytext); }
+<IF_CLAUSE,ARITHMETIC>"&&"		{ add2expr('a'); }
+<IF_CLAUSE,ARITHMETIC>"||"		{ add2expr('o'); }
+<IF_CLAUSE,ARITHMETIC>[=!()+\-/*%<>~&|^:?]	{ add2expr(yytext[0]); }
+<IF_CLAUSE,ARITHMETIC>"<<"		{ add2expr('l'); }
+<IF_CLAUSE,ARITHMETIC>">>"		{ add2expr('r'); }
+<IF_CLAUSE,ARITHMETIC>"<="		{ add2expr('L'); }
+<IF_CLAUSE,ARITHMETIC>">="		{ add2expr('G'); }
+<IF_CLAUSE,ARITHMETIC>"=="		{ add2expr('E'); }
+<IF_CLAUSE,ARITHMETIC>"!="		{ add2expr('N'); }
+<IF_CLAUSE,ARITHMETIC>0x[0-9A-Fa-f]+	|
+<IF_CLAUSE,ARITHMETIC>[0-9]+	{ addnumstr2expr(yytext); }
+<ARITHMETIC>[0-9]*"."[0-9]*	{ addfloat2expr(yytext); }
+<ARITHMETIC>sqrt		{ addfunc2expr('q'); }
+<ARITHMETIC>sin			{ addfunc2expr('s'); }
+<ARITHMETIC>cos			{ addfunc2expr('c'); }
+<ARITHMETIC>tan			{ addfunc2expr('t'); }
+<ARITHMETIC>asin		{ addfunc2expr('S'); }
+<ARITHMETIC>acos		{ addfunc2expr('C'); }
+<ARITHMETIC>atan		{ addfunc2expr('T'); }
+<ARITHMETIC>atan2		{ addfunc2expr('a'); }
+<ARITHMETIC>hypot		{ addfunc2expr('h'); }
+<ARITHMETIC>round		{ addfunc2expr('r'); }
+<ARITHMETIC>floor		{ addfunc2expr('f'); }
+<ARITHMETIC>ceiling		{ addfunc2expr('L'); }
+<ARITHMETIC>,			{ add2expr(','); }
 <IF_CLAUSE>defined[ \t\n]*"("?[ \t\n]*[A-Z][A-Z_0-9]*[ \t\n]*")"?	{
 				char * macname;
 
@@ -715,19 +758,40 @@ if			{
 				}
 				macname = yytext + 7 + strspn(yytext + 7, "( \t\n");
 				strtok(macname, " \t\n)");
-				add_ifclause(is_defined(macname, YES) ? 'T' : 'F');
+				add2expr(is_defined(macname, YES) ? 'T' : 'F');
 			}
 
-<IF_CLAUSE>[A-Z][A-Z_0-9]*	{
-					if (is_defined(yytext, YES) != 0) {
+<IF_CLAUSE,ARITHMETIC>[A-Z][A-Z_0-9]*	{
+					if (is_defined(yytext, YES) == YES) {
 						call_macro(yytext);
 					}
 					else {
-						addnumstr_ifclause("0");
+						/* In an "if" clause,
+						 * an undefined macro silently
+						 * gets the value 0, to be
+						 * consistent with cpp behavior.
+						 * In an "eval" expression,
+						 * that is an error,
+						 * but we still pretend
+						 * they gave us a zero, because
+						 * doing that will usually
+						 * reduce the number of extra
+						 * error messages, because the
+						 * macro was probably supposed
+						 * a number will probably make
+						 * things syntacticly valid.
+						 */
+						addnumstr2expr("0");
+						if (YYSTATE == ARITHMETIC) {
+							l_yyerror(Curr_filename,
+							yylineno,
+							"macro %s used in eval expression is not defined",
+							yytext);
+						}
 					}
 				}
-<IF_CLAUSE>[ \t\r?\n]	;
-<IF_CLAUSE>\\[ \t]*\r?\n	{
+<IF_CLAUSE,ARITHMETIC>[ \t\r\n]	;
+<IF_CLAUSE,ARITHMETIC>\\[ \t]*\r?\n	{
 			/* ignore backslashed newlines;
 			 * allow white space after backslash */
 			ignore();
@@ -748,7 +812,9 @@ if			{
 				}
 			}
 
-define[ \t]+[A-Z][A-Z_0-9]*"("?		define_macro(yytext + 7);
+<ARITHMETIC>.		{ bad_input("'eval' expression"); }
+
+define[ \t]+[A-Z][A-Z_0-9]*"("?		define_macro(yytext + 7, NO);
 
 undef[ \t]+[A-Z][A-Z_0-9]*			undef_macro(yytext + 6);
 
@@ -801,6 +867,25 @@ endif				{
 					else {
 						If_count--;
 						pop_if_line();
+					}
+				}
+
+eval[ \t]+[A-Z][A-Z_0-9]*	{
+					define_macro(yytext + 4, YES);
+					BEGIN ARITHMETIC;
+					Expr_length = 0;
+					Dbls_index = 0;
+					Ints_index = 0;
+					add2expr('e');
+				}
+
+<ARITHMETIC>":=:"		{
+					/* Special marker that was added to
+					 * tell us the eval expression is done */
+					BEGIN 0;
+					set_expr_buffer(Expr_buff, Expr_length);
+					if (exprparse() == YES) {
+						do_eval();
 					}
 				}
 
@@ -1916,8 +2001,11 @@ int len;
 }
 
 
-/* The contents of an "if clause" is stored in compressed form in
- * Ifclause_buff, and eventually passed to a mini-parser. This function
+/* The contents of an "if clause" or an expression for an "eval"
+ * is stored in a somewhat compressed form in Expr_buff, and eventually passed
+ * to a mini-parser. It would probably be possible to parse it more directly,
+ * but saving in an intermediate form and passing that to the separate parser
+ * seems cleaner and easier to think about. This function
  * add tokens to the buffer. Compressed format:
  *	input		compressed token
  *    -------------------------------------
@@ -1946,46 +2034,77 @@ int len;
  *	?		?
  *	:		:
  *	defined(X)	T or F depending on whether X is defined or not
- *      literal number	# followed by 4 bytes in MSB order
- *      macro name 	# followed by macro's value as 4 bytes in MSB order
+ *      literal number	#   (and use the next entry in Ints_table as value)
+ * Additionally, if it is a "if clause," the first byte will be 'i'
+ * whereas if it an expression for an "eval," the first byte will be 'e' 	
+ * If the expression if for an "eval," the following are also supported:
+ *	=		=
+ *	float number	$   (and use the next entry in Dbls_table as the value)
+ *	,		,   (to separate argement of functions)
+ *	function	f  followed by a specific function designation:
+ *		q	sqrt
+ *		s	sin
+ *		c	cos
+ *		t	tan
+ *		S	asin
+ *		C	acos
+ *		T	atan
+ *		a	atan2
+ *		h	hypot
+ *		r	round
+ *		f	floor
+ *		L	ceiling
+ * The lexer in exprgram.y has to match this.
  */
 
 static void
-add_ifclause(token)
+add2expr(token)
 
 int token;
 
 {
-	if (If_length >= sizeof(Ifclause_buff)) {
-		ufatal("Sorry, 'if' clause is too complex");
+	if (Expr_size == 0) {
+		Expr_size = EXPR_SIZE;
+		MALLOCA(char, Expr_buff, Expr_size);
 	}
-	Ifclause_buff[If_length++] = (unsigned char) (token & 0xff);
+	else if (Expr_length >= Expr_size) {
+		Expr_size += EXPR_SIZE;
+		REALLOCA(char, Expr_buff, Expr_size);
+	}
+	Expr_buff[Expr_length++] = (char) (token & 0xff);
 }
 
-/* We store numbers in the if-clause compressed form as '#' followed by
- * 4 bytes in MSB order.
- */
-
+/* We store numbers in the if-clause compressed form as '#'
+ * and store the value in the next slot in Ints_table. */
 
 static void
-addnum_ifclause(value)
+addnum2expr(value)
 
 int value;
 
 {
-	int shift;
-
-	add_ifclause('#');
-	for (shift = 24; shift >= 0; shift -= 8) {
-		add_ifclause((value >> shift) & 0xff);
+	/* How many bytes an int takes is machine dependent, and how it
+	 * would need to be aligned would also be machine dependent.
+	 * So we have a table of ints, and put value into the next slot.
+	 */
+	if (Ints_size == 0) {
+		Ints_size = EXPR_TBL_SIZE;
+		MALLOCA(int, Ints_table, Ints_size);
 	}
+	else if (Ints_index >= Ints_size) {
+		Ints_size += EXPR_TBL_SIZE;
+		REALLOCA(int, Ints_table, Ints_size);
+	}
+
+	add2expr('#');
+	Ints_table[Ints_index++] = value;
 }
 
 
 /* Add number in ASCII. Convert to value and add */
 
 static void
-addnumstr_ifclause(numtoken)
+addnumstr2expr(numtoken)
 
 char *numtoken;
 
@@ -2010,7 +2129,73 @@ char *numtoken;
 	}
 #endif
 
-	addnum_ifclause(value);
+	addnum2expr(value);
+}
+
+
+/* Add a floating point number (actually a double) to expression */
+
+static void
+addfloat2expr(numtoken)
+
+char *numtoken;
+
+{
+	double value;
+	char *end_p;
+
+	/* If only matched one character, it would have to have been the dot,
+	 * which is not a valid number by itself. */
+	if (strlen(numtoken) == 1) {
+		yyerror("just a decimal point without numbers is invalid");
+		value = 0.0;
+	}
+	else {
+#ifdef ERANGE
+		errno = 0;
+#endif
+		value = strtod(numtoken, &end_p);
+		if (*end_p != '\0') {
+			/* Lexer shouldn't allow unparsable number,
+		 	* so if strtod didn't get to end, must be too big */
+			yyerror("bad floating point number (probably out of range)");
+		}
+#ifdef ERANGE
+		/* Additional range check assuming strtod sets this properly
+	 	* on all systems. */
+		else if (errno == ERANGE) {
+			yyerror("floating point number is out of range");
+		}
+#endif
+	}
+	add2expr('$');
+	/* How many bytes a double takes is machine dependent, and how it
+	 * would need to be aligned could also be machine dependent.
+	 * So we have a table of doubles, and put the value into the next slot.
+	 */
+	if (Dbls_size == 0) {
+		Dbls_size = EXPR_TBL_SIZE;
+		MALLOCA(double, Dbls_table, Dbls_size);
+	}
+	else if (Dbls_index >= Dbls_size) {
+		Dbls_size += EXPR_TBL_SIZE;
+		REALLOCA(double, Dbls_table, Dbls_size);
+	}
+	Dbls_table[Dbls_index++] = value;
+}
+
+
+/* Add a function call to the compressed expression. It is stored as an 'f'
+ * followed by one character to say which function. */
+
+static void
+addfunc2expr(whichfunc)
+
+int whichfunc;
+
+{
+	add2expr('f');
+	add2expr(whichfunc);
 }
 
 

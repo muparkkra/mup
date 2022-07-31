@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -109,6 +109,7 @@ struct SHAPENAMES {
 	{ "semicirc",	"fillsemicircle semicircle semicircle dwhsemicircle quadwhole octwhole" },
 	{ "allslash",	"fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead" },
 	{ "slash",	"fillslashhead slashhead slashhead dwhslashhead quadwhole octwhole" },
+	{ "mensural",	"mensurfilldiamond mensurdiamond mensurdiamond mensurdblwhole" },
 	{ 0, 0 }
 };
 
@@ -157,6 +158,9 @@ struct HEADDATA {
   { "slashhead",	{ C_SLASHHEAD,		FONT_MUSIC2, { 1.8, -1.8 } } },
   { "fillslashhead",	{ C_FILLSLASHHEAD,	FONT_MUSIC2, { 1.8, -1.8 } } },
   { "dwhslashhead",	{ C_DWHSLASHHEAD,	FONT_MUSIC2, { 1.8, -1.8 } } },
+  { "mensurdiamond",	{ C_MENSURDIAMOND,	FONT_MUSIC2, { 0.866, -0.866 } } },
+  { "mensurfilldiamond",{ C_MENSURFILLDIAMOND,	FONT_MUSIC2, { 0.866, -0.866 } } },
+  { "mensurdblwhole",	{ C_MENSURDBLWHOLE,	FONT_MUSIC2, { 0.0, 0.0 } } },
   { 0,			{ 0,			0, 	     { 0.0, 0.0 } } }
 };
 

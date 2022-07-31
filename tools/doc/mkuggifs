@@ -29,6 +29,25 @@ do
 done
 
 # Do the chart showing all the special music characters
-echo '-50 -65 translate' | $CAT ../../src/mup/prolog.ps - ../muschar.ps | $GS -sOutputFile=muschar.ppm -sDEVICE=ppmraw -r108 -g775x1050 -
+mc_res=150
+# We should be able to do just:
+#    grep BoundingBox ../muschar.ps | read XX mc_llx mc_lly mc_urx mc_ury
+# but that does not work in bash. (It works perfectly well in ksh.)
+# So do them the hard way...
+mc_llx=$(grep BoundingBox ../muschar.ps | cut -f2 -d' ')
+mc_lly=$(grep BoundingBox ../muschar.ps | cut -f3 -d' ')
+mc_urx=$(grep BoundingBox ../muschar.ps | cut -f4 -d' ')
+mc_ury=$(grep BoundingBox ../muschar.ps | cut -f5 -d' ')
+# add a little fuzz around the edge
+mc_llx=$($EXPR $mc_llx - 1)
+mc_lly=$($EXPR $mc_lly - 1)
+mc_urx=$($EXPR $mc_urx + 1)
+mc_ury=$($EXPR $mc_ury + 1)
+# Calculate width and height
+mc_width=$($EXPR $mc_urx - $mc_llx)
+mc_width=$($EXPR $mc_width '*' $mc_res / 72)
+mc_height=$($EXPR $mc_ury - $mc_lly)
+mc_height=$($EXPR $mc_height '*' $mc_res / 72)
+echo "-$mc_llx -$mc_lly translate" | $CAT ../../src/mup/prolog.ps - ../muschar.ps | $GS -sOutputFile=muschar.ppm -sDEVICE=ppmraw -r${mc_res} -g${mc_width}x${mc_height} -
 $PPMTOGIF < muschar.ppm > muschar.gif
 rm muschar.ppm

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -2736,33 +2736,74 @@ int size;
 }
 
 
-/* return which character to use for rest, based on basictime */
+/* Return which character to use for rest, based on basictime.
+ * Also takes into account possible shape overrides.  */
 
 int
-restchar(basictime)
+restchar(grp_p, font_p)
 
-int basictime;
+struct GRPSYL *grp_p;
+int *font_p;
 
 {
+	int basictime;
+	int code;
+
+
+	basictime = grp_p->basictime;
 	if (basictime == BT_DBL) {
 		/* double whole rest */
-		return (C_DWHREST);
+		code = C_DWHREST;
 	}
 	else if (basictime == BT_QUAD) {
 		/* quad rest */
-		return (C_QWHREST);
+		code = C_QWHREST;
 	}
 	else if (basictime == BT_OCT) {
 		/* quad rest */
-		return (C_OWHREST);
+		code = C_OWHREST;
 	}
-
-
 	else {
 		/* other non-multirest */
-		return (Resttab [ drmo(basictime) ] );
+		code = Resttab [ drmo(basictime) ];
 	}
+	
+	/* Now do shape override, if any. */
+	*font_p = FONT_MUSIC;
+	(void) get_shape_override(grp_p->staffno, grp_p->vno, font_p, &code);
+	return(code);
 }
+
+
+/* Return which character to use for measrpt, accounting for shape overrides.
+ * Returns the font via pointer. */
+
+int
+mrptchar(grp_p, font_p)
+
+struct GRPSYL *grp_p;
+int *font_p;
+
+{
+	int rptchar;
+
+	if (grp_p->meas_rpt_type == MRT_DOUBLE) {
+		rptchar = C_DBLMEASRPT;
+		*font_p = FONT_MUSIC2;
+	}
+	else if (grp_p->meas_rpt_type == MRT_QUAD) {
+		rptchar = C_QUADMEASRPT;
+		*font_p = FONT_MUSIC2;
+	}
+	else {
+		rptchar = C_MEASRPT;
+		*font_p = FONT_MUSIC;
+	}
+	/* Get shape override, if any */
+	(void) get_shape_override(grp_p->staffno, grp_p->vno, font_p, &rptchar);
+	return(rptchar);
+}
+
 
 
 /* return YES if given font is an italic font (includes boldital too) */

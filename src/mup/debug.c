@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1274,7 +1274,7 @@ char *acclist;
 		name = get_charname(acclist[a+1], acclist[a]);
 		/* Normally would do a strncpy here, but some compilers warn
 		 * that the len is based on the source size rather than the
-		 * destination size. While that is true, is it done in a way
+		 * destination size. While that is true, is is done in a way
 		 * that is safe. The author of the warning even agrees
 		 * there are cases that are actually safe, but difficult
 		 * for the warning code to realize they are safe.

@@ -1,8 +1,8 @@
 " Vim syntax file
 " Language:	Mup music notation language
 " Maintainer:	Arkkra Enterprises <support@arkkra.com>
-" URL:		ftp://www.arkkra.com/pub/unix/user.pgms/mup.vim
-" Last Change:  02 January 2021 ( Mup 6.9 )
+" URL:		http://www.arkkra.com/ftp/pub/unix/user.pgms/mup.vim
+" Last Change:  22 June 2022 ( Mup 7.0 )
 
 " Quit when a syntax file was already loaded
 if exists("b:current_syntax")
@@ -24,10 +24,13 @@ syn match Define "@"
 syn match Type "[\\/]n]" "n[\\/]"
 
 syn keyword Operator sin cos tan asin acos atan hypot sqrt
+syn keyword Operator round floor ceiling string
 highlight MupContext ctermfg=Yellow ctermbg=Blue guifg=Yellow guibg=Blue
 syn keyword MupContext header header2 footer footer2 top top2 bottom bottom2
 syn keyword MupContext block music grids score voice staff headshapes symbol
 syn keyword MupContext keymap accidentals control
+" Note that shapes is also used as a parameter name
+syn keyword MupContext shapes
 
 syn keyword Type dim diminished aug augmented per perfect min minor maj major
 syn keyword Type wide medium wavy
@@ -68,7 +71,7 @@ syn keyword Identifier times avantgarde courier helvetica bookman newcentury pal
 
 syn keyword Include include fontfile
 
-syn keyword Define ifdef ifndef if then else endif define undef defined
+syn keyword Define ifdef ifndef if then else endif define undef defined eval
 syn keyword Define savemacros restoremacros
 
 syn keyword Delimiter bar invisbar dblbar endbar repeatstart repeatend repeatboth restart

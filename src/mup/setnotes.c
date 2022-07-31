@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1765,7 +1765,10 @@ int keylet;			/* letter of the key, assuming major */
 		 */
 		if (is_mrpt(gs_p)) {
 			/* special handling for measure repeat */
-			high = height(FONT_MUSIC, DFLT_SIZE, C_MEASRPT);
+			int mrpt_sym;
+			int mrpt_font;
+			mrpt_sym = mrptchar(gs_p, &mrpt_font);
+			high = height(mrpt_font, DFLT_SIZE, mrpt_sym);
 			gs_p->c[RX] = mr_y_offset(gs_p->staffno) * STEPSIZE;
 			gs_p->c[RN] = gs_p->c[RX] + high / 2.0;
 			gs_p->c[RS] = gs_p->c[RX] - high / 2.0;

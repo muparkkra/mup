@@ -1,0 +1,267 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "mac_arith.mup"
+	paragraph (14) "This file tests the usage of 'eval' macros."
+
+score
+	size=10
+	label=""
+music
+
+define FOO(X) X + 3@
+eval Y = 23 @
+eval X = FOO(19) == 22 ? 109 : 1016 @
+eval F = (15 ^ 10) * 6.0 - (3 < 4.0) @
+
+// Note that the automated check is not very good, because it uses
+// the some code as is being tested, so could miss bugs. But is it
+// better than nothing, and the epected values are also printed for
+// human to verify.
+define ASSERT(ITEM, EXPECTED, ACTUAL)
+	undef E
+	define E `EXPECTED` \@
+	eval A = ACTUAL \@
+	rom below 1: 1 ITEM + " should be " + E +  " actual " + `A`;
+	if EXPECTED != ACTUAL then a    ***bug has been found***    endif 
+@
+
+define F_ASSERT(ITEM, EXPECTED, ACTUAL)
+	undef E
+	define E `EXPECTED` \@
+	eval A = ACTUAL \@
+	rom below 1: 1 ITEM + " should be " + E +  " actual " + `A`;
+	eval RESULT = EXPECTED == ACTUAL \@
+	if ! RESULT then a    ***bug has been found***    endif 
+@
+eval PARENTEST = ((2+3)*(11-6)+10)/7 @
+eval NOTTEST = !4 @
+eval ADDTEST = 1+2 @
+eval SUBTEST = 5 - 7 @
+eval MULTEST = 6*9 @
+eval DIVTEST = 28/4 @
+eval DIVTEST2 = 8 / 3 @
+eval MODTEST = 19 % 5 @
+eval SIGNTEST  = +4 * -6 @
+eval LEFTSHIFTTEST = 5 << 2 @
+eval RIGHTSHIFTTEST = 15 >> 2 @
+eval LESSTEST1 = -6 < 43 @
+eval LESSTEST2 = 71 < -114 @
+eval GREATERTEST1 = 99 > 98 @
+eval GREATERTEST2 = -2 > -3 @
+eval LETEST1 = 6 <= 7 @
+eval LETEST2 = -8 <= -8 @
+eval LETEST3 = 18 <= 8 @
+eval GETEST1 = 199 >= 198 @
+eval GETEST2 = 16 >= 16 @
+eval GETEST3 = 18 >= 888 @
+
+eval BITANDTEST = 5 & 3 @
+eval BITXORTEST = 5 ^ 3 @
+eval BITORTEST = 7 | 8 @
+eval BITCOMPLEMENTTEST = (~1) & 31 @
+
+eval ANDTEST1 = (1==1) && (3<9) @
+eval ANDTEST2 = (1==1) && (3==9) @
+eval ORTEST1 = (0==1) || (5>1) @
+eval ORTEST2 = (0==1) || (5>15) @
+
+eval INTERTEST1 = 31 > 4 ? 99 : 45 @
+eval INTERTEST2 = 39 < 4 ? 55 : 24 @
+
+eval SQRTTEST = sqrt(25.0) @
+eval SINTEST = sin(30) @
+eval COSTEST = cos(60) @
+eval TANTEST = tan(45) @
+eval ASINTEST = asin(0.5) @
+eval ACOSTEST = acos(0.5) @
+eval ATANTEST = atan(1) @
+eval ATAN2TEST1 = atan2(0, -60) @
+eval ATAN2TEST2 = atan2(0, 60) @
+eval ATAN2TEST3 = atan2(-5, 0) @
+eval ATAN2TEST4 = atan2(15, 0) @
+eval HYPOTTEST = hypot(3.0, 4.0) @
+
+eval FADDTEST1 = 1 + 1.6 @
+eval FADDTEST2 = 1.6 + 1 @
+eval FADDTEST3 = 1. + 1.6 @
+eval FSUBTEST1 = 100 - 50.0 @
+eval FSUBTEST2 = 51.0 - 1 @
+eval FSUBTEST3 = 29.0 + 21.0 @
+eval FMULTEST1 = 3 * 50.0 @
+eval FMULTEST2 = 15. * 10 @
+eval FMULTEST3 = 5.0 * 30.0 @
+eval FDIVTEST1 = 100 / 4.0 @
+eval FDIVTEST2 = 250. / 10 @
+eval FDIVTEST3 = 12.5 / .5 @
+
+eval FLTTEST1 = 1 < 1.2 @
+eval FLTTEST2 = 0.9 < 1 @
+eval FLTTEST3 = 100.001 < 100.002 @
+eval FLTTEST4 = 5 < 5.0 @
+eval FLTTEST5 = 18.00001 < 18 @
+eval FLTTEST6 = 18.00001 < 18.000001 @
+
+eval FGTTEST1 = 2 > 1.999 @
+eval FGTTEST2 = 99.1 > 99 @
+eval FGTTEST3 = 150. > -1. @
+eval FGTTEST4 = -6 > -6.0 @
+eval FGTTEST5 = 71.3 > 72 @
+eval FGTTEST6 = 54.01 > 54.1 @
+
+eval FLETEST1 = 1 <= 1.2 @
+eval FLETEST2 = 1.0 <= 1 @
+eval FLETEST3 = 100.001 <= 100.002 @
+eval FLETEST4 = 5 <= 4.9999 @
+eval FLETEST5 = 18.00001 <= 18 @
+eval FLETEST6 = 18.00001 <= 18.000001 @
+
+eval FGETEST1 = 2 >= 1.999 @
+eval FGETEST2 = 99.1 >= 99 @
+eval FGETEST3 = 150. >= 150.000 @
+eval FGETEST4 = -6 >= -5.999 @
+eval FGETEST5 = 71.3 >= 72 @
+eval FGETEST6 = 54.01 >= 54.1 @
+
+eval FEQTEST1 = 2 == 2.0 @
+eval FEQTEST2 = 91. == 91 @
+eval FEQTEST3 = 15. == 15.000 @
+eval FEQTEST4 = -6 == -6.01 @
+eval FEQTEST5 = 71.3 == 72 @
+eval FEQTEST6 = 54.01 == 54.1 @
+
+eval FNETEST1 = 2 != 2.1 @
+eval FNETEST2 = 91. != 99 @
+eval FNETEST3 = 15. != 15.0001 @
+eval FNETEST4 = -6 != -6.0 @
+eval FNETEST5 = 71.0 != 71 @
+eval FNETEST6 = 54.01 != 54.01 @
+
+ital above 1: 1 "should be 109";
+ital above 1: 1 " and 29.000000:";
+rom above 1: 1 `X`;
+rom above 1: 2 `F`;
+
+//------------
+ASSERT("((", 5, PARENTEST)
+ASSERT("!", 0, NOTTEST)
+ASSERT("int +", 3, ADDTEST)
+ASSERT("int -", -2, SUBTEST)
+ASSERT("int *", 54, MULTEST)
+ASSERT("int /", 7, DIVTEST)
+ASSERT("int / with truncation", 2, DIVTEST2)
+ASSERT("%", 4, MODTEST)
+ASSERT("sign", -24, SIGNTEST)
+ASSERT("<<", 20, LEFTSHIFTTEST)
+ASSERT(">>", 3, RIGHTSHIFTTEST)
+ASSERT("< true", 1, LESSTEST1)
+ASSERT("< false", 0, LESSTEST2)
+ASSERT("> true", 1, GREATERTEST1)
+ASSERT("> false", 1, GREATERTEST2)
+ASSERT("<= less", 1, LETEST1)
+ASSERT("<= equal", 1, LETEST2)
+ASSERT("<= greater", 0, LETEST3)
+ASSERT(">= greater", 1, GETEST1)
+ASSERT(">= equal", 1, GETEST2)
+ASSERT("<= less", 0, GETEST3)
+ASSERT("&", 1, BITANDTEST)
+ASSERT("^", 6, BITXORTEST)
+ASSERT("|", 15, BITORTEST)
+ASSERT("~", 30, BITCOMPLEMENTTEST)
+ASSERT("&& true", 1, ANDTEST1)
+ASSERT("&& false", 0, ANDTEST2)
+ASSERT("|| true", 1, ORTEST1)
+ASSERT("|| false", 0, ORTEST2)
+ASSERT("?: true", 99, INTERTEST1)
+ASSERT("?: false", 24, INTERTEST2)
+F_ASSERT("sqrt", 5.00000, SQRTTEST)
+F_ASSERT("sin", 0.500000, SINTEST)
+F_ASSERT("cos", 0.500000, COSTEST)
+F_ASSERT("tan", 1.000000, TANTEST)
+F_ASSERT("asin", 30.000000, ASINTEST)
+F_ASSERT("acos", 60.000000, ACOSTEST)
+F_ASSERT("atan", 45.000000, ATANTEST)
+F_ASSERT("atan2 0 <0", 180.000000, ATAN2TEST1)
+F_ASSERT("atan2 0 >0", 0.000000, ATAN2TEST2)
+F_ASSERT("atan2 <0 0", -90.000000, ATAN2TEST3)
+F_ASSERT("atan2 >0 0", 90.000000, ATAN2TEST4)
+F_ASSERT("hypot", 5.000000, HYPOTTEST)
+
+1: c;;;;
+bar
+
+eval N=1 @
+1: 1g;
+ital above 1: 1 "should be 1:";
+rom above 1: 1 `N`;
+bar
+
+eval N=N+1 @
+1: d;;;;
+ital above 1: 1 "should be 2:";
+rom above 1: 1 `N`;
+F_ASSERT("int + float", 2.60000000, FADDTEST1)
+F_ASSERT("float + int", 2.60000000, FADDTEST2)
+F_ASSERT("float + float", 2.60000000, FADDTEST3)
+
+F_ASSERT("int - float", 50.00000000, FSUBTEST1)
+F_ASSERT("float - int", 50.00000000, FSUBTEST2)
+F_ASSERT("float - float", 50.00000000, FSUBTEST3)
+
+F_ASSERT("int * float", 150.00000000, FMULTEST1)
+F_ASSERT("float * int", 150.00000000, FMULTEST2)
+F_ASSERT("float * float", 150.00000000, FMULTEST3)
+
+F_ASSERT("int / float", 25.00000000, FDIVTEST1)
+F_ASSERT("float / int", 25.00000000, FDIVTEST2)
+F_ASSERT("float / float", 25.00000000, FDIVTEST3)
+
+F_ASSERT("int < float true", 1, FLTTEST1)
+F_ASSERT("float < int true", 1, FLTTEST2)
+F_ASSERT("float < float true", 1, FLTTEST3)
+F_ASSERT("int < float false", 0, FLTTEST4)
+F_ASSERT("float < int false", 0, FLTTEST5)
+F_ASSERT("float < float false", 0, FLTTEST6)
+
+F_ASSERT("int > float true", 1, FGTTEST1)
+F_ASSERT("float > int true", 1, FGTTEST2)
+F_ASSERT("float > float true", 1, FGTTEST3)
+F_ASSERT("int > float false", 0, FGTTEST4)
+F_ASSERT("float > int false", 0, FGTTEST5)
+F_ASSERT("float > float false", 0, FGTTEST6)
+
+F_ASSERT("int <= float true", 1, FLETEST1)
+F_ASSERT("float <= int true", 1, FLETEST2)
+F_ASSERT("float <= float true", 1, FLETEST3)
+F_ASSERT("int <= float false", 0, FLETEST4)
+F_ASSERT("float <= int false", 0, FLETEST5)
+F_ASSERT("float <= float false", 0, FLETEST6)
+
+F_ASSERT("int >= float true", 1, FGETEST1)
+F_ASSERT("float >= int true", 1, FGETEST2)
+F_ASSERT("float >= float true", 1, FGETEST3)
+F_ASSERT("int >= float false", 0, FGETEST4)
+F_ASSERT("float >= int false", 0, FGETEST5)
+F_ASSERT("float >= float false", 0, FGETEST6)
+
+F_ASSERT("int == float true", 1, FEQTEST1)
+F_ASSERT("float == int true", 1, FEQTEST2)
+F_ASSERT("float == float true", 1, FEQTEST3)
+F_ASSERT("int == float false", 0, FEQTEST4)
+F_ASSERT("float == int false", 0, FEQTEST5)
+F_ASSERT("float == float false", 0, FEQTEST6)
+
+F_ASSERT("int != float true", 1, FNETEST1)
+F_ASSERT("float != int true", 1, FNETEST2)
+F_ASSERT("float != float true", 1, FNETEST3)
+F_ASSERT("int != float false", 0, FNETEST4)
+F_ASSERT("float != int false", 0, FNETEST5)
+F_ASSERT("float != float false", 0, FNETEST6)
+
+bar
+
+eval N =N*N+1 @
+1: e;;;;
+ital above 1: 1 "should be 5:";
+rom above 1: 1 `N`;
+bar

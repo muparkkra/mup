@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -38,7 +38,7 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/* This program generate random Mup input files and runs Mup on them, as a
+/* This program generates random Mup input files and runs Mup on them, as a
  * way to do regression testing. If the program runs to completion before
  * a timeout value, and without generating a core dump, the input is discarded.
  * Otherwise, the file is kept as a way to potentially reproduce a bug.
@@ -140,6 +140,7 @@ short crnl;		/* % of time to use \r\n  */
 short cr_only;		/* % of time to use \r alone as line separator */
 short midmeas;		/* % of time to make mid-measure param chgs */
 short noteheads;	/* % of time to use noteheads parameter */
+short noteleft;		/* % of time to add a noteleft string */
 short typo;		/* % of time to add a "typo" to the input */
 short scorefeed;	/* % of time to use newscore */
 short pagefeed;		/* % of time to use newpage */
@@ -247,6 +248,11 @@ short beamslope;	/* % of the time to generate beamslope parameter */
 short tupletslope;	/* % of the time to generate tupletslope parameter */
 short numbermultrpt;	/* % of the time to generate numbermultrpt parameter */
 short defaultphraseside; /* % of the time to generate defaultphraseside param */
+short shapes;		/* % of time to generate shapes contexts */
+short add_to_string;	/* % of time to do string + string */
+short stringfunc;	/* % of time to do string() */
+short eval;		/* % of time to use eval macros */
+short mensural;		/* % of time to use mensural notes/ shapes */
 
 short maxnotes;		/* notes per voice */
 short maxsize;		/* maxsize to actually use */
@@ -288,7 +294,7 @@ short maxsize;		/* maxsize to actually use */
 #define HDFTSIZE	15	/* % of time to use size in header/footer */
 #define FNT		20	/* % of time to specify font on titles */
 #define TITLE2		25	/* % of time to generate 2nd title string */
-#define TITLE3		20	/* % of time to generate 2nd title string */
+#define TITLE3		20	/* % of time to generate 3rd title string */
 #define HDFT		20	/* % of time to generate a header/footer */
 #define GRACE		5	/* % of time to add grace notes */
 #define GRACETIME	30	/* % of time to explicitly specify time value on grace groups after the first */
@@ -324,6 +330,8 @@ short maxsize;		/* maxsize to actually use */
 #define MAXSTRINGS	9	/* maximum number of tablature strings */
 #define MAX_KEYMAPS     5	/* maximum number of keymap contexts to generate */
 #define MAX_KEYMAP_NAME_LEN     10	/* longest keymap name */
+#define MAX_SHAPES	4		/* max number of shapes contexts to generate */
+#define MAX_SHAPES_NAME_LEN	10	/* longest shapes context name */
 
 
 /* kinds of groups */
@@ -658,6 +666,9 @@ struct LIST Paramlist[] = {
 	{ "midlinestemfloat", 0 },
 	{ "minalignscale", 0 },
 	{ "mingridheight", 0 },
+	{ "noteleftfont", 0 },
+	{ "noteleftfontfamily", 0 },
+	{ "noteleftsize", 0 },
 	{ "numbermrpt", 0 },
 	{ "numbermultrpt", 0 },
 	{ "ontheline", 0 },
@@ -692,6 +703,7 @@ struct LIST Paramlist[] = {
 	{ "swingunit", 0 },
 	{ "sylposition", 0 },
 	{ "tabwhitebox", 0 },
+	{ "shapes", 0 },
 	{ "time", 0 },
 	{ "timeunit", 0 },
 	{ "topmargin", 0 },
@@ -796,6 +808,7 @@ struct LIST Noteheadlist[] = {
 	{ "semicirc", 0 },
 	{ "slash", 0 },
 	{ "allslash", 0 },
+	{ "mensural", 0 },
 	{ "ILLEGAL", 0 }	/* to cause error cases */
 };
 
@@ -853,12 +866,50 @@ struct LIST Midi_list[] = {
 	{ "text", 0 }
 };
 
+/* List of what to use for the first string in a shapes context pair */
+struct LIST Shapes_orig_list[] = {
+	{ "gclef", 0 },
+	{ "cut", 0 },
+	{ "measrpt", 0 },
+	{ "dnflag", 0 },
+	{ "4rest", 0 },
+	{ "ll1rest", 0 },
+	{ "quadmeasrpt", 0 },
+	{ "flat", 0 },
+	/* ferm is a valid music sym, but not one which can be overridden
+	 * in shapes context, for testing that error case */
+	{ "ferm", 0 },
+	{ "INVALID", 0 }
+};
+
+/* List of what to use for the second string in a shapes context pair,
+ * Many of these would be stupid to use, but we are trying to find bugs,
+ * so we want to force down unlikely paths. */
+struct LIST Shapes_replacement_list[] = {
+	{ "cclef", 0 },
+	{ "rr", 0 },
+	{ "piewedge", 0 },
+	{ "dblflat", 0 },
+	{ "sign", 0 },
+	{ "dot", 0 },
+	{ "pedal", 0 },
+	{ "dnbow", 0 },
+	{ "turn", 0 },
+	{ "slashhead", 0 },
+	{ "perfminor", 0 },
+	{ "INVALID", 0 }
+};
+
 /* list of grid chords to use */
 struct LIST *Gridlist;	/* malloc-ed */
 int Numgrids;
 
 char Keymapnames[MAX_KEYMAPS][MAX_KEYMAP_NAME_LEN + 1];
 int Numkeymaps;
+
+/* Shapes contexts */
+int Num_shapes;
+char Shapes_names[MAX_SHAPES][MAX_SHAPES_NAME_LEN+1];
 
 /* For save/restore. The names are for testing a typical name, a name with a
  * space, and a ridiculous but legal name. */
@@ -882,7 +933,7 @@ struct STRINGDATA {
 /* tag information */
 char Tagtable[MAXTAGS][MAXTAGLEN+1] = {
 	"_win", "_page", "_cur", "_score", "_staff.1" } ;
-int Numtags = 3;
+int Numtags = 5;
 
 /* statistics */
 int num_killed, num_core_dumped, num_exited_nonzero, num_midi_nonzero, num_nans;
@@ -948,11 +999,15 @@ void gen_grid(int gridlist_index);
 void adjust_defoct(char * clefname, int staff);
 void gen_coord_things(void);
 void gen_keymaps(void);
+void gen_shapes(void);
 void gen_til(int count100, int num, int measrem);
 void gen_to(int minval, int maxval, int start, int ts_num, int measrem, int multi);
 void gen_midi(int staffs, int ts_num, int measrem);
 void gen_barstyle(void);
 void gen_subbarstyle(void);
+char *macro_name(void);
+char *func_arg(void);
+void gen_eval(int count);
 
 
 
@@ -1449,6 +1504,13 @@ gen()
 	den = (int) (pow(2.0, (double) myrandom(0, 6)));
 	In_ending = NO;
 
+	if (eval > 5) {
+		int e;
+		for (e = myrandom(1, 6); e > 0; e--) {
+			gen_eval(e);
+		}
+	}
+
 	if (sometimes(noteheads)) {
 		int i, j;
 		/* generate a headshapes context */
@@ -1482,6 +1544,13 @@ gen()
 	}
 	else {
 		Numkeymaps = 0;
+	}
+
+	if (sometimes(shapes)) {
+		gen_shapes();
+	}
+	else {
+		Num_shapes = 0;
 	}
 
 	/* do the score things */
@@ -1706,6 +1775,11 @@ gen()
 		}
 	}
 
+	if (Num_shapes > 0) {
+		outfmt("shapes=\"%s\"", Shapes_names[myrandom(0, Num_shapes-1)]);
+		newline();
+	}
+
 
 
 	/* rearrange the score parameters */
@@ -1829,6 +1903,21 @@ gen()
 			if (sometimes(staffscale)) {
 				out("staffscale=");
 				outfmt("%d.%d", myrandom(0,1), myrandom(0, 9));
+				newline();
+			}
+			if (sometimes(mensural)) {
+				/* Usally do both notehead and shapes,
+				 * but since we are trying to test strange
+				 * cases, something do only one of them. */
+				if (sometimes(80)) {
+					out("noteheads=\"mensural\"");
+					newline();
+				}
+				if (sometimes(80)) {
+					out("shapes=\"mensural\"");
+					newline();
+				}
+				outfmt("stemlen=%d", myrandom(4,8));
 				newline();
 			}
 		}
@@ -2820,6 +2909,10 @@ int defoct;
 			outfmt("hs \"%s\"", picklist(Noteheadlist,
 				sizeof(Noteheadlist) / sizeof(struct LIST), -1));
 		}
+		/* sometimes add noteleft */
+		if (sometimes(noteleft)) {
+			outfmt("_%s", create_a_string(0, 3));
+		}
 	}
 	if (css_index > 0) {
 		if (sometimes(50)) {
@@ -2912,7 +3005,14 @@ genstring(leng)
 int leng;
 
 {
-	outfmt("%s", create_a_string(0, leng));
+	if (sometimes(add_to_string)) {
+		outfmt("%s", create_a_string(0, leng/2 + 1));
+		out("+");
+		outfmt("%s", create_a_string(0, leng/2 + 1));
+	}
+	else {
+		outfmt("%s", create_a_string(0, leng));
+	}
 }
 
 /* create a random string, returning it in static buffer */
@@ -2930,6 +3030,31 @@ create_a_string(int minleng, int leng)
 	}
 	leng = myrandom(minleng, leng);
 	offset = 0;
+
+	if (sometimes(stringfunc) && leng >= 2) {
+		const char *transform;
+
+		switch (myrandom(1, 4)) {
+		case 1: transform = "ROM";
+			break;
+		case 2: transform = "rom";
+			break;
+		case 3: transform = "LET";
+			break;
+		case 4: transform = "let";
+			break;
+		default:
+			fprintf(stderr, "got to impossible case in create_a_string\n");
+			exit(2);
+		}
+		if (eval > 5) {
+			sprintf(buff, " string(%s, \"%s\")", macro_name(), transform);
+		}
+		else {
+			sprintf(buff, " string(%d, \"%s\")", myrandom(0,99), transform);
+		}
+		return(buff);
+	}
 
 	buff[offset++] = '"';
 	/* Yes, I mean single = here */
@@ -3907,6 +4032,7 @@ initvals()
 	cr_only = myrandom(0, 10);
 	midmeas = myrandom(0, 10);
 	noteheads = myrandom(0, 10);
+	noteleft = myrandom(0, 5);
 	typo = myrandom(0, 20);
 	scorefeed = myrandom(0, 30);
 	pagefeed = myrandom(0, 20);
@@ -4019,6 +4145,11 @@ initvals()
 	tupletslope = myrandom(3, 12);
 	numbermultrpt = myrandom(3, 12);
 	defaultphraseside = myrandom(5, 15);
+	shapes = myrandom(3, 10);
+	add_to_string = myrandom(3, 8);
+	stringfunc = myrandom(2, 5);
+	eval = myrandom(3, 10);
+	mensural = myrandom(3, 5);
 	samescore = myrandom(2, 7);
 	samepage = myrandom(2, 7);
 	Samescore_inprog = NO;
@@ -4655,6 +4786,36 @@ gen_keymaps()
 	}
 }
 
+
+/* Generate shapes contexts */
+
+void
+gen_shapes()
+{
+	int n;
+	int entries;
+	int e;
+	static int shapes_generation;
+
+	Num_shapes = myrandom(1, MAX_SHAPES);
+	for (n = 0; n < Num_shapes; n++) {
+		shapes_generation++;
+		strcpy(Shapes_names[n], create_a_name(1, MAX_SHAPES_NAME_LEN));
+		outfmt("shapes \"%s\"", Shapes_names[n]);
+		newline();
+		entries = myrandom(0, 8);
+		for (e = 0; e < entries; e++) {
+			outfmt("\"%s\" ", picklist(Shapes_orig_list,
+				sizeof(Shapes_orig_list) / sizeof(struct LIST), 
+				shapes_generation));
+			outfmt("\"%s\"", picklist(Shapes_replacement_list,
+				sizeof(Shapes_replacement_list) /
+				sizeof(struct LIST), -1));
+			newline();
+		}
+	}
+}
+
 /* Generate a "to" clause for a stuff */
 
 void
@@ -4786,5 +4947,171 @@ gen_subbarstyle()
 	case 0: out("1.5"); break;
 	case 1: out("2"); break;
 	}
+	newline();
+}
+
+/* Test "eval" macros. This isn't currently very thorough, but is better
+ * than nothing. It will mostly generate invalid things, like integers
+ * where they aren't allowed, but that is better for finding bugs. */
+
+
+char *operators[] = {
+ "+", "-", "*", "/", "%",
+ "<<", ">>", "|", "&", "^",
+ "<", ">", "<=", ">=",
+ "==", "!=", "&&", "||"
+};
+int num_operators = sizeof(operators) / sizeof(operators[0]);
+
+/* For now, just do functions with one argument */
+char *functions[] = {
+ "sqrt",
+ "sin",
+ "cos",
+ "tan",
+ "asin",
+ "acos",
+ "atan",
+ "round",
+ "floor",
+ "ceiling"
+};
+int num_functions = sizeof(functions) / sizeof(functions[0]);
+
+char *
+macro_name()
+{
+	int m;
+
+	/* We just pick from a few hard-coded names for now. We generally 
+	 * want the same name to get used multiple times in a file, so we 
+	 * aren't always referencing ones that are not defined. */
+	m = myrandom(1, 5);
+	switch(m) {
+	case 1: return("A");
+	case 2: return("Z198_P");
+	case 3: return("XY___");
+	case 4: return("G_P_1_Q");
+	case 5: return("XXXX");
+	}
+}
+
+
+/* Return a string that could be an argument to a eval function.
+ * For now, it just does simple numbers, not expressions.  */
+
+char *
+func_arg()
+{
+	static char value[32];
+
+	/* For now, just choose between whole and decimal numbers */
+	if (sometimes(40)) {
+		sprintf(value, "%d", myrandom(0, 500));
+	}
+	else {
+		sprintf(value, "%d.%d", myrandom(0, 500), myrandom(0, 99));
+	}
+	return(value);
+}
+
+
+/* Generate one eval macro definition */
+
+void
+gen_eval(count)
+
+int count;
+
+{
+	int items;
+	int i;
+	int parens;
+	int item_type;
+	int op;
+
+	/* Pick how many items. */
+	/* For first few, make them short, so they are more likely to
+	 * be of the form X=N, and less chance of referencing a macro
+	 * not yet defined. */
+	if (count < 2) {
+		items = 1;
+	}
+	else {
+		items = myrandom(1, 6);
+	}
+
+	outfmt("eval %s = ", macro_name());
+	parens = 0;
+	for (i = 0; i < items; i++) {
+  		/* Sometimes start a parenthesized grouping */
+		if (sometimes(25)) {
+			out("(");
+			parens++;
+		}
+		/* Sometimes do unary +- */
+		if (sometimes(8)) {
+			out(sometimes(60) ? "-" : "+");
+		}
+
+  		/* do a whole number, decimal number, macro name,
+		 * or function call. */
+		item_type = myrandom(1, 10);
+		if (item_type < 4) {
+			outfmt("%d", myrandom(0, 5000));
+		} else if (item_type < 7){
+			outfmt("%d.%d", myrandom(0, 5000), myrandom(0, 999));
+		}
+		else if (item_type < 10) {
+			outfmt("%s", macro_name());
+		}
+		else {
+			/* Just do simple cases for now: functions with
+			 * one argument, and simple values for it */
+			op = myrandom(0, num_functions - 1);
+			outfmt("%s(", functions[op]);
+			outfmt("%s", func_arg());
+			out(")");
+		}
+
+		/* If paren count > 0, sometimes do a closing ).
+		 * Once in a while, even do a closing when there shouldn't
+		 * be one, since a user could easily do that by accident.*/
+		if (parens > 0) {
+			if (sometimes(35)) {
+				out(")");
+				parens--;
+			}
+		}
+		else if (sometimes(3)) {
+			out(")");
+			parens--;
+		}
+
+		/* If the last, end any paren groups, but sometimes
+		 * miscount how many to add. */
+		if (i == items - 1) {
+			int miscount;
+			int p;
+
+			miscount = myrandom(1, 50);
+			if (miscount == 4) {
+				parens++;
+			}
+			else if (miscount == 17) {
+				parens--;
+			}
+			for (p = 0; p < parens; p++) {
+				out(")");
+			}
+		}
+
+		/* Otherwise (i.e., if not last), add a binary operator */
+		else {
+			op = myrandom(0, num_operators - 1);
+			outfmt("%s", operators[op]);
+		}
+	}
+	out("@");
 	newline();
 }

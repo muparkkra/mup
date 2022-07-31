@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -161,3 +161,16 @@
 #define C_IMPERFMINORDIM	(%)	/* imperfectum minor diminutum */
 #define C_DBLMEASRPT		(%)	/* double measure repeat */
 #define C_QUADMEASRPT		(%)	/* quadruple measure repeat */
+#define C_MENSURDIAMOND		(%)	/* mensural diamond */
+#define C_MENSURFILLDIAMOND	(%)	/* mensural filled diamond */
+#define C_MENSURDBLWHOLE	(%)	/* mensural double whole */
+#define C_MENSURDWHREST		(%)	/* mensural double whole rest */
+#define C_MENSUR1REST		(%)	/* mensural whole rest */
+#define C_MENSURLL1REST		(%)	/* mensural legerline-less whole rest */
+#define C_MENSUR2REST		(%)	/* mensural half rest */
+#define C_MENSURLL2REST		(%)	/* mensural legerline-less half rest */
+#define C_MENSUR4REST		(%)	/* mensural quarter rest */
+#define C_MENSUR8REST		(%)	/* mensural eighth rest */
+#define C_MENSUR16REST		(%)	/* mensural sixteenth rest */
+#define C_MENSURUPFLAG		(%)	/* mensural upward flag */
+#define C_MENSURDNFLAG		(%)	/* mensural downward flag */

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1602,8 +1602,9 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
  * Returns:     void
  *
  * Description: This function adds the src group info (if the src group exists)
- *		into the dest group.  But it doesn't mess with linkages.  That
- *		is the calling function's job.
+ *		into the dest group.  But it doesn't mess with linkages, except
+ *		for having the src point at the dest.  That is the calling
+ *		function's job.
  */
 
 static void
@@ -1625,6 +1626,9 @@ struct GRPSYL *src_p;		/* source group, or can be NULL */
 	if (src_p == 0) {
 		return;
 	}
+
+	/* remember what dest our src is being combined into */
+	src_p->vcombdest_p = dest_p;
 
 	/* move references to the src group's coords */
 	upd_ref(src_p->c, dest_p->c);
@@ -1680,6 +1684,15 @@ struct GRPSYL *src_p;		/* source group, or can be NULL */
 			dest_p->roll = ENDITEM;
 			break;
 		}
+	}
+
+	/*
+	 * Only for dest == space can there be a "with" list disagreement.
+	 * Spaces can never have one, but if src has one, copy it.
+	 */
+	if (dest_p->grpcont == GC_SPACE && src_p->nwith != 0) {
+		dest_p->nwith = src_p->nwith;
+		dest_p->withlist = src_p->withlist;
 	}
 
 	/* if either is a rest, the other must be rest or space; combine */

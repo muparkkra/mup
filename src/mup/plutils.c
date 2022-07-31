@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -164,6 +164,31 @@ struct MAINLL **mll_p_p;	/* MLL structure it is hanging off of */
 	do {
 		gs_p = prevgrpsyl(gs_p, mll_p_p);
 	} while (gs_p != 0 && gs_p->grpvalue == GV_ZERO);
+	return (gs_p);
+}
+
+/*
+ * Name:        nextnongracenonspace()
+ *
+ * Abstract:    Return next nongrace nonspace group in a GRPSYL list.
+ *
+ * Returns:     pointer to GRPSYL of next nongrace group, 0 if none
+ *
+ * Description: This function loops down the GRPSYL linked list from the given
+ *		starting point.  It returns the next nongrace nonspace GRPSYL,
+ *		or 0 if none.
+ */
+
+struct GRPSYL *
+nextnongracenonspace(gs_p)
+
+struct GRPSYL *gs_p;	/* current group */
+
+{
+	gs_p = gs_p->next;
+	while (gs_p != 0 && (gs_p->grpvalue == GV_ZERO ||
+			     gs_p->grpcont == GC_SPACE))
+		gs_p = gs_p->next;
 	return (gs_p);
 }
 
@@ -856,11 +881,13 @@ int vno;		/* voice being tested for being all spaces */
 	msend_p = getendstuff(msbeg_p, stuff_p, &timeden);
 
 	/*
-	 * If we hit a multirest, bail out, arbitrarily returning NO.  This
-	 * stuff will be thrown away later anyway.
+	 * If we hit a multirest, bail out, returning YES.  A multirest is a
+	 * rest.  Yes, we are neglecting the slight chance that the STUFF will
+	 * extend beyond the end of the multirest, and that that would matter.
 	 */
-	if (msend_p == 0)
-		return (NO);
+	if (msend_p == 0) {
+		return (YES);
+	}
 
 	/*
 	 * Find time values that are sure to contain the stuff.  Take the
@@ -1215,8 +1242,9 @@ int timeden;			/* denominator of current time signature */
  */
 
 void
-accdimen(note_p, ascent_p, descent_p, width_p)
+accdimen(staffno, note_p, ascent_p, descent_p, width_p)
 
+int staffno;			/* staff where this acc is */
 struct NOTE *note_p;		/* the note whose accidental we're working on*/
 float *ascent_p;		/* ascent, to be filled in */
 float *descent_p;		/* descent, to be filled in */
@@ -1240,19 +1268,22 @@ float *width_p;			/* width, to be filled in */
 	/* loop through every accidental on this note */
 	for (idx = 0; idx < MAX_ACCS*2 && note_p->acclist[idx] != 0; idx += 2) {
 
+		int musfont = FONT_MUSIC;
+		int muschar = note_p->acclist[idx + 1];
+
+		/* override if appropriate; accs are at staff level, not voice*/
+		(void)get_shape_override(staffno, 0, &musfont, &muschar);
+
 		/* maintain the maximum ascent so far */
-		asc  =   ascent(note_p->acclist[idx], size,
-				note_p->acclist[idx + 1]);
+		asc  =   ascent(note_p->acclist[idx], size, muschar);
 		final_asc = MAX(final_asc, asc);
 
 		/* maintain the maximum descent so far */
-		desc =  descent(note_p->acclist[idx], size,
-				note_p->acclist[idx + 1]);
+		desc =  descent(note_p->acclist[idx], size, muschar);
 		final_desc = MAX(final_desc, desc);
 
 		/* accumulate the width */
-		final_wid += width(note_p->acclist[idx], size,
-				note_p->acclist[idx + 1]);
+		final_wid += width(note_p->acclist[idx], size, muschar);
 	}
 
 	/*
@@ -1513,10 +1544,10 @@ int numbeams;			/* number of beams */
 
 		if (gs_p->stemdir == UP) {
 			/* get ascent and width */
-			accdimen(note_p, &accy, (float *)0, &wid);
+			accdimen(gs_p->staffno,note_p, &accy, (float *)0, &wid);
 		} else {	/* stemdir == DOWN */
 			/* get descent and width */
-			accdimen(note_p, (float *)0, &accy, &wid);
+			accdimen(gs_p->staffno,note_p, (float *)0, &accy, &wid);
 			accy = -accy;	/* need descent as negative */
 		}
 		accy += note_p->c[ycoordtype];
@@ -1724,7 +1755,10 @@ int coord;			/* RE or RW */
 
 	} else {	/* RW */
 
-		if (note_p->note_has_paren == YES &&
+		if (gs_p->sep_accs == YES && note_p->noteleft_string != 0) {
+			/* if string left of note, start there */
+			h = note_p->wlstring;
+		} else if (note_p->note_has_paren == YES &&
 					! is_tab_staff(gs_p->staffno)) {
 			/* if parens around note, start there */
 			h = note_p->wlparen;
@@ -3212,7 +3246,7 @@ struct GRPSYL *gs_p;		/* the group to be checked */
 	 * For the clef boundaries, this convenient function gives the answer,
 	 * though we have to do the adjustment for staff scale.
 	 */
-	(void)clefvert(clef, YES, &clef_rn, &clef_rs);
+	(void)clefvert(clef,  gs_p->staffno, YES, &clef_rn, &clef_rs);
 	clef_rn *= Staffscale;
 	clef_rs *= Staffscale;
 

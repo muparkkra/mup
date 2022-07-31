@@ -1,6 +1,6 @@
 %{
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -777,4 +777,10 @@ index_entry()
 		}
 	} 
 	(void) fprintf(indexfile, "</UL>\n");
+}
+
+int
+yywrap()
+{
+	return(1);
 }

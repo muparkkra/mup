@@ -1,0 +1,52 @@
+//!Mup-Arkkra
+
+header
+	title bold (18) "mac_arith.mup"
+	paragraph (14) "This file tests the errors on 'eval' macros."
+
+music
+
+eval ERR1 = 3.0 << 1 @
+eval ERR2 = 3 << 1.0 @
+eval ERR3 = 3.0 << 1.0 @
+
+eval ERR4 = 4.0 >> 2 @
+eval ERR5 = 4 >> 2.0 @
+eval ERR6 = 4.0 >> 2.0 @
+
+eval ERR7 = 5.0 & 3 @
+eval ERR8 = 5 & 3.0 @
+eval ERR9 = 5.0 & 3.0 @
+
+eval ERR10 = 7.0 ^ 9 @
+eval ERR11 = 7 ^ 9.0 @
+eval ERR12 = 7.0 ^ 9.0 @
+
+eval ERR13 = 8.0 | 6 @
+eval ERR14 = 8 | 6.0 @
+eval ERR15 = 8.0 | 6.0 @
+
+eval ERR16 = 1.0 || 1 @
+eval ERR17 = 1 || .0 @
+eval ERR18 = 1.0 || 0.0 @
+
+eval ERR19 = 1.0 && 1 @
+eval ERR20 = 1 && .0 @
+eval ERR21 = 1.0 && 0.0 @
+
+eval ERR22 = 5 / 0 @
+eval ERR23 = 24.0 % 3 @
+eval ERR24 = 24 % 3.0 @
+eval ERR25 = 24. % 3.0 @
+
+eval ERR26 = 19 / 0 @
+eval ERR27 = 19. / 0 @
+eval ERR28 = 19 / 0.0 @
+eval ERR29 = 19.0 / 0.0 @
+
+eval ERR30 = . + 1 @
+eval ERR31 = UNDEFINED @
+eval ERR32 = sqrt(-42) @
+eval ERR34 29@
+1: c;;;;
+bar

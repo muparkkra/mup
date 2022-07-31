@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -270,6 +270,7 @@ static double pr_timesig P((int staffno, double x, int multnum,
 		int really_print));
 static double pr_arbitrary_tsig P((int staffno, double x, int really_print));
 static double tsjam P((int num));
+static int is_tsig_symbol P((char *str));
 static void pr_tsnum P((double x, double y, char *str, double jam));
 static void draw_circle P((double x, double y, double radius));
 static void do_scale P((double xscale, double yscale));
@@ -486,7 +487,7 @@ init4print()
 	initstructs();
 
 	printf("%%!PS-Adobe-1.0\n");
-	printf("%%%%Creator: Mup (Version 6.9)\n");
+	printf("%%%%Creator: Mup (Version 7.0)\n");
 	printf("%%%%Title: music: %s from %s\n", Outfilename, Curr_filename);
 	clockinfo = time((time_t *)0);
 	timeinfo_p = localtime(&clockinfo);
@@ -3738,13 +3739,18 @@ int really_print;	/* if YES actually print, otherwise just being called to
 			set_staffscale(s);
 			/* mid-staff clefs should be 3/4 as big as normal */
 			if (clefsig_p->clefsize == SMALLSIZE) {
+				int clefcode;
+				int cleffont;
+
 				clefsize = (3 * DFLT_SIZE) / 4;
 				/* right justify mid-score clefs */
+				clefcode = clefchar(svpath(s, CLEF)->clef,
+							s, &cleffont);
 				clefx = clefsig_p->wclefsiga +
 						(clefsig_p->widestclef -
 						Staffscale *
-						width(FONT_MUSIC, clefsize,
-						clefchar(svpath(s, CLEF)->clef)));
+						width(cleffont, clefsize,
+						clefcode));
 			}
 			else {
 				clefsize = DFLT_SIZE;
@@ -3887,7 +3893,8 @@ int really_print;	/* if YES, actually print, else just return width */
 int size;		/* point size of clef */
 
 {
-	char muschar;	/* clef character */
+	int muschar;	/* clef character */
+	int cleffont;
 	float y_offset;	/* where to place clef vertical relative to staff */
 	int clef;
 	float y;
@@ -3910,18 +3917,18 @@ int size;		/* point size of clef */
 
 	/* figure out which clef to use */
 	clef = svpath(staffno, CLEF)->clef;
-	muschar = clefchar(clef);
+	muschar = clefchar(clef, staffno, &cleffont);
 
 	/* figure out vertical placement */
 	if (clef == TABCLEF) {
 		return(pr_tabclef(staffno, x, really_print, size));
 	}
 
-	y_offset = clefvert(clef, NO, 0, 0) * STEPSIZE;
+	y_offset = clefvert(clef, staffno, NO, 0, 0) * STEPSIZE;
 
 	/* print the clef */
 	if (really_print) {
-		x += (width(FONT_MUSIC, size, muschar) / 2.0
+		x += (width(cleffont, size, muschar) / 2.0
 						+ CLEFPAD) * Staffscale;
 		y = Staffs_y[staffno] + y_offset * Staffscale;
 		/* Print 8 below or above a G clef clef in 9-point
@@ -3941,17 +3948,17 @@ int size;		/* point size of clef */
 			tr8str[3] = '\0';
 			/* Figure out correct y offset */
 			if (clef == TREBLE_8) {
-				y8 = y - descent(FONT_MUSIC, size, muschar)
+				y8 = y - descent(cleffont, size, muschar)
 					* Staffscale
 					- strascent(tr8str) + (2.0 * Stdpad);
 			}
 			else if (clef == BASS_8) {
-				y8 = y - descent(FONT_MUSIC, size, muschar)
+				y8 = y - descent(cleffont, size, muschar)
 					* Staffscale
 					- strascent(tr8str) + (0.5 *Stdpad);
 			}
 			else {
-				y8 = y + ascent(FONT_MUSIC, size, muschar)
+				y8 = y + ascent(cleffont, size, muschar)
 						* Staffscale - Stdpad;
 			}
 
@@ -3977,10 +3984,10 @@ int size;		/* point size of clef */
 			j_outstring(x + x_adj, y8, tr8str, J_CENTER, strwidth(tr8str),
 					DEFHORZSCALE, (char *) 0, -1);
 		}
-		pr_muschar(x, y, muschar, size, FONT_MUSIC);
+		pr_muschar(x, y, muschar, size, cleffont);
 	}
 
-	return (width(FONT_MUSIC, size, muschar) + CLEFPAD) * Staffscale;
+	return (width(cleffont, size, muschar) + CLEFPAD) * Staffscale;
 }
 
 
@@ -4240,15 +4247,18 @@ int really_print;	/* if YES, actually print, else just return width */
 	for (t = timerep; *t != TSR_END; t++) {
 
 		if (*t == TSR_CUT || *t == TSR_COMMON) {
-			char tschar;
+			int tschar;
+			int tsfont;
 
 			tschar = (*t == TSR_CUT ? C_CUT : C_COM);
-			thiswidth = width(FONT_MUSIC, DFLT_SIZE, tschar) * Staffscale;
+			tsfont = FONT_MUSIC;
+			(void) get_shape_override(staffno, 0, &tsfont, &tschar);
+			thiswidth = width(tsfont, DFLT_SIZE, tschar) * Staffscale;
 			totalwidth += thiswidth;
 			if (really_print) {
 				pr_muschar( x + totalwidth - (thiswidth / 2.0),
 						Staffs_y[staffno], tschar,
-						DFLT_SIZE, FONT_MUSIC);
+						DFLT_SIZE, tsfont);
 			}
 		}
 
@@ -4387,8 +4397,14 @@ int really_print;	/* if YES, actually print, else just return width */
 		/* May need to adjust for staffscale, so make a copy
 		 * and normalize that based on staffscale. */
 		str1 = strdup(str1);
-		size = adj_size(24, Staffscale, (char *) 0, -1);
-		str1 = fix_string(str1, FONT_NB, size, (char *)0, -1);
+		if (is_tsig_symbol(str1) == YES) {
+			size = adj_size(str1[1], Staffscale, (char *) 0, -1);
+			str1 = fix_string(str1, str1[0], size, (char *) 0, -1);
+		}
+		else {
+			size = adj_size(24, Staffscale, (char *) 0, -1);
+			str1 = fix_string(str1, FONT_NB, size, (char *) 0, -1);
+		}
 		
 		/* only one string, center it vertically */
 		if (really_print == YES) {
@@ -4431,6 +4447,45 @@ int really_print;	/* if YES, actually print, else just return width */
 		return(widest);
 	}
 	return(0.0);
+}
+
+
+/* Returns YES if the given string consists solely of something that is
+ * normally used as a time signature symbol.
+ */
+
+/* The remainder of the string to be matched if we see it starts with \( */
+static char *Tsig_symbols[] = {
+	"cut)",
+	"com)",
+	"perfminor)",
+	"perfmaior)",
+	"imperfminor)",
+	"imperfmaior)",
+	"perfminordim)",
+	"perfmaiordim)",
+	"imperfminordim)",
+	"imperfmaiordim)"
+};
+
+static int
+is_tsig_symbol(str)
+
+char *str;
+
+{
+	int s;
+
+	if (str[2] != '\\' || str[3] != '(') {
+		return(NO);
+	}
+
+	for (s = 0; s < NUMELEM(Tsig_symbols); s++) {
+		if (strcmp(str+4, Tsig_symbols[s]) == 0) {
+			return(YES);
+		}
+	}
+	return(NO);
 }
 
 
@@ -4595,8 +4650,15 @@ int lineno;	/* line number for error messages */
 		outop(O_EOFILL);
 		outop(O_GRESTORE);
 
-		/* adjust x for where text should be printed */
-		x += x_offset;
+		/* adjust x for where text should be printed, if needed */
+		switch (justify) {
+		case J_LEFT:
+			x += x_offset;
+			break;
+		case J_RIGHT:
+			x -= x_offset;
+			break;
+		}
 	}
 
 	split_a_string(x, y, string, justify, fullwidth, horzscale,
@@ -4737,6 +4799,11 @@ int lineno;		/* line number for error messages */
 		 * to make things align properly). */
 		text++;
 		fullwidth -= 7.0 * STDPAD;
+	}
+	if (IS_CIRCLED(string) == YES) {
+		/* Similarly, skip past the circle indicator, so it
+		 * doesn't affect the string width calculation. */
+		text++;
 	}
 	p = text;
 	MALLOCA(char, buff, strlen(string) + 1);

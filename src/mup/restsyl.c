@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -975,8 +975,8 @@ struct CHORD *pch_p;		/* prev chord to the one containing gs1_p */
 		g_p[0]->ho_usage = HO_NONE;
 	}
 
-	/* stack the accs for all these groups, if not already done */
-	applyaccs(g_p, numgrps);
+	/* stack the accs/strings for all these groups, if not already done */
+	applyaccstrs(g_p, numgrps);
 
 	/* in case of midmeasure clef change, make sure it's marked right */
 	/* but don't do it for grace groups; their main group handles it */
@@ -1157,8 +1157,8 @@ int numgrps;			/* how many nonspace groups are here */
 			otherhasacc = NO;
 			south = onote_p->c[RY] - STEPSIZE + 0.001;
 			for (k = 0; k < gs_p->nnotes; k++) {
-				accdimen(&gs_p->notelist[k], (float *)0,
-						&topdesc, (float *)0);
+				accdimen(gs_p->staffno, &gs_p->notelist[k],
+					(float *)0, &topdesc, (float *)0);
 				if (gs_p->notelist[k].c[RY] - topdesc < south) {
 					south = gs_p->notelist[k].c[RY]
 							- topdesc;
@@ -1171,8 +1171,8 @@ int numgrps;			/* how many nonspace groups are here */
 			v3hasacc = NO;
 			north = v3note_p->c[RY] + STEPSIZE - 0.001;
 			for (k = 0; k < v3_p->nnotes; k++) {
-				accdimen(&v3_p->notelist[k], &botasc,
-						(float *)0, (float *)0);
+				accdimen(v3_p->staffno, &v3_p->notelist[k],
+					&botasc, (float *)0, (float *)0);
 				if (v3_p->notelist[k].c[RY] + botasc > north) {
 					north = v3_p->notelist[k].c[RY]
 							+ botasc;
@@ -1255,8 +1255,8 @@ int numgrps;			/* how many nonspace groups are here */
 			otherhasacc = NO;
 			north = onote_p->c[RY] + STEPSIZE - 0.001;
 			for (k = 0; k < gs_p->nnotes; k++) {
-				accdimen(&gs_p->notelist[k], &botasc,
-						(float *)0, (float *)0);
+				accdimen(gs_p->staffno, &gs_p->notelist[k],
+					&botasc, (float *)0, (float *)0);
 				if (gs_p->notelist[k].c[RY] + botasc > north) {
 					north = gs_p->notelist[k].c[RY]
 							+ botasc;
@@ -1269,8 +1269,8 @@ int numgrps;			/* how many nonspace groups are here */
 			v3hasacc = NO;
 			south = v3note_p->c[RY] - STEPSIZE + 0.001;
 			for (k = 0; k < v3_p->nnotes; k++) {
-				accdimen(&v3_p->notelist[k], (float *)0,
-						&topdesc, (float *)0);
+				accdimen(v3_p->staffno, &v3_p->notelist[k],
+					(float *)0, &topdesc, (float *)0);
 				if (v3_p->notelist[k].c[RY] - topdesc < south) {
 					south = v3_p->notelist[k].c[RY]
 							- topdesc;
@@ -1390,7 +1390,8 @@ struct CHORD *pch_p;		/* prev chord to the one containing gs1_p */
 	 * perfectly.
 	 */
 	if (is_mrpt(g_p[0])) {
-		g_p[0]->c[RW] -= clefwidth(g_p[0]->clef, YES) + CLEFPAD;
+		g_p[0]->c[RW] -= clefwidth(g_p[0]->clef, g_p[0]->staffno, YES)
+				+ CLEFPAD;
 		for (n = 1; n < numgrps; n++) {
 			g_p[n]->c[RW] = g_p[0]->c[RW];	/* widen */
 			g_p[n]->c[RX] = g_p[0]->c[RX];	/* shouldn't be needed*/
@@ -1462,7 +1463,8 @@ struct CHORD *pch_p;		/* prev chord to the one containing gs1_p */
 	}
 
 	/* move western boundary of GRPSYL to allow room to print the clef */
-	westgs_p->c[RW] -= clefwidth(westgs_p->clef, YES) + CLEFPAD;
+	westgs_p->c[RW] -= clefwidth(westgs_p->clef, westgs_p->staffno, YES)
+			+ CLEFPAD;
 
 	/*
 	 * If this is a grace group, we also have to alter its main group's
@@ -1473,7 +1475,8 @@ struct CHORD *pch_p;		/* prev chord to the one containing gs1_p */
 		;
 	}
 	if (gs_p != westgs_p) {
-		gs_p->c[RW] -= clefwidth(westgs_p->clef, YES) + CLEFPAD;
+		gs_p->c[RW] -= clefwidth(westgs_p->clef, westgs_p->staffno,
+				YES) + CLEFPAD;
 	}
 }
 
@@ -1495,7 +1498,8 @@ register struct GRPSYL *gs_p;	/* the GRPSYL containing the rest */
 float *wid_p, *asc_p, *des_p;	/* return width, ascent, and descent of rest */
 
 {
-	char rchar;		/* char for the rest */
+	int rchar;		/* char for the rest */
+	int rfont;		/* font for the rest */
 	int size;		/* font size */
 
 
@@ -1517,11 +1521,11 @@ float *wid_p, *asc_p, *des_p;	/* return width, ascent, and descent of rest */
 	 * The "normal" rest case.  Find the name of the character.  Then get
 	 * the width, ascent, and descent of the rest.
 	 */
-	rchar = restchar(gs_p->basictime);
+	rchar = restchar(gs_p, &rfont);
 	size = (gs_p->grpsize == GS_NORMAL ? DFLT_SIZE : SMALLSIZE);
-	*wid_p = width(FONT_MUSIC, size, rchar);
-	*asc_p = ascent(FONT_MUSIC, size, rchar);
-	*des_p = descent(FONT_MUSIC, size, rchar);
+	*wid_p = width(rfont, size, rchar);
+	*asc_p = ascent(rfont, size, rchar);
+	*des_p = descent(rfont, size, rchar);
 }
 
 /*
@@ -2035,8 +2039,9 @@ relxchord()
 					}
 					if (pgs_p->clef_vert == YES) {
 						clefwid = clefwidth(pgs_p->clef,
-						YES) * svpath(pgs_p->staffno,
-						STAFFSCALE)->staffscale;
+							pgs_p->staffno, YES)
+							* svpath(pgs_p->staffno,
+							STAFFSCALE)->staffscale;
 
 						if (clefwid > maxclefwid) {
 							maxclefwid = clefwid;
@@ -2486,7 +2491,8 @@ struct GRPSYL *g2_p;		/* ptr to right group */
 				for (j = 0; j < g_p[k]->nnotes; j++) {
 					if (has_accs(g_p[k]->
 							notelist[j].acclist)) {
-						accdimen(&g_p[k]->notelist[j],
+						accdimen(g_p[k]->staffno,
+							&g_p[k]->notelist[j],
 							(float *)0, &descent,
 							(float *)0);
 						descent *= staffscale;
@@ -2532,7 +2538,8 @@ struct GRPSYL *g2_p;		/* ptr to right group */
 				for (j = 0; j < g_p[k]->nnotes; j++) {
 					if (has_accs(g_p[k]->
 							notelist[j].acclist)) {
-						accdimen(&g_p[k]->notelist[j],
+						accdimen(g_p[k]->staffno,
+							&g_p[k]->notelist[j],
 							&ascent, (float *)0,
 							(float *)0);
 						ascent *= staffscale;

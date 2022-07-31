@@ -46,4 +46,7 @@ rom above 1: 4 "\{\(smgclef)\}";
 rom above 1: 4.2 "\{pile\:\|super \|sub \|sub2\}";
 rom above 2: 1 "\{This is very Long!\}";
 ital (9) above 2: 4 "adjusted by staffscale";
+left (_win.x - 50, _win.s + 5) "\{multiline\nleft justified\}"
+center (_win.x, _win.s + 5) "\{multiline\ncentered\}"
+right (_win.x + 50, _win.s + 5) "\{multiline\nright justified\}"
 bar

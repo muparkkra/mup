@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -657,7 +657,7 @@ midi_squeeze()
 						ch_p != (struct CHORD *) 0;
 						ch_p = ch_p->ch_p) {
 
-			if (ch_p->uncollapsible == 0.0) {
+			if (ch_p->uncollapsible == NO) {
 				/* found one to squeeze, do it */
 				fix_spacechord(mll_p, ch_p);
 			}

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -169,6 +169,13 @@ int grp_or_syl;		/* GS_GROUP or GS_SYLLABLE */
 	/* assume no explicit abm/eabm */
 	new_p->autobeam = NOITEM;
 	new_p->tupletslope = NOTUPLETANGLE;
+	/* init pointers, just to be sure */
+	new_p->restc = 0;
+	new_p->notelist = 0;
+	new_p->prev = 0;
+	new_p->next = 0;
+	new_p->gs_p = 0;
+	new_p->vcombdest_p = 0;
 	/* everything else zero-ed is proper default */
 
 	return(new_p);
@@ -528,6 +535,8 @@ int copy_acc_etc;	/* if YES, copy accidentals.  If just reusing a
 			}
 			new_p->notelist[n].tie = NO;
 		}
+		/* noteleft should never be copied */
+		new_p->notelist[n].noteleft_string = 0;
 	}
 }
 
@@ -653,6 +662,7 @@ char *bendstring;		/* bend specification, or null if no bend */
 	grpsyl_p->notelist [ index ].tied_to_voice = NO_TO_VOICE;
 	grpsyl_p->notelist [ index ].tied_from_other = NO;
 	grpsyl_p->notelist [ index ].slurred_from_other = NO;
+	grpsyl_p->notelist [ index ].noteleft_string = 0;
 
 	/* don't need to initialize anything else in NOTE */
 
@@ -2006,6 +2016,8 @@ int lineno;		/* input line number for error messages */
 
 {
 	register int n;
+	int staffno;
+	int vno;
 
 
 	if (gs_p->grpcont == GC_SPACE && gs_p->nwith > 0) {
@@ -2016,8 +2028,6 @@ int lineno;		/* input line number for error messages */
 	}
 
 	for (n = 0; n < gs_p->nwith; n++) {
-		int staffno;
-		int vno;
 		staffno = gs_p->staffno;
 		vno = gs_p->vno;
 		(void) fix_string(gs_p->withlist[n].string,
@@ -2026,6 +2036,22 @@ int lineno;		/* input line number for error messages */
 			(vvpath(staffno, vno, WITHSIZE))->withsize,
 			fname, lineno);
 	}
+
+	for (n = 0; n < gs_p->nnotes; n++) {
+		if (gs_p->notelist[n].noteleft_string != 0) {
+			staffno = gs_p->staffno;
+			vno = gs_p->vno;
+			gs_p->notelist[n].noteleft_string =
+				pad_string(gs_p->notelist[n].noteleft_string,
+				TM_NONE);
+			(void) fix_string(gs_p->notelist[n].noteleft_string,
+				(vvpath(staffno, vno, NOTELEFTFONT))->noteleftfont +
+				(vvpath(staffno, vno, NOTELEFTFAMILY))->noteleftfamily,
+				(vvpath(staffno, vno, NOTELEFTSIZE))->noteleftsize,
+				fname, lineno);
+		}
+	}
+
 }
 
 
@@ -2990,14 +3016,12 @@ int nummeas;		/* how many measures in the multi-rest */
 	for (s = 1; s <= Score.staffs; s++) {
 		numvoices = vscheme_voices(svpath(s, VSCHEME)->vscheme);
 		for (v = 0; v < numvoices; v++) {
-			if (v == 0 || Doing_MIDI == YES) {
-				Staffmap_p[s]->u.staff_p->groups_p[v] = new_p
+			Staffmap_p[s]->u.staff_p->groups_p[v] = new_p
 						= newGRPSYL(GS_GROUP);
-				new_p->grpcont = GC_REST;
-				new_p->basictime = -nummeas;
-				new_p->is_multirest = YES;
-				new_p->fulltime = Score.time;
-			}
+			new_p->grpcont = GC_REST;
+			new_p->basictime = -nummeas;
+			new_p->is_multirest = YES;
+			new_p->fulltime = Score.time;
 		}
 	}
 

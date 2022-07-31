@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -303,9 +303,13 @@ struct GRPSYL *grp_p;	/* list of GRPSYLs to check */
 					numnotes = 0;
 					for (g_p = grpsyl_p->next; g_p != 0;
 							g_p = g_p->next) {
-						if (g_p->grpcont == GC_NOTES &&
-						    g_p->grpvalue != GV_ZERO) {
+						if (g_p->grpcont == GC_NOTES) {
+						    if (g_p->grpvalue == GV_ZERO) {
+							continue;
+						    }
+						    else {
 							numnotes++;
+						    }
 						}
 						if (g_p->breakbeam == YES) {
 							break;

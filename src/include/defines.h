@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -348,6 +348,10 @@
 #define	IS_STEMLEN_KNOWN(x)	((x) >= 0.0)	/* avoid using "==" on floats */
 #define	IS_STEMLEN_UNKNOWN(x)	((x) < 0.0)	/* avoid using "==" on floats */
 
+/* horizontal stem position relative to a note */
+#define SP_EDGE		(0)
+#define SP_CENTERED	(1)
+
 /* other stem length definitions */
 #define	MINSTEMLEN	(0.0)
 #define	DEFSTEMLEN	(7.0)
@@ -538,10 +542,11 @@
 #define	C_MUSIC		(0x1000) /* notes, etc. */
 #define	C_GRIDS		(0x2000) /* chord grids */
 #define	C_HEADSHAPES	(0x4000) /* head shapes for notehead characters */
-#define	C_SYMBOL	(0x8000) /* user-defined symbol */
-#define	C_KEYMAP	(0x10000) /* key mapping */
-#define	C_ACCIDENTALS	(0x20000) /* pitch offsets of accidentals */
-#define	C_CONTROL	(0x40000) /* control commands */
+#define	C_SHAPES	(0x8000) /* shape overrides for characters */
+#define	C_SYMBOL	(0x10000) /* user-defined symbol */
+#define	C_KEYMAP	(0x20000) /* key mapping */
+#define	C_ACCIDENTALS	(0x40000) /* pitch offsets of accidentals */
+#define	C_CONTROL	(0x80000) /* control commands */
 
 /* context classes--combining things that mostly have the same rules */
 #define	C_BLOCKHEAD	(C_HEADER | C_FOOTER | C_HEAD2 | C_FOOT2 | \
@@ -1001,6 +1006,12 @@
  * The right.rtag_p->c_index is ignored. */
 #define OP_TIME_OFFSET	(OP_OPERAND + 2)
 
+/*
+ * Define types of number in expressions.
+ */
+#define TYPE_UNKNOWN	(0)
+#define TYPE_INT	(1)
+#define TYPE_FLOAT	(2)
 
 /*
  * Define the types of bar line.
@@ -1234,6 +1245,11 @@
  * Define the default font size of a measure number.
  */
 #define MNUM_SIZE	(11)
+
+/*
+ * Define the default font size of strings on the left of a note.
+ */
+#define NOTELEFT_SIZE	(10)
 
 /*
  * Define types of lines and curves.
@@ -1497,8 +1513,9 @@
 #define PH_BITS		(3)
 #define PH_COUNT	((1 << PH_BITS) - 1)
 
-#define	NO		(0)
-#define	YES		(1)
+/* return the correct boolean value */
+#define	NO		(0 == 1)
+#define	YES		(0 == 0)
 
 /* the "used" field in input SSVs uses the following in addition to YES/NO */
 #define	UNSET		(2)
@@ -1656,6 +1673,17 @@
 #define SQUARED(x)	((x) * (x))
 #define NEARESTQUARTER(x) ( (int)((x) * 4.0 + 0.5) / 4.0 )
 
+
+/*
+ * Macro to convert degrees to radians, since Mup input for trig functions
+ * is specified in degrees (because we think most musicians will be more
+ * comfortable using degrees than radians), but C trig functions that we call
+ * to get the results use radians.
+ */
+#define DEG2RAD(a)	((a) * PI / 180.0)
+/* .. and its inverse */
+#define RAD2DEG(a)	((a) * 180.0 / PI)
+
 /* half the height of a staff in stepsizes; use 1 for 1-line staffs */
 #define HALFSTAFF(s)	((svpath(s, STAFFLINES)->stafflines == 5) ? 4 : 1)
 
@@ -1735,8 +1763,12 @@
  * do groups with stemlen = 0.
  */
 #define	STEMSIDE_RIGHT(gs_p)					\
-	(gs_p->stemdir == UP || gs_p->basictime <= BT_QUAD)
-#define STEMSIDE_LEFT(gs_p)	( ! STEMSIDE_RIGHT(gs_p) )
+	((gs_p->stemdir == UP || gs_p->basictime <= BT_QUAD) &&	\
+		stem_x_position(gs_p) == SP_EDGE)
+#define STEMSIDE_LEFT(gs_p)					\
+	((gs_p->stemdir == DOWN && gs_p->basictime > BT_QUAD) &&\
+		stem_x_position(gs_p) == SP_EDGE)
+#define STEMSIDE_CENTER(gs_p)	(stem_x_position(gs_p) == SP_CENTERED)
 
 /*
  * For the given note group (but not mrpt), check whether it has a stem or not.

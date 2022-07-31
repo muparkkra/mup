@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -2823,14 +2823,6 @@ int inputlineno;
  * the result. The original caller should then set the hor or vert
  * field of the INPCOORD to the result.
  */
-
-/* Macro to convert degrees to radians, since Mup input for trig functions
- * is specified in degrees (because we think most musicians will be more
- * comfortable using degrees than radian), but C trig functions that we call
- * to get the results want radians. */
-#define DEG2RAD(a)	(a * PI / 180.0)
-/* .. and its inverse */
-#define RAD2DEG(a)	(a * 180.0 / PI)
 
 static double
 eval_expr(node_p, inputfile, inputlineno)

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -208,7 +208,7 @@ extern short Tsig_visibility;
 extern RATIONAL Maxtime;
 
 extern int Debuglevel;
-extern int ifdebug;
+extern int exprdebug;
 extern float Debug_coords[2][NUMCTYPE];
 
 /* =========== defines that depend on the above variables ============= */
@@ -342,7 +342,7 @@ extern double strdescent P((char *str));
 extern double strheight P((char *str));
 extern double strwidth P((char *str));
 extern char *tranchstr P((char *chordstring, int staffno));
-extern int restchar P((int basictime));
+extern int restchar P((struct GRPSYL *grp_p, int *font_p));
 extern char *dashstr P((char *str));
 extern void end_fontsize P((char *str, int *font_p, int *size_p));
 extern char *ascii_str P((char *str, int verbose, int pagenum, int textmod));
@@ -401,6 +401,7 @@ extern int set_firstpageside P((int p_option_side));
 extern void chk4matching_repeatends P((void));
 extern void expand_repeats P((void));
 extern void set_mrpt_info P((void));
+extern int mrptchar P((struct GRPSYL *grp_p, int *font_p));
 
 /* debug.c */
 extern char *stype_name P((int stype));
@@ -541,7 +542,7 @@ extern void mac_error P((void));
 extern void includefile P((char *fname));
 extern int popfile P((void));
 extern void cmdline_macro P((char *macdef));
-extern void define_macro P((char *macname));
+extern void define_macro P((char *macname, int is_expression));
 extern void undef_macro P((char *macname));
 extern void call_macro P((char *macname));
 extern int is_defined P((char *macname, int paramtoo));
@@ -703,6 +704,7 @@ extern struct GRPSYL *nextglobnongrace P((struct GRPSYL *gs_p,
 		struct MAINLL **mll_p_p)); 
 extern struct GRPSYL *prevglobnongrace P((struct GRPSYL *gs_p,
 		struct MAINLL **mll_p_p));
+extern struct GRPSYL *nextnongracenonspace P((struct GRPSYL *gs_p)); 
 extern int drmo P((int num));
 extern double tieslurpad P((struct MAINLL *mll_p, struct STAFF *staff_p,
 		struct GRPSYL *gs_p));
@@ -720,8 +722,8 @@ extern int allspace P((int vno, struct MAINLL *msbeg_p, RATIONAL begtime,
 		struct MAINLL *msend_p, RATIONAL endtime));
 extern struct MAINLL *getendstuff P((struct MAINLL *mainll_p,
 		struct STUFF *stuff_p, int *timeden_p));
-extern void accdimen P((struct NOTE *note_p, float *ascent_p, float *descent_p,
-		float *width_p));
+extern void accdimen P((int staffno, struct NOTE *note_p,
+		float *ascent_p, float *descent_p, float *width_p));
 extern int has_accs P((char *acclist));
 extern int eq_accs(char *acclist1, char *acclist2);
 extern int standard_acc P((char *acclist));
@@ -768,6 +770,12 @@ extern void free_rectab P((void));
 extern int clef_vert_overlap P((int clef, struct GRPSYL *gs_p));
 extern void allow_subbar P((struct CHORD *cp_p,
 		struct SUBBAR_APPEARANCE *subbar_app_p, short subbar_ok[]));
+extern char *pad_string P((char *string, int modifier));
+extern char *string_func P((int num, char *transform));
+extern int stem_x_position P((struct GRPSYL *gs_p));
+extern double find_x_stem P((struct GRPSYL *gs_p));
+extern double size2factor P((int size));
+extern double slash_xlen P((struct GRPSYL *grpsyl_p));
 
 /* print.c */
 extern void print_music P((void));
@@ -906,10 +914,18 @@ extern int gets_roll P((struct GRPSYL *gs_p, struct STAFF *staff_p, int v));
 
 /* setgrps.c */
 extern void setgrps P((void));
-extern void applyaccs P((struct GRPSYL *g_p[], int numgrps));
+extern void applyaccstrs P((struct GRPSYL *g_p[], int numgrps));
 
 /* setnotes.c */
 extern void setnotes P((void));
+
+/* from shapes.c */
+extern int get_shape_override P((int staffno, int vno, int *font_p,
+		int *code_p));
+extern void init_new_shape_map P((char *name));
+extern void add_shape_map_entry P((char *from_sym_name, char *to_sym_name));
+extern void finish_shape_map P((void));
+extern struct SHAPE_MAP *get_shape_map P((char *name));
 
 /* ssv.c */
 extern void initstructs P((void));
@@ -995,7 +1011,7 @@ extern void set_win P((double n, double s, double e, double w));
 extern double width_barline P((struct BAR *bar_p));
 extern double width_clefsig P((struct MAINLL *mainll_p,
 		struct CLEFSIG *clefsig_p));
-extern int clefchar P((int clef));
+extern int clefchar P((int clef, int staffno, int *font_p));
 extern void calc_headfoot_height P((void));
 extern int numbeams P((int btime));
 extern int acc2char P((int acc));
@@ -1026,8 +1042,9 @@ extern double eff_rightmargin P((struct MAINLL *mainll_p));
 extern double eff_leftmargin P((struct MAINLL *mainll_p));
 extern short *findprimes P((int max));
 extern short *factor P((int num));
-extern double clefwidth P((int clef, int is_small));
-extern int clefvert P((int clef, int is_small, float *north_p, float *south_p));
+extern double clefwidth P((int clef, int staffno, int is_small));
+extern int clefvert P((int clef, int staffno, int is_small,
+		float *north_p, float *south_p));
 extern double widest_head P((struct GRPSYL *gs_p));
 extern void calc_block_heights P((void));
 extern void mnum_string P((char *dest_string, int measnum));

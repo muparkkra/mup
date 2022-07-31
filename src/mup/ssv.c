@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -287,6 +287,9 @@ initstructs()
 	Score.withfamily = BASE_TIMES;
 	Score.withfont = FONT_TR;
 	Score.withsize = DFLT_SIZE;
+	Score.noteleftfamily = BASE_NEWCENTURY;
+	Score.noteleftfont = FONT_TR;
+	Score.noteleftsize = NOTELEFT_SIZE;
 	Score.alignrests = NO;
 	Score.release = DEFRELEASE;
 	Score.ontheline = YES;
@@ -295,6 +298,7 @@ initstructs()
 	for (n = 0; n < 7; n++) {
 		Score.noteheads[n] = hs;
 	}
+	Score.shapes = 0;
 	Score.emptymeas = 0;
 	Score.extendlyrics = NO;
 	Score.cue = NO;
@@ -571,12 +575,6 @@ int field;	/* the defined symbol for the field desired */
 		return (svpath(s, field));
 
 	/*
-	 * See the comment in svpath() regarding the "visible" field.  There's
-	 * probably no need to call vvpath() for "visible" after mkchords.c has
-	 * run, since voices that are to be invisible are changed to measure
-	 * spaces there.  But in mkchords.c itself, and earlier, there is
-	 * sometimes a need.
-	 *
 	 * For the "visible" field, first check the command line to see if this
 	 * voice or its staff must always be invisible.  If so, return a phony
 	 * SSV that says that.  Otherwise fall through to handle the normal way.
@@ -1454,6 +1452,12 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 
 	SETPARM(withsize, WITHSIZE)
 
+	SETPARM(noteleftfamily, NOTELEFTFAMILY)
+
+	SETPARM(noteleftfont, NOTELEFTFONT)
+
+	SETPARM(noteleftsize, NOTELEFTSIZE)
+
 	SETPARM(alignrests, ALIGNRESTS)
 
 	SETPARM(release, RELEASE)
@@ -1473,6 +1477,8 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 		f_p->used[NOTEHEADS] = NO;
 		break;
 	}
+
+	SETPARM(shapes, SHAPES)
 
 	SETPARM(emptymeas, EMPTYMEAS)
 

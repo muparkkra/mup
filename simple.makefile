@@ -9,7 +9,10 @@
 # the system directories. If you change DESTDIR
 # to point to some other writeable area, you wouldn't need to be root.)
 
-# For Apple Mac OS X, see the notes for what to change (CFLAGS and X_LIBS)
+# For Apple Mac OS X, at least define APPLE, e.g. invoke as
+#   make APPLE=yes -f simple.makefile
+# and see notes below for other things you may want to set/change
+# (optflags, X_LOCATION, and X_LIBS)
 
 # If you only want the Mup program itself, you can do
 #	make src/mup/mup
@@ -45,8 +48,8 @@
 # The mupmate program requires FLTK 1.x libraries and headers (www.fltk.org).
 
 # If you want mupdisp to support Linux console mode, make sure you have
-# the svgalib package installed, then find the two commented-out lines below
-# related to Linux console support, and uncomment them.
+# the svgalib package installed, then find the lines below
+# related to Linux console support, and adjust accordingly.
 
 # If you are building on a system that does not support make,
 # you can look at what this makefile does for how to build.
@@ -87,23 +90,26 @@ CCOMPILER = gcc
 # CC would be another common choice. It is only used for mupmate
 CPPCOMPILER = g++
 
-# -O option turns on optimization for most C compilers.
+# CFLAGS specifies what options to pass the the C/C++ compilers.
+# The -O option turns on optimization for most C compilers.
 # You can add other options, if you like, as appropriate for your C compiler.
 # Another common addition would be -g to get debugging information.
-# For Mac OS X, you should probably add
-#	-Dunix
-# and if you want universal binaries, add
-#	-arch i386 -arch ppc
-# and if you want backward compatibility to older versions, add something like
-#	-mmacosx-version-min=10.1
-# Or in other words:
-# CFLAGS = -O -Dunix -arch i386 -arch ppc -mmacosx-version-min=10.1
-# You can set optflags in your environment or via arguments to make
+# Apple needs -Dunix (as may other Unix-like systems).
+# You can set optflags in your environment or via an argument to make,
 # to add C compiler options without needing to edit this makefile.
+ifdef APPLE
+CFLAGS = -O -Dunix $(optflags)
+else
 CFLAGS = -O $(optflags)
+endif
+# For Mac OS X, if you want universal binaries, optflags could be set
+# to include the architectures you want to support, e.g.,
+#	-arch i386 -arch ppc -arch x86_64
+# If you want backward compatibility to older OS-X versions, add something like
+#	-mmacosx-version-min=10.5
 
-# You can change this if your X libraries and headers are somewhere else
-# (like /usr/X11R6).
+# You can change this if your X libraries and headers are somewhere else.
+# For Mac XQuartz, this should probably be /opt/X11
 X_LOCATION = /usr/X11
 
 # If you installed fltk somewhere other than $(X_LOCATION)/lib
@@ -112,11 +118,14 @@ X_LOCATION = /usr/X11
 FLTK_LIB_LOCATION =
 
 # The X libraries to link with Mupmate.
-# Depending on how fltk was compiled, you may be able to omit
-# -lXext, -Xft, and -lXinerama
-X_LIBS = -lXext -lX11 -lXpm -lXft -lXinerama
-# On Mac OS X replace that with
-# X_LIBS = -framework Carbon
+ifdef APPLE
+  # old versions of fltk may require Carbon
+  X_LIBS = -framework Cocoa
+else
+  # Depending on how fltk was compiled, you may be able to omit
+  # -lXext, -Xft, and -lXinerama
+  X_LIBS = -L$(X_LOCATION)/lib -lXext -lX11 -lXpm -lXft -lXinerama
+endif
 
 # Default is to use a 1.3 version of FLTK. If you want to use a 1.1 version
 # instead, uncomment the next line. (Note: using version 2 is not supported.)
@@ -138,8 +147,11 @@ PNGLIB = -lpng
 ZLIB = -lz
 
 # Options to pass to man command.
-# On Mac OS X, replace with -t
-MAN_OPTIONS = -l -Tps
+ifdef APPLE
+  MAN_OPTIONS = -t
+else
+  MAN_OPTIONS = -l -Tps
+endif
 
 #-----------------------------------------------------------------------
 
@@ -154,11 +166,11 @@ MUP_SRC =  \
 	src/mup/check.c \
 	src/mup/debug.c \
 	src/mup/errors.c \
+	src/mup/exprgram.c \
 	src/mup/font.c \
 	src/mup/fontdata.c \
 	src/mup/globals.c \
 	src/mup/grpsyl.c \
-	src/mup/ifgram.c \
 	src/mup/keymap.c \
 	src/mup/lex.c \
 	src/mup/locvar.c \
@@ -190,6 +202,7 @@ MUP_SRC =  \
 	src/mup/roll.c \
 	src/mup/setgrps.c \
 	src/mup/setnotes.c \
+	src/mup/shapes.c \
 	src/mup/ssv.c \
 	src/mup/stuff.c \
 	src/mup/symtbl.c \
@@ -227,7 +240,11 @@ MUPDISP_BITMAPS = src/mupdisp/help.bm src/mupdisp/waitmsg.bm
 
 MKMUPFNT_SRC = src/mkmupfnt/mkmupfnt.c
 
+ifdef APPLE
+APPLE_MM = src/mupmate/apple.mm
+endif
 MUPMATE_SRC = \
+	$(APPLE_MM) \
 	src/mupmate/Config.C \
 	src/mupmate/Edit.C \
 	src/mupmate/File.C \
@@ -273,17 +290,17 @@ src/mup/mup: $(MUP_HDRS) $(MUP_SRC)
 	$(CCOMPILER) -Isrc/include $(CFLAGS) -o $@ $(MUP_SRC) -lm
 
 src/mupdisp/mupdisp: $(MUPDISP_HDRS) $(MUPDISP_BITMAPS) $(MUPDISP_SRC)
-	$(CCOMPILER) $(CFLAGS) -L$(X_LOCATION)/lib -o $@ -DNO_VGA_LIB $(MUPDISP_SRC) -lX11
-	# For Linux console mode support, comment out the previous line
-	# and uncomment the following line
-	# $(CCOMPILER) $(CFLAGS) -L$(X_LOCATION)/lib -o $@ $(MUPDISP_SRC) -lvga -lX11 -lm
+	$(CCOMPILER) $(CFLAGS) -I$(X_LOCATION)/include \
+	-L$(X_LOCATION)/lib -o $@ -DNO_VGA_LIB $(MUPDISP_SRC) -lX11
+	# For Linux console mode support, remove the -DNO_VGA_LIB,
+	# and add -lvga before the -lX11 and -lm after it.
 
 src/mkmupfnt/mkmupfnt: $(MKMUPFNT_SRC)
 	$(CCOMPILER) $(CFLAGS) -o $@ $(MKMUPFNT_SRC)
 
 src/mupmate/mupmate: $(MUPMATE_SRC) $(MUPMATE_HDRS) $(MUPMATE_OTHER_FILES)
 	$(CPPCOMPILER) $(CFLAGS) -o $@ $(MUPMATE_SRC) \
-	$(FLTK_VERSION) -I$(FLTK_INCLUDE) -Isrc/include -L$(X_LOCATION)/lib \
+	$(FLTK_VERSION) -I$(FLTK_INCLUDE) -Isrc/include \
 	$(FLTK_LIB_LOCATION) -lfltk -lfltk_images $(X_LIBS) \
 	$(JPEGLIB) $(PNGLIB) $(ZLIB) -lm
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -151,6 +151,7 @@ Run_parameters_dialog::Run_parameters_dialog(void)
 			"most useful for printing to a printer\n"
 			"that stacks in reverse order.");
 	reversed_p->type(FL_TOGGLE_BUTTON);
+	saved_pages_direction = FORWARD_ORDER;
 
 	page_list_p = new Fl_Input(110, 130, 280, 30, "Selected:");
 	page_list_p->tooltip("List the specific pages you want displayed.\n"
@@ -406,6 +407,9 @@ Run_parameters_dialog::do_apply(bool ok_to_hide)
 	}
 	if (reversed_p->value() == 1) {
 		saved_pages_direction = REVERSED_ORDER;
+	}
+	else {
+		saved_pages_direction = FORWARD_ORDER;
 	}
 
 	// Similar for staff list (-s option)

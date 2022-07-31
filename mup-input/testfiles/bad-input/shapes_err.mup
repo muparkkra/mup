@@ -1,0 +1,23 @@
+//!Mup-Arkkra 7.0
+
+header
+        title bold (18) "shapes.mup"
+        paragraph (14) "This file tests error cases in usage of the shapes context."
+
+shapes "ABC"
+	"upflag" "nosuchsym"
+	"nosuchsym" "dnflag"
+	"smup4n" "up4n"
+	"up4n" "smup4n"
+	"coda" "cclef"
+
+shapes "not voice"
+	"com" "cclef"
+score
+	shapes="no such shapes context"
+
+voice 1 1
+	shapes="not voice"
+music
+1: c;;;;
+bar

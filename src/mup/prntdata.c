@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -79,6 +79,7 @@ static void pr_tieslur P((struct STUFF *stuff_p, struct MAINLL *mll_p,
 		int staffno));
 static int get_ts_style P((struct STUFF *stuff_p, struct MAINLL *mll_p));
 static void pr_rest P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
+static int is_ledgerless P((int restfont, int restcode));
 static double mr_y_loc P((int staffno));
 static void pr_note_dots P((struct NOTE *noteinfo_p, int numdots,
 		double xdotr, double group_x, double group_y, int size));
@@ -87,7 +88,6 @@ static void pr_stems P((struct GRPSYL *grpsyl_p));
 static void pr_withside P((struct GRPSYL *gs_p, int side));
 static void pr_withitems P((struct GRPSYL *gs_p, int side,
 			double x, double y, double sign));
-static double slash_xlen P((struct GRPSYL *grpsyl_p));
 static void pr_flags P((struct GRPSYL *grpsyl_p, double x, double y));
 static void pr_accidental P((struct NOTE *noteinfo_p, struct GRPSYL *grpsyl_p));
 static void pr_leger P((struct NOTE *noteinfo_p, struct GRPSYL *gs_p,
@@ -113,7 +113,6 @@ static void pr_cresc P((struct STUFF *stuff_p));
 static void extend P((struct STUFF *stuff_p));
 static int tupdir1voice P((struct GRPSYL *gs_p));
 static int mirror P((char *str, int ch, int font));
-static double size2factor P((int size));
 static double size2flagsep P((int size));
 
 
@@ -276,9 +275,13 @@ struct MAINLL *mll_p;	/* which main list struct holds the STAFF struct */
 			if (grpsyl_p->clef != NOCLEF) {
 				float widthclef;
 				int clefsize;
+				int clefcode;
+				int cleffont;
+
 				clefsize = (3 * DFLT_SIZE) / 4;
-				widthclef = width(FONT_MUSIC, clefsize,
-					clefchar(grpsyl_p->clef));
+				clefcode = clefchar(grpsyl_p->clef,
+						grpsyl_p->staffno, &cleffont);
+				widthclef = width(cleffont, clefsize, clefcode);
 				pr_clef(grpsyl_p->staffno,
 					grpsyl_p->c[AW] -
 					(widthclef + CLEFPAD) * Staffscale,
@@ -353,6 +356,16 @@ struct MAINLL *mll_p;	/* which main list struct holds the STAFF struct */
 			
 				/* do any accidental */
 				pr_accidental(noteinfo_p, grpsyl_p);
+
+				/* print noteleft string, if any */
+				if (noteinfo_p->noteleft_string != 0) {
+					pr_string(grpsyl_p->c[AX] + noteinfo_p->wlstring,
+						noteinfo_p->c[AY] - Stepsize,
+						noteinfo_p->noteleft_string,
+						J_LEFT,
+						grpsyl_p->inputfile,
+						grpsyl_p->inputlineno);
+				}
 
 				/* do any dots */
 				pr_note_dots(noteinfo_p, grpsyl_p->dots,
@@ -802,6 +815,7 @@ struct MAINLL *mll_p;
 
 {
 	struct STAFF *staff_p;
+	int musfont;
 	int muschar;	/* which type of rest character to print */
 	int d;		/* number of dots */
 	float adjust;	/* to space dots properly */
@@ -818,13 +832,13 @@ struct MAINLL *mll_p;
 	staff_p = mll_p->u.staff_p;
 
 	/* draw the rest */
-	muschar = restchar(gs_p->basictime);
+	muschar = restchar(gs_p, &musfont);
 	/* Half and whole rests outside the staff need to use the version
 	 * that includes a ledger line. So check for that case. 
 	 * We used to use characters with ledgers all the time,
 	 * but Ghostscript then sometimes seemed to misplace them
 	 * by one pixel at certain magnifications, which looked bad. */
-	if (muschar == C_LL1REST || muschar == C_LL2REST) {
+	if (is_ledgerless(musfont, muschar) == YES) {
 		double halfst;
 		if (svpath(staff_p->staffno, STAFFLINES)->stafflines > 1) {
 			halfst = halfstaffhi(staff_p->staffno);
@@ -845,10 +859,10 @@ struct MAINLL *mll_p;
 	if (gs_p->is_meas == YES) {
 		/* measure rest is special case, have to move to middle */
 		pr_muschar( (gs_p->c[AW] + gs_p->c[AE]) / 2.0,
-				gs_p->restc[AY], muschar, size, FONT_MUSIC);
+				gs_p->restc[AY], muschar, size, musfont);
 	}
 	else {
-		pr_muschar(gs_p->c[AX], gs_p->restc[AY], muschar, size, FONT_MUSIC);
+		pr_muschar(gs_p->c[AX], gs_p->restc[AY], muschar, size, musfont);
 	}
 
 	/* get ready to print any dots */
@@ -866,6 +880,30 @@ struct MAINLL *mll_p;
 }
 
 
+/* Return YES if the given font/char is for a ledger-less rest symbol */
+
+static int
+is_ledgerless(restfont, restcode)
+
+int restfont;
+int restcode;
+
+{
+	if (restfont == FONT_MUSIC) {
+		if ((restcode == C_LL1REST) || (restcode == C_LL2REST)) {
+			return(YES);
+		}
+	}
+	else if (restfont == FONT_MUSIC2) {
+		if ((restcode == C_MENSURLL1REST)
+					|| (restcode == C_MENSURLL2REST)) {
+			return(YES);
+		}
+	}
+	return(NO);
+}
+
+
 /* print a measure repeat, single, double, or quad */
 
 void
@@ -879,8 +917,8 @@ struct MAINLL *mainll_p;
 	double y, y_offset;	/* vertical location */
 	double height, width;	/* of meas num string */
 	char *numstr;		/* ASCII version of numbers of measures */
-	unsigned char rptchar;	/* measure repeat music character */
-	unsigned char rptfont;
+	int rptsym;		/* measure repeat music character */
+	int rptfont;
 	short print_number;	/* YES or NO */
 
 
@@ -891,16 +929,7 @@ struct MAINLL *mainll_p;
 		return;
 	}
 
-	rptchar = C_MEASRPT;
-	rptfont = FONT_MUSIC;
-	if (gs_p->meas_rpt_type == MRT_DOUBLE) {
-		rptchar = C_DBLMEASRPT;
-		rptfont = FONT_MUSIC2;
-	}
-	else if (gs_p->meas_rpt_type == MRT_QUAD) {
-		rptchar = C_QUADMEASRPT;
-		rptfont = FONT_MUSIC2;
-	}
+	rptsym = mrptchar(gs_p, &rptfont);
 
 	print_number = NO;
 	if ( (gs_p->meas_rpt_type == MRT_SINGLE) &&
@@ -924,7 +953,7 @@ struct MAINLL *mainll_p;
 		/* x is currently left edge of number, so adjust to middle */
 		x += strwidth(numstr) / 2.0;
 	}
-	pr_muschar(x, mr_y_loc(gs_p->staffno), rptchar, DFLT_SIZE, rptfont);
+	pr_muschar(x, mr_y_loc(gs_p->staffno), rptsym, DFLT_SIZE, rptfont);
 }
 
 
@@ -1400,7 +1429,34 @@ struct GRPSYL *grpsyl_p;	/* which group's stem to print */
 		/* print the stem */
 		do_linetype(L_NORMAL);
 
-		draw_line(x, y1, x, y2);
+		if (STEMSIDE_CENTER(grpsyl_p) == YES) {
+			int n;
+
+			/* Draw a stem from the top of the top/bottom note */
+			if (grpsyl_p->stemdir == UP) {
+				y1 = grpsyl_p->notelist[0].c[AN] - Stdpad;
+			}
+			else {
+				y1 = grpsyl_p->notelist[grpsyl_p->nnotes-1].c[AS]
+						+ Stdpad;
+			}
+			draw_line(x, y1, x, y2);
+
+			/* Now draw line segments between any notes pairs
+			 * which are more than 2 steps apart. */
+			for (n = 0; n < grpsyl_p->nnotes - 1; n++) {
+				if ((grpsyl_p->notelist[n].stepsup -
+					grpsyl_p->notelist[n+1].stepsup) > 2) {
+					draw_line(x,
+						grpsyl_p->notelist[n].c[AS] + Stdpad,
+						x,
+						grpsyl_p->notelist[n+1].c[AN] - Stdpad);
+				}
+			}
+		}
+		else {
+			draw_line(x, y1, x, y2);
+		}
 
 		/* attach any flags as appropriate */
 		pr_flags(grpsyl_p, (double) x, (double) y2);
@@ -1621,15 +1677,6 @@ double y_tilt;
 				x + xlen, y_offset + y_tilt, halfwidth);
 	}
 }
-
-static double
-slash_xlen(grpsyl_p)
-
-struct GRPSYL *grpsyl_p;
-
-{
-	return (SLASHHORZ * Stepsize * size2factor(grpsyl_p->grpsize));
-}
 
 
 /* print flags on 8th and shorter notes */
@@ -1643,6 +1690,8 @@ double y;			/* coord of end of stem */
 
 {
 	int muschar;	/* what kind of flag to print */
+	int flagfont;
+	float y_spacing;	/* distance to next flag */
 	float y_offset;	/* from end of stem */
 	int f;		/* how many flags */
 	int size;
@@ -1663,36 +1712,34 @@ double y;			/* coord of end of stem */
 		return;
 	}
 
-	/* figure out if up/down and whether small/reg */
-	muschar = (grpsyl_p->stemdir == UP ? C_DNFLAG : C_UPFLAG);
+	/* figure out whether small/reg  and if up/down */
 	size = size_def2font(grpsyl_p->grpsize);
-		
+	if (grpsyl_p->stemdir == UP) {
+		muschar = C_DNFLAG;
+		y_spacing = - size2flagsep(grpsyl_p->grpsize);
+	}
+	else {
+		muschar = C_UPFLAG;
+		y_spacing = size2flagsep(grpsyl_p->grpsize);
+	}
+
+	/* Handle override of flag character, if any.
+	 * We have to assume that if the user overrode the symbol,
+	 * they made it similar enough that our placement
+	 * will look good. */
+	flagfont = FONT_MUSIC;
+	(void) get_shape_override(grpsyl_p->staffno, grpsyl_p->vno,
+					&flagfont, &muschar);
+
 
 	/* do for each flag. f == 1 less than the number of flags, and is
 	 * how much to multiply the y_offset by for each flag */
 	for ( f = numbeams(grpsyl_p->basictime) - 1; f >= 0; f--) {
-
-		switch (muschar) {
-
-		case C_UPFLAG:
-			y_offset = f * size2flagsep(grpsyl_p->grpsize);
-			break;
-		case C_DNFLAG:
-			y_offset = -f * size2flagsep(grpsyl_p->grpsize);
-			break;
-		default:
-			pfatal("bad flag type");
-			/*NOTREACHED*/
-			return;	/* to shut up compiler warning about unused */
-		}
-
-		y_offset *= Staffscale;
-
-		/* now that we know where to place the flag, print it */
-		pr_muschar(x + width(FONT_MUSIC,
+		y_offset = f * y_spacing * Staffscale;
+		pr_muschar(x + width(flagfont,
 				adj_size(size, Staffscale, (char *) 0, -1),
 				muschar) / 2.0,
-				y + y_offset, muschar, size, FONT_MUSIC);
+				y + y_offset, muschar, size, flagfont);
 	}
 }
 
@@ -2044,6 +2091,8 @@ struct STAFF *staff_p;	/* staff pointing to gs_p */
 				 * (positive or negative depending on the
 				 * direction that the bracket points) */
 	int size;
+	int rfont;		/* rest symbol font */
+	int rcode;		/* rest symbol code */
 
 
 	/* go through all the groups */
@@ -2152,10 +2201,8 @@ struct STAFF *staff_p;	/* staff pointing to gs_p */
 						* Staffscale / 2.0;
 				}
 				else if (first_gs_p->grpcont == GC_REST) {
-					x_adjust = width(FONT_MUSIC, size,
-
-						restchar(first_gs_p->basictime))
-						/ 2.0;
+					rcode = restchar(first_gs_p, &rfont);
+					x_adjust = width(rfont, size, rcode) / 2.0;
 				}
 				else {
 					x_adjust = 0.0;
@@ -2170,9 +2217,8 @@ struct STAFF *staff_p;	/* staff pointing to gs_p */
 						* Staffscale / 2.0;
 				}
 				else if (gs_p->grpcont == GC_REST) {
-					x_adjust = width(FONT_MUSIC, size,
-						restchar(gs_p->basictime))
-						/ 2.0;
+					rcode = restchar(gs_p, &rfont);
+					x_adjust = width(rfont, size, rcode) / 2.0;
 				}
 				else {
 					x_adjust = 0.0;
@@ -2319,13 +2365,15 @@ struct STAFF *staff_p;	/* staff pointing to gs_p */
 
 	/* figure out which side. First determine vscheme */
 
-	/* there is a circumstance where we're looking at an entire score,
-	 * (in relvert), and if some of the score has V_1 and some of it
-	 * doesn't, it's possible for us to get confused and think something
-	 * isn't V_1 when it is. We would then try to look at the other
+	/* There used to be  a circumstance where we looked at an entire score
+	 * in relvert, and if some of the score had V_1 and some of it
+	 * didn't, it was possible for Mup to get confused and think something
+	 * wasn't V_1 when it was. We would then try to look at the other
 	 * voice, which is null, and would blow up. To avoid this, if one
-	 * voice is null, treat measure as V_1 regardless of what vscheme
-	 * might lead us to believe.
+	 * voice is null, we treat measure as V_1 regardless of what vscheme
+	 * might lead us to believe. That case has since been fixed in relvert,
+	 * so this "if" statement should never be true anymore,
+	 * but it doesn't hurt to have it, as defensive code, just in case.
 	 */
 	if (staff_p->groups_p[1] == (struct GRPSYL *) 0) {
 		return(tupdir1voice(gs_p));
@@ -2427,7 +2475,7 @@ struct GRPSYL *gs_p;	/* first group of tuplet */
 
 /* Go through measure, printing any beams. Gets called once
  * for normal sized notes, once for cue notes,
- * once for grace note, and once for grace cue notes.
+ * once for grace notes, and once for grace cue notes.
  */
 
 static void
@@ -3661,6 +3709,17 @@ struct MAINLL *mll_p;
 		return;
 	}
 
+	/* Avoid re-printing multirest on voice 2 or 3
+	 * if it was already printed on a earlier voice. */
+	if ( (gs_p->vno > 1) &&
+			(vvpath(gs_p->staffno, 1, VISIBLE)->visible == YES)) {
+		return;
+	}
+	if ( (gs_p->vno > 2) &&
+			(vvpath(gs_p->staffno, 2, VISIBLE)->visible == YES)) {
+		return;
+	}
+
 	staff_p = mll_p->u.staff_p;
 
 	/* determine where to place the multirest */
@@ -4095,30 +4154,6 @@ int font;	/* FONT_MUSIC or some other music font */
 		}
 	}
 	return(ch);
-}
-
-
-/* Given a GS_* value, return the factor by which to multiply normal sized
- * things to match that size. */
-
-static double
-size2factor(size)
-
-int size;	/* GS_NORMAL, GS_SMALL, or GS_TINY */
-
-{
-	switch (size) {
-	default:
-		pfatal("unexpected size %d in size2factor", size);
-		/*NOTREACHED*/
-		/*FALLTHRU*/
-	case GS_NORMAL:
-		return(1.0);
-	case GS_SMALL:
-		return(SM_FACTOR);
-	case GS_TINY:
-		return(TINY_FACTOR);
-	}
 }
 
 

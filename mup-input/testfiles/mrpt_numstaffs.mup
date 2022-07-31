@@ -2,7 +2,7 @@
 
 header
 	title bold (17) "numstaffs.mup"
-	paragraph (13) "This files tests that it is allwoed to change the number of staffs in the source and destination of a mprt, as long as the it isn't reduced to the point of eliminating the staff with the mrpt."
+	paragraph (13) "This file tests that it is allowed to change the number of staffs in the source and destination of a mprt, as long as it isn't reduced to the point of eliminating the staff with the mrpt."
 
 score staffs=3
 music

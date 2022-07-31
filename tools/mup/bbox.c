@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -112,6 +112,7 @@ int leftbit P((int byte));
 int rightbit P((int byte));
 void cleanup P((int status));
 void adjust0 P((int ch));
+void adjust2 P((int ch));
 #ifdef linux
 #define sigset(x, y) signal(x, y)
 #endif
@@ -182,10 +183,7 @@ main()
 
 	/* adjust to put a little white space around most characters */
 	adjust0(numch[0]);
-	/* Note that so far, all the characters in the second music font
-	 * are note head characters, which get no extra padding, so
-	 * we don't need to adjust anything in that font.
-	 */
+	adjust2(numch[1]);
 
 	/* put width/height/ascent values into file for Mup use */
 	(void) fprintf(outf, "/* Copyright (c) 2009 by Arkkra Enterprises */\n/* All rights reserved */\n");
@@ -685,6 +683,59 @@ int nch;		/* how many music characters */
 			width[0][nch] += pad;
 			height[0][nch] += pad;
 			ascent[0][nch] += STDPAD;
+			break;
+		}
+	}
+}
+
+
+/* adjust to put a little white space around appropriate characters in MFONT2 */
+
+void
+adjust2(nch)
+
+int nch;		/* how many music characters */
+
+{
+	float pad = 2.0 * STDPAD;
+
+
+	for (  ; nch >= 0; nch--) {
+		switch(nch) {
+		case CHAR_INDEX(C_DWHRIGHTTRIANGLE):
+		case CHAR_INDEX(C_RIGHTTRIANGLE):
+		case CHAR_INDEX(C_FILLRIGHTTRIANGLE):
+		case CHAR_INDEX(C_UDWHRIGHTTRIANGLE):
+		case CHAR_INDEX(C_URIGHTTRIANGLE):
+		case CHAR_INDEX(C_UFILLRIGHTTRIANGLE):
+		case CHAR_INDEX(C_DWHRECTANGLE):
+		case CHAR_INDEX(C_RECTANGLE):
+		case CHAR_INDEX(C_FILLRECTANGLE):
+		case CHAR_INDEX(C_DWHISOSTRIANGLE):
+		case CHAR_INDEX(C_ISOSTRIANGLE):
+		case CHAR_INDEX(C_FILLISOSTRIANGLE):
+		case CHAR_INDEX(C_DWHPIEWEDGE):
+		case CHAR_INDEX(C_PIEWEDGE):
+		case CHAR_INDEX(C_FILLPIEWEDGE):
+		case CHAR_INDEX(C_DWHSEMICIRCLE):
+		case CHAR_INDEX(C_SEMICIRCLE):
+		case CHAR_INDEX(C_FILLSEMICIRCLE):
+		case CHAR_INDEX(C_DWHSLASHHEAD):
+		case CHAR_INDEX(C_SLASHHEAD):
+		case CHAR_INDEX(C_FILLSLASHHEAD):
+		case CHAR_INDEX(C_BLANKHEAD):
+		case CHAR_INDEX(C_MENSURDIAMOND):
+		case CHAR_INDEX(C_MENSURFILLDIAMOND):
+		case CHAR_INDEX(C_MENSURDBLWHOLE):
+		case CHAR_INDEX(C_MENSURUPFLAG):
+		case CHAR_INDEX(C_MENSURDNFLAG):
+			/* these are the special cases that get no padding */
+			break;
+		default:
+			/* add padding */
+			width[1][nch] += pad;
+			height[1][nch] += pad;
+			ascent[1][nch] += STDPAD;
 			break;
 		}
 	}

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -88,9 +88,10 @@
 #define MIN_FLATTEN_SEG	(5 * Stepsize)
 #define MAX_FLATTEN_SEG	(12 * Stepsize)
 
-/* How much to adjust x from note's AX on anend note tie/slur */
+/* How much to adjust x from note's AX on an end note tie/slur */
 #define COLLIDING_TS_ADJUST	Stdpad
 #define NONCOLLIDING_TS_ADJUST  (-2.0 * Stdpad)
+#define CENTERED_STEM_TS_ADJUST	(3.0 * Stdpad)
 
 /* try_bulge() is called lots of times in a row with mostly the same values,
  * and it needs lots of values, so it is convenient to put them in a struct,
@@ -100,6 +101,7 @@ struct TRYBULGE {
 	struct GRPSYL *begin_gs_p;	/* group at left end of curve */
 	struct GRPSYL *end_gs_p;	/* group at right end of curve */
 	int place;			/* PL_*  */
+	int is_phrase;			/* YES or NO */
 	struct CRVLIST *curvelist_p;	/* points to beginning of curve */
 	struct CRVLIST *endlist_p;	/* points to end of curve */
 	double xlen;			/* distance to midpoint */
@@ -149,6 +151,7 @@ static int bulge_direction P((struct MAINLL *mll_p, struct GRPSYL *gs1_p,
 static double left_endts_adj P((struct MAINLL *mll_p, struct GRPSYL *gs_p,
 		struct NOTE *note_p));
 static double right_endts_adj P((struct NOTE *note_p));
+static int centered_stem_end_note P((struct GRPSYL *gs_p, struct NOTE *note_p));
 
 
 /* figure out what points are needed for a phrase mark */
@@ -1004,6 +1007,9 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 				curvelist_p->y -= y_adj;
 			}
 		}
+		else if (centered_stem_end_note(begin_gs_p, begnote_p) == YES) {
+			curvelist_p->x = begin_gs_p->c[AX] + CENTERED_STEM_TS_ADJUST;
+		}
 		else {
 			curvelist_p->x = begin_gs_p->c[AX] +
 					notehorz(begin_gs_p, begnote_p, RE) +
@@ -1327,8 +1333,13 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 			else if (end_gs_p->stemdir == UP && place == PL_ABOVE
 					&& endnote_p ==
 					&(end_gs_p->notelist[0]) ) {
-				endlist_p->x = endnote_p->c[AX]
-						- right_endts_adj(endnote_p);
+				endlist_p->x = endnote_p->c[AX];
+				if (centered_stem_end_note(end_gs_p, endnote_p)) {
+					endlist_p->x -= CENTERED_STEM_TS_ADJUST;
+				}
+				else {
+					endlist_p->x -= right_endts_adj(endnote_p);
+				}
 				y2_adj = (Stepsize * (endnote_p->notesize
 						== GS_NORMAL ? 1.7 : 1.2));
 				endlist_p->y += y2_adj;
@@ -1438,6 +1449,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 	tb.begin_gs_p = begin_gs_p;
 	tb.end_gs_p = end_gs_p;
 	tb.place = place;
+	tb.is_phrase = is_phrase;
 	tb.curvelist_p = curvelist_p;
 	tb.endlist_p = endlist_p;
 	try_p->sign = sign;
@@ -1939,17 +1951,61 @@ struct TRYBULGE *info_p;
 		pfatal("got null pointer when checking phrase marks");
 	}
 
-	if (begin_gs_p->vno != end_gs_p->vno) {
-		/* Must be a tie/slue to another voice. We don't attempt
-		 * to try to avoid anything that is in the way. */
-		return(0.0);
-	}
-
 	/* If starting phrase on last note of score or ending one on first
 	 * note of a score, begin and end will be the same. We know that
 	 * note has already been accounted for, so nothing to do. */
 	if (begin_gs_p == end_gs_p) {
 		return(0.0);
+	}
+
+	if (begin_gs_p->vno != end_gs_p->vno) {
+		if (info_p->is_phrase == NO) {
+			/* A tie/slur to another voice should not have
+			 * anything between to get in the way. */
+			return(0.0);
+		}
+
+		/* If either end is associated with voice 3, there is a
+		 * good chance it may be nearly impossible to know what to
+		 * do or to get something that will look good, so give up. */
+		if ( (begin_gs_p->vno > 2) || (end_gs_p->vno > 2) ) {
+			return(0.0);
+		}
+
+		if (info_p->place == PL_ABOVE) {
+			/* Voice 1 never gets combined with a voice below it,
+			 * so we should never get here. */
+			return(0.0);
+		}
+
+		/* Find the voice 2 group to replace
+		 * whichever voice 1 group we have, for the purpose of
+		 * boundary for checking protrusions.
+		 */
+		else {
+			if (begin_gs_p->vno == 1) {
+				if ( (begin_gs_p->gs_p == 0) ||
+					(begin_gs_p->gs_p->vcombdest_p
+						!= begin_gs_p) ) {
+					debug(32, "vcombdest_p does not match begin_gs_p for below");
+				}
+				begin_gs_p = begin_gs_p->gs_p;
+				if ( (begin_gs_p == 0) || begin_gs_p->vno != 2) {
+					return(0.0);
+				}
+			}
+			else {
+				if ( (end_gs_p->gs_p == 0) ||
+						(end_gs_p->gs_p->vcombdest_p
+						!= end_gs_p) ) {
+					debug(32, "vcombdest_p does not match end_gs_p");
+				}
+				end_gs_p = end_gs_p->gs_p;
+				if ( (end_gs_p == 0) || end_gs_p->vno != 2) {
+					return(0.0);
+				}
+			}
+		}
 	}
 
 	staff = begin_gs_p->staffno;
@@ -1958,7 +2014,7 @@ struct TRYBULGE *info_p;
 	mll_p = info_p->mll_p;
 	place = info_p->place;
 	stickout = 0.0;
-	worst_stickout = 0;
+	worst_stickout = 0.0;
 	info_p->left_protrusion = info_p->right_protrusion = 0.0;
 
 	/* Go through each group between the beginning and end. We've
@@ -1971,8 +2027,8 @@ struct TRYBULGE *info_p;
 		 * so skip by all of them. */
 		while (gs_p == (struct GRPSYL *) 0) {
 			mll_p = next_staff(staff, mll_p->next);
-			if (info_p->mll_p == (struct MAINLL *) 0) {
-				pfatal("fell off end of list while doing phrase marks");
+			if (mll_p == (struct MAINLL *) 0) {
+				ufatal("reached end of song while doing phrase mark");
 			}
 			gs_p = mll_p->u.staff_p->groups_p[voice - 1];
 		}
@@ -2097,7 +2153,7 @@ struct TRYBULGE *info_p;
 					 * unlikely to make anything worse.
 					 * In any case, we'll
 					 * pretend the current group is just
-					 * little taller than it really is,
+					 * a little taller than it really is,
 					 * which will likely be just enough to
 					 * push the phrase curve out
 					 * far enough to avoid hitting the tie.
@@ -2379,6 +2435,9 @@ int place;		/* PL_ABOVE or PL_BELOW to tell which side to look on */
 					use_group_boundary = YES;
 				}
 			}
+		}
+		if (centered_stem_end_note(gs_p, note_p) == YES) {
+			return(gs_p->c[AX] + gs_p->stemx);
 		}
 		if (use_group_boundary == YES) {
 			return(gs_p->c[AW] + gs_p->padding
@@ -3092,6 +3151,10 @@ struct NOTE *note_p;	/* the note in gs_p of interest */
 		return(NONCOLLIDING_TS_ADJUST);
 	}
 
+	if (centered_stem_end_note(gs_p, note_p) == YES) {
+		return(CENTERED_STEM_TS_ADJUST);
+	}
+
 	/* Loop through notes in previous group, checking if any are
 	 * tied or slurs to the note of interest. */
 	for (n = 0; n < prevgrp_p->nnotes; n++) {
@@ -3128,4 +3191,40 @@ struct NOTE *note_p;	/* the note of interest */
 		return(COLLIDING_TS_ADJUST);
 	}
 	return(NONCOLLIDING_TS_ADJUST);
+}
+
+
+/* Returns YES if the given note is the end note on the stem side of
+ * a group that has a centered stem. */
+
+static int
+centered_stem_end_note(gs_p, note_p)
+
+struct GRPSYL *gs_p;
+struct NOTE *note_p;
+
+{
+	if ( ! STEMSIDE_CENTER(gs_p) ) {
+		/* not centered stem */
+		return(NO);
+	}
+
+	if (gs_p->basictime < 2) {
+		/* no stem */
+		return(NO);
+	}
+
+	if (gs_p->stemdir == UP) {
+		if (note_p == &(gs_p->notelist[0])) {
+			/* top note of stem up */
+			return(YES);
+		}
+	}
+	else {
+		if (note_p == &(gs_p->notelist[gs_p->nnotes - 1])) {
+			/* bottom note of stem down */
+			return(YES);
+		}
+	}
+	return(NO);
 }

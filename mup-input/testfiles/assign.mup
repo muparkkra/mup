@@ -92,6 +92,7 @@ score
 	restcombine=15
 	restsymmult=y
 	scale=0.95
+	shapes=
 	staffpad=5
 	staffscale=1.1
 	stemlen=4.5
@@ -185,6 +186,7 @@ staff 4
 	release=20
 	repeatdots=all
 	restsymmult=y
+	shapes="mensural"
 	staffpad=5
 	staffscale=1.1
 	stemlen=4.5
@@ -211,6 +213,7 @@ voice 3 1
 	ontheline=n
 	pad=6
 	release=50
+	shapes="mensural"
 	stemlen=8
 	stemshorten=1,3,2,5
 	swingunit=2

@@ -4,7 +4,7 @@ mupdisp_SOURCES = at386.c do_cmd.c genfile.c init.c mupdisp.c xterm.c \
 	 dos.c linvga.c mupdisp.h dispttyp.h help.bm waitmsg.bm
 AM_CFLAGS = @LIBVGA@ @EXTRA_CFLAGS@ $(optflags)
 if OSX
-  mupdisp_LDFLAGS = -framework Carbon -L/usr/X11/lib
+  mupdisp_LDFLAGS = -framework Cocoa -L/usr/X11/lib -L/opt/X11/lib
 endif
 mupdisp_LDADD = -lX11 -lm
 

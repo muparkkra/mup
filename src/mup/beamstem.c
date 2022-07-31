@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -59,6 +59,7 @@ static void proctablist P((struct MAINLL *mainll_p, int vno));
 static int stemforced P((struct GRPSYL *gs_p, struct GRPSYL *ogs_p));
 static void setbeam P((struct GRPSYL *start_p, struct GRPSYL *end_p,
 		struct GRPSYL *ogs_p)); 
+static int mensural_flags P((struct GRPSYL *gs_p));
 static void restore_ry P((struct GRPSYL *start_p, struct GRPSYL *end_p));
 static double desired_vert_stemoffset P((struct GRPSYL *gs_p));
 static double embedgrace P((struct GRPSYL *start_p, double b1, double b0));
@@ -308,6 +309,13 @@ int vno;			/* voice we're to deal with, 0 to MAXVOICES-1 */
 			extsteps = MAX(extsteps, 6.0);
 			break;
 		default:
+			if (flags == 2 && gs_p->slash_alt == 0 &&
+					mensural_flags(gs_p)) {
+				/* mensural flag 16th note flags do not need to
+				 * force extra room, treat like 8th notes */
+				extsteps = MAX(extsteps, 6.0);
+				break;
+			}
 			temp = 7.0 + (flags - 2) * FLAGSEP / STEPSIZE;
 			extsteps = MAX(extsteps, temp);
 			break;
@@ -446,6 +454,13 @@ int vno;			/* voice we're to deal with, 0 to MAXVOICES-1 */
 			extsteps = MAX(extsteps, 6.0);
 			break;
 		default:
+			if (flags == 2 && gs_p->slash_alt == 0 &&
+					mensural_flags(gs_p)) {
+				/* mensural flag 16th note flags do not need to
+				 * force extra room, treat like 8th notes */
+				extsteps = MAX(extsteps, 6.0);
+				break;
+			}
 			temp = 7.0 + (eqflags - 2) * FLAGSEP / STEPSIZE;
 			extsteps = MAX(extsteps, temp);
 			break;
@@ -1402,6 +1417,45 @@ struct GRPSYL *ogs_p;		/* first group in other voice's GRPSYL list */
 }
 
 /*
+ * Name:        mensural_flags()
+ *
+ * Abstract:    Does this GRPSYL use mensural flags?
+ *
+ * Returns:     YES or NO
+ *
+ * Description: This function finds whether any flags on the given group will
+ *		be mensural.
+ */
+
+static int
+mensural_flags(gs_p)
+
+struct GRPSYL *gs_p;
+
+{
+	int musfont;
+	int muschar;
+
+
+	musfont = FONT_MUSIC;
+
+	if (gs_p->stemdir == UP) {
+		muschar = C_DNFLAG;
+	} else {
+		muschar = C_UPFLAG;
+	}
+
+	(void)get_shape_override(gs_p->staffno, gs_p->vno, &musfont, &muschar);
+
+	/* if it got translated to a mensural flag, return YES */
+	if (muschar == C_MENSURUPFLAG || muschar == C_MENSURDNFLAG) {
+		return (YES);
+	}
+
+	return (NO);
+}
+
+/*
  * Name:        restore_ry()
  *
  * Abstract:    Restore RY coordinates if need be.
@@ -1602,7 +1656,7 @@ double b0;		/* y intercept */
 		}
 
 		/* find the vertical edges of the clef */
-		(void)clefvert(gs_p->clef, YES, &north, &south);
+		(void)clefvert(gs_p->clef, gs_p->staffno, YES, &north, &south);
 		north *= Staffscale;
 		south *= Staffscale;
 
@@ -1637,7 +1691,8 @@ double b0;		/* y intercept */
 		 * the beams.
 		 */
 		/* find left side of the clef */
-		horizontal -= clefwidth(gs_p->clef, YES) * Staffscale;
+		horizontal -= clefwidth(gs_p->clef, gs_p->staffno,YES)
+				* Staffscale;
 
 		/* group whose partial beams we need to worry about */
 		pbgs_p = prevnongrace(gs_p);
@@ -1788,7 +1843,8 @@ double b0;		/* y intercept */
 	struct GRPSYL *gn_p, *gnn_p; /* next nongrace note, and next to that */
 	int bp, bn;		/* beams on gp_p and gn_p */
 	int partial;		/* partial beams in our way */
-	char rchar;		/* char for the rest */
+	int rchar;		/* char for the rest */
+	int rfont;		/* font for the rest */
 	int size;		/* font size */
 	float asc, des;		/* ascent and descent of a rest */
 	float beamthick;	/* total thickness of beams and space between*/
@@ -1831,10 +1887,10 @@ double b0;		/* y intercept */
 		if (gs_p->restdist != NORESTDIST)
 			continue;
 
-		rchar = restchar(gs_p->basictime);
+		rchar = restchar(gs_p, &rfont);
 		size = (gs_p->grpsize == GS_NORMAL ? DFLT_SIZE : SMALLSIZE);
-		asc = ascent(FONT_MUSIC, size, rchar) * Staffscale;
-		des = descent(FONT_MUSIC, size, rchar) * Staffscale;
+		asc = ascent(rfont, size, rchar) * Staffscale;
+		des = descent(rfont, size, rchar) * Staffscale;
 
 
 		/*
@@ -2043,7 +2099,7 @@ struct GRPSYL *ogs_p;	/* first group in the other voice */
 		 */
 		for (prev_p = next_p = start_p;
 		     next_p->c[AX] < gs_p->c[AX];
-		     prev_p = next_p, next_p = nextnongrace(next_p))
+		     prev_p = next_p, next_p = nextnongracenonspace(next_p))
 			;
 
 		/*
@@ -2996,7 +3052,7 @@ struct GRPSYL *(*nextfunc_p)();	/* call here to get the next relevant group */
 				continue;
 			}
 
-			accdimen(note_p, &asc, &des, &wid);
+			accdimen(gs_p->staffno, note_p, &asc, &des, &wid);
 			asc *= Staffscale;
 			des *= Staffscale;
 			wid *= Staffscale;

@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -415,6 +415,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_SCOREPAD
 %token <intval>	T_SCORESEP
 %token		T_SEMICOLON
+%token <intval>	T_SHAPES
 %token		T_SHARP
 %token <intval>	T_SHORTEN
 %token		T_SLASH
@@ -427,6 +428,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token		T_STAR
 %token		T_STEMOFFSET
 %token <stringval>	T_STRING
+%token		T_STRINGFUNC
 %token <intval>	T_STRVAR
 %token <intval>	T_SUBBARSTYLE
 %token <intval>	T_SWINGUNIT
@@ -445,6 +447,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_TUNINGTYPE
 %token <intval>	T_TUNINGVAR
 %token		T_UNARY_OP
+%token		T_UNDERSCORE
 %token <intval>	T_UNITS
 %token <intval>	T_UNITTYPE
 %token		T_UNSET 
@@ -567,6 +570,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <intval> staffnum
 %type <floatval> steps_offset
 %type <stringval> string
+%type <stringval> string_part
 %type <floatval> stuff_dist
 %type <intval> stuff_type
 %type <ratval> swing_time
@@ -646,6 +650,7 @@ item:	context opt_semi
 		Getting_tup_dur = NO;
 		Good_till_canceled = NO;
 		Defining_multiple = NO;
+		Doing_vcombine = NO;
 		Curr_grpsyl_p = (struct GRPSYL *) 0;
 		Last_grpsyl_p = (struct GRPSYL *) 0;
 		Prev_grpsyl_p = (struct GRPSYL *) 0;
@@ -673,6 +678,10 @@ context:	ssv_context
 
 	|
 	headshape_context
+	{}
+
+	|
+	shapes_context
 	{}
 
 	|
@@ -1231,12 +1240,15 @@ stringpair:
 			/* skip past the font/size bytes */
 			add_shape($1 + 2, $2 + 2);
 		}
+		else if (Context == C_SHAPES) {
+			add_shape_map_entry($1 + 2, $2 + 2);
+		}
 		else if (Context == C_KEYMAP) {
 			add_to_keymap($1, $2);
 		}
 		else {
 			l_warning(Curr_filename, yylineno - 1,
-				"unexpected pair of text strings (possibly intended to be in grids, headshapes, or keymap context, or missing + for concatenation?)");
+				"unexpected pair of text strings (possibly intended to be in grids, headshapes, shapes, or keymap context, or missing + for concatenation?)");
 		}
 	};
 
@@ -1245,6 +1257,15 @@ headshape_context:
 	{
 		end_prev_context();
 		Context = C_HEADSHAPES;
+	}
+	;
+
+shapes_context:
+	T_SHAPES string
+	{
+		end_prev_context();
+		Context = C_SHAPES;
+		init_new_shape_map($2 + 2);
 	}
 	;
 
@@ -1736,6 +1757,12 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 	}
 
 	|
+	T_SHAPES T_EQUAL opt_string
+	{
+		assign_string($1, $3, Currstruct_p);
+	}
+
+	|
 	T_TUNINGVAR T_EQUAL T_TUNINGTYPE
 	{
 		if (contextcheck(C_SCORE, "tuning") == YES
@@ -2198,6 +2225,9 @@ barstlist:
 
 	|
 	barstlist T_COMMA opt_between barst_item
+
+	|
+	between barst_item
 
 	|
 	opt_between T_ALL
@@ -3442,7 +3472,8 @@ paragraph:	opt_paratype T_PARAGRAPH tfont title_size string opt_semi T_NEWLINE
 					 */
 					end_fontsize(String1, &font, &size);
 					string_start = copy_string(p+2, font, size);
-					p++;
+					p = string_start + 1;
+					backslash_count = 0;
 				}
 			}
 			else {
@@ -3599,31 +3630,42 @@ paramname:
 
 	|
 	T_CLEFVAR
+
+	|
+	T_SHAPES
 	;
 
-string:	T_STRING
+string:	string_part
 	{
-		/* strip the quotes from the string and make a copy for later use */
+		/* make a copy */
 		if (Curr_family == FAMILY_DFLT) {
 			Curr_family = Score.fontfamily;
 		}
-		$$ = copy_string(stripquotes(yytext), Curr_family + Curr_font,
-								Curr_size);
+		$$ = copy_string($1, Curr_family + Curr_font, Curr_size);
 	}
 
 	|
-	string T_PLUS T_STRING
+	string T_PLUS string_part
 	{
-		char *old_string;
+		/* append new string part to existing string */
+		MALLOCA(char, $$, strlen($1) + strlen($3) + 1);
+		sprintf($$, "%s%s", $1, $3);
+		FREE($1);
+	}
+	;
 
-		/* append new string part to existing part */
-		old_string = $1;
-		/* new string part has quotes, so subtract 2 from needed length,
-		 * but need space for null, so overall need 1 less. */
-		MALLOCA(char, $$, strlen(old_string) + strlen(yytext) - 1);
-		sprintf($$, "%s%s", old_string, stripquotes(yytext));
-		FREE(old_string);
-	};
+string_part:
+	T_STRING
+	{
+		$$ = stripquotes(yytext);
+	}
+
+	|
+	T_STRINGFUNC T_LPAREN num T_COMMA string T_RPAREN
+	{
+		$$ = string_func($3, $5 + 2);
+	}
+	;
 
 music_input:	noteinfo T_NEWLINE
 	{
@@ -5062,6 +5104,29 @@ extra_item:
 	}
 
 	|
+	T_UNDERSCORE string
+	{
+		if (Curr_grpsyl_p->nnotes == 0) {
+			l_yyerror(Curr_filename, yylineno,
+				"noteleft must be specified after note");
+		}
+		/* This check relies on the fact that the PP_* values are > 'g' */
+		else if (Curr_grpsyl_p->notelist[Curr_grpsyl_p->nnotes - 1].letter > 'g' ) {
+			l_warning(Curr_filename, yylineno,
+					"noteleft can only be specified on a note");
+		}
+		else {
+			if (Curr_grpsyl_p->notelist[Curr_grpsyl_p->nnotes - 1].noteleft_string != 0) {
+				l_warning(Curr_filename, yylineno,
+					"noteleft specified more than once; using last");
+  fprintf(stderr, "previous string was %s\n", Curr_grpsyl_p->notelist[Curr_grpsyl_p->nnotes-1].noteleft_string);
+			}
+			Curr_grpsyl_p->notelist[Curr_grpsyl_p->nnotes - 1].noteleft_string = $2;
+		}
+	}
+
+
+	|
 	slur_item
 	;
 
@@ -6367,7 +6432,7 @@ os_directive:	barinfo bar_items
 			l_yyerror(Curr_filename, yylineno,
 				"cannot nest samescorebegin zones");
 		}
-		if ( ($1 == NO) ) {
+		if ($1 == NO) {
 			if (Doing_samescore == NO) {
 				l_yyerror(Curr_filename, yylineno,
 					"cannot have samescoreend without previous matching samescorebegin");
@@ -6401,7 +6466,7 @@ os_directive:	barinfo bar_items
 			l_yyerror(Curr_filename, yylineno,
 				"cannot nest samepagebegin zones");
 		}
-		if ( ($1 == NO) ) {
+		if ($1 == NO) {
 			if (Doing_samepage == NO) {
 				l_yyerror(Curr_filename, yylineno,
 					"cannot have samepageend without previous matching samespagebegin");
@@ -8053,6 +8118,15 @@ end_prev_context()
 		Curr_usym_p = 0;
 	}
 
+	if (Context == C_SHAPES) {
+		/* Note that if the user puts a shapes context as the very
+		 * last context in their input, end_prev_context would not
+		 * get called, so this finish_shape_map call would not
+		 * get hit,  but since since nothing could refer to it,
+		 * that wouldn't actually hurt anything. */
+		finish_shape_map();
+	}
+
 	Curr_grpsyl_p = (struct GRPSYL *) 0;
 	Currblock_p = (struct BLOCKHEAD *) 0;
 	Currstruct_p = (struct MAINLL *) 0;
@@ -8606,13 +8680,15 @@ char *acc_name;
 {
 	int code;
 	int font;
+	int is_small;
 
 	if (Acc_offset >= 2 * MAX_ACCS) {
 		l_yyerror(Curr_filename, yylineno,
 				"Too many accidentals (%d max)", MAX_ACCS);
 		return;
 	}
-	if (is_bad_char((code = find_char(acc_name, &font, NO, NO))) == YES) {
+	is_small = NO;
+	if (is_bad_char((code = find_char(acc_name, &font, &is_small, NO))) == YES) {
 		l_yyerror(Curr_filename, yylineno,
 			"No symbol named %s to use as accidental", acc_name);
 		return;

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -62,7 +62,7 @@ struct NOTEPTRS {
 
 static struct GRPSYL *procallvoices P((struct MAINLL *mll_p,
 		struct GRPSYL *gs_p));
-static int contra_accs P((struct GRPSYL *top_p));
+static int contradictory P((struct GRPSYL *top_p));
 static void proc1or2voices P((struct MAINLL *mll_p, struct STAFF *staff_p,
 		struct GRPSYL *gs1_p, struct GRPSYL *gs2_p, int contra));
 static int compat P((struct NOTEPTRS noteptrs[], struct GRPSYL *gs1_p,
@@ -77,11 +77,12 @@ static int time2ticks P((int time));
 static void procbunch P((struct NOTEPTRS noteptrs[], struct MAINLL *mll_p,
 		struct STAFF *staff_p, struct GRPSYL *gs1_p,
 		struct GRPSYL *gs2_p));
-static void doaccparen P((struct NOTEPTRS noteptrs[], double halfwide,
-		double halfhigh, int collinear, int sep_accs));
+static void doaccparenstr P((struct GRPSYL *gs_p, struct NOTEPTRS noteptrs[],
+		double halfwide, double halfhigh, int collinear, int sep_accs));
 static int nextaccparen P((struct NOTEPTRS noteptrs[], int what, int found));
-double stackleft P((struct NOTE *note_p, double base, float *parenwidth_p,
-		int stackwhat));
+double stackleft P((int staffno, struct NOTE *note_p, double base,
+		float *lstringwidth, float *parenwidth_p, int stackwhat));
+double stackpartleft P((double north, double south, double width, double base));
 static void dodot P((struct STAFF *staff_p, struct GRPSYL *gs1_p,
 		struct GRPSYL *gs2_p, double halfwide, int collinear));
 static void dogrpdot P((struct STAFF *staff_p, struct GRPSYL *gs_p,
@@ -269,7 +270,7 @@ struct GRPSYL *gs_p;		/* point at first voice on this staff */
 	int numnonspace;		/* number of nonspace GRPSYLs */
 	int numgrps;			/* how many note groups are here */
 	int sep;			/* whether to apply acc separately */
-	int contra;			/* return value of contra_accs() */
+	int contra;			/* return value of contradictory() */
 	int n;				/* loop variable, voices processed */
 
 
@@ -311,9 +312,9 @@ struct GRPSYL *gs_p;		/* point at first voice on this staff */
 	 * but that will be reversed later if proc1or2voices finds that the
 	 * groups have to be offset horizontally (and contra is NO).
 	 */
-	/* if numgrps == 0, must avoid calling contra_accs (sep's irrelevant) */
+	/* if numgrps==0, must avoid calling contradictory (sep's irrelevant) */
 	contra = NO;	/* default */
-	if (numgrps <= 1 || (contra = contra_accs(g_p[0])) == YES) {
+	if (numgrps <= 1 || (contra = contradictory(g_p[0])) == YES) {
 		sep = YES;
 	} else if (numgrps == 3) {
 		sep = NO;
@@ -455,19 +456,19 @@ struct GRPSYL *gs_p;		/* point at first voice on this staff */
 }
 
 /*
- * Name:        contra_accs()
+ * Name:        contradictory()
  *
- * Abstract:    Do any groups in this chord/staff have contradictory accs?
+ * Abstract:    Do any groups in chord/staff have contradictory accs/strings?
  *
  * Returns:     YES or NO
  *
  * Description: This function is given the first group in a particular chord on
  *		a particular staff.  It checks whether any note exists in these
- *		groups with different accidentals.
+ *		groups with different accidentals or different noteleft strings.
  */
 
 static int
-contra_accs(top_p)
+contradictory(top_p)
 
 struct GRPSYL *top_p;	/* first group in the chord on the staff */
 
@@ -500,11 +501,6 @@ struct GRPSYL *top_p;	/* first group in the chord on the staff */
 
 			/* loop through every note in first group */
 			for (n = 0; n < gs1_p->nnotes; n++) {
-				/* skip if it has no accs */
-				if ( ! has_accs(gs1_p->notelist[n].acclist)) {
-					continue;
-				}
-
 				/* loop through every note in 2nd group */
 				for (k = 0; k < gs2_p->nnotes; k++) {
 					/* skip if different letter/octave */
@@ -515,15 +511,21 @@ struct GRPSYL *top_p;	/* first group in the chord on the staff */
 						continue;
 					}
 
-					/* skip if it has no accs */
-					if ( ! has_accs(
-					    gs2_p->notelist[k].acclist)) {
-						continue;
+					/* if both have accs and they contradict
+					 * return YES */
+					if (has_accs(gs1_p->notelist[n].acclist) &&
+					    has_accs(gs2_p->notelist[k].acclist) &&
+					    !eq_accs(gs1_p->notelist[n].acclist,
+							gs2_p->notelist[k].acclist)) {
+						return (YES);
 					}
 
-					/* if they contradict, return YES */
-					if (!eq_accs(gs1_p->notelist[n].acclist,
-					    gs2_p->notelist[k].acclist)) {
+					/* if both have a string and they contradict,
+					 * return YES */
+					if (gs1_p->notelist[n].noteleft_string != 0 &&
+					    gs2_p->notelist[k].noteleft_string != 0 &&
+					    strcmp(gs1_p->notelist[n].noteleft_string,
+					           gs2_p->notelist[k].noteleft_string) != 0) {
 						return (YES);
 					}
 				}
@@ -710,6 +712,12 @@ int contra;		/* do any groups have contradictory accidentals? */
 			 * use "len" or "ho" to avoid a collision.
 			 */
 			incompat = YES;
+		} else if ((stem_x_position(gs1_p) == SP_CENTERED ||
+			    stem_x_position(gs2_p) == SP_CENTERED) &&
+			   noteptrs[num1-1].top_p->stepsup -
+					gs2_p->notelist[0].stepsup < 2) {
+			/* centered stems are involved, don't allow this close*/
+			incompat = YES;
 		} else {
 			/*
 			 * We have decided the groups are compatible, so
@@ -731,6 +739,14 @@ int contra;		/* do any groups have contradictory accidentals? */
 			procgrace(noteptrs, mll_p, staff_p, gs1_p, gs2_p);
 			return;
 		}
+	}
+
+	/* check again here in case not caught in the above "if" */
+	if ((stem_x_position(gs1_p) == SP_CENTERED ||
+	     stem_x_position(gs2_p) == SP_CENTERED) &&
+		   noteptrs[num1-1].top_p->stepsup -
+				gs2_p->notelist[0].stepsup < 2) {
+		incompat = YES;
 	}
 
 	/*
@@ -768,7 +784,8 @@ int contra;		/* do any groups have contradictory accidentals? */
 	 * stems.  For this to be allowed, it must be that the bottom note of
 	 * the top group is on the same step as the top note of the bottom
 	 * group.  The top group's note can't have dots, the bottom group's
-	 * can't have accidentals or a roll, and neither can have parentheses,
+	 * can't have accs/string/roll, and neither can have parentheses,
+	 * or have a centered stem,
 	 * because they couldn't be drawn decently.  Neither note can have
 	 * another note on a neighboring step.
 	 */
@@ -778,7 +795,12 @@ int contra;		/* do any groups have contradictory accidentals? */
 
 			! has_accs(gs2_p->notelist[0].acclist) &&
 
+			gs2_p->notelist[0].noteleft_string == 0 &&
+
 			gs2_p->roll == NOITEM &&
+
+			(stem_x_position(gs1_p) == SP_EDGE &&
+			 stem_x_position(gs2_p) == SP_EDGE) &&
 
 			noteptrs[num1-1].top_p->note_has_paren == NO &&
 			gs2_p->notelist[0].note_has_paren == NO &&
@@ -942,7 +964,9 @@ register struct GRPSYL *gs1_p, *gs2_p;	/* point at groups in this hand */
 	 * 	4) no two of these N notes can be on neighboring letters
 	 * 	5) for each of the N pairs, the two notes do not have
 	 *	   contradictory accidentals
-	 *	6) for each of the N pairs, the two notes must have the same
+	 *	6) for each of the N pairs, the two notes do not have
+	 *	   contradictory noteleft strings
+	 *	7) for each of the N pairs, the two notes must have the same
 	 *	   size and headshape
 	 */
 	/* check rule 1 */
@@ -957,7 +981,7 @@ register struct GRPSYL *gs1_p, *gs2_p;	/* point at groups in this hand */
 	if (gs1_p->dots != gs2_p->dots)
 		return (NO);
 
-	/* check rules 3, 4, 5, and 6 together */
+	/* check the rest of the rules together */
 	/* see if any note in the top group matches the top note in the other*/
 	for (n = 0; n < num1; n++) {
 		if (noteptrs[n].top_p->stepsup == gs2_p->notelist[0].stepsup)
@@ -980,6 +1004,12 @@ register struct GRPSYL *gs1_p, *gs2_p;	/* point at groups in this hand */
 		    has_accs(gs2_p->notelist[k].acclist) &&
 		    has_accs(noteptrs[n].top_p->acclist))
 			return (NO);
+		if (gs2_p->notelist[k].noteleft_string != 0 &&
+		    noteptrs[n].top_p->noteleft_string != 0 &&
+		    strcmp(gs2_p->notelist[k].noteleft_string,
+				noteptrs[n].top_p->noteleft_string) != 0) {
+			return (NO);
+		}
 		if (gs2_p->notelist[k].notesize != noteptrs[n].top_p->notesize)
 			return (NO);
 		if (gs2_p->notelist[k].headshape != noteptrs[n].top_p->headshape)
@@ -1003,6 +1033,8 @@ register struct GRPSYL *gs1_p, *gs2_p;	/* point at groups in this hand */
 	 * that could affect the RS of group 1, so change that too.
 	 * If either note has an accidental, copy it to the other note (in case
 	 * one started out as null and the other didn't).
+	 * If either note has a noteleft string, make both point at it,
+	 * in case for one of them it was originally not present.
 	 * Also, while doing this, if any of these notes or their accs have
 	 * parens in one group but not the other, erase those parens.
 	 */
@@ -1019,6 +1051,17 @@ register struct GRPSYL *gs1_p, *gs2_p;	/* point at groups in this hand */
 		} else if ( ! has_accs(gs2_p->notelist[k].acclist)) {
 			COPY_ACCS(gs2_p->notelist[k].acclist,
 					gs1_p->notelist[n].acclist);
+		}
+
+		if (gs1_p->notelist[n].noteleft_string != 0 &&
+		    gs2_p->notelist[k].noteleft_string == 0) {
+			gs2_p->notelist[k].noteleft_string =
+			gs1_p->notelist[n].noteleft_string;
+		} else
+		if (gs1_p->notelist[n].noteleft_string == 0 &&
+		    gs2_p->notelist[k].noteleft_string != 0) {
+			gs1_p->notelist[n].noteleft_string =
+			gs2_p->notelist[k].noteleft_string;
 		}
 
 		if (gs1_p->notelist[n].note_has_paren !=
@@ -1192,6 +1235,11 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	}
 	if (parens) {
 		offset += STEPSIZE / 2.0;
+	}
+	/* centered stem needs more room too */
+	if (stem_x_position(gs1_p) == SP_CENTERED ||
+	    stem_x_position(gs2_p) == SP_CENTERED) {
+		offset += STEPSIZE / 4.0;
 	}
 	return (offset);
 }
@@ -1421,12 +1469,12 @@ struct GRPSYL *gs1_p, *gs2_p;	/* group(s) which may have preceding graces */
 			v2g_p->sep_accs = YES;
 
 			/*
-			 * contra_accs and finalgroupproc depend on the groups
+			 * contradictory and finalgroupproc depend on the groups
 			 * being linked as if they were in a chord, so do that.
 			 */
 			v1g_p->gs_p = v2g_p;
 			proc1or2voices(mll_p, staff_p, v1g_p, v2g_p,
-					contra_accs(v1g_p));
+					contradictory(v1g_p));
 
 			(void)finalgroupproc(v1g_p, (struct CHORD *)0);
 
@@ -1502,8 +1550,8 @@ int time;		/* basictime */
  * Description: This function figures out which note heads in the given
  *		group(s) need to be put on the "wrong" side of the stem to
  *		avoid overlapping.  Then it sets all note heads' horizontal
- *		coords.  It calls doaccparen() to find and store the positions
- *		for the accidentals, dodot() for the dots.  It sets RW and
+ *		coords.  It calls doaccparenstr() to find and store positions
+ *		for acs/parens/stringss, dodot() for the dots.  It sets RW and
  *		RE for the group(s), also taking flags into consideration.
  */
 
@@ -1530,11 +1578,12 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	float maxwide;			/* max of gwide for the two groups */
 	float ghigh;			/* height of any note in these groups*/
 	float nhigh;			/* height of a particular note */
-	float g1wide, g2wide;		/* gwide for the two groups */
 	float maxhigh;			/* max of ghigh for the two groups */
 	float flagwidth;		/* width of a flag */
 	float rh;			/* relative horizontal of a note */
+	float newedge;			/* a new edge offset */
 	int collinear;			/* are the 2 groups' stems collinear? */
+	int musfont, muschar;		/* for getting possible char overrides*/
 	register int k, n;		/* loop variables */
 	int size;
 
@@ -1605,7 +1654,19 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		 * we want to offset the groups slightly, such that their stems
 		 * are collinear, so set that flag.
 		 */
-		if (STEMSIDE_RIGHT(gs1_p)) {
+		if (stem_x_position(gs1_p) == SP_CENTERED) {
+			/* all notes must be normal */
+			normhead[0] = YES;
+			for (k = 1; k < gs1_p->nnotes; k++) {
+				if (gs1_p->notelist[ k ].stepsup + 1 ==
+				    gs1_p->notelist[k-1].stepsup) {
+					l_ufatal(gs1_p->inputfile,
+					gs1_p->inputlineno,
+					"Notes are not allowed on neighboring steps when the stem is centered");
+				}
+				normhead[k] = YES;
+			}
+		} else if (STEMSIDE_RIGHT(gs1_p)) {
 			normhead[n-1] = YES;	/* bottom note normal */
 			for (k = n - 2; k >= 0; k--) {
 				if (noteptrs[k+1].top_p->stepsup ==
@@ -1626,7 +1687,19 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		}
 
 		if (gs2_p != 0) {
-			if (STEMSIDE_RIGHT(gs2_p)) {
+			if (stem_x_position(gs2_p) == SP_CENTERED) {
+				/* all notes must be normal */
+				normhead[n] = YES;
+				for (k = 1; k < gs2_p->nnotes; k++) {
+					if (gs2_p->notelist[ k ].stepsup + 1 ==
+					    gs2_p->notelist[k-1].stepsup) {
+						l_ufatal(gs2_p->inputfile,
+						gs2_p->inputlineno,
+						"Notes are not allowed on neighboring steps when the stem is centered");
+					}
+					normhead[n + k] = YES;
+				}
+			} else if (STEMSIDE_RIGHT(gs2_p)) {
 				/* find the slot beyond the last bottom note */
 				for (k = n + 1; noteptrs[k].bot_p != 0; k++) {
 				}
@@ -1675,7 +1748,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	}
 
 	/* remember these values, for comparing to the other group (if any) */
-	maxwide = g1wide = gwide;	/* widest group so far */
+	maxwide = gwide;		/* widest group so far */
 	maxhigh = ghigh;		/* highest group so far */
 
 	if (HAS_STEM_ON_RIGHT(gs1_p)) {
@@ -1684,6 +1757,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		gs1_p->stemx = -gwide / 2;
 	} else {
 		gs1_p->stemx = 0.0;	/* center the imaginary stem */
+					/* or centered stem */
 	}
 
 	for (n = 0; noteptrs[n].top_p != 0; n++) {
@@ -1711,6 +1785,10 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 							-gwide / 2 + nwide / 2;
 					noteptrs[n].top_p->c[RE] =
 							-gwide / 2 + nwide;
+				} else { /* no stem or centered stem */
+					noteptrs[n].top_p->c[RX] = 0;
+					noteptrs[n].top_p->c[RW] = -nwide / 2;
+					noteptrs[n].top_p->c[RE] = nwide / 2;
 				}
 			} else {
 				noteptrs[n].top_p->c[RX] = 0;
@@ -1725,6 +1803,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			 * be placed differently regardless of whether stemed.
 			 * In all case, adjust by W_NORMAL*POINT, the width of
 			 * the stem, so that the note overlays the stem.
+			 * (Note: centered stems don't allow this case.)
 			 */
 			if (nwide != gwide) {
 				if (STEMSIDE_RIGHT(gs1_p)) {
@@ -1772,7 +1851,6 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	 * it, setting coords.  While doing this, set the group's
 	 * horizontal coords.
 	 */
-	g2wide = 0.0;	/* to avoid useless 'used before set' warning */
 	if (gs2_p != 0) {
 		/* skip by notes that are only in the top group */
 		for (n = 0; noteptrs[n].bot_p == 0; n++)
@@ -1803,13 +1881,13 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 				ghigh = nhigh;
 			}
 		}
-		g2wide = gwide;
 		if (HAS_STEM_ON_RIGHT(gs2_p)) {
 			gs2_p->stemx = gwide / 2;
 		} else if (HAS_STEM_ON_LEFT(gs2_p)) {
 			gs2_p->stemx = -gwide / 2;
 		} else {
 			gs2_p->stemx = 0.0;	/* center the imaginary stem */
+						/* or centered stem */
 		}
 
 		/* if groups have different note head sizes, adjust maxes */
@@ -1834,20 +1912,24 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			 	 * so that it touches the stem.
 				 */
 				if (nwide != gwide && noteptrs[n].top_p == 0) {
-					if (STEMSIDE_RIGHT(gs2_p)) {
+					if (HAS_STEM_ON_RIGHT(gs2_p)) {
 						noteptrs[n].bot_p->c[RE] =
 							gwide / 2;
 						noteptrs[n].bot_p->c[RX] =
 							gwide / 2 - nwide / 2;
 						noteptrs[n].bot_p->c[RW] =
 							gwide / 2 - nwide;
-					} else {  /* STEMSIDE_LEFT */
+					} else if (HAS_STEM_ON_LEFT(gs2_p)) {
 						noteptrs[n].bot_p->c[RW] =
 							-gwide / 2;
 						noteptrs[n].bot_p->c[RX] =
 							-gwide / 2 + nwide / 2;
 						noteptrs[n].bot_p->c[RE] =
 							-gwide / 2 + nwide;
+					} else { /* no stem or centered stem */
+						noteptrs[n].bot_p->c[RX] = 0;
+						noteptrs[n].bot_p->c[RW] = -nwide / 2;
+						noteptrs[n].bot_p->c[RE] = nwide / 2;
 					}
 				} else {
 					noteptrs[n].bot_p->c[RX] = 0;
@@ -1861,6 +1943,7 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 				 * on which way the stem is going.  Smaller
 			 	 * than normal notes need to be placed
 				 * differently regardless of whether stemmed.
+				 * (Note: centered stems don't allow this case.)
 				 */
 				if (nwide != gwide) {
 					if (STEMSIDE_RIGHT(gs2_p)) {
@@ -1904,10 +1987,10 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	}
 
 	/*
-	 * Find position of left parentheses around notes, and accidentals if
-	 * they are to be applied separately to each group.
+	 * Find position of left parentheses around notes, and accidentals andif
+	 * noteleft strings if they are to be applied separately to each group.
 	 */
-	doaccparen(noteptrs, maxwide / 2, maxhigh / 2, collinear,
+	doaccparenstr(gs1_p, noteptrs, maxwide / 2, maxhigh / 2, collinear,
 			gs1_p->sep_accs);
 
 	/* find position of dots after notes */
@@ -1946,15 +2029,13 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		if (rh < gs1_p->c[RW])
 			gs1_p->c[RW] = rh;
 	}
-	/*
-	 * If the stem is down on a half note or shorter that is to have
-	 * slashes through its stem, make sure there is room for the slashes.
-	 */
-	if (gs1_p->slash_alt > 0 && HAS_STEM_ON_LEFT(gs1_p)) {
-		gwide = g1wide;
+	/* make sure there is room on the left for slashes */
+	if (gs1_p->slash_alt > 0) {
 		/* if position of stem minus slash room < current west . . . */
-		if (-gwide / 2 - SLASHPAD < gs1_p->c[RW])
-			gs1_p->c[RW] = -gwide / 2 - SLASHPAD;
+		newedge = gs1_p->stemx - slash_xlen(gs1_p) - STDPAD / 2;
+		if (newedge < gs1_p->c[RW]) {
+			gs1_p->c[RW] = newedge;
+		}
 	}
 	westwith(gs1_p);		/* expand RW for "with" list if needbe*/
 	gs1_p->c[RW] -= gs1_p->padding;	/* add user requested padding */
@@ -1973,11 +2054,13 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 			if (rh < gs2_p->c[RW])
 				gs2_p->c[RW] = rh;
 		}
-		if (gs2_p->slash_alt > 0 && HAS_STEM_ON_LEFT(gs2_p)) {
-			gwide = g2wide;
+		/* make sure there is room on the left for slashes */
+		if (gs2_p->slash_alt > 0) {
 			/* if pos of stem minus slash room < current west . .*/
-			if (-gwide / 2 - SLASHPAD < gs2_p->c[RW])
-				gs2_p->c[RW] = -gwide / 2 - SLASHPAD;
+			newedge = gs2_p->stemx - slash_xlen(gs2_p) - STDPAD / 2;
+			if (newedge < gs2_p->c[RW]) {
+				gs2_p->c[RW] = newedge;
+			}
 		}
 		westwith(gs2_p);
 		gs2_p->c[RW] -= gs2_p->padding;
@@ -2003,27 +2086,30 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 	if (gs1_p->slash_alt < 0 && gs1_p->beamloc == STARTITEM)
 		gs1_p->c[RE] += ALTPAD;
 	/*
-	 * If the stem is up and a flag is needed, and the east boundary
-	 * doesn't yet contain it, adjust the east boundary so the flag will
-	 * fit.
+	 * If a flag is needed, and the east boundary doesn't yet contain it,
+	 * adjust the east boundary so the flag will fit.
 	 */
-	if (gs1_p->stemdir == UP && gs1_p->basictime >= 8 &&
-				gs1_p->beamloc == NOITEM) {
-		flagwidth = width(FONT_MUSIC, size_def2font(gs1_p->grpsize),
-			C_UPFLAG);
-		if (gs1_p->notelist[0].c[RE] + flagwidth > gs1_p->c[RE])
-			gs1_p->c[RE] = gs1_p->notelist[0].c[RE] + flagwidth;
+	if (gs1_p->basictime >= 8 && gs1_p->beamloc == NOITEM) {
+		musfont = FONT_MUSIC;
+		muschar = C_UPFLAG;
+		(void)get_shape_override(gs1_p->staffno, gs1_p->vno,
+			&musfont, &muschar);
+		flagwidth = width(musfont, size_def2font(gs1_p->grpsize),
+			muschar);
+		if (gs1_p->stemx + flagwidth > gs1_p->c[RE]) {
+			gs1_p->c[RE] = gs1_p->stemx + flagwidth;
+		}
 	}
-	/*
-	 * If a note that has a stem on the right is to have slashes
-	 * through its stem, make sure there's room for the slashes.
-	 */
-	if (gs1_p->slash_alt > 0 && HAS_STEM_ON_RIGHT(gs1_p)) {
-		gwide = g1wide;
-		/* if position of stem plus slash room > current east . . . */
-		if (gwide / 2 + SLASHPAD > gs1_p->c[RE])
-			gs1_p->c[RE] = gwide / 2 + SLASHPAD;
+
+	/* make sure there is room on the right for slashes */
+	if (gs1_p->slash_alt > 0) {
+		/* if pos of stem plus slash room > current east . .*/
+		newedge = gs1_p->stemx + slash_xlen(gs1_p) + STDPAD / 2;
+		if (newedge > gs1_p->c[RE]) {
+			gs1_p->c[RE] = newedge;
+		}
 	}
+
 	/*
 	 * Expand RE some more if need be to accommodate the "with" list.  Then
 	 * shift it over by RX, in case RX isn't 0.
@@ -2044,39 +2130,45 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 		eastwith(gs2_p);
 		gs2_p->c[RE] += gs2_p->c[RX];
 
-		if (gs2_p->stemdir == UP && gs2_p->basictime >= 8 &&
-					gs2_p->beamloc == NOITEM) {
-			flagwidth = width(FONT_MUSIC,
-				size_def2font(gs2_p->grpsize), C_UPFLAG);
-			if (gs2_p->notelist[0].c[RE] + flagwidth > gs2_p->c[RE])
-				gs2_p->c[RE] =
-					gs2_p->notelist[0].c[RE] + flagwidth;
+		if (gs2_p->basictime >= 8 && gs2_p->beamloc == NOITEM) {
+			musfont = FONT_MUSIC;
+			muschar = C_UPFLAG;
+			(void)get_shape_override(gs2_p->staffno, gs2_p->vno,
+				&musfont, &muschar);
+			flagwidth = width(musfont,
+				size_def2font(gs2_p->grpsize), muschar);
+			if (gs2_p->stemx + flagwidth > gs2_p->c[RE]) {
+				gs2_p->c[RE] = gs2_p->stemx + flagwidth;
+			}
 		}
 
-		if (gs2_p->slash_alt > 0 && HAS_STEM_ON_RIGHT(gs2_p)) {
-			gwide = g1wide;
-			/* if position of stem plus slash room > current east */
-			if (gwide / 2 + SLASHPAD > gs2_p->c[RE])
-				gs2_p->c[RE] = gwide / 2 + SLASHPAD;
+		/* make sure there is room on the right for slashes */
+		if (gs2_p->slash_alt > 0) {
+			/* if pos of stem plus slash room > current east . .*/
+			newedge = gs2_p->stemx + slash_xlen(gs2_p) + STDPAD / 2;
+			if (newedge > gs2_p->c[RE]) {
+				gs2_p->c[RE] = newedge;
+			}
 		}
 	}
 }
 
 /*
- * Name:        doaccparen()
+ * Name:        doaccparenstr()
  *
- * Abstract:    Finds horizontal position for accidentals/parens in group(s).
+ * Abstract:    Finds horizontal position for accs/parens/strings in group(s).
  *
  * Returns:     void
  *
  * Description: If sep_accs == YES, this function determines (for each note)
  *		the horizontal positioning of 1) its accidental if any
  *		(including any parentheses around the acc, which are treated as
- *		part of the acc), and 2) the left parenthesis of the note if
- *		there are parens around the note.  It figures out where to place
- *		them to avoid overlap, and stores the relative west coord of
- *		each in the NOTE structure.  If sep_accs == NO, it does only
- *		the notes' parens; and the accs are done later by applyaccs().
+ *		part of the acc), 2) the left parenthesis of the note if there
+ *		are parens around the note, and 3) noteleft string, if any.  It
+ *		figures out where to place them to avoid overlap, and stores
+ *		the relative west coord of each in the NOTE structure.
+ *		If sep_accs == NO, it does only the notes' parens; and the accs
+ *		and noteleft strings are done later by applyaccs().
  *		It uses the appropriate size of accidentals (based on normal
  *		versus cue/grace), and places them appropriately, considering
  *		also the size of the notes.  However, if there are two groups,
@@ -2096,10 +2188,12 @@ struct GRPSYL *gs1_p, *gs2_p;	/* point at group(s) in this hand */
 /* code to tell stackleft() what it should stack */
 #define	SL_ACC		(1 << 0)
 #define	SL_PAREN	(1 << 1)
+#define	SL_LSTRING	(1 << 2)
 
 static void
-doaccparen(noteptrs, halfwide, halfhigh, collinear, sep_accs)
+doaccparenstr(gs_p, noteptrs, halfwide, halfhigh, collinear, sep_accs)
 
+struct GRPSYL *gs_p;		/* first group using these notes */
 struct NOTEPTRS noteptrs[];	/* array of ptrs to notes to process */
 double halfwide;		/* half of max of width & height of (notes */
 double halfhigh;		/*  in group 1, notes in group 2) */
@@ -2109,6 +2203,7 @@ int sep_accs;			/* put accs on each group individually? */
 {
 	struct NOTE *note_p;		/* point at a note */
 	float west;
+	float lstringwidth;		/* width of string left of note */
 	float parenwidth;		/* width of note's left parenthesis */
 	int found;			/* accs/parens found so far */
 	int what;			/* what to stack during this call */
@@ -2182,8 +2277,8 @@ int sep_accs;			/* put accs on each group individually? */
 		}
 
 		/* stack whatever we should for this note */
-		west = stackleft(note_p, -halfwide - STDPAD, &parenwidth,
-				stackwhat);
+		west = stackleft(gs_p->staffno, note_p, -halfwide - STDPAD,
+				&lstringwidth, &parenwidth, stackwhat);
 
 		/*
 		 * If this note exists in the top group, set coords for the
@@ -2212,7 +2307,40 @@ int sep_accs;			/* put accs on each group individually? */
 	} /* end of loop for each accidental and/or note paren */
 
 	/*
-	 * Finally, if the stems were collinear, we have to adjust waccr for
+	 * Now that all the accs and parens have been placed, place any
+	 * noteleft strings that exist; but only if sep_accs is YES.  For
+	 * these, just loop in order through the array.
+	 */
+	if (sep_accs) {
+		for (k = 0; GETPTR(k) != 0; k++) {
+			note_p = GETPTR(k);
+
+			/* if no string, skip this note */
+			if (note_p->noteleft_string == 0) {
+				continue;
+			}
+
+			/*
+			 * If this note exists in the top group, set coords for
+			 * the string.
+			 */
+			west = stackleft(gs_p->staffno, note_p,
+					-halfwide - STDPAD,
+					&lstringwidth, &parenwidth, SL_LSTRING);
+
+			if (noteptrs[k].top_p != 0) {
+				noteptrs[k].top_p->wlstring = west;
+			}
+
+			/* same if the note exists in the bottom group */
+			if (noteptrs[k].bot_p != 0) {
+				noteptrs[k].bot_p->wlstring = west;
+			}
+		}
+	}
+
+	/*
+	 * Finally, if the stems were collinear, we have to adjust offsets for
 	 * all the notes of the top group, so that it's relative to the top
 	 * group instead of the bottom group.
 	 */
@@ -2225,6 +2353,11 @@ int sep_accs;			/* put accs on each group individually? */
 			    (what & SL_ACC) != 0)
 				noteptrs[k].top_p->waccr += 2 * halfwide
 					 	- W_NORMAL * POINT;
+			if (noteptrs[k].top_p->noteleft_string != 0 &&
+			    sep_accs) {
+				noteptrs[k].top_p->wlstring += 2 * halfwide
+					 	- W_NORMAL * POINT;
+			}
 		}
 	}
 }
@@ -2236,7 +2369,7 @@ int sep_accs;			/* put accs on each group individually? */
  *
  * Returns:	Index to the NOTE, or -1 if no more.
  *
- * Description:	This function is called by doaccparen(), to return in the
+ * Description:	This function is called by doaccparenstr(), to return in the
  *		correct order the notes that have accidentals and/or parens to
  *		be processed.  The "what" parameter says which or these (or
  *		both) we are looking for.  The first time in here, found is 0,
@@ -2320,22 +2453,26 @@ int found;			/* no. of accidentals found already */
 /*
  * Name:        stackleft()
  *
- * Abstract:    Stack note's acc and/or paren onto the left side of a baseline.
+ * Abstract:    Stack note's acc/paren/strig onto the left side of a baseline.
  *
  * Returns:     RW of the leftmost item stacked (relative to the chord).
  *
- * Description: This function is given a note that has a paren and/or acc that
- *		is to be stacked.  Only the items indicated by "stackwhat" are
- *		stacked.  The stacking goes leftward from the given "base"
- *		line.   *parenwidth_p gets set to the width of the paren if a
- *		paren is being stacked, otherwise zero.
+ * Description: This function is given a note that has a paren and/or acc and/or
+ *		noteleft string that is to be stacked.  Only the items indicated
+ *		by "stackwhat" are stacked.  The stacking goes leftward from
+ *		the given "base" line.   *parenwidth_p gets set to the width of
+ *		the paren if a paren is being stacked, otherwise zero.
+ *		Similarly, *lstringwidth_p gets set to the width of the
+ *		noteleft string if it is being stacked, otherwise zero.
  */
 
 double
-stackleft(note_p, base, parenwidth_p, stackwhat)
+stackleft(staffno, note_p, base, lstringwidth_p, parenwidth_p, stackwhat)
 
+int staffno;			/* the staff we are on */
 struct NOTE *note_p;		/* note whose acc and/or paren to stack */
 double base;			/* the base line, relative to the chord */
+float *lstringwidth_p;		/* this will be set */
 float *parenwidth_p;		/* this will be set */
 int stackwhat;			/* what items are to be stacked? */
 
@@ -2344,9 +2481,10 @@ int stackwhat;			/* what items are to be stacked? */
 	float accasc, accdesc;		/* ascent & descent of accidental */
 	float accwidth;			/* width of new accidental */
 	float parenv;			/* half the vertical size of paren */
+	int parencount;			/* how many parens before the acc? */
+	float allparenwidth;		/* of the one or two parens before acc*/
 	float totwidth;			/* width of acc plus paren */
 	int overlap;			/* does our acc overlap existing ones*/
-	int try;			/* which element of Rectab to try */
 	int j;				/* loop variable */
 	int size;			/* font size of paren */
 	float horfn, verfn;		/* horz & vert flat/nat notch sizes */
@@ -2359,7 +2497,7 @@ int stackwhat;			/* what items are to be stacked? */
 
 	/* get dimensions of accidental if there is one */
 	if ((stackwhat & SL_ACC) != 0) {
-		accdimen(note_p, &accasc, &accdesc, &accwidth);
+		accdimen(staffno, note_p, &accasc, &accdesc, &accwidth);
 	} else {
 		accwidth = accasc = accdesc = 0.0;
 	}
@@ -2374,6 +2512,7 @@ int stackwhat;			/* what items are to be stacked? */
 	}
 
 	/* set the north, south, and width of what we have found */
+	/* but in this first phase, consider only accs and parens */
 	north = note_p->c[RY] + MAX(accasc, parenv);
 	south = note_p->c[RY] - MAX(accdesc, parenv);
 	if (note_p->stepsup >= CSS_STEPS / 2) {	/* adjust like css_alter_vert */
@@ -2385,111 +2524,13 @@ int stackwhat;			/* what items are to be stacked? */
 	}
 	totwidth = accwidth + *parenwidth_p;
 
-	/*
-	 * For each rectangle in Rectab, decide whether (based on its vertical
-	 * coords) it could possibly overlap with our new accidental.  If it's
-	 * totally above or below ours, it can't.  We allow a slight overlap
-	 * (FUDGE) so that round off errors don't stop us from packing things
-	 * as tightly as possible.
-	 */
-	for (j = 0; j < Reclim; j++) {
-		if (Rectab[j].s + FUDGE > north || Rectab[j].n < south + FUDGE){
-			Rectab[j].relevant = NO;
-		} else {
-			Rectab[j].relevant = YES;
-		}
-	}
+
+	/* stack (making rectangles) for the acc and/or paren */
+	west = stackpartleft(north, south, totwidth, base);
+	east = west + totwidth;
 
 	/*
-	 * Mark that none of the relevant rectangles' boundaries have been
-	 * tried yet for positioning our acc.
-	 */
-	for (j = 0; j < Reclim; j++) {
-		if (Rectab[j].relevant == YES) {
-			Rectab[j].tried = NO;
-		}
-	}
-
-	/*
-	 * Set up first trial position for this acc, just to the left of normal
-	 * notes, allowing padding.
-	 */
-	east = base;
-	west = east - totwidth;
-
-	/*
-	 * Keep trying positions for this acc, working right to left.  When we
-	 * find one that doesn't overlap an existing rectangle, break.  This
-	 * has to succeed at some point, at the leftmost rectangle position if
-	 * not earlier.
-	 */
-	for (;;) {
-		overlap = NO;
-		for (j = 0; j < Reclim; j++) {
-			/* ignore ones too far north or south */
-			if (Rectab[j].relevant == NO) {
-				continue;
-			}
-
-			/* if all west or east, okay; else overlap */
-			if (Rectab[j].w + FUDGE <= east &&
-			    Rectab[j].e >= west + FUDGE) {
-				overlap = YES;
-				break;
-			}
-		}
-
-		/* if no rectangle overlapped, we found a valid place*/
-		if (overlap == NO) {
-			break;
-		}
-
-		/*
-		 * Something overlapped, so we have to try again.  Find the
-		 * eastermost relevant west rectangle boundary that hasn't been
-		 * tried already, and whose west is not to the east of the
-		 * current trial east, to use as the next trial position for
-		 * our acc's east.
-		 */
-		try = -1;
-		for (j = 0; j < Reclim; j++) {
-			/* ignore ones too far north or south */
-			if (Rectab[j].relevant == NO || Rectab[j].tried == YES){
-				continue;
-			}
-
-			/* ignore ones east of where we already are */
-			if (Rectab[j].w > east) {
-				continue;
-			}
-
-			/*
-			 * If this is the first eligible one we haven't tried,
-			 * or if this is farther east than the easternmost so
-			 * far, save it as being the new easternmost so far.
-			 */
-			if (try == -1 || Rectab[j].w > Rectab[try].w) {
-				try = j;
-			}
-		}
-
-		if (try == -1) {
-			pfatal("bug in stackleft()");
-		}
-
-		/*
-		 * Mark this one as having been tried (for next time around, if
-		 * necessary).  Set new trial values for east and west of our
-		 * acc.
-		 */
-		Rectab[try].tried = YES;
-		east = Rectab[try].w;
-		west = east - totwidth;
-
-	} /* end of while loop trying positions for this acc */
-
-	/*
-	 * We found the correct position for the new acc.  However, for flats,
+	 * We found the correct position for the acc/paren.  However, for flats,
 	 * double flats, and naturals, we would like a notch to be taken out of
 	 * the upper right corner of their rectangle, in effect, since there's
 	 * nothing there but white space.  This can only be done if the acc is
@@ -2577,34 +2618,224 @@ int stackwhat;			/* what items are to be stacked? */
 	}
 
 	/*
-	 * We have the final position for the new acc.  Enter it into Rectab.
-	 * But for naturals, we don't want to reserve the lower left corner,
+	 * We have the final position for the new acc.  The "west" includes
+	 * any parentheses around the accidental itself, and around the "note",
+	 * which means around the whole thing, acc plus note.
+	 * In Rectab, we will put one rectangle for the parentheses if any,
+	 * and one or two rectangles for the acc.  Normally just one, but
+	 * for naturals, we don't want to reserve the lower left corner,
 	 * where there is nothing but white space; so in that case, put two
 	 * overlapping entries in Rectab to account for the rest of the space.
 	 * Naturals are symmetrical, so we can use the same horfn and verfn as
 	 * were calculated above for the upper right corner.
 	 */
-	if (std_acc == 'n') {
-		/* upper part of natural */
+	/* find how many left parens there are before the acc */
+	parencount = ((stackwhat & SL_PAREN) != 0) +	/* around note & acc */
+		     (note_p->acc_has_paren == YES);	/* around acc itself */
+	if (parencount > 0) {
+		size = size_def2font(note_p->notesize);
+		allparenwidth = parencount * width(FONT_TR, size, '(');
+		parenv = height(FONT_TR, size, '(') / 2.0;
+	} else {
+		allparenwidth = parenv = 0.0;
+	}
+
+	if ((stackwhat & SL_ACC) != 0) {
+		/* there is an acc; make rectangle(s) for it */
+		if (std_acc == 'n') {
+			/* upper part of natural */
+			Rectab[Reclim].n = north;
+			Rectab[Reclim].s = south + verfn;
+			Rectab[Reclim].e = east;
+			Rectab[Reclim].w = west + allparenwidth;
+			inc_reclim();
+	
+			/* right hand part of natural */
+			Rectab[Reclim].n = north;
+			Rectab[Reclim].s = south;
+			Rectab[Reclim].e = east;
+			Rectab[Reclim].w = west + savehorfn + allparenwidth;
+			inc_reclim();
+		} else {
+			/* some other accidental; reserve the whole rectangle */
+			Rectab[Reclim].n = north;
+			Rectab[Reclim].s = south;
+			Rectab[Reclim].e = east;
+			Rectab[Reclim].w = west + allparenwidth;
+			inc_reclim();
+		}
+	}
+	if (parencount > 0) {
+		/* there are paren(s); make a rectangle for it/them */
+		Rectab[Reclim].n = note_p->c[RY] + parenv;
+		Rectab[Reclim].s = note_p->c[RY] - parenv;
+		Rectab[Reclim].e = west + allparenwidth;
+		Rectab[Reclim].w = west;
+		inc_reclim();
+	}
+
+	/* if there is a string, make a rectangle for it */
+	if ((stackwhat & SL_LSTRING) == 0) {
+		*lstringwidth_p = 0.0;	/* no string */
+	} else {
+		*lstringwidth_p = strwidth(note_p->noteleft_string);
+
+		/* string's baseline is bottom edge of (normal) note head */
+		north = note_p->c[RY] - STEPSIZE
+				+ strascent(note_p->noteleft_string);
+		south = note_p->c[RY] - STEPSIZE
+				- strdescent(note_p->noteleft_string);
+
+		/* adjust like css_alter_vert */
+		if (note_p->stepsup >= CSS_STEPS / 2) {
+			north += CSS_OFF;
+			south += CSS_OFF;
+		} else if (note_p->stepsup <= -CSS_STEPS / 2) {
+			north -= CSS_OFF;
+			south -= CSS_OFF;
+		}
+
+		west = stackpartleft(north, south, *lstringwidth_p, base);
+		east = west + *lstringwidth_p;
+
 		Rectab[Reclim].n = north;
-		Rectab[Reclim].s = south + verfn;
+		Rectab[Reclim].s = south;
 		Rectab[Reclim].e = east;
 		Rectab[Reclim].w = west;
 		inc_reclim();
-
-		/* right hand part of natural */
-		Rectab[Reclim].n = north;
-		Rectab[Reclim].s = south;
-		Rectab[Reclim].e = east;
-		Rectab[Reclim].w = west + savehorfn;
-	} else {
-		/* some other accidental; reserve the whole rectangle*/
-		Rectab[Reclim].n = north;
-		Rectab[Reclim].s = south;
-		Rectab[Reclim].e = east;
-		Rectab[Reclim].w = west;
 	}
-	inc_reclim();
+
+	return (west);
+}
+
+/*
+ * Name:        stackpartleft()
+ *
+ * Abstract:    Stack the given part of the items to be stacked.
+ *
+ * Returns:     RW of the leftmost item stacked (relative to the chord).
+ *
+ * Description: This function is given the info that is needed to stack one
+ *		rectangle.  The rectangle may contain one or more items, but
+ *		it/they are all in this one rectangle.
+ */
+
+double
+stackpartleft(north, south, width, base)
+
+double north;		/* north of the new item(s) */
+double south;		/* south of the new item(s) */
+double width;		/* width of the new item(s) */
+double base;		/* horizontal position of the base to stack against */
+{
+	float east, west;	/* relative coords of new item(s) */
+	int overlap;		/* do the items overlap existing ones? */
+	int try;		/* which element of Rectab to try */
+	int j;			/* loop variable */
+
+
+	/*
+	 * For each rectangle in Rectab, decide whether (based on its vertical
+	 * coords) it could possibly overlap with our new item.  If it's
+	 * totally above or below ours, it can't.  We allow a slight overlap
+	 * (FUDGE) so that round off errors don't stop us from packing things
+	 * as tightly as possible.
+	 */
+	for (j = 0; j < Reclim; j++) {
+		if (Rectab[j].s + FUDGE > north || Rectab[j].n < south + FUDGE){
+			Rectab[j].relevant = NO;
+		} else {
+			Rectab[j].relevant = YES;
+		}
+	}
+
+	/*
+	 * Mark that none of the relevant rectangles' boundaries have been
+	 * tried yet for positioning our item.
+	 */
+	for (j = 0; j < Reclim; j++) {
+		if (Rectab[j].relevant == YES) {
+			Rectab[j].tried = NO;
+		}
+	}
+
+	/*
+	 * Set up first trial position for this item, just to the left of normal
+	 * notes, allowing padding.
+	 */
+	east = base;
+	west = east - width;
+
+	/*
+	 * Keep trying positions for this item, working right to left.  When we
+	 * find one that doesn't overlap an existing rectangle, break.  This
+	 * has to succeed at some point, at the leftmost rectangle position if
+	 * not earlier.
+	 */
+	for (;;) {
+		overlap = NO;
+		for (j = 0; j < Reclim; j++) {
+			/* ignore ones too far north or south */
+			if (Rectab[j].relevant == NO) {
+				continue;
+			}
+
+			/* if all west or east, okay; else overlap */
+			if (Rectab[j].w + FUDGE <= east &&
+			    Rectab[j].e >= west + FUDGE) {
+				overlap = YES;
+				break;
+			}
+		}
+
+		/* if no rectangle overlapped, we found a valid place*/
+		if (overlap == NO) {
+			break;
+		}
+
+		/*
+		 * Something overlapped, so we have to try again.  Find the
+		 * eastermost relevant west rectangle boundary that hasn't been
+		 * tried already, and whose west is not to the east of the
+		 * current trial east, to use as the next trial position for
+		 * our item's east.
+		 */
+		try = -1;
+		for (j = 0; j < Reclim; j++) {
+			/* ignore ones too far north or south */
+			if (Rectab[j].relevant == NO || Rectab[j].tried == YES){
+				continue;
+			}
+
+			/* ignore ones east of where we already are */
+			if (Rectab[j].w > east) {
+				continue;
+			}
+
+			/*
+			 * If this is the first eligible one we haven't tried,
+			 * or if this is farther east than the easternmost so
+			 * far, save it as being the new easternmost so far.
+			 */
+			if (try == -1 || Rectab[j].w > Rectab[try].w) {
+				try = j;
+			}
+		}
+
+		if (try == -1) {
+			pfatal("bug in stackleft()");
+		}
+
+		/*
+		 * Mark this one as having been tried (for next time around, if
+		 * necessary).  Set new trial values for east and west of our
+		 * item.
+		 */
+		Rectab[try].tried = YES;
+		east = Rectab[try].w;
+		west = east - width;
+
+	}
 
 	return (west);
 }
@@ -3335,7 +3566,7 @@ struct GRPSYL *gs_p;		/* point at this group */
  * Description: If any of the notes in the given group(s) are to have
  *		parentheses around them, this function finds the horizontal
  *		positions of the right parentheses.  The left ones are done
- *		in doaccparen() or applyaccs().  For each group, it uses
+ *		in doaccparenstr() or applyaccs().  For each group, it uses
  *		the appropriate size of parentheses (based on normal versus
  *		cue/grace), and places them appropriately, considering also
  *		the size of the notes.  However, if there are two groups,
@@ -3602,20 +3833,20 @@ int collinear;			/* are stems collinear? */
 }
 
 /*
- * Name:        applyaccs()
+ * Name:        applyaccstrs()
  *
- * Abstract:    Stack accidentals against all the groups at once.
+ * Abstract:    Stack accidentals and strings against all the groups at once.
  *
  * Returns:     void
  *
  * Description: This function is used only when sep_accs == NO for the groups
- *		in a chord on a staff, meaning the accidentals are to be
- *		stacked to the left of all the groups, after restsyl.c is done
- *		placing all the groups relative to each other.
+ *		in a chord on a staff, meaning the accidentals and noteleft
+ *		strings are to be stacked to the left of all the groups, after
+ *		restsyl.c is done placing all the groups relative to each other.
  */
 
 void
-applyaccs(g_p, numgrps)
+applyaccstrs(g_p, numgrps)
 
 struct GRPSYL *g_p[];		/* initially point at nonspace voices' groups */
 int numgrps;			/* initially how many nonspace groups exist */
@@ -3625,10 +3856,12 @@ int numgrps;			/* initially how many nonspace groups exist */
 	struct NOTE *n_p[MAXVOICES][MAXHAND];
 
 	struct NOTE *note_p;	/* point at one note */
-	struct NOTE *accnote_p;	/* point at a note with an acc */
+	struct NOTE *accnote_p;	/* point at a note with an acc or maybe string*/
+	struct NOTE *strnote_p;	/* point at a note with a string */
 	struct GRPSYL *grace_p;	/* a grace group */
 	struct GRPSYL *temp_p;	/* to the right of a grace group */
 	float gwest[MAXVOICES];	/* original west boundary of group */
+	float lstringwidth;	/* passed to stackleft */
 	float parenwidth;	/* passed to stackleft, otherwise not used */
 	float base;		/* baseline to stack against */
 	float west;		/* west edge of acc to be stacked */
@@ -3647,6 +3880,7 @@ int numgrps;			/* initially how many nonspace groups exist */
 	int gidx;		/* group index: into g_p[gidx] or n_p[gidx][] */
 	float high;		/* height and width of something */
 	int gotacc;		/* are there any accidentals? */
+	int gotstr;		/* are there any noteleft strings? */
 	char acclist[MAX_ACCS * 2];	/* accs for a note */
 
 
@@ -3672,21 +3906,23 @@ int numgrps;			/* initially how many nonspace groups exist */
 	}
 	numgrps = k;
 
-	/* if no non-mrpt note groups, there are no accs to deal with */
+	/* if no non-mrpt note groups, there are no strings/accs to deal with */
 	if (numgrps == 0) {
 		return;
 	}
 
-	/* if accs were already applied separately to the groups, get out */
+	/* if noteleft strings and accs were already applied separately to the
+	 * groups, get out */
 	if (g_p[0]->sep_accs == YES) {
 		return;
 	}
 
 	/*
 	 * Load the array pointing at all the notes.  If we find that no notes
-	 * have accidentals, return, since there is nothing to do.
+	 * have strings or accidentals, return, since there is nothing to do.
 	 */
 	gotacc = NO;
+	gotstr = NO;
 	for (gidx = 0; gidx < numgrps; gidx++) {
 		/* first null out all the pointers for this group */
 		for (pidx = 0; pidx < MAXHAND; pidx++) {
@@ -3702,9 +3938,12 @@ int numgrps;			/* initially how many nonspace groups exist */
 			if (has_accs(note_p->acclist)) {
 				gotacc = YES;
 			}
+			if (note_p->noteleft_string != 0) {
+				gotstr = YES;
+			}
 		}
 	}
-	if (gotacc == NO) {
+	if (gotacc == NO && gotstr == NO) {
 		return;
 	}
 
@@ -3825,7 +4064,8 @@ int numgrps;			/* initially how many nonspace groups exist */
 		 * the leftmost note of this pitch.  Since we're not asking for
 		 * paren info, parenwidth will be set to 0.
 		 */
-		west = stackleft(accnote_p, base, &parenwidth, SL_ACC);
+		west = stackleft(g_p[0]->staffno, accnote_p, base,
+				&lstringwidth, &parenwidth, SL_ACC);
 
 		/*
 		 * Loop through the groups, dealing with the ones that have
@@ -3875,9 +4115,82 @@ int numgrps;			/* initially how many nonspace groups exist */
 	}
 
 	/*
-	 * Groups' west boundaries may have been extended due to accidentals.
+	 * Loop through all notes, finding the ones with noteleft strings.
+	 * Find where they will fit, storing that info in wlstring and adding
+	 * them to Rectab.
+	 * Loop through all possible notes, skipping one that don't exist in
+	 * any group or don't have a string in any of the groups.
+	 */
+	for (pidx = 0; pidx < MAXHAND; pidx++) {
+		/*
+		 * Find RW of the leftmost note of this pitch.  Also, of all
+		 * the notes, remember the leftmost that has a string, if any. 
+		 */
+		base = 1000.0;		/* way to the right of everything */
+		strnote_p = 0;		/* haven't found one yet */
+		for (gidx = 0; gidx < numgrps; gidx++) {
+			note_p = n_p[gidx][pidx];
+			if (note_p != 0) {
+				noteleft = g_p[gidx]->c[RX] + note_p->c[RW]
+						- STDPAD;
+				if (note_p->noteleft_string != 0 &&
+						noteleft < base) {
+					base = noteleft;
+					strnote_p = note_p;
+				}
+			}
+		}
+		if (strnote_p == 0) {
+			/* no note with a string was found */
+			continue;
+		}
+
+		/*
+		 * Stack the string.  By using this base, the string will be
+		 * left of the leftmost note of this pitch.
+		 */
+		west = stackleft(g_p[0]->staffno, strnote_p, base,
+				&lstringwidth, &parenwidth, SL_LSTRING);
+
+		/* store this position in every group that has the string */
+		note_ry = 0.0;		/* keep lint happy */
+		for (gidx = 0; gidx < numgrps; gidx++) {
+			note_p = n_p[gidx][pidx];
+			if (note_p != 0 && note_p->noteleft_string != 0) {
+				note_p->wlstring = west - g_p[gidx]->c[RX];
+
+			 	 /*
+				  * Remember the note's RY.  At least one group
+				  * has to have the note, so note_ry will get
+				  * set.
+				  */
+				note_ry = note_p->c[RY];
+			}
+		}
+
+		/*
+		 * For each group that overlaps vertically with the string's RY
+		 * (which equals the note's RY), expand the group's boundary to
+		 * include the str.  Allow for a roll, if any.  Thanks to CSS,
+		 * we can't just use the group coordinates; we have to look at
+		 * the coords of the outer notes.
+		 */
+		for (gidx = 0; gidx < numgrps; gidx++) {
+			rollpad = g_p[gidx]->roll == NOITEM ? 0.0 : ROLLPADDING;
+			if (g_p[gidx]->notelist[0].c[RN] > note_ry &&
+			    g_p[gidx]->notelist[g_p[gidx]->nnotes - 1].c[RS]
+					< note_ry &&
+			    g_p[gidx]->c[RW] > west - rollpad) {
+				g_p[gidx]->c[RW] = west - rollpad;
+				g_p[gidx]->orig_rw = g_p[gidx]->c[RW];
+			}
+		}
+	}
+
+	/*
+	 * Groups' west boundaries may have been extended due to strings/accs.
 	 * Move move any grace groups that exist to the left, if necessary to
-	 * avoid hitting these accidentals.  Then restore the main groups'
+	 * avoid hitting these things.  Then restore the main groups'
 	 * west boundaries to include their graces.
 	 */
 

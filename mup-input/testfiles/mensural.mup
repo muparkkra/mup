@@ -1,0 +1,83 @@
+//!Mup-Arkkra
+header
+	title bold (18) "mensural.mup"
+	paragraph (14) "\
+Test mensrual notation, especially centered stems.
+Some things are not correct mensural style, but we allow and test them anyway.
+Do everything the same on mensural and standard staffs, for comparison.
+Mensual looks better on larger scale staffs, so do that.
+Octuple and quadruple notes (maxima, longa) are tested in beamstem.mup
+and are not affected by the mensural settings."
+
+score
+	scale = 0.95
+	staffs = 2
+	vscheme = 3f
+	size = 12
+	time = 3/1
+	packfact = 1.3
+staff 1
+	shapes = "mensural"
+	noteheads = "mensural"
+	stemlen = 6
+	printedtime = "\(perfminor)"
+	staffscale = 1.4
+music
+	1,2: 1/2. e;
+	bar
+
+	1,2: 1/2 b-; 1c;
+	bar
+
+	rom all: 0 "Multiple notes in a group: invalid style " + \
+		"but supported if separated by at least 2 steps.";
+	1,2: 1dfa; daf+; e;
+	bar
+
+	1,2: 2c; f; b; gb; fa; be+;
+	bar
+
+	1,2: 4c; d; e; f; 8g; a; b; c+; 16d+; e+; f+; g+; 2.a+; 2b+;
+	bar
+
+	1,2: 1/2 r; 1;
+	bar
+
+	1,2: 2r; ; 4; ; 8; ; 16; ; ; ; 1;
+	bar
+score
+	beamstyle = 2, 2, 2, 2, 2, 2
+music
+	rom all: 0 "Beaming: invalid style but supported.";
+	1,2: 4c; d; e; f; 8g; a; b; c+; 16d+; e+; f+; g+; 2.a+; 2b+;
+	bar
+
+	rom all: 0 "Two voices on a staff: invalid style but supported, ";
+	rom all: 0 "but no sharing of note heads, and no collinear stems.";
+	1 1 & 2 1: 1a; 2; e; 4; b; a; b;
+	1 2 & 2 2: 1f; 2; b; 4; ;  ;  a;
+	bar
+
+	rom all: 0 "Three voices on a staff: invalid style but supported.";
+	1,2 1: 4g+; 2; 8c+; d+; 1/2;
+	1,2 3: 2c+; ; 1/2;
+	1,2 2: 8g# slur; 4.a; { 8; ; ; }3; 8; 16; ; 1/2;
+	phrase below 1,2: 1 til 2.5;
+	bar
+
+	rom all: 0 "Parentheses: unlikely but supported.";
+	1,2 1: 2(a); a(&); (a&); (d+); d+(#); (d+#);
+	bar
+
+	1,2 1: 2(a); a(&); (a&); (d+); d+(#); (d+#);
+	1,2 2: 2(f); f(&); (f&); (d); d(#); (d#);
+	bar
+
+	rom all: 0 "Slashes: invalid style but supported.";
+	1,2 1: [slash 1]... 2(a); a(&); (a&); (d+); d+(#); (d+#);
+	bar
+
+	rom all: 0 "Grace notes: invalid style but supported.";
+	1,2: [grace]8e; 2f; [grace]8b; 2g; [grace]8c+; 2b; d+; \
+		[grace]8e; []f; []g; 1a;
+	bar

@@ -1,5 +1,5 @@
-%define version 6.9
-%define versionnodot 69
+%define version 7.0
+%define versionnodot 70
 %define _binary_payload w9.bzdio
 Summary:       A music notation program that can also generate MIDI files
 Name:          mup

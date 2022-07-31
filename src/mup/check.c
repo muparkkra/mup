@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -271,6 +271,8 @@ UINT32B cont;	/* context number */
 		return("block");
 	case C_HEADSHAPES:
 		return("headshapes");
+	case C_SHAPES:
+		return("shapes");
 	case C_GRIDS:
 		return("grids");
 	case C_SYMBOL:

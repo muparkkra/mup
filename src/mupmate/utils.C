@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -58,7 +58,7 @@
 #endif
 
 #if defined(__APPLE__)
-static void initMagicPaths(void);
+extern void initMagicPaths(void);
 #endif
 
 // The FLTK Fl_Int_Input is almost what we want, but it allows
@@ -560,194 +560,6 @@ filename_expand(char *expanded_path, const char *given_path)
 	}
 #endif
 }
-
-#if defined (__APPLE__)
-#include <Carbon/Carbon.h>
-
-// On Apple OS X, we set some magic path environment variables,
-// so that Mupmate can be relocated and still find what it needs
-// relative to wherever it gets moved. An OS X app has a particular
-// directory structure. For Mupmate it looks like this:
-//
-//                       MupMate
-//                          |
-//           ---------------------------------
-//           |              |                |
-//     MupIncludes     MupMate.app       MupMusic
-//			    |
-//			Contents
-//			    |
-//     -----------------------------------------------------------
-//     |                |           |           |                |
-//  Info.plist        MacOS      PkgInfo    Resources    Resources Disabled
-//                      |                       |
-//                   MupMate                    |
-//                                              |
-//                                ------------------------------
-//                                |             |              |
-//                         MupMate*.icns       bin            doc
-//                                              |              |
-//                                             mup          packages
-//                                                             |
-//                                                            mup
-//                                                             |
-//                                                      -----------------
-//                                                      |               |
-//                                                    *.html, etc     uguide
-//                                                                      |
-//                                                              -------------
-//                                                              |           |
-//                                                             *.html    *.gif
-// APPL is set to the top of the tree
-// RSRC is set to $APPL/MupMate.app/Contents/Resources
-// SUPP is set to the kApplicationSupportFolderType
-// DOCS is set to the kDocumentsFolderType
-// HOME is set to the kCurrentUserFolderType
-//
-// Note that
-//   $APPL/MupMate.app/Contents/MacOS/MupMate
-// is the actual Mupmate executable, and
-//   $APPL/MupMate.app/Contents/Resources/bin/mup
-// is the actual Mup executable that it calls.
-//
-// This code is adapted from code provided by Michael Thies.
-
-enum MagicPath { MP_RSRC = 0, MP_APPL, MP_SUPP, MP_DOCS, MP_HOME };
-
-static const char * magicPathTable[] =
-{
-	"RSRC",
-	"APPL",
-	"SUPP",
-	"DOCS",
-	"HOME",
-	0
-};
-
-// This looks the the value of the given magic path, and returns it,
-// or returns 0 if the path cannot be resolved.
-
-static char *
-getMagicPath (enum MagicPath mp)
-
-{
-	static char path[FL_PATH_MAX];
-	FSRef myFSRef;
-
-	// $RSRC and $APPL are looked up in similar way
-	if (mp == MP_RSRC || mp == MP_APPL) {
-
-		// Get reference to the application bundle
-		CFBundleRef myAppsBundle = CFBundleGetMainBundle();
-		if (myAppsBundle == NULL) {
-			return(0);
-		}
-
-		// Get the specific directory of interst inside the bundle
-		CFURLRef myBundleURL;
-		if (mp == MP_RSRC) {
-			myBundleURL = CFBundleCopyResourcesDirectoryURL(myAppsBundle);
-		}
-		else {
-			myBundleURL = CFBundleCopyBundleURL(myAppsBundle);
-		}
-		if (myBundleURL == NULL) {
-			return(0);
-		}
-
-		Boolean ok;
-		if (mp == MP_RSRC) {
-               		ok = CFURLGetFSRef(myBundleURL, &myFSRef);
-		}
-		else {
-			// parent folder of application bundle
-			FSRef tmpFSRef;
-			ok = CFURLGetFSRef(myBundleURL, &tmpFSRef);
-			if (ok) {  // get parent folder
-				ok = (FSGetCatalogInfo(&tmpFSRef, kFSCatInfoNone, 0, 0, 0, &myFSRef) == noErr);
-			}
-		}
-		CFRelease(myBundleURL);
-		if (!ok) {
-			return 0;
-		}
-	}
-	else {
-		// Look up $SUPP, $DOCS, or $HOME
-		OSType folderType;
-		if (mp == MP_SUPP) {
-			 folderType = kApplicationSupportFolderType;
-		}
-		else if (mp == MP_DOCS) {
-			folderType = kDocumentsFolderType;
-		}
-		else {
-			folderType = kCurrentUserFolderType;
-		}
-		if (FSFindFolder(kUserDomain, folderType, TRUE, &myFSRef)
-								!= noErr) {
-			return(0);
-		}
-	}
-
-	// Translate the reference to a path. 
-	if (FSRefMakePath(&myFSRef, (UInt8*) path, FL_PATH_MAX) == noErr) {
-		return(path);
-	}
-	return 0;
-}
-
-// This looks up all the magic path variables. If they were not already
-// set and a value can be found for them, that value is placed into
-// the environment, so it can be used in file name expansions.
-
-static void
-initMagicPaths(void)
-
-{
-	int i;
-
-	for (i = 0; magicPathTable[i] != 0; i++) {
-
-		// Only look up if not already an environment variable
-		// by this name. $HOME in particular might well be set,
-		// although probably to the same as what we will set it to.
-		if (getenv(magicPathTable[i]) != 0) {
-			continue;
-		}
-
-		size_t len;
-		char *value;
-		char *p = getMagicPath((MagicPath) i);
-
-		if (p != 0 && *p != 0) {
-			// Normalize path value to end with slash.
-			// This shouldn't really be necessary,
-			// but shouldn't hurt either, as extra slashes
-			// are harmless.
-			len = strlen(p);
-			if (p[len - 1] != '/') {
-				 len++;
-			}
-			value = (char *) malloc(len + 1);
-			(void) strcpy(value, p);
-			if (p[len - 1] != '/') {
-				// append slash and terminator
-				value[len - 1] = '/';
-				value[len] = 0;
-			}
-		}
-		else {
-			// fallback default initialization
-			value = "./";
-		}
-		// We put into the environment, so that the code that
-		// handles environment variable expansion will use them,
-		// without having to know or care that they were "magic."
-		setenv(magicPathTable[i], value, 0);
-	}
-}
-#endif
 
 #ifdef OS_LIKE_WIN32
 

@@ -187,6 +187,7 @@ uguide_files = \
 	uguide/pstools.html \
 	uguide/roll.html \
 	uguide/running.html \
+	uguide/shapes.html \
 	uguide/shaped.html \
 	uguide/sharehd.html \
 	uguide/slantxt.html \
@@ -213,8 +214,8 @@ mup_doc__DATA = $(ps_files)
 mup_uguide_dir = $(mup_doc_dir)/uguide
 mup_uguide__DATA = $(uguide_files)
 
-muschar.ps: ../src/include/muschar.h ../tools/doc/mkmuscharps.sh
-	../tools/doc/mkmuscharps.sh < ../src/include/muschar.h
+muschar.ps: ../src/include/muschar.h ../src/mup/prolog.ps ../tools/doc/mkmuscharps.sh
+	../tools/doc/mkmuscharps.sh ../src/mup/prolog.ps < ../src/include/muschar.h
 
 quickref.ps: quickref.t ../src/mup/prolog.ps muschar.ps
 	$(GROFF) -t -Tps quickref.t | $(SED) -e "/BeginProlog/r ../src/mup/prolog.ps" > quickref.ps

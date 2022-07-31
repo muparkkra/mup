@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -217,6 +217,13 @@ struct MAINLL *mainll_item_p;	/* where to store SSV info in main list */
 				C_SCORE | C_STAFF | C_VOICE,
 				NO, name, mainll_item_p,
 				&(mainll_item_p->u.ssv_p->withsize) );
+		break;
+
+	case NOTELEFTSIZE:
+		(void) do_assign(var, value, MINSIZE, MAXSIZE,
+				C_SCORE | C_STAFF | C_VOICE,
+				NO, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->noteleftsize) );
 		break;
 
 	case SYLPOSITION:
@@ -1307,6 +1314,7 @@ struct MAINLL *mainll_item_p;	/* where to assign */
 /* Assign a string to an SSV variable. It just assigns the pointer for labels,
  * so temporary strings should be copied before being passed.
  * For NOTEHEADS, it parses the string and saves the numeric internal numbers.
+ * For SHAPES, it looks up the shape map and assigns that.
  */
 
 void
@@ -1343,6 +1351,10 @@ struct MAINLL *mainll_item_p;	/* where to assign it */
 	else if (var == ACCTABLE) {
 		context = C_SCORE;
 		error_msg = "acctable parameter";
+	}
+	else if (var == SHAPES) {
+		context  = C_SSV;
+		error_msg = "shapes parameter";
 	}
 	else {
 		context = C_SCORE | C_STAFF;
@@ -1421,6 +1433,18 @@ struct MAINLL *mainll_item_p;	/* where to assign it */
 			}
 			if (n != 7 || *string != '\0') {
 				yyerror("wrong number of notehead names: expecting either 1 or 7");
+			}
+			break;
+
+		case SHAPES:
+			if (string == 0) {
+				mainll_item_p->u.ssv_p->shapes = 0;
+			}
+			else if ((mainll_item_p->u.ssv_p->shapes =
+					get_shape_map(string + 2)) == 0) {
+				l_yyerror(Curr_filename, yylineno,
+					"shape map '%s' has not been defined",
+					string + 2);
 			}
 			break;
 
@@ -1719,6 +1743,7 @@ struct MAINLL *mainll_item_p;	/* where to assign it in main list */
 
 	if (mainll_item_p == 0 && (!(Context & C_BLOCKHEAD)
 				|| (var != FONT && var != FONTFAMILY))) {
+		wrong_context(parm_name(var));
 		return;
 	}
 	/* determine the name of the variable, for error messages */
@@ -1834,6 +1859,24 @@ struct MAINLL *mainll_item_p;	/* where to assign it in main list */
 	case WITHFAMILY:
 		if (contextcheck(C_SCORE | C_STAFF | C_VOICE, fullname) == YES) {
 			mainll_item_p->u.ssv_p->withfamily = (short) value;
+		}
+		else {
+			return;
+		}
+		break;
+
+	case NOTELEFTFONT:
+		if (contextcheck(C_SCORE | C_STAFF | C_VOICE, fullname) == YES) {
+			mainll_item_p->u.ssv_p->noteleftfont = (short) value;
+		}
+		else {
+			return;
+		}
+		break;
+
+	case NOTELEFTFAMILY:
+		if (contextcheck(C_SCORE | C_STAFF | C_VOICE, fullname) == YES) {
+			mainll_item_p->u.ssv_p->noteleftfamily = (short) value;
 		}
 		else {
 			return;
@@ -2931,6 +2974,9 @@ int param;	/* #define name from ssvused.h */
 	case MINSCSEP:		return("minimum scoresep");
 	case MINSTSEP:		return("staffsep");
 	case NOTEINPUTDIR:	return("noteinputdir");
+	case NOTELEFTFAMILY:	return("noteleftfontfamily");
+	case NOTELEFTFONT:	return("noteleftfont");
+	case NOTELEFTSIZE:	return("noteleftsize");
 	case NUMBERMRPT:	return("numbermrpt");
 	case NUMBERMULTRPT:	return("numbermultrpt");
 	case NUMSTAFF:		return("staffs");

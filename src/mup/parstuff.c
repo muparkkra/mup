@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -253,99 +253,6 @@ dflt_place()
 		/* default for everything else is above */
 		return(PL_ABOVE);
 	}
-}
-
-
-/* Add a space padding to a string (except if is it boxed or circled).
- * If padding was added, free the passed-in string and return the padded string,
- * else return the string as is. The incoming string
- * is expected to already be converted to font/size/string
- * internal format by this time, although still in input ASCII form.
- */
-
-char *
-pad_string(string, modifier)
-
-char *string;
-int modifier;	/* TM_* */
-
-{
-	char *padded_string;		/* string with 1-space padding at end */
-	char *str_p;			/* walk through padded_string */
-	int len;			/* length of string */
-	int last_was_backslash;		/* YES/NO */
-	int count_backslashed;		/* YES/NO if to count backslashed or
-					 * unbackslashed colons */
-	int colons;			/* how many colons found */
-	int extra;			/* how many extra bytes to malloc */
-
-
-	len = strlen(string);
-
-	/* Boxed and circled strings don't get any extra padding,
-	 * so we can use what we have. We check from the end of the string,
-	 * because we allow font/size changes at the beginning. */
-	if (len > 5 && string[len - 2] == '\\'
-			&& (string[len-1] == ']' || string[len-1] == '}')) {
-		return(string);
-	}
-
-	/* Make a new copy with a space at the end.
-	 * But if the string ends in the middle of a pile,
-	 * we need to implicitly end the pile before adding the space.
-	 * Since the string is still in ASCII form,
-	 * we have to count up the number of colons
-	 * to see if we are mid-pile. In chord/analysis/figbass
-	 * we need to count unbackslashed colon,
-	 * otherwise backslashed.*/
-	count_backslashed = (IS_CHORDLIKE(modifier) ? NO : YES);
-	/* figbass implicitly begins with a pile */
-	colons = (modifier == TM_FIGBASS ? 1 : 0);
-	last_was_backslash = NO;
-	for (str_p = string + 2; *str_p != '\0'; str_p++) {
-		if (last_was_backslash == YES) {
-			if (*str_p == ':' && count_backslashed == YES) {
-				colons++;
-			}
-			last_was_backslash = NO;
-		}
-		else {
-			if (*str_p ==  ':' && count_backslashed == NO) {
-				colons++;
-			}
-			last_was_backslash = (*str_p == '\\' ? YES : NO);
-		}
-	}
-
-	/* If odd number of colons, we are mid-pile.  Will need
-	 * add extra byte to hold the colon to implicitly end the
-	 * pile, and if it needs to be a backslashed colon,
-	 * another extra byte for that. */
-	if (colons & 1) {
-		extra = (count_backslashed == YES ? 2 : 1);
-	}
-	else {
-		extra = 0;
-	}
-
-	/* +2 is for space/null at end */
-	MALLOCA(char, padded_string, len + 2 + extra);
-	(void) memcpy(padded_string, string, len);
-	str_p = padded_string + len;
-
-	/* add implicit end-pile if needed */
-	if (extra == 2) {
-		*str_p++ = '\\';
-	}
-	if (extra > 0) {
-		*str_p++ = ':';
-	}
-
-	/* now add space padding */
-	*str_p++ = ' ';
-	*str_p = '\0';
-	FREE(string);
-	return(padded_string);
 }
 
 

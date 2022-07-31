@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -344,6 +344,7 @@ map_all_strings()
 	int s;			/* index through syllables */
 	int w;			/* index through "with" list items */
 	int b;			/* index through brace/bracket lists */
+	int  n;			/* index through notes in notelist */
 	struct KEYMAP *map_p;	/* Which mapping table to use */
 
 
@@ -402,16 +403,25 @@ map_all_strings()
 				}
 			}
 
-			/* "with" lists */
+			/* "with" lists and noteleft strings */
+			map_p = kpvp_map(mll_p->u.staff_p->staffno, WITHKEYMAP);
 			for (v = 0; v < MAXVOICES; v++) {
 				for (gs_p = mll_p->u.staff_p->groups_p[v]; gs_p != 0; gs_p = gs_p->next) {
-					map_p = kpvp_map(mll_p->u.staff_p->staffno, WITHKEYMAP);
 					for (w = 0; w < gs_p->nwith; w++) {
 						gs_p->withlist[w].string = map_string(
 							gs_p->withlist[w].string,
 							map_p,
 							gs_p->inputfile,
 							gs_p->inputlineno);
+					}
+					for (n = 0; n < gs_p->nnotes; n++) {
+						if (gs_p->notelist[n].noteleft_string != 0) {
+							gs_p->notelist[n].noteleft_string = map_string(
+							    gs_p->notelist[n].noteleft_string,
+							    map_p,
+							    gs_p->inputfile,
+							    gs_p->inputlineno);
+						}
 					}
 				}
 			}

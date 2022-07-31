@@ -1,0 +1,52 @@
+//!Mup-Arkkra 7.0
+
+header
+        title bold (18) "shapes.mup"
+        paragraph (14) "This file tests the usage of the shapes context."
+
+shapes "reasonable"
+	"upflag" "mensurupflag"
+	"dnflag" "mensurdnflag"
+
+shapes "silly replacements!"
+	"com" "cut"
+	"cut" "com"
+	"2rest" "4rest"
+	"4rest" "16rest"
+	"1rest" "dwhrest"
+	"fclef" "cclef"
+	"gclef" "cclef"
+	"measrpt" "quadmeasrpt"
+
+shapes "per voice"
+	"4rest" "8rest"
+	"2rest" "16rest"
+score
+	staffs=4
+	vscheme=2f
+	time=common
+
+staff 2
+	shapes="reasonable"
+staff 3
+	shapes="silly replacements!"
+	clef=bass
+	
+voice 4 2
+	shapes="per voice"
+
+music
+
+1-4: c;r;2;
+4 2: 2r;4;c;
+bar
+
+1-4: mr;
+bar
+
+score
+	time=cut
+music
+
+1-4: 8c;d;2r;4d;
+bar

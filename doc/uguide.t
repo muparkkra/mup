@@ -1,3 +1,4 @@
+.ll +0.5i
 .\"  .if \n(.g .warn \n[.warn]-512
 .\" turning off warnings doesn't seem to work on all versions
 .\" of groff, so explicitly initialize null strings to pacify it.
@@ -375,7 +376,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 6.9
+Mup Version 7.0
 .ps
 .vs
 .ev
@@ -389,9 +390,9 @@ Mup Version 6.9
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 6.9
+Mup Music Publisher User's Guide \(em Mup Version 7.0
 .sp 0.5
-\(co Copyright 1995-2021 by Arkkra Enterprises
+\(co Copyright 1995-2022 by Arkkra Enterprises
 .sp 0.5
 All rights reserved.
 .sp
@@ -485,6 +486,12 @@ Note ties
 .LI
 .Hr noteattr.html#nslur
 Slurs
+.LI
+.Hr noteattr.html#shaped
+Headshape
+.LI
+.Hr noteattr.html#noteleft
+Noteleft string
 .LI
 .Hr noteattr.html#ntag
 Note location tag
@@ -600,6 +607,9 @@ Tablature notation
 .H 2 "Shaped notes"
 .Hr shaped.html
 Shaped notes
+.H 2 "Shape overrides"
+.Hr shapes.html
+Overridding music symbol appearance
 <HR>
 .H 2 "Text Strings"
 .Hr textstr.html
@@ -661,6 +671,9 @@ Include files
 .br
 .Hr exit.html
 Exit
+.br
+.Hr strfunc.html
+Converting a value to a string
 .br
 .Hr udefsym.html
 User-defined symbols
@@ -794,7 +807,7 @@ http://www.arkkra.com
 </P>
 <HR>
 <P>
-Copyright (c) 1995-2021 by Arkkra Enterprises
+Copyright (c) 1995-2022 by Arkkra Enterprises
 </P>
 ..
 .Ht Introduction to Mup
@@ -847,11 +860,11 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 6.9.
+This User's Guide is for Mup version 7.0.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
-\(co Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021 by Arkkra Enterprises
+\(co Copyright 1995-2022 by Arkkra Enterprises
 .FE
 .He
 .ig
@@ -1734,7 +1747,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 6.9.
+Mup will then exit. This document is for version 7.0.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -1986,7 +1999,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-6.9
+//!Mup-Arkkra-7.0
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -2105,7 +2118,8 @@ newlines are required to separate commands: music data, bar lines, rolls,
 commands to print strings, dynamic marks, lyrics, etc. all must each
 end with a newline. In
 .Hr textmark.html#grids
-grids context
+grids context,
+shapes context,
 and
 .Hr shaped.html#hdshape
 headshape context,
@@ -2236,6 +2250,9 @@ to define what notehead shapes to use for notes of various durations.
 This context is rarely used, and is described in the chapter on
 .Hr shaped.html
 shaped notes.
+.LI "\fBshapes \(dq\fIname\fB\(dq\fR"
+to define overrides for certain musical symbols, which could be applied on
+a per-staff, or even per-voice basis.
 .Ix jG
 .LI "\fBsymbol \(dq\fIname\fB\(dq\fR"
 to define
@@ -2969,6 +2986,9 @@ slurs
 .Hr noteattr.html#shaped
 headshape
 .LI
+.Hr noteattr.html#noteleft
+noteleft string
+.LI
 .Hr noteattr.html#ntag
 location tag
 .LE
@@ -3120,6 +3140,25 @@ use hs followed by the name of the shape in quotes.
 .Ex
 1: 2e e+ hs "diam";g;
 .Ee
+.Hh noteleft
+.H 4 "Noteleft string"
+.P
+An underscore followed by a quoted string will cause that string to be
+printed to the left of the note and any accidentals.
+Typically this would be used for fingering, but the string can be anything.
+.Ex
+1: 2f _"3";g _"4";
+.Ee
+.P
+There are
+.Hr param.html#leftfont
+noteleftfont,
+.Hr param.html#leftffam
+noteleftfontafmily,
+and
+.Hr param.html#leftsize
+noteleftsize
+parameters for adjusting the string appearance.
 .Hh ntag
 .H 4 "Note location tag"
 .P
@@ -3692,6 +3731,10 @@ avoid colliding with other notes; in that case you can use the
 .Hr chrdattr.html#hoffset
 horizontal offset
 that was described earlier.
+Or, if the collision is with a beam on the other staff,
+the collision may be avoided by
+forcing the stems in that beamed set to point the other
+direction (using '[up]' or '[down]') to move the beam to the other side.
 .P
 For
 .Hr midi.html
@@ -4052,7 +4095,10 @@ a "boldital" statement.
 It is possible for cross-staff beams to collide with other items, such as
 .Hr stuff.html
 dynamic marks.
-In these cases, you may need to move the other items. Another
+There may be undesired interactions between cross-staff beams and
+.Hr crossst.html
+cross-staff stems.
+In these cases, you may need to move other items. Another
 thing you might try is
 .Hr chrdattr.html#stemlen
 specifying stem lengths
@@ -4425,6 +4471,9 @@ noteinputdir parameter
 is ignored on chord-at-a-time input.
 Location tags cannot be used with chord-at-a-time input, since often that
 would be ambiguous.
+.Hr midmeas.html
+Mid-measure parameter changes
+are not supported on chord-at-a-time input.
 .Ht Bar Lines
 .Hd bars.html
 .H 2 "Bar lines"
@@ -5897,6 +5946,7 @@ l l.
 \&"semicirc"	"fillsemicircle semicircle semicircle dwhsemicircle quadwhole octwhole"
 \&"slash"	"fillslashhead slashhead slashhead dwhslashhead quadwhole octwhole"
 \&"allslash"	"fillslashhead fillslashhead fillslashhead fillslashhead fillslashhead fillshlashhead"
+\&"mensural"	"mensurfilldiamond mensurdiamond mensurdiamond mensurdblwhole"
 .TE
 .P
 You can redefine these or define new ones if you wish.
@@ -5924,6 +5974,7 @@ ufillrighttriangle	urighttriangle	udwhrighttriangle
 fillsemicircle	semicircle	dwhsemicircle
 fillslashhead	slashhead	dwhslashhead
 xnote	altdblwhole	blankhead
+mensurfilldiamond	mensurdiamond	mensurdblwhole
 .TE
 .He
 .ig
@@ -5939,6 +5990,7 @@ ufillrighttriangle   urighttriangle     udwhrighttriangle
 fillsemicircle       semicircle         dwhsemicircle
 fillslashhead        slashhead          dwhslashhead
 xnote                altdblwhole	blankhead
+mensurfilldiamond    mensurdiamond      mensurdblwhole
 </PRE>
 ..
 The righttriangle shape names can be prefixed by u? when
@@ -5970,6 +6022,9 @@ headshapes
 The blankhead does not print any head at all, it just leaves space as if
 there were a notehead. It might be used if for some reason you just want
 stems.
+.P
+The use of "mensural" will also cause stems to be centered, as is
+appropriate for those noteheads.
 .H 2 "Noteheads parameter"
 .P
 .Hr param.html#notehead
@@ -6199,6 +6254,187 @@ bar
 1: [ hs "pie" ]2ce; [hs "isostri"] c e g hs "righttri"; 
 endbar
 .Ee
+.Ht Shape overrides
+.Hd shapes.html
+.H 1 "SHAPE OVERRIDES AND MENSURAL NOTATION"
+.P
+The shapes context can be used to define overrides for certain music symbols.
+The overrides can then be applied, via
+.Hr param.html#shapes
+the shapes parameter,
+either globally or to specific staffs, or, for symbols for which it could
+make sense, to specific voices.
+Most users will probably never use this facility, so if you are satisfied
+with the appearance of Mup's standard music symbols, feel free to skip
+this section.
+.P
+These overrides apply only when Mup is choosing the symbols to use. I.e., they
+will not apply when symbols are explicitly specified in strings, like for
+.Hr stuff.html
+rom, ital, bold, boldital, mussym,
+.Hr prnttext.html
+print, left, center, right,
+.Hr noteattr.html#noteleft
+noteleft,
+.Hr chrdattr.html#withlist
+or "with lists."
+If you want a symbol to be overridden everywhere, see the
+section on
+.Hr udefsym.html
+user-defined symbols.
+.P
+The syntax of the shapes context is:
+.Hi
+.DS
+\fBshapes "\fIname\fB"
+  "\fIsymbol1\fB" "\fIreplacement1\fB"
+  "\fIsymbol2\fB" "\fIreplacement2\fB"\fR
+.DE
+.He
+.ig
+<PRE>
+shapes "name"
+  "symbol1" "replacement1"
+  "symbol2" "replacement2"
+</PRE>
+..
+.P
+The \fIname\fR is an arbitrary string which can then be used as the value of
+.Hr param.html#shapes
+the shapes parameter.
+It is followed by one or more pairs of strings,
+with each pair on a separate line.
+Any subset of the allowable characters can
+be overridden in a given shapes context. Any not overridden will retain
+their normal values.
+As many shapes contexts as desired can be defined.
+.P
+The symbols which can be overridden in score, staff, or voice context are:
+.Hi
+.TS
+center;
+l l l l.
+upflag	dnflag	ll1rest	ll2rest
+owhrest	qwhrest	dwhrest	1rest
+2rest	4rest	8rest	16rest
+32rest	64rest	128rest	256rest
+.TE
+.He
+.ig
+<PRE>
+upflag    dnflag    ll1rest    ll2rest
+owhrest   qwhrest   dwhrest    1rest
+2rest     4rest     8rest      16rest
+32rest    64rest    128rest    256rest
+</PRE>
+..
+.P
+The following symbols are only used in score or staff context,
+so while they can be overridden in any shapes context, if that shapes context
+is used at voice level, the overrides of these symbols
+would have no effect there:
+.Hi
+.TS
+center;
+l l l.
+fclef	gclef	cclef
+measrpt	dblmeasrpt	quadmeasrpt
+sharp	flat	nat
+dblsharp	dblflat
+cut	com
+.TE
+.He
+.ig
+<PRE>
+fclef     gclef       cclef
+measrpt   dblmeasrpt  quadmeasrpt
+sharp     flat        nat
+dblsharp  dblflat
+cut       com
+</PRE>
+..
+.P
+Note that while Mup will take the bounding boxes
+of overridden symbols into account,
+there are certain cases where it uses special knowledge of the characteristics
+of built-in symbols, to improve the aesthetics of their placement.
+If a user-defined symbol is substituted,
+and it has different characteristics, its placement may not look as good as
+the default symbol.
+.P
+The replacements will likely often be
+user defined symbols, though built-in symbols may also be used.
+One example of using built-in symbols could be if you wanted to use
+the more simple, mensural style flags, but only on one staff,
+so that overriding the flags symbols on a global level would not work.
+For that, you could do something like:
+.Ex 1
+shapes "simpleflags"
+  "upflag" "mensurupflag"
+  "dnflag" "mensurdnflag"
+score
+.\" leftmargin=2
+.\" rightmargin=2
+  staffs=2
+staff 2
+  shapes="simpleflags"
+music
+
+1-2: c;8d;e;e+;d+;4c+;
+bar
+.Ee
+.P
+As an example of a user-defined symbol as the replacement, there are 
+several variations of the C clef symbol which have been used over the
+centuries, and the C clef symbol is used for several clefs. Suppose you wanted
+only the alto clef usage to look different. You could define that different
+appearance symbol using the
+.Hr udefsym.html
+symbol context,
+then have a shapes context:
+.Ex
+shapes "alt C clef"
+  "cclef"  "mycclef"
+.Ee
+then define a macro:
+.Ex
+  define ALTO_CLEF  clef=alto ; shapes="alt C clef" @
+.Ee
+and then use that macro in the parameters section for appropriate staffs.
+.P
+There is a pre-defined "mensural" shapes context, which is:
+.Ex
+shapes "mensural"
+    "dwhrest" "mensurdwhrest"
+    "1rest" "mensur1rest"
+    "ll1rest" "mensurll1rest"
+    "2rest" "mensur2rest"
+    "ll2rest" "mensurll2rest"
+    "4rest" "mensur4rest"
+    "8rest" "mensur8rest"
+    "16rest" "mensur16rest"
+    "upflag" "mensurupflag"
+    "dnflag" "mensurdnflag"
+.Ee
+So to produce mensural notation, the recommended usage is:
+.Ex 1
+.\" score
+.\"	leftmargin=2
+.\"	rightmargin=2
+score // or just the staff(s) where mensural notation is desired
+     shapes = "mensural"
+     noteheads = "mensural"
+     stemlen = 6
+     time = 3/2  // or as appropriate
+     printedtime = "\e(imperfminordim)" // or one of the other 7 choices
+music
+
+1: c;4e;g;8c+;b;a;g;
+invisbar
+
+1: 4f;;1c;
+endbar
+.Ee
 .Ht Text Strings
 .Hd textstr.html
 .H 1 "TEXT STRINGS"
@@ -6247,6 +6483,14 @@ clef	gclef	G clef (treble clef)
 time sig	com	common time
 .Ix gT
 	cut	cut time
+	perfmaior	perfectum maior
+	perfminor	perfectum minor
+	imperfmaior	imperfectum maior
+	imperfminor	imperfectum minor
+	perfmaiordim	perfectum maior diminutum
+	perfminordim	perfectum minor diminutum
+	imperfmaiordim	imperfectum maior diminutum
+	imperfminordim	imperfectum minor diminutum
 
 accidental	flat	flat
 .Ix bL
@@ -6284,6 +6528,8 @@ note	4n	quarter (and shorter) note notehead
 .Ix dH
 	upflag	upward flag
 	dnflag	downward flag
+	mensurupflag	mensural upward flag
+	mensurdnflag	mensural downward flag
 
 notehead
 	xnote	X-shaped notehead
@@ -6314,13 +6560,18 @@ notehead
 	fillslashhead	filled slash notehead
 	dwhslashhead	double whole slash notehead
 	blankhead	blank notehead
+	mensurdiamond	mensural open diamond notehead
+	mensurfilldiamond	mensural filled diamond notehead
+	mensurdblwhole	mensural double whole notehead
 
 rest	owhrest	octuple whole rest	
 	qwhrest	quadruple whole rest
 	dwhrest	double whole rest
 .Ix hC
 	1rest	whole rest
+	ll1rest	ledger-less whole rest
 	2rest	half rest
+	ll2rest	ledger-less half rest
 	4rest	quarter rest
 	8rest	eighth rest
 	16rest	sixteenth rest
@@ -6328,6 +6579,14 @@ rest	owhrest	octuple whole rest
 	64rest	sixty-fourth rest
 	128rest	128th rest
 	256rest	256th rest
+	mensurdwhrest	mensural double whole rest
+	mensur1rest	mensural whole rest
+	mensurll1rest	mensural ledger-less whole rest
+	mensur2rest	mensural half rest
+	mensurll2rest	mensural ledger-less half rest
+	mensur4rest	mensural quarter rest
+	mensur8rest	mensural eighth rest
+	mensur16rest	mensural sixteenth rest
 
 pedal	begped	begin pedal mark
 .Ix fL
@@ -6374,14 +6633,6 @@ misc	ferm	fermata
 .Ix iQ
 	halfdim	half diminished
 	triangle	triangle
-	perfmaior	perfectum maior
-	perfminor	perfectum minor
-	imperfmaior	imperfectum maior
-	imperfminor	imperfectum minor
-	perfmaiordim	perfectum maior diminutum
-	perfminordim	perfectum minor diminutum
-	imperfmaiordim	imperfectum maior diminutum
-	imperfminordim	imperfectum minor diminutum
 .TE
 .He
 .ig
@@ -6393,8 +6644,16 @@ cclef       C clef (used for alto clef, tenor clef, etc.)
 </PRE>
 .H 3 Time Signature
 <PRE>
-com         common time
-cut         cut time
+com             common time
+cut             cut time
+perfmaior       perfectum maior
+perfminor       perfectum minor
+imperfmaior     imperfectum maior
+imperfminor     imperfectum minor
+perfmaiordim    perfectum maior diminutum
+perfminordim    perfectum minor diminutum
+imperfmaiordim  imperfectum maior diminutum
+imperfminordim  imperfectum minor diminutum
 </PRE>
 .H 3 Accidentals
 <PRE>
@@ -6406,24 +6665,26 @@ nat         natural
 </PRE>
 .H 3 Notes
 <PRE>
-dn2n        half note with stem down
-dn4n        quarter note with stem down
-dn8n        eighth note with stem down
-dn16n       16th note with stem down
-dn32n       32nd note with stem down
-dn64n       64th note with stem down
-dn128n      128th note with stem down
-dn256n      256th note with stem down
-up2n        half note with stem up
-up4n        quarter note with stem up
-up8n        eighth note with stem up
-up16n       16th note with stem up
-up32n       32nd note with stem up
-up64n       64th note with stem up
-up128n      128th note with stem up
-up256n      256th note with stem up
-upflag      upward flag
-dnflag      downward flag
+dn2n           half note with stem down
+dn4n           quarter note with stem down
+dn8n           eighth note with stem down
+dn16n          16th note with stem down
+dn32n          32nd note with stem down
+dn64n          64th note with stem down
+dn128n         128th note with stem down
+dn256n         256th note with stem down
+up2n           half note with stem up
+up4n           quarter note with stem up
+up8n           eighth note with stem up
+up16n          16th note with stem up
+up32n          32nd note with stem up
+up64n          64th note with stem up
+up128n         128th note with stem up
+up256n         256th note with stem up
+upflag         upward flag
+dnflag         downward flag
+mensurupflag   mensural upward flag
+mensurdnflag   mensural downward flag
 </PRE>
 .H 3 Noteheads
 <PRE>
@@ -6460,21 +6721,35 @@ slashhead            open slash notehead
 fillslashhead        filled slash notehead
 dwhslashhead         double whole slash notehead
 blankhead            blank notehead
+mensurdiamond        mensural open diamond notehead
+mensurfilldiamond    mensural filled diamond notehead
+mensurdblwhole       mensural double whole notehead
 </PRE>
 .H 3 Rests
 <PRE>
-owhrest     octuple whole rest
-qwhrest     quadruple whole rest
-dwhrest     double whole rest
-1rest       whole rest
-2rest       half rest
-4rest       quarter rest
-8rest       eighth rest
-16rest      sixteenth rest
-32rest      thirty-second rest
-64rest      sixty-fourth rest
-128rest     128th rest
-256rest     256th rest
+owhrest         octuple whole rest
+qwhrest         quadruple whole rest
+dwhrest         double whole rest
+1rest           whole rest
+ll1rest         ledger-less whole rest
+2rest           half rest
+ll2rest         ledger-less half rest
+4rest           quarter rest
+8rest           eighth rest
+16rest          sixteenth rest
+32rest          thirty-second rest
+64rest          sixty-fourth rest
+128rest         128th rest
+256rest         256th rest
+mensurdwhrest   mensural double whole rest
+mensur1rest     mensural whole rest
+mensurll1rest   mensural ledger-less whole rest
+mensur2rest     mensural half rest
+mensurll2rest   mensural ledger-less half rest
+mensur4rest     mensural quarter rest
+mensur8rest     mensural eighth rest
+mensur8rest     mensural eighth rest
+mensur16rest    mensural sixteenth rest
 </PRE>
 .H 3 Pedal
 <PRE>
@@ -6514,14 +6789,6 @@ copyright      C-in-circle copyright symbol
 dim            diminished
 halfdim        half diminished
 triangle       triangle
-perfmaior      perfectum maior
-perfminor      perfectum minor
-imperfmaior    imperfectum maior
-imperfminor    imperfectum minor
-perfmaiordim   perfectum maior diminutum
-perfminordim   perfectum minor diminutum
-imperfmaiordim imperfectum maior diminutum
-imperfminordim imperfectum minor diminutum
 </PRE>
 ..
 .Hi
@@ -6530,7 +6797,9 @@ imperfminordim imperfectum minor diminutum
 .ie \n(.g \{
 .nr Boxpict 0
 .nr Nn 0
+.po +0.05i
 .Pt muschar.ps
+.po -0.05i
 .nr Boxpict 1
 .nr Nn 1
 .nop \}
@@ -6693,7 +6962,7 @@ score
 
 music
 	// enter Russian string phonetically
-	title "pesnq"
+	title "Cyrillic: pesnq"
 .\" block
 .\"paragraph ""
 .Ee
@@ -7890,6 +8159,11 @@ the chord names in the grids context have to match the transposed names.
 So, for example, if you use an "A" chord in a chord statement, then
 transpose the staff up a major second, Mup will look for and use the grid
 definition called "B" to match the transposed chord name.
+If
+.Hr param.html#chordxlate
+chordtranslation
+is in effect, that is
+applied to the chords in grid context, though transposition is not.
 .P
 If you supply more than one grid definition for the same chord name,
 Mup uses the last one. This allows you to easily
@@ -9953,6 +10227,160 @@ music
 
 ARROW(h.x + 2, h.y - 1, k.x - 2, k.y + 1)
 .Ee
+.Hh evalexpr
+.H 3 "Expression macros"
+.P
+There is a special kind of macro definition, where the value is the result
+of evaluating a numeric expression. It uses "eval" rather than "define"
+as the keyword, along with an equals sign.
+At its simplest, the value is just a single number, so
+.Ex
+ eval X=1 @
+.Ee
+is effectively the same as 
+.Ex
+  define X 1 @
+.Ee
+But the value can be an expression, like
+.Ex
+  eval T=(3+5)*5/20 @
+.Ee
+which would be evaluated, setting the value of T to 2.
+Using all literal numbers is not likely to be very
+useful, but using other macros as variables can be. For example:
+.Ex
+  ifndef SIZE define SIZE 12 @ endif
+  eval WITHSIZE = SIZE + 2 @
+  eval LYRSIZE = SIZE-1 @
+  score
+    size=SIZE
+    withsize=WITHSIZE
+    lyricssize=LYRSIZE
+.Ee
+By default, that would set size to 12, withsize to 14 and lyricssize to 11,
+but with a single
+.Hr cmdargs.html#doption
+command line override,
+like -DSIZE=10, all three values would adjust.
+.P
+Another common usage would be to increment a value. Suppose you were making
+a booklet with many songs, and want to automatically number them.
+At the beginning you could do something like:
+.Ex
+eval SONGNUM = 0 @
+  define NEWSONG(TITLE)
+    eval SONGNUM = SONGNUM+1 \e@
+    block
+    title bold (16) `SONGNUM`+ ". " + `TITLE`
+    music
+  @
+.Ee
+and then begin each song with:
+.Ex
+  NEWSONG(This is the title of the song)
+.Ee
+New songs could then be inserted anywhere, and later songs would automatically
+be renumbered appropriately.
+See the section on
+.Hr strfunc.html
+Converting a value to a string
+for more information on how to turn a number into a letter or Roman numeral
+string to be printed.
+.P
+Another use for incrementing might be for staff numbers. You might start
+with something like:
+.Ex
+  eval VIOLIN = 1 @
+  eval VIOLA = VIOLIN + 1 @
+  eval CELLO = VIOLA + 1 @
+  eval BASS = CELLO + 1 @
+.Ee
+Then if later you decided to add a second violin part, you could just replace
+the second line with:
+.Ex
+  eval VIOLIN2 = VIOLIN + 1 @
+  eval VIOLA = VIOLIN2 +  1 @
+.Ee
+and the other instruments would move down automatically.
+.P
+Numbers in expressions can either be whole numbers, like 1 or 42, or they
+can be numbers with a decimal point, like 0.7 or 3.14. If arithmetic needs to
+be done involving a whole number and a decimal number, the whole number
+will be "promoted" to a decimal number, with the result being a decimal number.
+Decimal arithmetic is done at the precision of your system, but the results
+(i.e., the ultimate value that the macro takes on) is limited to 6 decimal
+places.
+.P
+Supported operators are listed in the table below, with those on a line
+being higher precedence than those on lines below it:
+.Hi
+.DS
+.He
+.TS
+center, allbox;
+c c c
+l l l.
+\fBoperators\fP	\fBoperations\fP	\fBassociativity\fP
+_
+\f(CW( )\fP	grouping	left to right	
+\f(CW! ~ - +\fP	not, one's complement, unary minus, unary plus	right to left
+\f(CW* / %\fP	multiply, divide, modulo	left to right
+\f(CW+ -\fP	add, subtract	left to right
+\f(CW<< >>\fP	left shift, right shift	left to right
+\f(CW< <= > >=\fP	less than, less or equal, greater than, greater or equal	left to right
+\f(CW== !=\fP	equal, not equal	left to right
+\f(CW&\fP	bitwise AND	left to right
+\f(CW^\fP	bitwise XOR	left to right
+\f(CW|\fP	bitwise OR	left to right
+\f(CW&&\fP	logical AND	left to right
+\f(CW||\fP	logical OR	left to right
+\f(CW? :\fP	interrogation	right to left
+.TE
+.Hi
+.DE
+.He
+.P
+The not, one's complement, modulo, left and right shift, bitwise and,
+bitwise or, bitwise exclusive or, logical and, and logical or operators are
+only allowed on whole numbers. Comparision operators result in
+either 0 for false, or 1 for true.
+.P
+There are also some functions supported. Most take a single argument, but
+a few take two, in which case there is a comma between them.
+.Hi
+.DS
+.He
+.TS
+center, allbox;
+c c c c
+l l l l.
+Name	Argument(s)	Result	Result type
+_
+sqrt	number	square root of the number	decimal
+sin	angle (degrees)	sin of the angle	decimal
+cos	angle (degrees)	cosine of the angle	decimal
+tan	angle (degrees)	tangent of the angle	decimal
+asin	number	arc sine of the number (degrees)	decimal
+acos 	number	arc cosine of the number (degrees)	decimal
+atan 	number	arc tangent of the number (degrees)	decimal
+atan2	number,number	arc tangent of the ratio of the numbers (degrees)	decimal
+hypot	number,number	square root of sum of the squares of the numbers	decimal
+round	number	number rounded to nearest whole	whole
+floor	number	number rounded down to whole number	whole
+ceiling	number	number rounded up to whole number	whole
+.TE
+.Hi
+.DE
+.He
+.P
+Here are some examples of expressions:
+.Ex
+ eval PI=3.1415 @
+ eval R = (1 + 0.6) / hypot(3.1, 1.896)@
+ eval CIRC = PI * R * R@
+ eval S = CIRC > R * 5 ? round(R) : ceiling(CIRC) @ 
+ eval ANGLE=asin(0.625) @
+.Ee
 .Hh saverest
 .H 3 "Saving and restoring macros"
 .P
@@ -10238,6 +10666,102 @@ On systems where file names are case sensitive, .mup takes precedence
 over .MUP.
 If the file is not found in MUPPATH, then the directory of the "including"
 file is searched.
+.Ht Converting a value to a string
+.Hd strfunc.html
+.H 2 "Converting a value to a string"
+.P
+A macro name can be placed inside ` ` to get a string version of it.
+That effectively puts double quotes around the macro value,
+and does any necessary escaping.
+That may be useful, for example, if you have a numeric value that you
+want to print, or want to use something both literally and as a string,
+as in this example:
+.Ex
+// Choose a clef
+ifdef USE_BASS
+ define CLEF bass@
+else
+ define CLEF treble@
+endif
+
+score
+  // Use CLEF literally
+  clef=CLEF
+music
+// Use CLEF as a string
+rom above 1: 1 "This uses the " + `CLEF` + " clef";
+1: c;d;e;c;
+bar
+.Ee
+.P
+There is also a string() function available, which maps a number to a string,
+using a transform. Currently, there are four transforms available.
+A transform of "LET" maps the number to one or two upper case letters,
+while "let" maps to lower case letters. Similarly, "ROM" and "rom" will map
+to upper and lower case Roman numerals, respectively.
+Some examples:
+.TS
+center, allbox;
+l l.
+\fBInput\fP	\fBResult\fP
+_
+string(1, "LET")	"A"
+string(2, "LET")	"B"
+string(26, "let")	"z"
+string(27, "let")	"aa"
+string(3, "ROM")	"III"
+string(36, "rom")	"xxxvi"
+.TE
+.P
+Those might be useful for things like labeling movements or songs in a
+collection, if you wanted to use letters or Roman numerals rather than numbers.
+To demonstrate the functionality, here is how an outline could be created:
+.Ex 1
+eval L1 = 1 @
+eval L2 = 1 @
+eval L3 = 1 @
+eval L4 = 1 @
+
+define LEVEL1(TEXT)
+ left nl string(L1, "ROM") + ". " + `TEXT`
+ eval L1 = L1+1 \e@
+ eval L2 = 1 \e@
+ eval L3 = 1 \e@
+ eval L4 = 1 \e@
+@
+
+define LEVEL2(TEXT)
+ left nl "    " + string(L2, "LET") + ". " + `TEXT`
+ eval L2 = L2+1 \e@
+ eval L3 = 1 \e@
+ eval L4 = 1 \e@
+@
+
+define LEVEL3(TEXT)
+ left nl "        " + string(L3, "rom") + ". " + `TEXT`
+ eval L3 = L3+1 \e@
+ eval L4 = 1 \e@
+@
+
+define LEVEL4(TEXT)
+ left nl "            " + string(L4, "let") + ". " + `TEXT`
+ eval L4 = L4+1 \e@
+@
+block
+
+LEVEL1(This is the first top level item)
+LEVEL2(This is a second level item)
+LEVEL2(This is another second level item)
+LEVEL3(This is a third level item)
+LEVEL4(This is a fourth level item)
+LEVEL3(This is another third level item)
+LEVEL4(A new fourth level item)
+LEVEL1(This is another top level item)
+LEVEL2(This is a new second level item)
+.Ee
+.P
+The range for LET and let is 1 to 702 (A, B, C, ... Y, Z, AA, AB, AC, ... ZZ),
+and the range for ROM and rom is 1 to 3999.
 .Ht Exit
 .Hd exit.html
 .H 2 Exit
@@ -10258,6 +10782,13 @@ of your own symbols, as well as override any of the
 built-in music symbols
 with your own versions. Most people will never need this facility,
 so feel free to skip past this section unless you feel you do need it.
+If you just want things like notes and rests changed on certain staffs,
+see the sections on
+.Hr shaped.html
+Shaped Notes
+and
+.Hr shapes.html
+Shape Overrides and Mensural Notation,
 .P
 To define your own symbols, the description of how to draw those symbols
 must be provided as PostScript code.
@@ -10322,7 +10853,7 @@ with the symbol's "logical center" at (0, 0).
 Limitations of Type 3 fonts apply. For example,
 since PostScript does not allow using setrgbcolor or
 sethsbcolor after a setcachedevice operation in a BuildChar procedure,
-it is not possible to change the color of a symbol.
+it is not possible to set the color of a symbol.
 The PostScript code will be written to the output exactly as it is,
 so you will have to provide any escaping needed by PostScript.
 The normal Mup text string escape rule of needing to put a backslash
@@ -11445,7 +11976,7 @@ barstyle = 1-2, 5-8
 .br
 barstyle = all
 .br
-barstyle 1-4,10-12, between 5-9,13-17
+barstyle = 1-4,10-12, between 5-9,13-17
 .br
 barstyle = between all
 .Sa
@@ -12617,8 +13148,8 @@ font = boldital
 fontfamily,
 .Hr param.html#lyrfont
 lyricsfont,
-.Hr param.html#lyrfam
-lyricsfontfamily,
+.Hr param.html#leftfont
+noteleftfont,
 .Hr param.html#size
 size,
 .Hr param.html#withfont
@@ -12657,10 +13188,10 @@ fontfamily=palatino
 .Sa
 .Hr param.html#font
 font,
-.Hr param.html#lyrfont
-lyricsfont,
 .Hr param.html#lyrfam
 lyricsfontfamily,
+.Hr param.html#leftffam
+noteleftfontfamily,
 .Hr param.html#withfam
 withfontfamily
 .Ix gB
@@ -13653,6 +14184,9 @@ noteheads = "righttri norm rect righttri norm rect diam"
 .br
 noteheads = "isostri semicirc diam righttri norm rect pie"
 .Ix jG
+.Sa
+.Hr param.html#shapes
+shapes
 .eP
 .\"---------------
 .bP
@@ -13691,6 +14225,89 @@ score, staff, voice
 .Nm
 .eX
 noteinputdir=up
+.eP
+.\"---------------
+.bP
+.Na
+.Hm leftfont
+noteleftfont
+.De
+This controls the font used for
+.Hr noteattr.html#noteleft
+strings to be printed to the left of notes,
+typically to show fingering.
+.Va
+rom, bold, ital, or bodlital
+.Df
+rom
+.Cn
+score, staff, voice
+.Nm
+.eX
+noteleftfont = ital
+.Sa
+.Hr param.html#font
+font,
+.Hr param.html#leftffam
+noteleftfontfamily,
+.Hr param.html#leftsize
+noteleftsize
+.eP
+.\"---------------
+.bP
+.Na
+.Hm leftffam
+noteleftfontfamily
+.De
+This controls the font family used for
+.Hr noteattr.html#noteleft
+strings to be printed to the left of notes,
+typically to show fingering.
+.Va
+avantgarde, bookman, courier,  helvetica, newcentury, palatino, times
+.Df
+newcentury
+.Cn
+score, staff, voice
+.Nm
+.eX
+noteleftfontfamily = helvetica
+.Sa
+.Hr param.html#fontfam
+fontfamily,
+.Hr param.html#leftfont
+noteleftfont,
+.Hr param.html#leftsize
+noteleftsize
+.eP
+.\"---------------
+.bP
+.Na
+.Hm leftsize
+noteleftsize
+.De
+This controls the font size used for
+.Hr noteattr.html#noteleft
+strings to be printed to the left of notes,
+typically to show fingering.
+.Va
+1 to 100
+.Df
+10
+.Cn
+score, staff, voice
+.Nm
+.eX
+noteleftsize = 5
+.Sa
+.Hr param.html#fontfam
+fontfamily,
+.Hr param.html#leftfont
+noteleftfont,
+.Hr param.html#leftffam
+noteleftfontfamily,
+.Hr param.html#size
+size
 .eP
 .\"---------------
 .bP
@@ -14571,6 +15188,31 @@ staffsep
 .\"----------------
 .bP
 .Na
+.Hm shapes
+shapes
+.De
+This parameter specifies the name of a shapes context that defines music
+symbol overrides. This allows using alternate symbols on only certains staffs,
+or for some symbols, only a specific voice.
+.Va
+A string which matches the name given for a shapes context,
+or nothing, to turn off shapes overrides.
+.Df
+Not set
+.Cn
+score, staff, voice
+.Nm
+.eX
+shapes="myshapes"
+.br
+shapes=    // to stop overridding
+.Sa
+.Hr param.html#notehead
+noteheads
+.eP
+.\"----------------
+.bP
+.Na
 .Hm size
 size
 .De
@@ -14595,6 +15237,10 @@ font,
 fontfamily,
 .Hr param.html#lyrsize
 lyricssize,
+.Hr param.html#leftsize
+noteleftsize,
+.Hr param.html#mnumsize
+measnumsize,
 .Hr param.html#withsize
 withsize
 .Ix aS

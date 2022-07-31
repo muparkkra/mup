@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([mup], [6.9], [support@arkkra.com])
+AC_INIT([mup], [7.0], [support@arkkra.com])
 AM_INIT_AUTOMAKE([-Wall -Werror])
 
 # Checks for programs.
@@ -59,6 +59,9 @@ AC_PATH_PROG(PAMTOWINICON, pamtowinicon, none, $PATH)
 AM_CONDITIONAL([HAVE_PAMTOWINICON],[test "$PAMTOWINICON" != "none"])
 AC_PATH_PROG(PPMTOWINICON, ppmtowinicon, none, $PATH)
 AM_CONDITIONAL([HAVE_PPMTOWINICON],[test "$PPMTOWINICON" != "none"])
+
+# Mac needs objective-C for one Mupmate file
+test "$build_mac" == "yes" && AC_PROG_OBJCXX
 
 # Do extra check if user wants to build mupmate
 AS_IF([test "x$enable_mupmate" != xno],

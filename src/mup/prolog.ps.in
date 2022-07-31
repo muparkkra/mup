@@ -2,7 +2,7 @@
 % 2008, 2009, 2012 by Arkkra Enterprises
 % All rights reserved
 
-% Mup PostScript Prolog 6.9 for use with Mup 6.9
+% Mup PostScript Prolog 7.0 for use with Mup 7.0
 
 % lwid is used as the width of a standard (thin) line in the music
 % character definitions.
@@ -992,6 +992,15 @@ mfont1 begin
 		-620 -530 moveto -480 -670 lineto 620 530 lineto 480 670 lineto
 		closepath stroke
 	} def
+	/do_mensurupflag {
+		-205 0 moveto
+		-70 90 lineto
+		105 235 200 415 240 500 curveto
+		190 500 lineto
+		150 495 75 380 -30 285 curveto
+		-205 165 lineto
+		fill
+	} def
 
 	% subsidiary dictionary of character definitions
 	/CharStrings 128 dict def
@@ -1150,33 +1159,33 @@ mfont1 begin
 
 		% perfmaior
 		/W {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 0 360 arc stroke
 			newpath 0 0 170 0 360 arc fill
 		} def
 
 		% perfminor
 		/X {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 0 360 arc stroke
 		} def
 
 		% imperfmaior
 		/Y {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 55 305 arc stroke
 			newpath 0 0 170 0 360 arc fill
 		} def
 
 		% imperfminor
 		/Z {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 55 305 arc stroke
 		} def
 
 		% perfmaiordim
 		/a {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 0 360 arc stroke
 			newpath 0 0 170 0 360 arc fill
 			newpath 0 -700 moveto 0 700 lineto stroke
@@ -1184,14 +1193,14 @@ mfont1 begin
 
 		% perfminordim
 		/b {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 0 360 arc stroke
 			newpath 0 -700 moveto 0 700 lineto stroke
 		} def
 
 		% imperfmaiordim
 		/c {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 55 305 arc stroke
 			newpath 0 0 170 0 360 arc fill
 			newpath 0 -700 moveto 0 700 lineto stroke
@@ -1199,7 +1208,7 @@ mfont1 begin
 
 		% imperfminordim
 		/d {
-			lwid setlinewidth
+			90 setlinewidth
 			newpath 0 0 510 55 305 arc stroke
 			newpath 0 -700 moveto 0 700 lineto stroke
 		} def
@@ -1222,6 +1231,106 @@ mfont1 begin
 			-800 -600 moveto 300 600 lineto stroke
 			-300 -600 moveto 800 600 lineto stroke
 			200 -600 moveto 1300 600 lineto stroke
+		} def
+
+		% mensurdiamond
+		/g {
+			newpath
+			315 0 moveto 0 390 lineto -315 0 lineto
+			0 -390 lineto closepath
+			195 -36 moveto -29 241 lineto -195 36 lineto
+			29 -241 lineto closepath
+			eofill
+		} def
+
+		% mensurfilldiamond
+		/h {
+			newpath
+			315 0 moveto 0 390 lineto -315 0 lineto
+			0 -390 lineto fill
+			eofill
+		} def
+
+		% mensurdblwhole
+		/i {
+			lwid setlinewidth
+			-330 300 moveto -330 -300 lineto stroke
+			330 300 moveto 330 -300 lineto stroke
+			140 setlinewidth
+			-365 230 moveto 365 230 lineto stroke
+			-365 -230 moveto 365 -230 lineto stroke
+		} def
+
+		% mensurdwhrest
+		/j {
+			200 setlinewidth
+			0 0 moveto 0 600 lineto stroke
+		} def
+
+		% mensur1rest
+		/k {
+			lwid setlinewidth
+			-500 600 moveto 500 600 lineto stroke
+			200 setlinewidth
+			0 250 moveto 0 600 lineto stroke
+		} def
+
+		% mensurll1rest
+		/l {
+			200 setlinewidth
+			0 250 moveto 0 600 lineto stroke
+		} def
+
+		% mensur2rest
+		/m {
+			lwid setlinewidth
+			-500 0 moveto 500 0 lineto stroke
+			200 setlinewidth
+			0 0 moveto 0 350 lineto stroke
+		} def
+
+		% mensurll2rest
+		/n {
+			200 setlinewidth
+			0 0 moveto 0 350 lineto stroke
+		} def
+
+		% mensur4rest
+		/o {
+			120 setlinewidth
+			-170 0 moveto -170 420 lineto stroke
+			90 setlinewidth
+			-130 375 moveto 230 240 lineto stroke
+		} def
+
+		% mensur8rest
+		/p {
+			120 setlinewidth
+			170 0 moveto 170 420 lineto stroke
+			90 setlinewidth
+			130 375 moveto -230 240 lineto stroke
+		} def
+
+		% mensur16rest
+		/q {
+			120 setlinewidth
+			170 0 moveto 170 565 lineto stroke
+			90 setlinewidth
+			130 520 moveto -230 355 lineto stroke
+			130 320 moveto -230 155 lineto stroke
+		} def
+
+		% mensurupflag
+		/r {
+			do_mensurupflag	%do a mensural upflag
+		} def
+
+		% mensurdnflag
+		/s {
+			gsave
+			1 -1 scale	%reflect across X axis
+			do_mensurupflag	%do a mensural upflag
+			grestore
 		} def
 	end
 
@@ -1377,6 +1486,19 @@ end
 /imperfminordim		{ (d) printmchar1 } def
 /dblmeasrpt		{ (e) printmchar1 } def
 /quadmeasrpt		{ (f) printmchar1 } def
+/mensurdiamond		{ (g) printmchar1 } def
+/mensurfilldiamond	{ (h) printmchar1 } def
+/mensurdblwhole		{ (i) printmchar1 } def
+/mensurdwhrest		{ (j) printmchar1 } def
+/mensur1rest		{ (k) printmchar1 } def
+/mensurll1rest		{ (l) printmchar1 } def
+/mensur2rest		{ (m) printmchar1 } def
+/mensurll2rest		{ (n) printmchar1 } def
+/mensur4rest		{ (o) printmchar1 } def
+/mensur8rest		{ (p) printmchar1 } def
+/mensur16rest		{ (q) printmchar1 } def
+/mensurupflag		{ (r) printmchar1 } def
+/mensurdnflag		{ (s) printmchar1 } def
 
 
 % Define routines for Mup output other than music characters.

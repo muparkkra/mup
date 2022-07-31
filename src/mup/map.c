@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1244,6 +1244,18 @@ int n;			/* merge note n and n+1 into slot n, then remove
 	 * An optional merged with a non-optional, is non-optional. */
 	if (extra_p->note_has_paren == NO) {
 		note_p->note_has_paren = NO;
+	}
+
+	/* If one has a noteleft, use it. If both do, maybe should be an error,
+	 * but we'll discard the one on the "extra" note with a warning. */
+	if (extra_p->noteleft_string != 0) {
+		if (note_p->noteleft_string != 0) {
+			l_warning(gs_p->inputfile, gs_p->inputlineno,
+				"noteleft on combined-away note being discarded");
+		}
+		else {
+			note_p->noteleft_string = extra_p->noteleft_string;
+		}
 	}
 
 	/* Sorry, we don't deal with incompatible bends */

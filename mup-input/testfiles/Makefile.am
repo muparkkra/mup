@@ -13,6 +13,7 @@ XFAIL_TESTS = bad-input/chordinput_err.mup \
 	bad-input/input09_err.mup \
 	bad-input/input10_err.mup \
 	bad-input/input11_err.mup \
+	bad-input/mac_arith_err.mup \
 	bad-input/macparm_err.mup \
 	bad-input/mrpt_defoct_err.mup \
 	bad-input/mrpt_midmeas_err.mup \
@@ -32,6 +33,7 @@ XFAIL_TESTS = bad-input/chordinput_err.mup \
 	bad-input/mrpt_toofewb1_err.mup \
 	bad-input/mrpt_toofewb2_err.mup \
 	bad-input/mrpt_toofewb4_err.mup \
+	bad-input/shapes_err.mup \
 	bad-input/restart_err.mup \
 	bad-input/restart_err.mup \
 	bad-input/roll_err.mup \
@@ -51,7 +53,8 @@ SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
 	grace.mup groupalign.mup gtc.mup hasspace.mup \
 	ifclause.mup interfere.mup keysig.mup \
 	labels.mup latin1.mup ledger.mup lyrics.mup \
-	macros.mup marks.mup measnum.mup miditest.mup \
+	mac_arith.mup macros.mup marks.mup \
+	measnum.mup mensural.mup miditest.mup \
 	multcontext.mup multistuff.mup muschar.mup \
 	mrpt_defoct.mup mrpt_numstaffs.mup  mrpt_params1.mup \
 	mrpt_params2.mup mrpt_row.mup mrpt_time.mup \
@@ -61,9 +64,9 @@ SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
 	paragraph.mup pedal.mup piledtext.mup \
 	rehearsal.mup relvert.mup restart.mup restart2.mup \
 	restc.mup rests.mup roll.mup \
-	setgrps.mup setnotes.mup shaped.mup sizes.mup \
+	setgrps.mup setnotes.mup shapes.mup shaped.mup sizes.mup \
 	slashalt.mup split.mup stacking.mup staffscale.mup \
-	subbar.mup subbeam.mup symoverride.mup \
+	stringfunc.mup subbar.mup subbeam.mup symoverride.mup \
 	tabrepeat.mup tiecarry.mup tieslur.mup tiewarn.mup til.mup \
 	timesig.mup transpose.mup trantab.mup tuplets.mup \
 	underscore.mup unset.mup useaccs.mup usersyms.mup \

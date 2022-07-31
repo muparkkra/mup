@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -693,8 +693,9 @@ int place;			/* above or below? */
 
 			Rectab[Reclim].e = gs_p->c[AW] - Staffscale * CLEFPAD;
 			Rectab[Reclim].w = Rectab[Reclim].e - Staffscale *
-					clefwidth(gs_p->clef, YES);
-			(void)clefvert(gs_p->clef, YES, &north, &south);
+				clefwidth(gs_p->clef, gs_p->staffno, YES);
+			(void)clefvert(gs_p->clef, gs_p->staffno, YES,
+				&north, &south);
 			Rectab[Reclim].n = north * Staffscale;
 			Rectab[Reclim].s = south * Staffscale;
 
@@ -752,7 +753,8 @@ int place;			/* above or below? */
 				}
 
 				/* this note has an acc; create a rectangle */
-				accdimen(note_p, &asc, &des, &wid);
+				accdimen(gs_p->staffno, note_p,
+						&asc, &des, &wid);
 				asc *= Staffscale;
 				des *= Staffscale;
 				wid *= Staffscale;
@@ -1412,11 +1414,21 @@ int place;			/* above or below? */
 	if (is_tab_staff(s))
 		return;
 
+	/* save SSVs so that we can restore them after this loop */
+	savessvstate();
+
 	/*
 	 * Loop through this score's part of the MLL.
 	 */
 	for (mainll_p = start_p->next; mainll_p != 0 &&
 			mainll_p->str != S_FEED; mainll_p = mainll_p->next) {
+
+		/* tupdir needs to know the correct vscheme */
+		if (mainll_p->str == S_SSV) {
+			asgnssv(mainll_p->u.ssv_p);
+			continue;
+		}
+
 		/*
 		 * Whenever we find a structure for this staff (another
 		 * measure of this staff), loop through its voices.
@@ -1448,6 +1460,8 @@ int place;			/* above or below? */
 			}
 		}
 	}
+
+	restoressvstate();
 }
 
 /*
@@ -2996,8 +3010,21 @@ double baseline;		/* baseline of a verse of syllables */
 	lastgs_p = 0;		/* set later to last nonnull syl, if exists */
 	laststaff_p = 0;	/* set later to staff containing lastgs_p */
 
+	/*
+	 * On entry to the caller, dolyrics, the SSV state is set for the start
+	 * of this score.   dolyrics doesn't change that.  But cont_extender
+	 * needs the SSV state as during the first measure of the following
+	 * score.
+	 */
+	savessvstate();
+
 	for (mainll_p = start_p->next; mainll_p != 0 && mainll_p->str
 				!= S_FEED; mainll_p = mainll_p->next) {
+
+		if (mainll_p->str == S_SSV) {
+			asgnssv(mainll_p->u.ssv_p);
+			continue;
+		}
 
 		if (mainll_p->str != S_STAFF ||
 				mainll_p->u.staff_p->staffno != s)
@@ -3049,6 +3076,8 @@ double baseline;		/* baseline of a verse of syllables */
 	 */
 	if (lastgs_p != 0 && has_extender(lastgs_p->syl))
 		cont_extender(laststaff_p, place, v);
+
+	restoressvstate();
 }
 
 /*

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -46,6 +46,27 @@
 #include "defines.h"
 #include "structs.h"
 #include "globals.h"
+
+/* Mapping of string() transform names to functions */
+struct STRFUNC {
+	char *name;		/* For string(num, name) ... */
+	char * (*func)(int);	/* ...call (*func)(num) */
+};
+
+/* Table of supported string transform functions.
+ * IMPORTANT: The table must be sorted on the first field, so bsearch will work!
+ */
+static char * num2uletter P((int num));
+static char * num2lletter P((int num));
+static char * num2uroman P((int num));
+static char * num2lroman P((int num));
+static struct STRFUNC Trans_table[] = {
+	{ "LET", num2uletter },
+	{ "ROM", num2uroman },
+	{ "let", num2lletter },
+	{ "rom", num2lroman }
+};
+static int Trans_elements = NUMELEM(Trans_table);
 
 static int prev_has_tie P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 static void chk_tie_out_oct P((struct GRPSYL *gs_p, RATIONAL total_time,
@@ -219,32 +240,42 @@ struct CLEFSIG *clefsig_p;	/* return width of this clefsig */
 }
 
 
-/* translate clef name to clef output character */
+/* Translate clef name to clef output character, accounting for shape overides */
 
 int
-clefchar(clef)
+clefchar(clef, staffno, font_p)
 
-int clef;	/* TREBLE, etc */
+int clef;
+int staffno;
+int *font_p;	/* symbol's font is returned here */
 
 {
+	int clefcode;
+
 	switch(clef) {
 
 	case TREBLE:
 	case TREBLE_8:
 	case FRENCHVIOLIN:
 	case TREBLE_8A:
-		return(C_GCLEF);
+		clefcode = C_GCLEF;
+		break;
 
 	case BASS:
 	case BASS_8:
 	case BASS_8A:
 	case SUBBASS:
-		return(C_FCLEF);
+		clefcode = C_FCLEF;
+		break;
 
 	default:
 		/* everything else uses the C clef */
-		return(C_CCLEF);
+		clefcode = C_CCLEF;
+		break;
 	}
+	*font_p = FONT_MUSIC;
+	get_shape_override(staffno, 0, font_p, &clefcode);
+	return(clefcode);
 }
 
 
@@ -257,14 +288,19 @@ int clef;	/* TREBLE, etc */
  */
 
 double
-clefwidth(clef, is_small)
+clefwidth(clef, staffno, is_small)
 
 int clef;	/* TREBLE, BASS, ALTO, FRENCHVIOLIN, etc */
+int staffno;
 int is_small;	/* If YES, assume mid-score clef, not full sized one */
 
 {
-	return(width(FONT_MUSIC, (is_small ? (3 * DFLT_SIZE) / 4 : DFLT_SIZE),
-						clefchar(clef)));
+	int clefsym;
+	int cleffont;
+
+	clefsym = clefchar(clef, staffno, &cleffont);
+	return(width(cleffont, (is_small ? (3 * DFLT_SIZE) / 4 : DFLT_SIZE),
+						clefsym));
 }
 
 
@@ -280,9 +316,10 @@ int is_small;	/* If YES, assume mid-score clef, not full sized one */
  */
 
 int
-clefvert(clef, is_small, north_p, south_p)
+clefvert(clef, staffno, is_small, north_p, south_p)
 
 int clef;	/* TREBLE, BASS, ALTO, FRENCHVIOLIN, etc */
+int staffno;
 int is_small;	/* If YES, assume mid-score clef, not full sized one.
 		 * Note that if both of the following arguments are null,
 		 * this is_small argument's value is actually irrelevent. */
@@ -291,6 +328,7 @@ float *south_p;	/* if non-null, relative south will be returned here */
 
 {
 	int steps;	/* relative to middle line, to be returned */
+	int cleffont;
 
 	switch(clef) {
 
@@ -346,7 +384,7 @@ float *south_p;	/* if non-null, relative south will be returned here */
 		char tr8str[4];	/* "8" of treble8 or 8treble */
 		float value;	/* of north or south */
 
-		muschar = clefchar(clef);
+		muschar = clefchar(clef, staffno, &cleffont);
 		clefsize = (is_small ? (3 * DFLT_SIZE) / 4 : DFLT_SIZE);
 		tr8str[0] = FONT_TR;
 		tr8str[1] = 9;
@@ -354,7 +392,7 @@ float *south_p;	/* if non-null, relative south will be returned here */
 		tr8str[3] = '\0';
 		
 		if (north_p != 0) {
-			value = (float) ascent(FONT_MUSIC, clefsize, muschar);
+			value = (float) ascent(cleffont, clefsize, muschar);
 			if (clef == TREBLE_8A || clef == BASS_8A) {
 				value += (float) strheight(tr8str);
 			}
@@ -362,7 +400,7 @@ float *south_p;	/* if non-null, relative south will be returned here */
 		}
 
 		if (south_p != 0) {
-			value = (float) descent(FONT_MUSIC, clefsize, muschar);
+			value = (float) descent(cleffont, clefsize, muschar);
 			if (clef == TREBLE_8 || clef == BASS_8) {
 				value += (float) strheight(tr8str);
 			}
@@ -463,15 +501,14 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
 			 * location evaluated now. Fortunately,
 			 * prints inside blocks don't get affected by
 			 * placement phase, so we can evaluate it now.
-			 * For header/footer type blocks, we don't know
-			 * the inputfile or inputlineno.
 			 */
 			if (mll_p != 0) {
 				eval_coord(&(pr_p->location), mll_p->inputfile,
 						mll_p->inputlineno);
 			}
 			else {
-				eval_coord(&(pr_p->location), 0, -1);
+				eval_coord(&(pr_p->location), pr_p->inputfile,
+						pr_p->inputlineno);
 			}
 			yval = inpc_y (&(pr_p->location), (char *) 0, -1);
 			set_cur( inpc_x( &(pr_p->location), (char *) 0, -1 )
@@ -880,6 +917,43 @@ struct GRPSYL *gs_p;	/* which group to get the stem of */
 }
 
 
+/* Returns whether a note stem should be at the edge of center of note head.
+ * For now, a mensural note head is centered, anything else not.
+ */
+
+int
+stem_x_position(gs_p)
+
+struct GRPSYL *gs_p;
+
+{
+	int n;
+	int centered_count = 0;
+
+	for (n = 0; n < gs_p->nnotes; n++) {
+		if (gs_p->notelist[n].headfont == FONT_MUSIC2) {
+			switch (gs_p->notelist[n].headchar) {
+			case C_MENSURDIAMOND:
+			case C_MENSURFILLDIAMOND:
+			case C_MENSURDBLWHOLE:
+				centered_count++;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	if (centered_count > 0) {
+		if (centered_count != gs_p->nnotes) {
+			l_ufatal(gs_p->inputfile, gs_p->inputlineno,
+				"Mixture of centered and edge stem note heads");
+		}
+		return(SP_CENTERED);
+	}
+	return(SP_EDGE);
+}
+
+
 /* return x coordinate of a note stem */
 
 double
@@ -901,11 +975,17 @@ struct GRPSYL *gs_p;	/* return x of stem of this group */
 		return(gs_p->c[AX]);
 	}
 
-	/* move stem by half of stem width so edge lines up with edge of note */
-	stem_adjust = W_NORMAL / PPI / 2.0;
-	if (gs_p->stemdir == UP || gs_p->basictime == BT_QUAD
+	if (stem_x_position(gs_p) == SP_CENTERED) {
+		stem_adjust = 0.0;
+	}
+	else {
+		/* Move stem by half of stem width so edge
+		 * lines up with edge of note */
+		stem_adjust = W_NORMAL / PPI / 2.0;
+		if (gs_p->stemdir == UP || gs_p->basictime == BT_QUAD
 					|| gs_p->basictime == BT_OCT) {
-		stem_adjust = -stem_adjust;
+			stem_adjust = -stem_adjust;
+		}
 	}
 	return(gs_p->c[AX] + (gs_p->stemx + stem_adjust) * Staffscale);
 }
@@ -2644,4 +2724,304 @@ struct GRPSYL *gs_p;
 		}
 	}
 	return(NO);
+}
+
+
+/* Add a space padding to a string (except if is it boxed or circled).
+ * If padding was added, free the passed-in string and return the padded string,
+ * else return the string as is. The incoming string
+ * is expected to already be converted to font/size/string
+ * internal format by this time, although still in input ASCII form.
+ */
+
+char *
+pad_string(string, modifier)
+
+char *string;
+int modifier;	/* TM_* */
+
+{
+	char *padded_string;		/* string with 1-space padding at end */
+	char *str_p;			/* walk through padded_string */
+	int len;			/* length of string */
+	int last_was_backslash;		/* YES/NO */
+	int count_backslashed;		/* YES/NO if to count backslashed or
+					 * unbackslashed colons */
+	int colons;			/* how many colons found */
+	int extra;			/* how many extra bytes to malloc */
+
+
+	len = strlen(string);
+
+	/* Boxed and circled strings don't get any extra padding,
+	 * so we can use what we have. We check from the end of the string,
+	 * because we allow font/size changes at the beginning. */
+	if (len > 5 && string[len - 2] == '\\'
+			&& (string[len-1] == ']' || string[len-1] == '}')) {
+		return(string);
+	}
+
+	/* Make a new copy with a space at the end.
+	 * But if the string ends in the middle of a pile,
+	 * we need to implicitly end the pile before adding the space.
+	 * Since the string is still in ASCII form,
+	 * we have to count up the number of colons
+	 * to see if we are mid-pile. In chord/analysis/figbass
+	 * we need to count unbackslashed colon,
+	 * otherwise backslashed.*/
+	count_backslashed = (IS_CHORDLIKE(modifier) ? NO : YES);
+	/* figbass implicitly begins with a pile */
+	colons = (modifier == TM_FIGBASS ? 1 : 0);
+	last_was_backslash = NO;
+	for (str_p = string + 2; *str_p != '\0'; str_p++) {
+		if (last_was_backslash == YES) {
+			if (*str_p == ':' && count_backslashed == YES) {
+				colons++;
+			}
+			last_was_backslash = NO;
+		}
+		else {
+			if (*str_p ==  ':' && count_backslashed == NO) {
+				colons++;
+			}
+			last_was_backslash = (*str_p == '\\' ? YES : NO);
+		}
+	}
+
+	/* If odd number of colons, we are mid-pile.  Will need
+	 * add extra byte to hold the colon to implicitly end the
+	 * pile, and if it needs to be a backslashed colon,
+	 * another extra byte for that. */
+	if (colons & 1) {
+		extra = (count_backslashed == YES ? 2 : 1);
+	}
+	else {
+		extra = 0;
+	}
+
+	/* +2 is for space/null at end */
+	MALLOCA(char, padded_string, len + 2 + extra);
+	(void) memcpy(padded_string, string, len);
+	str_p = padded_string + len;
+
+	/* add implicit end-pile if needed */
+	if (extra == 2) {
+		*str_p++ = '\\';
+	}
+	if (extra > 0) {
+		*str_p++ = ':';
+	}
+
+	/* now add space padding */
+	*str_p++ = ' ';
+	*str_p = '\0';
+	FREE(string);
+	return(padded_string);
+}
+
+
+/* Returns a malloc-ed letter string for the passed in number.
+ * 1 -> "A", 2 -> "B" ... up to 702 -> "ZZ" if baseletter is 'A'
+ * or corresponding lower case if baseletter is 'a' */
+
+#define MIN_LET_VALUE (1)
+#define MAX_LET_VALUE (26+(26*26))
+
+static char *
+num2letter(num, baseletter)
+
+int num;
+int baseletter;
+
+{
+	char *ret;
+
+	if (num < MIN_LET_VALUE || num > MAX_LET_VALUE) {
+		l_yyerror(Curr_filename, yylineno,
+			"Number %d is out of range (%d-%d) for conversion to letter",
+			num, MIN_LET_VALUE, MAX_LET_VALUE);
+		/* Clamp to nearest valid value */
+		num = (num < MIN_LET_VALUE ? MIN_LET_VALUE : MAX_LET_VALUE);
+	}
+	/* Easier to deal with 0-25 */
+	num--;
+	if (num < 26) {
+		MALLOCA(char, ret, 2);
+		ret[0] = num + baseletter;
+		ret[1] = '\0';
+	}
+	else {
+		MALLOCA(char, ret, 3);
+		ret[0] = (num / 26) + baseletter - 1;
+		ret[1] = (num % 26) + baseletter;
+		ret[2] = '\0';
+	}
+	return(ret);
+}
+
+static char *
+num2uletter(num)
+
+int num;
+
+{
+	return(num2letter(num, 'A'));
+}
+
+static char *
+num2lletter(num)
+
+int num;
+
+{
+	return(num2letter(num, 'a'));
+}
+
+
+/* Returns a malloc-ed roman numeral string for the passed in number.
+ * 1 -> "I", 2 -> "II" ... up to 3999 -> "MMMCMXCIX" */
+
+#define MIN_ROM_VALUE (1)
+#define MAX_ROM_VALUE (3999)
+
+static char *
+num2uroman(num)
+
+int num;
+
+{
+	int digit;
+	char *roman;
+
+	if (num < MIN_ROM_VALUE || num > MAX_ROM_VALUE) {
+		l_yyerror(Curr_filename, yylineno,
+			"Number %d is out of range (%d-%d) for conversion to Roman numeral",
+			num, MIN_ROM_VALUE, MAX_ROM_VALUE);
+		/* Clamp to nearest valid value */
+		num = (num < MIN_ROM_VALUE ? MIN_ROM_VALUE : MAX_ROM_VALUE);
+	}
+
+	/* the longest possible result is MMMDCCCLXXXVIII */
+	MALLOCA(char, roman, 16);
+
+	roman[0] = '\0';
+
+	/* convert the decimal digits one at a time, appending the results */
+
+	static char *thou_str[] = { "", "M", "MM", "MMM" };
+	digit = num / 1000;
+	strcat(roman, thou_str[digit]);
+
+	static char *hund_str[] = { "", "C", "CC", "CCC", "CD", 
+				"D", "DC", "DCC", "DCCC", "CM" };
+	digit = (num % 1000) / 100;
+	strcat(roman, hund_str[digit]);
+
+	static char *ten_str[] = { "", "X", "XX", "XXX", "XL", 
+				"L", "LX", "LXX", "LXXX", "XC" };
+	digit = (num % 100) / 10;
+	strcat(roman, ten_str[digit]);
+
+	static char *one_str[] = { "", "I", "II", "III", "IV", 
+				"V", "VI", "VII", "VIII", "IX" };
+	digit = num % 10;
+	strcat(roman, one_str[digit]);
+
+	return roman;
+}
+
+static char *
+num2lroman(num)
+
+int num;
+
+{
+	char *roman;
+	int i;
+
+	roman = num2uroman(num);
+	for (i = 0; roman[i] != '\0'; i++) {
+		roman[i] = tolower(roman[i]);
+	}
+	return(roman);
+}
+
+
+/* Comparision function for bsearch of Trans_table. The first arg in the
+ * string to match, and the second is a pointer to an entry in the table */
+
+static int
+trans_compare(item1, item2)
+
+const void *item1;
+const void *item2;
+
+{
+	return( strcmp( (char*)(item1),  ((struct STRFUNC *)item2)->name) );
+}
+
+
+/* This implements the "string()" functions, which take a number and
+ * a string that describes what kind of transform to do the the number
+ * and returns a malloc-ed string that is the result of the transform
+ * on the number.
+ */
+
+char *
+string_func(num, transform)
+
+int num;
+char * transform;
+
+{
+	struct STRFUNC *entry;
+
+	/* Look up the transform in the table of known ones, and if found,
+	 * call its corresponding function on the number passed in. */
+	if ( ( entry = (struct STRFUNC *) bsearch( transform, Trans_table,
+				Trans_elements, sizeof(struct STRFUNC),
+				trans_compare) ) == 0) {
+		l_yyerror(Curr_filename, yylineno,
+			"Unrecognized string transform %s", transform);
+		return(strdup("unknown"));
+	}
+	return (*(entry->func))(num);
+}
+
+
+/* Return the width of a slash that goes through a stem, accounting for
+ * current Stepsize value and size of the group. */
+
+double
+slash_xlen(grpsyl_p)
+
+struct GRPSYL *grpsyl_p;
+
+{
+	return (SLASHHORZ * Stepsize * size2factor(grpsyl_p->grpsize));
+}
+
+
+
+/* Given a GS_* value, return the factor by which to multiply normal sized
+ * things to match that size. */
+
+double
+size2factor(size)
+
+int size;	/* GS_NORMAL, GS_SMALL, or GS_TINY */
+
+{
+	switch (size) {
+	default:
+		pfatal("unexpected size %d in size2factor", size);
+		/*NOTREACHED*/
+		/*FALLTHRU*/
+	case GS_NORMAL:
+		return(1.0);
+	case GS_SMALL:
+		return(SM_FACTOR);
+	case GS_TINY:
+		return(TINY_FACTOR);
+	}
 }

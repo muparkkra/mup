@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -638,6 +638,14 @@ int both;		/* will there be a phrase both above and below? */
 	 */
 	while (beggrp_p != 0 &&
 			(beggrp_p->grpcont != GC_NOTES || beggrp_p->is_meas)) {
+		/* if our group was vcombined into another voice's group, it is
+		 * now a space; if that other group has notes, use it */
+		if (beggrp_p->vcombdest_p != 0 &&
+		   (beggrp_p->vcombdest_p->grpcont == GC_NOTES &&
+		    beggrp_p->vcombdest_p->is_meas == NO)) {
+			beggrp_p = beggrp_p->vcombdest_p;
+			break;
+		}
 		if (beggrp_p == endgrp_p)
 			break;
 		beggrp_p = nextnongrace(beggrp_p);
@@ -676,6 +684,14 @@ int both;		/* will there be a phrase both above and below? */
 	while (endgrp_p != 0 &&
 			(endgrp_p->grpcont != GC_NOTES || endgrp_p->is_meas) &&
 			beggrp_p != endgrp_p) {
+		/* if our group was vcombined into another voice's group, it is
+		 * now a space; if that other group has notes, use it */
+		if (endgrp_p->vcombdest_p != 0 &&
+		   (endgrp_p->vcombdest_p->grpcont == GC_NOTES &&
+		    endgrp_p->vcombdest_p->is_meas == NO)) {
+			endgrp_p = endgrp_p->vcombdest_p;
+			break;
+		}
 		endgrp_p = prevnongrace(endgrp_p);
 	}
 	if (beggrp_p == endgrp_p &&

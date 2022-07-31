@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -105,7 +105,7 @@ FILE *PS_file;          /* PostScript temp file */
 int Fullbitmaps;        /* temp file of full page bitmaps */
 int Partbitmaps;        /* temp file for bitmaps for scrollable pages */
 int Nulldev;            /* /dev/null */
-#ifdef linux
+#if defined(linux) || defined(unix)
 char Fullfile[] = "mupdispfXXXXXX"; /* name of gs output tmp file, full page */
 char Partfile[] = "mupdisppXXXXXX"; /* name of gs output tmp file, partial page */
 char Mupfile[] = "mupdispmXXXXXX"; /* Mup output temp file */
@@ -123,7 +123,7 @@ char *Gs_errfile = "mupdispg.err";      /* ghostscript error file */
 int Bits_per_line = 612; 	/* pixels per line */
 int Bytes_per_line = 77;	/* pixels per line divided by 8 rounded up */
 int Lines_per_page = 792;	/* vertical pixels */
-char *Version = "6.9";
+char *Version = "7.0";
 
 /* misc function declarations */
 static void parsePS P((FILE *file));
@@ -375,7 +375,7 @@ create_tmpfile(char *tmpfname)
 	int fd;
 
 
-#ifdef linux
+#if defined(linux) || defined(unix)
 	if ((fd = mkstemp(tmpfname)) < 0) {
 		fprintf(stderr, "can't create temp file\n");
 		generalcleanup(1);

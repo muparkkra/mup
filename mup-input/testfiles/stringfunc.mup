@@ -1,0 +1,70 @@
+//!Mup-Arkkra
+
+header
+        title bold (18) "stringfunc.mup"
+        paragraph (14) "This file tests the usage of string()."
+
+define TESTLET(N)
+  rom below 1: 1 `N` + ": " +string(N, "LET");
+  rom below 1: 3 `N` + ": " +string(N, "let");
+@
+define TESTROM(N)
+  rom below 1: 1 `N` + ": " +string(N, "ROM");
+  rom below 1: 3 `N` + ": " +string(N, "rom");
+@
+
+music
+
+1: c;;;;
+TESTLET(1)
+TESTLET(2)
+TESTLET(25)
+TESTLET(26)
+TESTLET(27)
+TESTLET(28)
+TESTLET(51)
+TESTLET(52)
+TESTLET(53)
+TESTLET(54)
+TESTLET(702)
+bar
+
+newscore
+
+1: c;;;;
+TESTROM(1)
+TESTROM(2)
+TESTROM(3)
+TESTROM(4)
+TESTROM(5)
+TESTROM(6)
+TESTROM(7)
+TESTROM(8)
+TESTROM(9)
+TESTROM(10)
+TESTROM(13)
+TESTROM(14)
+TESTROM(15)
+TESTROM(30)
+TESTROM(40)
+TESTROM(49)
+TESTROM(50)
+TESTROM(60)
+TESTROM(70)
+TESTROM(80)
+TESTROM(90)
+TESTROM(99)
+TESTROM(100)
+TESTROM(300)
+TESTROM(400)
+TESTROM(490)
+TESTROM(499)
+TESTROM(500)
+TESTROM(800)
+TESTROM(900)
+TESTROM(999)
+TESTROM(1000)
+TESTROM(2000)
+TESTROM(3888)
+TESTROM(3999)
+bar

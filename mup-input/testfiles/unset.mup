@@ -70,6 +70,9 @@ unset midlinestemfloat
 unset minalignscale
 unset mingridheight
 unset noteheads
+unset noteleftfont
+unset noteleftfontfamily
+unset noteleftsize
 unset noteinputdir
 unset numbermrpt
 unset numbermultrpt
@@ -94,6 +97,7 @@ unset rightmargin
 unset scale
 unset scorepad
 unset scoresep
+unset shapes
 unset size
 unset slashesbetween
 unset stafflines

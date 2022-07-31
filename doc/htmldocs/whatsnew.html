@@ -4,6 +4,50 @@
 </HEAD>
 <BODY>
 <H1>New Mup Features</H1>
+<H2>New Features in Mup and Mupmate Version 7.0 (released in 2022)</H2>
+<P>
+<UL>
+<LI>
+It is now possible to specify a
+<A HREF="uguide/noteattr.html#noteleft">string to be printed to the left of a note.</A>
+This would typically be used for fingering.
+<LI>
+There are new mensural notation music symbols, and chords with
+<A HREF="uguide/shapes.html">mensural note heads and centered stems</A>
+are now supported.
+<LI>
+Measuration time signature appearance has been altered slightly to be
+more similar to what seems to be more common, and when a
+<A HREF="uguide/param.html#printedtime">printedtime</A>
+string is a time signature symbol, it is left its normal size, rather than
+being made 24 point bold, like a printedtime string would otherwise be.
+<LI>
+There is a new kind of
+<A HREF="uguide/macros.html#evalexpr">
+macro, where the value is determined by evaluating a numeric expression.</A>
+This might be used for things like an automatically
+incrementing counter, or proportionally altering the values of multiple
+parameters by only changing a single factor.
+<LI>
+There is a new
+<A HREF="uguide/strfunc.html">string() function</A>,
+which will map a number to a Roman numeral or letter for printing.
+In connection with the expression feature listed above,
+this might be useful for something
+like labeling movements of a large work with Roman numerals, and being
+able to add another movement in the middle, with later movements getting
+renumbered automatically. It might also be useful for placing rehearsal
+marks at other than barlines.
+<LI>
+There is a new
+<A HREF="uguide/shapes.html">shapes context</A> and
+<A HREF="uguide/param.html#shapes">shapes parameter<A>.
+These make it possible to override certain music symbols on a scorewide basis,
+or at staff or voice level. 
+<LI>
+The Apple-specific code has been updated to remove references to deprecated
+functions.
+<LE>
 <H2>New Features in Mup and Mupmate Version 6.9 (released in 2021)</H2>
 <P>
 <UL>

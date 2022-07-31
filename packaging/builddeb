@@ -6,7 +6,7 @@
 #	If not set, uses $logname <$(logname)@$(hostname)>
 # $2 = architecture. If not set, uses $(arch)
 
-MUPVERSION=6.9
+MUPVERSION=7.0
 SRC_TAR=mup-$MUPVERSION.tar.gz
 if [ ! -f "../$SRC_TAR" ]
 then

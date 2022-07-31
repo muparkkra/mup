@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -143,6 +143,15 @@ struct COORD_INFO {
 	struct COORD_INFO *next;	/* linked list off hash table */
 };
 
+/* Value for an "if" clause, or a "set" expression */
+struct VALUE {
+	int type;		/* TYPE_* */
+	int intval;		/* meaningless if type is not TYPE_INT */
+	double floatval;	/* This will always be set in "set" expressions,
+				 * even if the type is TYPE_INT, in case this
+				 * value has to be promoted to double. */
+};
+
 /*
  * Define a structure to be used to hold two staff numbers, and pointers
  * to strings to be malloc'ed to hold labels, if desired.  This is to
@@ -277,6 +286,23 @@ struct USER_SYMBOL {
 struct USERFONT {
 	int num_symbols;	/* how many symbols actually defined */
 	struct USER_SYMBOL symbols[MAX_CHARS_IN_FONT];	/* info about each */
+};
+
+/*
+ * This is for mapping a single symbol. Where Mup would use the "from"
+ * symbol by default, the user wants to substitute the "to" symbol.
+ */
+struct SHAPE_ENTRY {
+	unsigned short from;
+	unsigned short to;
+};
+
+/* This saves information about a named shape mapping. */
+struct SHAPE_MAP {
+	char *name;			/* to be used by shapes= parameter */
+	short num_entries;		/* how many entries in the map */
+	struct SHAPE_ENTRY *map;	/* the actual mapping */
+	struct SHAPE_MAP *next;		/* for linked list */
 };
 
 /*
@@ -673,11 +699,15 @@ struct SSV {
 	short withfamily;	/* font family for "with" lists */
 	short withfont;		/* font for "with" lists */
 	short withsize;		/* point size for "with" lists */
+	short noteleftfamily;	/* font family for strings left of notes */
+	short noteleftfont;	/* font for strings left of notes */
+	short noteleftsize;	/* point size for strings left of notes */
 	short alignrests;	/* align rests vertically with notes? */
 	short release;		/* internote space for MIDI, in milliseconds */
 	short ontheline;	/* put notes on the one-line staff line? */
 	short tabwhitebox;	/* print white rectangle under fret numbers? */
 	short noteheads[7];	/* headshapes to be used for each scale degree*/
+	struct SHAPE_MAP *shapes;	/* point at shape map context */
 	char *emptymeas;	/* input to use when no voice info is given */
 	short extendlyrics;	/* automatically put "_" on syllables? */
 	short cue;		/* should this voice be all cues? */
@@ -1241,6 +1271,10 @@ struct NOTE {
 	float wlparen;		/* relative coord:  w(left paren)-x(group) */
 	float erparen;		/* relative coord:  e(right paren)-x(group) */
 
+	/* wlstring is 0 if and only if noteleft_string is 0 (null) */
+	float wlstring;		/* relative coord:  w(string)-x(group) */
+	char *noteleft_string;	/* malloc: string to print left of the note */
+
 	/*
 	 * nslurto says how many notes of the following group this note is
 	 * slurred to.  If it is greater than 0, an array of that many SLURTO
@@ -1628,6 +1662,8 @@ struct GRPSYL {
 	struct GRPSYL *prev;	/* point at previous group/syl in voice/verse*/
 	struct GRPSYL *next;	/* point at next group/syl in voice/verse */
 	struct GRPSYL *gs_p;	/* point at next group/syl in chord */
+	struct GRPSYL *vcombdest_p; /* if vcombine made this a space, point at
+				     * the destination GRPSYL */
 };
 
 /*

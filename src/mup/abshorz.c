@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -872,7 +872,8 @@ struct CHHEAD *chhead_p;	/* point at the preceding chhead */
 		/* find width of this clef, including padding */
 		clef = svpath(staffno, CLEF)->clef;
 		set_staffscale(staffno);
-		clefwid = (clefwidth(clef, YES) + CLEFPAD) * Staffscale;
+		clefwid = (clefwidth(clef, staffno, YES) + CLEFPAD)
+				* Staffscale;
 
 		/* remember biggest clef width */
 		if (clefwid > widestclef)
@@ -1368,17 +1369,27 @@ short measinscore[];		/* return number of measures in each score */
 		    ((!atend && (measwidth - adjust) <= remwidth) ||
 		      (atend && (measwidth - adjust) <= remwidth - userdelta)))){
 
-			/*
-			 * If this is restart pseudo measure, save the current
-			 * values of the SSVs and some local variables, in case
-			 * we need to back up later due to "indentrestart".
-			 */
 			if (this_is_restart(mainll_p)) {
+				/*
+				 * Save the current values of the SSVs and some
+				 * local variables, in case we need to back up
+				 * later due to "indentrestart".
+				 */
 				old_remwidth = remwidth;
 				old_mainll_p = mainll_p;
 				old_measinscore = measinscore[*scores_p];
 				old_countable_measures = countable_measures;
 				savessvstate();
+
+				/*
+				 * If this is the first measure on the score and
+				 * restarts are not being indented, set its
+				 * width to zero.
+				 */
+				if (measinscore[*scores_p] == 0 &&
+						Score.indentrestart == NO) {
+					measwidth = 0.0;
+				}
 			}
 
 			/*
@@ -1731,6 +1742,8 @@ struct CHORD *ch_p;	/* points at a chord, should be first chord in meas */
 	float newmeaswid;	/* possible new measure width */
 	float thismrpt;		/* space needed by one mrpt and its padding */
 	float increase;		/* how much bigger must we make the measure? */
+	int mrpt_sym;
+	int mrpt_font;
 
 
 	/*
@@ -1742,7 +1755,8 @@ struct CHORD *ch_p;	/* points at a chord, should be first chord in meas */
 		if (is_mrpt(gs_p)) {
 			gotmrpt = YES;
 			/* get width of this mrpt + its padding, if any */
-			thismrpt = width(FONT_MUSIC, DFLT_SIZE, C_MEASRPT) *
+			mrpt_sym = mrptchar(gs_p, &mrpt_font);
+			thismrpt = width(mrpt_font, DFLT_SIZE, mrpt_sym) *
 				svpath(gs_p->staffno, STAFFSCALE)->staffscale +
 				gs_p->padding;
 			if (thismrpt > newmeaswid) {
@@ -2214,6 +2228,14 @@ short measinscore[];		/* number of measures in each score */
 			insertMAINLL(ml2_p, mainll_p->prev);
 		}
 		mainll_p = mainll_p->prev;	/* point at the FEED */
+
+		/* if the only measure on this score is a restart, error */
+		if (measinscore[score] == 1 && this_is_restart(mainll_p)) {
+			l_warning(mainll_p->inputfile, mainll_p->inputlineno,
+				"restart falls alone on a score; "
+				"try reducing packfact or scale, or set "
+				"parameter indentrestart to 'n'");
+		}
 
 		/*
 		 * Insert CLEFSIG following the FEED, and fill as needed.
@@ -3350,8 +3372,8 @@ restore_grpsyl_west()
 
 				staffscale = svpath(gs_p->staffno,
 						STAFFSCALE)->staffscale;
-				clefwid = (clefwidth(gs_p->clef, YES) +
-						CLEFPAD) * staffscale;
+				clefwid = (clefwidth(gs_p->clef, gs_p->staffno,
+						YES) + CLEFPAD) * staffscale;
 				gs_p->c[RW] += clefwid;
 				gs_p->c[AW] += clefwid;
 

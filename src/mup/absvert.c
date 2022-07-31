@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2021  by Arkkra Enterprises.
+ Copyright (c) 1995-2022  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -2923,7 +2923,8 @@ struct GRPSYL *gs2_p;
 			continue;
 		}
 
-		accdimen(&gs1_p->notelist[idx1], &accasc, &accdesc, &accwidth);
+		accdimen(gs1_p->staffno, &gs1_p->notelist[idx1],
+				&accasc, &accdesc, &accwidth);
 		acc1n = gs1_p->notelist[idx1].c[AY] + accasc * staffscale;
 		acc1s = gs1_p->notelist[idx1].c[AY] - accdesc * staffscale;
 		acc1w = gs1_p->c[AX] + gs1_p->notelist[idx1].waccr;
@@ -2934,7 +2935,7 @@ struct GRPSYL *gs2_p;
 				continue;
 			}
 
-			accdimen(&gs2_p->notelist[idx2],
+			accdimen(gs2_p->staffno, &gs2_p->notelist[idx2],
 					&accasc, &accdesc, &accwidth);
 			acc2n = gs2_p->notelist[idx2].c[AY] +
 					accasc * staffscale;

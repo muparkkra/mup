@@ -22,7 +22,7 @@
 .ps +1
 .ce
 .ft B
-Mup Version 6.9 Statement Summary
+Mup Version 7.0 Statement Summary
 .sp
 \fIcontext\fR
 \fIstaffs voices & staffs voices\fB:\fI chord \fB; \fI....\fR
@@ -54,6 +54,7 @@ Mup Version 6.9 Statement Summary
 \fBifdef \fIMACRO_NAME ..... \fBelse\fI ..... \fBendif\fR
 \fBifndef \fIMACRO_NAME ..... \fBelse\fI ..... \fBendif\fR
 \fBundef \fIMACRO_NAME\fR
+\fBeval \fIMACRO_NAME \fB= \fIexpression \fB@\fR
 \fBexit\fR
 \fBsavemacros "\fIname\fB"\fR
 \fBrestoremacros "\fIname\fB"\fR
@@ -66,7 +67,6 @@ Mup Version 6.9 Statement Summary
 .ps -1
 .ce
 \fBValues used in Mup statements\fR
-.sp
 .ta 1.2i 2.6i 4.0i 5.4i
 \fIaccidental	\fB#\fR, \fB&\fR, \fBx\fR, \fB&&\fR, \fBn\fR or \fB{"\fIacc_name\fB"}
 \fIacc_spec	\fRaccidental symbol name in quotes followed by \fIpitch_spec\fR
@@ -97,6 +97,7 @@ Mup Version 6.9 Statement Summary
 	\fBgrids\fR	followed by pairs of strings: name and frets
 	\fBheadshapes\fR	followed by pairs of strings: name and list of 4 note head characters
 	\fBkeymap "\fIkeymap_name\fB"	\fRfollowed by pairs of strings: pattern and replacement
+	\fBshapes "\fIshapes_name\fB"	\fRfollowed by pairs of strings; symbol name and replacement
 	\fBsymbol\fR	followed by
 		    \fBbbox=\fInum\fB,\fInum\fB,\fInum\fB,\fInum\fR
 		    \fBpostscript="\fItext\fB"
@@ -104,7 +105,7 @@ Mup Version 6.9 Statement Summary
 \fIcres_mark	\fB<\fR (crescendo) or \fB>\fR (decrescendo)
 \fIdirection	\fBup\fR or \fBdown\fR
 \fIending_mark	\fBending "\fItext\fB" \fR or \fBendending\fR or \fBopenendending\fR or \fBclosedendending\fR
-\fIexpression	\fRcan contain \fBdefined()  ()  +  -  ~  !  *  /  %  ^  &  |  <<  >>  <  >  <=  >=  ==  !=  &&  ||  ?:\fR
+\fIexpression	\fRsee operator table on page 5
 \fIfilename	\fRpath to a file on your system; uses MUPPATH to find, if not in current directory
 	and not absolute path
 \fIfont	\fBrom\fR, \fBital\fR, \fBbold\fR, or \fBboldital\fR
@@ -129,7 +130,7 @@ Mup Version 6.9 Statement Summary
 \fImodifier	\fBchord\fR, \fBanalysis\fR, \fBfigbass\fR, or omitted
 \fImus_symbol	\fRmusical symbol; see chart on page 8 for complete list.
 \fInote_attributes	\fRone or more of the following: \fItieslur_style \fB~ \fIdirection \fR(tie), \fItieslur_style \fB< >\fR \fIdirection) (slur),
-	\fB? \fR(small), \fB^\fIpitch\fR (bend), \fBhs "\fIheadshape\fB"\fR, or \fB=\fItag\fR
+	\fB? \fR(small), \fB^\fIpitch\fR (bend), \fBhs "\fIheadshape\fB"\fR, \fB_"\fItext\fB"\fR or \fB=\fItag\fR
 \fInum	\fRsome number; valid values depend on where it appears
 \fIoctave	\fRnumber from \fB0\fR to \fB9\fR or one or more \fB+\fR or \fB-\fR signs
 \fIparameter	\fRSee parameter table on page 5 for complete list
@@ -239,11 +240,63 @@ _
 .vs -1
 .bp
 .ce
+\fBArithmetic operator precedence and associativity\fP
+.sp
+These are the arithmetic operators supported by eval expressions and generalized conditionals.
+Operators on each line have equal precedence, which is higher than the precedence of those on the lines below them.
+.TS
+center, allbox;
+c c c
+l l l.
+\fBoperators\fP	\fBoperations\fP	\fBassociativity\fP
+_
+\f(CW( )\fP	grouping	left to right	
+\f(CW! ~ - +\fP	not, one's complement, unary minus, unary plus	right to left
+\f(CW* / %\fP	multiply, divide, modulo	left to right
+\f(CW+ -\fP	add, subtract	left to right
+\f(CW<< >>\fP	left shift, right shift	left to right
+\f(CW< <= > >=\fP	less than, less or equal, greater than, greater or equal	left to right
+\f(CW== !=\fP	equal, not equal	left to right
+\f(CW&\fP	bitwise AND	left to right
+\f(CW^\fP	bitwise XOR	left to right
+\f(CW|\fP	bitwise OR	left to right
+\f(CW&&\fP	logical AND	left to right
+\f(CW||\fP	logical OR	left to right
+\f(CW? :\fP	interrogation	right to left
+.TE
+Note: generalized conditionals can also use "defined()"
+.sp
+.ce
+\fBFunctions for location tag arithmetic and eval expressions\fP
+.TS
+center, allbox;
+c c c
+l l l.
+Name	Argument(s)	Result
+_
+sqrt	number	square root of the number
+sin	angle (degrees)	sin of the angle
+cos	angle (degrees)	cosine of the angle
+tan	angle (degrees)	tangent of the angle
+asin	number	arc sine of the number (degrees)
+acos 	number	arc cosine of the number (degrees)
+atan 	number	arc tangent of the number (degrees)
+atan2	number,number	arc tangent of the ratio of the numbers (degrees)
+hypot	number,number	square root of sum of the squares of the numbers
+round	number	number rounded to nearest whole
+floor	number	number rounded down to whole number
+ceiling	number	number rounded up to whole number
+.TE
+.sp
+Note: round, floor, and ceiling return whole numbers, and are only supported for eval expressions.
+The others return decimals numbers and are supported for both location tag arithmetic and eval expressions.
+.bp
+.ce
 \fBMup Parameters\fR
 .ll +0.5i
 .sp
 .ps -2
-.vs +2
+.vs +3
 .TS
 allbox;
 c c c c c c c
@@ -280,6 +333,13 @@ defoct	\(bu	\(bu	\(bu		0 to 9	based on clef
 dist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	2.0
 division	\(bu				MIDI division, 1 to 1536 (ticks per quarter note)	192
 dyndist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	2.0
+.TE
+.TS
+allbox;
+c c c c c c c
+lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
+Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
+_
 emptymeas	\(bu	\(bu	\(bu		string containing music input	"ms;"
 endingkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
 endingstyle	\(bu				\fBtop\fR, \fBbarred\fR, or \fBgrouped\fR	top
@@ -294,13 +354,6 @@ gridfret	\(bu	\(bu			2 to 99	4
 gridsatend	\(bu	\(bu			\fBy\fR or \fBn\fP	n
 gridswhereused	\(bu	\(bu			\fBy\fR or \fBn\fP	n
 gridscale	\(bu	\(bu			0.1 to 10.0	1.0
-.TE
-.TS
-allbox;
-c c c c c c c
-lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
-Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
-_
 indentrestart	\(bu				\fBy\fR or \fBn\fP	n
 key	\(bu	\(bu			T{
 \fIpitch\fR \fBmajor\fR or \fBminor\fR; or 0 to 7 \fB#\fR or \fB&\fR and optional \fBmajor\fR or \fBminor\fR
@@ -327,11 +380,23 @@ measnumfontfamily	\(bu				T{
 T}	times
 measnumsize	\(bu				1 to 100 (points)	11
 measnumstyle	\(bu				\fBboxed\fR, \fBcircled\fR, or \fBplain\fR	plain
+.TE
+.TS
+allbox;
+c c c c c c c
+lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
+Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
+_
 midlinestemfloat	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 minalignscale	\(bu	\(bu			0.1 to 1.0	0.667
 mingridheight	\(bu	\(bu			2 to 99	4
 noteheads	\(bu	\(bu	\(bu		string containing 1 or 7 headshape names	"norm"
 noteinputdir	\(bu	\(bu	\(bu		\fBup\fP, \fBdown\fR, or \fBany\fP	any
+noteleftfont	\(bu	\(bu	\(bu		\fBrom\fR, \fBbold\fR, \fBital\fR, or \fBboldital\fR	rom
+noteleftfontfamily	\(bu	\(bu	\(bu		T{
+\fBavantgarde\fR, \fBbookman\fR, \fBcourier\fR, \fBhelvetica\fR, \fBnewcentury\fR, \fBpalatino\fR, or \fBtimes\fR
+T}	times
+noteleftsize	\(bu	\(bu	\(bu		1 to 100	10
 numbermrpt	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 numbermultrpt	\(bu	\(bu			\fBy\fR of \fBn\fR	y
 ontheline	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	y
@@ -348,13 +413,6 @@ printkeymap	\(bu			\(bu	\fB"\fIkeymap_name\fB"	\fR""
 printmultnum	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 rehearsalkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
 rehstyle	\(bu	\(bu			\fBboxed\fR, \fBcircled\fR, or \fBplain\fR	boxed
-.TE
-.TS
-allbox;
-c c c c c c c
-lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
-Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
-_
 release	\(bu	\(bu	\(bu		0 to 500 (milliseconds)	20
 repeatdots	\(bu	\(bu			\fBstandard\fR or \fBall\fR	standard
 restcombine	\(bu				2 to 1000	not set
@@ -363,6 +421,14 @@ rightmargin	\(bu				0.0 to pagewidth minus 0.5 inches	0.5 inches
 scale	\(bu				0.1 to 10.0	1.0
 scorepad	\(bu				\fInum\fR or \fInum\fB,\fInum\fR, negative pageheight to pageheight (stepsizes)	2.0,2.0
 scoresep	\(bu				\fInum\fR or \fInum\fB,\fInum\fR, 6.0 to pageheight (stepsizes)	12.0,20.0
+.TE
+.TS
+allbox;
+c c c c c c c
+lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
+Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
+_
+shapes	\(bu	\(bu	\(bu		shapes context name as a string	empty
 size	\(bu	\(bu		\(bu	1 to 100	12
 slashesbetween	\(bu				\fBy\fR or \fBn\fR	n
 stafflines	\(bu	\(bu			\fB1\fR, \fB1n\fR, \fB5\fR, \fB5n\fR, \fB5 drum\fR, \fB1 drum\fR, or \fBtab (\fItab_strings\fB)\fR optionally followed by \fBy\fR or \fBn\fR	5
@@ -402,18 +468,19 @@ Music symbols can be used in text strings by using \fB\e(\fIsymbol_name\fB)\fR. 
 .ie \n(.g \{
 .mk Px
 .sp -1
+.po -0.4i
 .if \n(.P .PSPIC -L muschar.ps
-.po -0.5i
+.po +0.4i
 .ps +1
-.sp -4
+.sp -3
 .ce 5 \}
 .el \{
 .sp
-.if \n(.P \!x X PI:\n(.o:\n(.i:\n(.l:\n(.t:muschar.ps:9.0,6.2,0.1,0:l:
-.po -0.5i
+.if \n(.P \!x X PI:\n(.o:\n(.i:\n(.l:\n(.t:muschar.ps:9.36,7.9,0.1,0:l:
 .sp 7.75i
 .ps +2
 .ce 3 \}
+.in 2.3i
 \f(NXArkkra Enterprises\f(NR
 http://www.arkkra.com
 support@arkkra.com

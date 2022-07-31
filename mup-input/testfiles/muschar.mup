@@ -28,7 +28,7 @@ print (k.x - 29, k.y - 65) "|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(invturn)
 
 print (k.x - 29, k.y - 80) "|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
 
-print (k.x - 29, k.y - 95) "|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
+print (k.x - 29, k.y - 95) "|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|\(mensurdiamond)|\(mensurfilldiamond)|\(mensurdblwhole)|\(mensurdwhrest)|\(mensur1rest)|\(mensurll1rest)|\(mensur2rest)|\(mensurll2rest)|\(mensur4rest)|\(mensur8rest)|\(mensur16rest)|\(mensurupflag)|\(mensurdnflag)| "
 
 newpage
 
@@ -68,7 +68,20 @@ bar
 "\(imperfmaior)","X", "\(imperfminor)", "X", \
 "\(perfmaiordim)","X", "\(perfminordim)","X", \
 "\(imperfmaiordim)","X", "\(imperfminordim)","X", \
-"\(dblmeasrpt)","X", "\(quadmeasrpt)","X"] 4f;
+"\(dblmeasrpt)","X", "\(quadmeasrpt)","X", \
+"\(mensurdiamond)","X", \
+"\(mensurfilldiamond)","X", \
+"\(mensurdblwhole)","X", \
+"\(mensurdwhrest)","X", \
+"\(mensur1rest)","X", \
+"\(mensurll1rest)","X", \
+"\(mensur2rest)","X", \
+"\(mensurll2rest)","X", \
+"\(mensur4rest)","X", \
+"\(mensur8rest)","X", \
+"\(mensur16rest)","X", \
+"\(mensurupflag)","X", \
+"\(mensurdnflag)","X"] 4f;
 bar
 
 newpage
@@ -85,7 +98,7 @@ print (k.x - 15, k.y - 65) "\f(TI)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(in
 
 print (k.x - 15, k.y - 80) "\f(TI)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
 
-print (k.x - 15, k.y - 95) "\f(TI)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
+print (k.x - 15, k.y - 95) "\f(TI)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|\(mensurdiamond)|\(mensurfilldiamond)|\(mensurdblwhole)|\(mensurdwhrest)|\(mensur1rest)|\(mensurll1rest)|\(mensur2rest)|\(mensurll2rest)|\(mensur4rest)|\(mensur8rest)|\(mensur16rest)|\(mensurupflag)|\(mensurdnflag)|"
 
 newpage
 
@@ -125,7 +138,20 @@ bar
 "\f(TI)\(imperfmaior)","X", "\f(TI)\(imperfminor)", "X", \
 "\f(TI)\(perfmaiordim)","X", "\f(TI)\(perfminordim)","X", \
 "\f(TI)\(imperfmaiordim)","X", "\f(TI)\(imperfminordim)","X", \
-"\f(TI)\(dblmeasrpt)","X", "\f(TI)\(quadmeasrpt)","X"] 4f;
+"\(dblmeasrpt)","X", "\(quadmeasrpt)","X", \
+"\(mensurdiamond)","X", \
+"\(mensurfilldiamond)","X", \
+"\(mensurdblwhole)","X", \
+"\(mensurdwhrest)","X", \
+"\(mensur1rest)","X", \
+"\(mensurll1rest)","X", \
+"\(mensur2rest)","X", \
+"\(mensurll2rest)","X", \
+"\(mensur4rest)","X", \
+"\(mensur8rest)","X", \
+"\(mensur16rest)","X", \
+"\(mensurupflag)","X", \
+"\(mensurdnflag)","X"] 4f;
 bar
 
 newpage
@@ -144,7 +170,7 @@ print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillri
 
 print (k.x - 15, k.y - 80) "\f(TB)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
 
-print (k.x - 15, k.y - 95) "\f(TB)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
+print (k.x - 15, k.y - 95) "\f(TB)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|\(mensurdiamond)|\(mensurfilldiamond)|\(mensurdblwhole)|\(mensurdwhrest)|\(mensur1rest)|\(mensurll1rest)|\(mensur2rest)|\(mensurll2rest)|\(mensur4rest)|\(mensur8rest)|\(mensur16rest)|\(mensurupflag)|\(mensurdnflag)|"
 
 newpage
 
@@ -184,7 +210,20 @@ bar
 "\f(TB)\(imperfmaior)","X", "\f(TB)\(imperfminor)", "X", \
 "\f(TB)\(perfmaiordim)","X", "\f(TB)\(perfminordim)","X", \
 "\f(TB)\(imperfmaiordim)","X", "\f(TB)\(imperfminordim)","X", \
-"\f(TB)\(dblmeasrpt)","X", "\f(TB)\(quadmeasrpt)","X"] 4f;
+"\(dblmeasrpt)","X", "\(quadmeasrpt)","X", \
+"\(mensurdiamond)","X", \
+"\(mensurfilldiamond)","X", \
+"\(mensurdblwhole)","X", \
+"\(mensurdwhrest)","X", \
+"\(mensur1rest)","X", \
+"\(mensurll1rest)","X", \
+"\(mensur2rest)","X", \
+"\(mensurll2rest)","X", \
+"\(mensur4rest)","X", \
+"\(mensur8rest)","X", \
+"\(mensur16rest)","X", \
+"\(mensurupflag)","X", \
+"\(mensurdnflag)","X"] 4f;
 bar
 
 newpage
@@ -201,7 +240,7 @@ print (k.x - 15, k.y - 65) "\f(TX)|\(sign)|\(coda)|\(mor)|\(invmor)|\(turn)|\(in
 
 print (k.x - 15, k.y - 80) "\f(TX)|\(dwhrighttriangle)|\(righttriangle)|\(fillrighttriangle)|\(udwhrighttriangle)|\(urighttriangle)|\(ufillrighttriangle)|\(dwhrectangle)|\(rectangle)|\(fillrectangle)|\(dwhisostriangle)|\(isostriangle)|\(fillisostriangle)|\(dwhpiewedge)|\(piewedge)|\(fillpiewedge)|\(dwhsemicircle)|\(semicircle)|\(fillsemicircle)|\(dwhslashhead)|\(slashhead)|\(fillslashhead)|\(blankhead)|"
 
-print (k.x - 15, k.y - 95) "\f(TX)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|"
+print (k.x - 15, k.y - 95) "\f(TX)|\(perfmaior)|\(perfminor)|\(imperfmaior)|\(imperfminor)|\(perfmaiordim)|\(perfminordim)|\(imperfmaiordim)|\(imperfminordim)|\(dblmeasrpt)|\(quadmeasrpt)|\(mensurdiamond)|\(mensurfilldiamond)|\(mensurdblwhole)|\(mensurdwhrest)|\(mensur1rest)|\(mensurll1rest)|\(mensur2rest)|\(mensurll2rest)|\(mensur4rest)|\(mensur8rest)|\(mensur16rest)|\(mensurupflag)|\(mensurdnflag)|"
 
 newpage
 
@@ -241,6 +280,19 @@ bar
 "\f(TX)\(imperfmaior)","X", "\f(TX)\(imperfminor)", "X", \
 "\f(TX)\(perfmaiordim)","X", "\f(TX)\(perfminordim)","X", \
 "\f(TX)\(imperfmaiordim)","X", "\f(TX)\(imperfminordim)","X", \
-"\f(TX)\(dblmeasrpt)","X", "\f(TX)\(quadmeasrpt)","X"] 4f;
+"\(dblmeasrpt)","X", "\(quadmeasrpt)","X", \
+"\(mensurdiamond)","X", \
+"\(mensurfilldiamond)","X", \
+"\(mensurdblwhole)","X", \
+"\(mensurdwhrest)","X", \
+"\(mensur1rest)","X", \
+"\(mensurll1rest)","X", \
+"\(mensur2rest)","X", \
+"\(mensurll2rest)","X", \
+"\(mensur4rest)","X", \
+"\(mensur8rest)","X", \
+"\(mensur16rest)","X", \
+"\(mensurupflag)","X", \
+"\(mensurdnflag)","X"] 4f;
 bar
 

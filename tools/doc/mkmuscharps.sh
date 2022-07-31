@@ -3,10 +3,11 @@
 # This is a script to create the PostScript to make a picture of each music
 # character, for including in the Mup User's Guide and Quick Reference.
 # It expects to have Mup's muschar.h file as its stdin.
+# $1 needs to be the path to prolog.ps
 
 cat - > muschar.ps <<!
 %!PS-Adobe-1.0
-%%BoundingBox: 64 47 597 728
+%%BoundingBox: Calculate later
 /boxheight 60 def
 /boxwidth 47 def
 /nameheight 10 def
@@ -48,7 +49,7 @@ cat - > muschar.ps <<!
 	restore
 } def
 
-/offset 72 def
+/offset 2 def
 /col 0 def
 /row 11 def
 /extra 0 def
@@ -60,13 +61,16 @@ cat - > muschar.ps <<!
 		extra sub extraoffset sub prm
 	/col col 1 add def
 	% go to next column when current one is full
-	col 11 ge { /col 0 def /row row 1 sub def } if
-	% a couple rows have to be extra tall, others shorter
+	col 12 ge { /col 0 def /row row 1 sub def } if
+	% A few rows have to be extra tall, others shorter.
+	% The extra is how much to adjust height from the norm.
+	% To get each extraoffset, add the extra from the previous.
+	% Rows are numbered from the number, starting from 1
 	row 7 eq { /extra -15 def } if
-	row 6 eq { /extraoffset -15 def } if
-	row 5 eq { /extraoffset -30 def /extra 6 def } if
-	row 4 eq { /extraoffset -24 def /extra 32 def } if
-	row 3 eq { /extraoffset 8 def /extra 0 def } if
+	row 6 eq { /extraoffset -15 def /extra -5 def } if
+	row 5 eq { /extraoffset -20 def /extra 35 def } if
+	row 4 eq { /extraoffset 15 def /extra 0 def } if
+	row 3 eq { /extraoffset 15 def /extra 0 def } if
 } def
 
 !
@@ -76,3 +80,9 @@ grep "#define C" - | sed -e "s/#define C_//" -e 's/	.*$//' | dd conv=lcase 2>/de
 
 # add in PostScript trailer
 echo showpage >> muschar.ps
+
+# set BoundingBox
+echo quit | cat $1 muschar.ps - | gs -sDEVICE=bbox -dNOPAUSE - >/dev/null 2> mcbboxinfo
+bbox=$(head -1 mcbboxinfo)
+sed -i -e "/BoundingBox/s/.*/$bbox/" muschar.ps
+rm mcbboxinfo

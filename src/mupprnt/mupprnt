@@ -9,7 +9,7 @@
 #	to see what your version supports, and set GS_DEVICE
 #	as appropriate for your printer.
 
-echo "Mupprnt - Version 6.9" >&2
+echo "Mupprnt - Version 7.0" >&2
 
 # if environment variable COPIES is set, use that as number of copies to print
 if [ "$COPIES" != "" ]
