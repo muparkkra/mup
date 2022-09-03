@@ -264,7 +264,7 @@ static void export1 P((char *name, float *coord_p, int alias_index, int tag_inde
 static int expr_has_invis P((struct EXPR_NODE *expr_p));
 static double pr_keysig P((int staffno, int sharps, int naturals, double x,
 		int really_print));
-static void draw_keysig P((int muschar, int symbols, double x,
+static void draw_keysig P((int staffno, int muschar, int symbols, double x,
 		double y, int *table, int offset, int skip));
 static double pr_timesig P((int staffno, double x, int multnum,
 		int really_print));
@@ -4116,13 +4116,13 @@ int really_print;	/* if YES, actually print, else just return width */
 	set_cur(x, y);
 	/* cancel a previous key signature of flats */
 	if (naturals < 0) {
-		draw_keysig(C_NAT, - naturals, (double) x, (double) y,
+		draw_keysig(staffno, C_NAT, - naturals, (double) x, (double) y,
 				flattbl, offset, (sharps < 0 ? -sharps : 0));
 	}
 
 	/* cancel a previous key signature of sharps */
 	else if (naturals > 0 ) {
-		draw_keysig(C_NAT, naturals, (double) x, (double) y,
+		draw_keysig(staffno, C_NAT, naturals, (double) x, (double) y,
 				sharptbl, offset, (sharps > 0 ? sharps : 0));
 	}
 	/* if there were some naturals, add a little padding before the other */
@@ -4132,14 +4132,14 @@ int really_print;	/* if YES, actually print, else just return width */
 
 	/* do key signatures with sharps */
 	if (sharps > 0) {
-		draw_keysig(C_SHARP, sharps, (double) _Cur[AX], (double) y,
-				sharptbl, offset, 0);
+		draw_keysig(staffno, C_SHARP, sharps,
+			(double) _Cur[AX], (double) y, sharptbl, offset, 0);
 	}
 
 	/* do key signatures with flats */
 	else if (sharps < 0) {
-		draw_keysig(C_FLAT, -sharps, (double) _Cur[AX], (double) y,
-				flattbl, offset, 0);
+		draw_keysig(staffno, C_FLAT, -sharps,
+			(double) _Cur[AX], (double) y, flattbl, offset, 0);
 	}
 
 	/* return the width of what we printed */
@@ -4151,8 +4151,9 @@ int really_print;	/* if YES, actually print, else just return width */
  * to do it */
 
 static void
-draw_keysig(muschar, symbols, x, y, table, offset, skip)
+draw_keysig(staffno, muschar, symbols, x, y, table, offset, skip)
 
+int staffno;
 int muschar;	/* what to draw: C_SHARP, C_FLAT, or C_NAT */
 int symbols;	/* how many to draw */
 double x;	/* where to start putting them */
@@ -4167,12 +4168,16 @@ int skip;	/* how many symbols to skip in pattern (for canceling key) */
 	float jam_factor;	/* how much to adjust to push things closer
 				 * together. (Key signatures should be packed
 				 * tighter than normal accidentals) */
+	int font;
 
 
 	_Cur[AX] = x;
 
+	font = FONT_MUSIC;
+	(void) get_shape_override(staffno, 1, &font, &muschar);
+
 	/* have to compensate for music char's x being in its middle */
-	compensation = width(FONT_MUSIC, DFLT_SIZE, muschar) * Staffscale / 2.0;
+	compensation = width(font, DFLT_SIZE, muschar) * Staffscale / 2.0;
 
 	/* just put each sharp or flat next to the previous one in the
  	 * x direction, except squeeze flats and sharps together by two points,
@@ -4188,7 +4193,7 @@ int skip;	/* how many symbols to skip in pattern (for canceling key) */
 	for (s = 0; s < symbols; s++) {
 		pr_muschar( _Cur[AX] + compensation - jam_factor,
 			y + ((table[s + skip] + offset) * Stepsize),
-			muschar, DFLT_SIZE, FONT_MUSIC);
+			muschar, DFLT_SIZE, font);
 	}
 }
 

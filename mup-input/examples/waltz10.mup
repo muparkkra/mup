@@ -1,0 +1,435 @@
+//!Mup-Arkkra
+
+// Uses macro TWO to add variations the second time through.
+
+header
+	title (18) "Waltz"
+	title "" "John A. Krallmann"
+	title " " "(July 10-17, 2022)"
+
+header2
+	title (12) "Waltz - page \%"
+footer
+	title (12) "\(copyright) Copyright 2022 John A. Krallmann"
+	title (4) " "
+	title (11) "Published using Mup software from Arkkra Enterprises (http://www.arkkra.com)"
+
+score
+	staffs=2
+	time=3/4
+	key=1#
+	beamstyle=4,4,4
+	brace=1-2
+	barstyle=1-2
+	measnum=y
+	scale=0.8
+staff 1
+	vscheme=2f
+staff 2
+	clef=bass
+music
+
+define BAR 
+ifdef MIDI pedal below 1,2: 1; endif
+bar
+@
+define DBLBAR 
+ifdef MIDI pedal below 1,2: 1; endif
+dblbar
+@
+
+midi all: 0 "tempo=110";
+midi 1 1: 0 "onvelocity=86,64";
+
+define THEME
+1: r;8d;e;f;g;
+2: g-;dgb;;
+BAR
+
+1: [with>]4.f;4e;8d;
+2: e-;dgb;;
+BAR
+
+1: ifdef TWO 8ce;df;4.eg;8a; else 8e;f;4.g;8a; endif
+2: c-;eac+;;
+BAR
+
+1: 8b-;c;4. ifdef TWO b- endif d;8d#;
+2: g--;b-dg;;
+BAR
+
+1: e;4. ifdef TWO e endif b;8a;
+2: c-;eac+;;
+BAR
+
+1: d;4. ifdef TWO d endif a;8g;
+2: b--;dgb;;
+BAR
+
+1: 8c;d;4.e;8g;
+2: a--;eac+;;
+BAR
+
+1: ifdef TWO [with>]2eg#;4da; else [with>]2g#;4a; endif
+2: d-;dfb;dfc+;
+BAR
+
+1: ifdef TWO d+;4.f+a+;8e+g+; else d+;4.a+;8g+; endif
+2: b--;dgb;;
+BAR
+
+1: ifdef TWO 4.d+f+;8c+e+;4; else 4.f+;8e+;4; endif
+2: c-;egd+;eac+;
+BAR
+
+1: ifdef TWO e+;4.g+b+;8e+a+; else e+;4.b+;8a+; endif
+2: c#-;eac#+;;
+BAR
+
+1: ifdef TWO 4.e+g+;8d+f+;4af+; else 4.g+;8f+;4; endif
+2: d-;dfb;dfc+;
+BAR
+
+1: ifdef TWO bf+;4.f+b+;8f+a+; else f+;4.b+;8a+; endif
+2: d#-;fabd#+;;
+BAR
+
+1: ifdef TWO 2e+a+;4e+g+; else 2a+;4g+; endif
+2: e-;egb;dgb;
+BAR
+
+1: ifdef TWO 2d+f+;4c+e+; else 2f+;4e+; endif
+2: c-;eac+;egc+;
+BAR
+
+1: ifdef TWO 2d+;4b&d&+; else 2d+;4d&+; endif
+ifdef TWO 1 2: b;g;s; endif
+2: g-;dgb;;
+BAR
+
+1: ifdef TWO ac+;4.e;8df; else c+;4.e;8f; endif
+2: d-;dfc+;;
+BAR
+
+1: ifdef TWO 2.b-g; else 2.g; endif
+2: g-;dgb;;
+BAR
+
+1: ifdef TWO fn;fn+;fb; else 2.fn; endif
+2: a-;dga;dgb;
+DBLBAR
+
+score key=0#
+music
+
+1: 8e;f;g;a;16b;c+;d+;d#+;
+2: c;egc+;;
+BAR
+
+1: 2.e+;
+ifdef TWO 1 2: c+;b;a; endif
+2: c;gc+e+;;
+BAR
+
+1: 2.g+;
+ifdef TWO 1 2: e+;d+;c+; endif
+2: e;gbe+;;
+BAR
+
+1: 8f+;g+;a+;b+;16c++;d++;e++;f++;
+2: d;ad+f+;;
+BAR
+
+staff 2 clef=treble
+music
+
+1: 2.d++;
+ifdef TWO 1 2: b+;a+;g+; endif
+2: g-;b-da;b-dg;
+BAR
+
+1: ifdef TWO 4.c++e++;8a+c++;4e+a+; else 4.e++;8c++;4a+; endif
+2: a-;ceb;cea;
+BAR
+
+1: ifdef TWO 4.b+d++;8g+b+;4d+g+; else 4.d++;8b+;4g+; endif
+2: g-;b-da;b-dg;
+BAR
+
+1: ifdef TWO 8a+c++;g+b+;f+a+;e+g+;d+f+;ac+; else 8c++;b+;a+;g+;8.f+;16c+; endif
+2: f-;a-cg;a-cf;
+BAR
+
+staff 2 clef=bass
+music
+
+1: ifdef TWO 4.e+g+;8c+e+;4gc+; else 4.g+;8e+;4c+; endif
+2: e;gc+d+;gc+e+;
+BAR
+
+1: ifdef TWO 4.d+f+;8e+g+;4d+f+; else 4.f+;8g+;4f+; endif
+2: d;fad+;;
+BAR
+
+1: ifdef TWO 4.ge+;8af+;4ge+; else 4.e+;8f+;4e+; endif
+2: c;egc+;;
+BAR
+
+1: ifdef TWO 8bd+;c+e+;d+f+;e+g+;f+a+;g+b+; else 8d+;e+;f+;g+;8.a+;16b+; endif
+2: g-;dfgb;;
+BAR
+
+1: ifdef TWO 2.e+c++; else 2.c++; endif
+2: c;gc+e+;;
+BAR
+
+1: 2.d++;
+ifdef TWO 1 2: f+;g+;a+; endif
+2: d;ad+f+;;
+BAR
+
+1: 2.a+;
+ifdef TWO 1 2: c+;b;a; endif
+2: f;ad+f+;;
+BAR
+
+ifdef TWO 1: 8a+c++;g+b+;f+a+;e+g+;d+f+;bd+; else 1: 8c++;b+;a+;g+;f+;d+; endif
+2: g;bd+g+;;
+BAR
+
+1: ifdef TWO 4.d+f+;c+e+; else 4.f+;e+; endif
+2: c;gc+e+;;
+BAR
+
+1: ifdef TWO 4.fae+;fad+; else 4.e+;d+; endif
+2: d;fad+;;
+BAR
+
+1: ifdef TWO 4.ac+;gb; else 4.c+;b; endif
+2: g;bd+f+;;
+BAR
+
+1: ifdef TWO 8b;c+;4.bd+;8c+e+; else 8b;c+;4.d+;8e+; endif
+2: g#;bd+f+;bd+e+;
+BAR
+
+1: ifdef TWO 4.bd+;ac+; else 4.d+;c+; endif
+2: a;c+e+;;
+BAR
+
+1: ifdef TWO 8f+a+;e+g+;d+f+;c+e+;bd+;ac+; else 8a+;g+;f+;e+;d+;c+; endif
+2: f;ac+f+;;
+BAR
+
+1: ifdef TWO [grace]8d+;[]e+;4.bd+;fg; else [grace]8d+;[]e+;4.d+;g; endif
+2: g;bd+;;
+BAR
+
+1: 2.g;
+ifdef TWO 1 2: d;e;f; endif
+2: e;gc+;;
+BAR
+
+1: c+;4.b;8a;
+ifdef TWO 1 2: 2.g; endif
+2: e&;gc+;;
+BAR
+
+1: ifdef TWO 2gb;4g; else 2b;4g; endif
+2: d;gb;;
+DBLBAR
+
+score key=1#
+music
+
+1: e;f;g;
+2: d&;gb;;
+BAR
+
+1: ifdef TWO 2ea;4e; else 2a;4e; endif
+2: c;ea;;
+BAR
+
+1: g;2f;
+2: d;fc+;;
+BAR
+
+1: ifdef TWO 2f;4eg; else 2f;4g; endif
+2: e;gb;;
+BAR
+
+1: ifdef TWO g;fa;gb; else g;a;b; endif
+2: d;gb;;
+BAR
+
+1: ifdef TWO c+e+;bd+;ac+; else 2e+;4c+; endif
+2: c;egc+;gc+e+;
+BAR
+
+1: ifdef TWO c+d+;c+e+;c+f+; else a;4.d+;8f+; endif
+2: d;fc+d+;;
+BAR
+
+1: ifdef TWO 2.bg+ tie; else 2.g+~; endif
+2: g-;dgb;gbd+;
+BAR
+
+1: ifdef TWO bg+;8r;b+;a+;g+; else g+;8r;b+;a+;g+; endif
+2: 2.bd+g+;
+bar
+
+ifndef TWO newpage endif
+
+1: ifdef TWO 2af+;4be+~; else 2f+;4e+~; endif
+2: e;gbe+;;
+BAR
+
+1: e+;4.d+;8c+;
+ifdef TWO 1 2: c+;2s; endif
+2: c;gc+e+;;
+BAR
+
+1: ifdef TWO 2gb;4dg; else 2b;4g; endif
+2: g-;dgb;;
+BAR
+
+1: ifdef TWO e;f;eg; else e;f;g; endif
+2: c;eac+;;
+BAR
+
+1: ifdef TWO 2fa;4f; else 2a;4f; endif
+2: d-;dfc+;;
+BAR
+
+1: ifdef TWO d;8df;eg;4fa; else d;8f;g;4a; endif
+2: f-;dfc+;;
+BAR
+
+1: 2.b;
+ifdef TWO 1 2: a;g;f; endif
+2: g-;dgb;;
+BAR
+
+1: 2d+;4d#+;
+ifdef TWO 1 2: 8fn;g;a;c+;4b; endif
+2: b-;dgb;;
+BAR
+
+1: ifdef TWO 2c+e+;4c+f+; else 2e+;4f+; endif
+2: c;gc+e+;;
+BAR
+
+1: 8a+;g+;4f+;e+;
+ifdef TWO 1 2: 2c+;4; endif
+2: c;gc+e+;;
+BAR
+
+1: ifdef TWO [with>]2a#c#+;4bd+; else 2d+;4b; endif
+2: g-;dgb;;
+BAR
+
+1: ifdef TWO eg;fa;gb; else g;a;b; endif
+2: e-;egb;;
+BAR
+
+1: ifdef TWO 2ec+;4ea; else 2c+;4a; endif
+2: a-;eac+;;
+BAR
+
+1: ifdef TWO ce;2eg; else e;2g; endif
+2: g-;eac+;;
+BAR
+
+1: 2.a;
+ifdef TWO 1 2: d;e;f; endif
+2: f-;dfc+;;
+BAR
+
+1: ifdef TWO 8r;d;e;f;eg;fa; else 8r;d;e;f;g;a; endif
+2: d-;dfc+;;
+BAR
+
+1: 2.b;
+ifdef TWO 1 2: a;g;f; endif
+2: g-;dgb;;
+BAR
+
+1: c+;d+;b;
+ifdef TWO 1 2: 2g;4fn; endif
+2: fn-;dgb;;
+BAR
+
+1: 2.a;
+ifdef TWO 1 2: 2.e; endif
+2: e-;egc+;;
+BAR
+
+1: 2g;4a;
+ifdef TWO 1 2: c;d;e&; endif
+2: e&-;e&gc+;;
+BAR
+
+1: 2b;4d+;
+ifdef TWO 1 2: d;e;g; endif
+2: d-;dgb;;
+BAR
+
+1: 2a+;4g+;
+ifdef TWO 1 2: a;b;c#+; endif
+2: c#-;egac#+;;
+BAR
+
+1: ifdef TWO d+f+;c+e+;bd+; else f+;e+;d+; endif
+2: d-;dfc+;;
+BAR
+
+1: ifdef TWO ac+;ed+;fa; else c+;d+;a; endif
+2: f-;dfc+;;
+BAR
+
+1: 2.b;
+ifdef TWO 1 2: a;g;f; endif
+2: g-;dgb;;
+BAR
+
+1: c+;d+;g;
+ifdef TWO 1 2: 2fn;4; endif
+2: fn-;dfngb;;
+BAR
+
+1: 2.g+;
+ifdef TWO 1 2: d+;c+;b; endif
+2: e-;egc+;;
+BAR
+
+1: 8g+;a+;g+;a+;g+;a+;
+ifdef TWO 1 2: 2.b&; endif
+2: e&-;e&gc+;;
+BAR
+
+1: 2.b+;
+ifdef TWO 1 2: d+;e+;f+; endif
+2: d-;dgb;;
+BAR
+
+ifdef TWO midi all: 1 "tempo=92"; endif
+ifdef TWO ital between 1&2: 1 "rit."; endif
+1: 8g+;a+;g+;a+;g+;a+;
+ifdef TWO 1 2: 2e+;4e&+; endif
+2: c-;egc+;e&gc+;
+BAR
+
+ifdef TWO midi all: 1 "tempo=78"; endif
+1: ifdef TWO 2.d+b+ tie; else 2.b+~; endif
+2: g--;dgb;gbd+;
+BAR
+
+1: ifdef TWO 2.d+b+; else 2.b+; endif
+2: 2.bd+g+;
+ifdef MIDI pedal below 1,2: 3.9*; endif
+ifdef TWO endbar else dblbar endif
+@
+
+THEME
+define TWO @
+THEME

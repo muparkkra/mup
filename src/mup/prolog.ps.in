@@ -1254,8 +1254,8 @@ mfont1 begin
 		% mensurdblwhole
 		/i {
 			lwid setlinewidth
-			-330 300 moveto -330 -300 lineto stroke
-			330 300 moveto 330 -300 lineto stroke
+			-420 300 moveto -420 -300 lineto stroke
+			420 300 moveto 420 -300 lineto stroke
 			140 setlinewidth
 			-365 230 moveto 365 230 lineto stroke
 			-365 -230 moveto 365 -230 lineto stroke
