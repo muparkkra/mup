@@ -471,7 +471,9 @@ char *grid_label;	/* optional label to use in place of real chord name */
 			 * to the same string, so that free_stufflist()
 			 * won't attempt to free the same string twice.
 			 */
-			new_p->grid_name = strdup(new_p->string);
+			if (new_p->string != 0) {
+				new_p->grid_name = strdup(new_p->string);
+			}
 		}
 		else {
 			/* User wants a custom label for this particular
