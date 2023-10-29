@@ -1,3 +1,9 @@
+* Mon Oct 23 2023 ArkkraEnterprises <support@arkkra.com> 7.1
+- musicscale parameter
+- mirrored titles
+- #file and #line comments
+- Alternate labels for chord grids
+- HTML version of Quick Reference
 * Fri Jul 01 2022 ArkkraEnterprises <support@arkkra.com> 7.0
 - noteleft string
 - mensural symbols and centered stems

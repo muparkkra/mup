@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -57,7 +57,7 @@
  * as a 5 line staff, so that's why we can use 8 * STEPSIZE here as the
  * smallest possible staff size.
  */
-#define CURMAXSCORES	( (int)(PGHEIGHT /				\
+#define CURMAXSCORES	( (int)(EFF_PG_HEIGHT /				\
 	(MINSTFSCALE * STEPSIZE * (8 + MIN(MINMINSTSEP, MINMINSCSEP)))) + 1 )
 
 #define	FUDGE	0.001	/* fudge factor for round off error */
@@ -862,12 +862,13 @@ posscores()
 			 * Remove these items' size from the space available
 			 * for music, and set music's starting point.
 			 */
-			availheight = PGHEIGHT - EFF_TOPMARGIN - EFF_BOTMARGIN
-				- head_p->height - foot_p->height
-				- topheight - botheight;
+			availheight = EFF_PG_HEIGHT - EFF_TOP_MARGIN
+				- EFF_BOT_MARGIN -
+				(head_p->height + foot_p->height
+				+ topheight + botheight) / Score.musicscale;
 
-			y_start = PGHEIGHT - EFF_TOPMARGIN
-				- head_p->height - topheight;
+			y_start = EFF_PG_HEIGHT - EFF_TOP_MARGIN -
+				(head_p->height + topheight) / Score.musicscale;
 
 			/* these vars need to be set for paqefeeds */
 			cfeed_p->north_win = y_start;
@@ -922,13 +923,16 @@ posscores()
 			if (scoreheight > availheight) {
 				if (Score.units == INCHES) {
 					ufatal("score is too high (%.2f inches) to fit on one page (limit %.2f)",
-					scoreheight * Score.scale_factor,
-					availheight * Score.scale_factor);
+					scoreheight * Score.scale_factor *
+						Score.musicscale,
+					availheight * Score.scale_factor *
+						Score.musicscale);
 				} else {
 					ufatal("score is too high (%.2f cm) to fit on one page (limit %.2f)",
 					scoreheight * Score.scale_factor *
-					CMPERINCH, availheight *
-					Score.scale_factor * CMPERINCH);
+						Score.musicscale * CMPERINCH,
+					availheight * Score.scale_factor *
+						Score.musicscale * CMPERINCH);
 				}
 			}
 
@@ -1886,8 +1890,8 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 			compgrids);
 
 	/* horizontal available width to use */
-	havail = PGWIDTH - eff_leftmargin((struct MAINLL *)0)
-			 - eff_rightmargin((struct MAINLL *)0);
+	havail = EFF_PG_WIDTH - eff_leftmargin((struct MAINLL *)0)
+			      - eff_rightmargin((struct MAINLL *)0);
 
 	/*
 	 * Find max we could put in one row, allowing padding.  Note that we do
@@ -1950,7 +1954,7 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 		 * opposite of what the next page would have been.
 		 */
 		if (pageside == PGSIDE_RIGHT) {	/* music page is PGSIDE_LEFT */
-			Atend_info.left.firstgrid_y = EFF_BOTMARGIN +
+			Atend_info.left.firstgrid_y = EFF_BOT_MARGIN +
 					totalheight - farnorth;
 
 			/* if music page's number is 1, use the first footer */
@@ -1965,7 +1969,7 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 
 			Atend_info.left.rows_per_page = nrows;
 		} else {	/* music page is PGSIDE_RIGHT */
-			Atend_info.right.firstgrid_y = EFF_BOTMARGIN +
+			Atend_info.right.firstgrid_y = EFF_BOT_MARGIN +
 					totalheight - farnorth;
 
 			/* if music page's number is 1, use the first footer */
@@ -2005,14 +2009,14 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 	 * It will have to go on other page(s).  Set the absolute coord to put
 	 * it at the top.
 	 */
-	Atend_info.left.firstgrid_y = PGHEIGHT - EFF_TOPMARGIN -
+	Atend_info.left.firstgrid_y = EFF_PG_HEIGHT - EFF_TOP_MARGIN -
 			upheight - farnorth;
 	if (upheight > 0) {
 		Atend_info.left.firstgrid_y -= white;
 	}
 
 	/* reset vertavail to the amount of space on a whole page */
-	vertavail = PGHEIGHT - EFF_TOPMARGIN - EFF_BOTMARGIN;
+	vertavail = EFF_PG_HEIGHT - EFF_TOP_MARGIN - EFF_BOT_MARGIN;
 	if (upheight > 0)
 		vertavail -= upheight + white;
 	if (downheight > 0)
@@ -2045,14 +2049,14 @@ struct FEED *gfeed_p;	/* FEED applying to grid-only pages (may be same) */
 	 * It will have to go on other page(s).  Set the absolute coord to put
 	 * it at the top.
 	 */
-	Atend_info.right.firstgrid_y = PGHEIGHT - EFF_TOPMARGIN -
+	Atend_info.right.firstgrid_y = EFF_PG_HEIGHT - EFF_TOP_MARGIN -
 			upheight - farnorth;
 	if (upheight > 0) {
 		Atend_info.right.firstgrid_y -= white;
 	}
 
 	/* reset vertavail to the amount of space on a whole page */
-	vertavail = PGHEIGHT - EFF_TOPMARGIN - EFF_BOTMARGIN;
+	vertavail = EFF_PG_HEIGHT - EFF_TOP_MARGIN - EFF_BOT_MARGIN;
 	if (upheight > 0)
 		vertavail -= upheight + white;
 	if (downheight > 0)

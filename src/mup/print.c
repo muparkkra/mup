@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -210,6 +210,8 @@ static float Flipshift;			/* How far the printed are on the page
 					 * only be nonzero if flipmargins is
 					 * YES, and even then only on
 					 * alternate pages. */
+int In_music = YES;			/* YES if musicscale is in effort,
+					 * thus NO if in head/foot/top/bot */
 
 /* static functions */
 static void init4print P((void));
@@ -288,6 +290,8 @@ static void prep_bbox P((void));
 static void show_bounding_boxes P((struct MAINLL *mll_p));
 static void start_page P((void));
 static void show_the_page P((void));
+static void begin_non_music_adj P((void));
+static void end_non_music_adj P((void));
 
 
 /* main function of print phase. Walk through main list,
@@ -487,7 +491,7 @@ init4print()
 	initstructs();
 
 	printf("%%!PS-Adobe-1.0\n");
-	printf("%%%%Creator: Mup (Version 7.0)\n");
+	printf("%%%%Creator: Mup (Version 7.1)\n");
 	printf("%%%%Title: music: %s from %s\n", Outfilename, Curr_filename);
 	clockinfo = time((time_t *)0);
 	timeinfo_p = localtime(&clockinfo);
@@ -543,6 +547,7 @@ init4print()
 
 	if (PostScript_hooks[PU_AFTERPROLOG] != 0) {
 		pr_print(PostScript_hooks[PU_AFTERPROLOG], YES);
+		printf("%%EndAfterPrologHook\n");
 	}
 	/* init for first page */
 	page1setup();
@@ -875,6 +880,7 @@ int lineno;		/* line number for error messages */
 {
 	double x1, y1;	/* beginning of line */
 	double x2, y2;	/* end of line */
+	int uses_page;	/* YES if start or end references _page */
 
 	x1 = inpc_x( &(line_p->start), fname, lineno);
 	y1 = inpc_y( &(line_p->start), fname, lineno);
@@ -930,9 +936,31 @@ int lineno;		/* line number for error messages */
 		return;
 	}
 
-	/* set line width to specified width and type, then draw the line */
+	/* Set line width to specified width and type, then draw the line.
+	 * But if _page was used, we want to cancel out any effect of
+	 * musicscale. This is a bit ugly. We set Last_staffscale to
+	 * invalid value to ensure do_linetype will output new value,
+	 * then adjust Staffscale by musicscale. Then after drawing,
+	 * we put Staffscale back to what it should be, and again set
+	 * Last_staffscale invalid, to force the next call to do_linetype
+	 * (if any) to output new value.
+	 */
+	uses_page = NO;
+	if (Score.musicscale != DEFMUSICSCALE) {
+		if ( (references_page(&(line_p->start)) == YES)
+				|| (references_page(&(line_p->end)) == YES) ) {
+			uses_page = YES;
+			Last_staffscale  = -1.0;
+			Staffscale /= Score.musicscale;
+		}
+	}
+	
 	do_linetype(line_p->linetype);
 	draw_line (x1, y1, x2, y2);
+	if (uses_page == YES) {
+		Last_staffscale  = -1.0;
+		Staffscale *= Score.musicscale;
+	}
 
 	/* make sure line type gets set back to solid */
 	if (line_p->linetype == L_DASHED || line_p->linetype == L_DOTTED) {
@@ -1117,6 +1145,7 @@ int lineno;		/* line number for error messages */
 	float *xlist, *ylist;
 	float cwid;		/* curve width */
 	int taper;		/* YES or NO */
+	int uses_page;		/* YES if a coord references _page */
 
 
 	/* pr_allcurve() expects lists of X and Y coordinates, so
@@ -1159,6 +1188,21 @@ int lineno;		/* line number for error messages */
 	}
 	/* adjust for current staff scaling */
 	cwid *= Staffscale;
+
+	/* If any of the coordinates reference _page,
+	 * then cancel out the effect of musicscale, since that is
+	 * suppose to only affect the music window, and _page encompasses
+	 * more than that. */
+	uses_page = NO;
+	for (n = 0; n < curve_p->ncoord; n++) {
+		if (references_page(&(curve_p->coordlist[n])) == YES) {
+			uses_page = YES;
+			break;
+		}
+	}
+	if (uses_page == YES) {
+		cwid /= Score.musicscale;
+	}
 
 	pr_allcurve(xlist, ylist, curve_p->ncoord, cwid, taper);
 	FREE(xlist);
@@ -1682,11 +1726,11 @@ struct MAINLL *mll_p;	/* to get effective margin */
 	 * margin or if the next bar is a restart. */
 	halfbarwidth = width_barline(bar_p) / 2.0;
 	/* Make sure bars line at end of score are precisely at the end */
-	if (PGWIDTH - eff_rightmargin(mll_p) - x <= halfbarwidth + 3.0 * STDPAD) {
+	if (EFF_PG_WIDTH - eff_rightmargin(mll_p) - x <= halfbarwidth + 3.0 * STDPAD) {
 		/* Should only hit this now if there is a bug in placement
 		 * of last bar line in a score, but since we changed how
 		 * that is determined, better safe than sorry. */
-		x = PGWIDTH - eff_rightmargin(mll_p) - halfbarwidth
+		x = EFF_PG_WIDTH - eff_rightmargin(mll_p) - halfbarwidth
 							+ eos_bar_adjust(bar_p);
 		at_end_of_score = YES;
 	}
@@ -2516,12 +2560,17 @@ double y;
 {
 	double x;
 
-	x = eff_leftmargin(0);
+	/* Note cannot use eff_*margin() in thus function because they are only
+	 * valid in music window.  */
+	x = Score.rightmargin / Score.scale_factor;
 	/* Set up window coordinates, go to upper left of window, and print */
 	set_win_coord(blockhead_p->c);
-	set_win(y, y - blockhead_p->height, PGWIDTH - eff_rightmargin(0), x);
+	set_win(y, y - blockhead_p->height,
+			PGWIDTH - (Score.rightmargin / Score.scale_factor), x);
 	set_cur(x, y);
+	begin_non_music_adj();
 	pr_print(blockhead_p->printdata_p, NO);
+	end_non_music_adj();
 	set_win_coord(0);
 }
 
@@ -2603,6 +2652,9 @@ outcoord(val)
 double val;		/* an x or y value */
 
 {
+	if (isnan(val)) {
+		pfatal("got invalid number for a coordinate");
+	}
 	OUTP(("%.2f ", val * PPI));
 }
 
@@ -2682,9 +2734,12 @@ int lineno;	/* line number for error messages */
 	intrinsic_width = strwidth(string);
 	if (lineno > 0) {
 		double flip_adjusted_x;
+		double pgwidth;
+
 		flip_adjusted_x = x + Flipshift;
-		if (flip_adjusted_x + intrinsic_width * horzscale > PGWIDTH
-					|| flip_adjusted_x < 0.0) {
+		pgwidth = (In_music ? EFF_PG_WIDTH : PGWIDTH);
+		if ( (flip_adjusted_x + intrinsic_width * horzscale > pgwidth)
+					|| (flip_adjusted_x < 0.0) ) {
 			l_warning(fname, lineno,
 					"string extends beyond edge of page");
 		}
@@ -3180,8 +3235,7 @@ struct MAINLL *mll_p;
 	if (header_p->height > 0.0 ||
 			(header_p->printdata_p != 0 &&
 			header_p->printdata_p->isPostScript == YES)) {
-		set_cur(eff_leftmargin((struct MAINLL *)0), PGHEIGHT - EFF_TOPMARGIN);
-		pr_print(header_p->printdata_p, NO);
+		pr_topbot(header_p, PGHEIGHT - EFF_TOPMARGIN);
 	}
 
 	/* figure out which footer to use */
@@ -3200,9 +3254,7 @@ struct MAINLL *mll_p;
 	if (footer_p->height > 0.0 ||
 			(footer_p->printdata_p != 0 &&
 			footer_p->printdata_p->isPostScript == YES)) {
-		set_cur(eff_leftmargin((struct MAINLL *)0),
-					EFF_BOTMARGIN + footer_p->height);
-		pr_print(footer_p->printdata_p, NO);
+		pr_topbot(footer_p, EFF_BOTMARGIN + footer_p->height);
 	}
 
 	Context = C_MUSIC;
@@ -3308,11 +3360,12 @@ struct MAINLL *mll_p;
 		Doing_dotted = NO;
 		Curr_font = FONT_UNKNOWN;
 		Curr_size = DFLT_SIZE;
-	}
-
-	if (PostScript_hooks[PU_ATPAGEBEGIN] != 0) {
-		set_cur(_Page[AW], _Page[AN]);
-		pr_print(PostScript_hooks[PU_ATPAGEBEGIN], YES);
+		if (PostScript_hooks[PU_ATPAGEBEGIN] != 0) {
+			set_cur(_Page[AW], _Page[AN]);
+			begin_non_music_adj();
+			pr_print(PostScript_hooks[PU_ATPAGEBEGIN], YES);
+			end_non_music_adj();
+		}
 	}
 }
 
@@ -3329,6 +3382,9 @@ int is_hook_call;
 	float x, y;	/* coordinate */
 	struct COORD_INFO *coordinfo_p;	/* to find out if coord is associated
 			 * with something that is invisible */
+	/* string_data_p is usually same as printdata_p,
+	 * but for mirrored titles, is the mirror */
+	struct PRINTDATA *string_data_p;
 
 
 	/* walk down list of things to print */
@@ -3395,19 +3451,27 @@ int is_hook_call;
 		y = inpc_y( &(printdata_p->location),
 			 printdata_p->inputfile, printdata_p->inputlineno );
 
+		/* Check if to use the mirrored string */
+		if (printdata_p->mirror_p != 0 && Curr_pageside == PGSIDE_LEFT) {
+			string_data_p = printdata_p->mirror_p;
+		}
+		else {
+			string_data_p = printdata_p;
+		}
+
 		/* justify as specified */
 		switch (printdata_p->justifytype) {
 
 		case J_RIGHT:
-			x -= printdata_p->width;
+			x -= string_data_p->width;
 			break;
 
 		case J_CENTER:
-			if (has_align_point(printdata_p->string) == YES) {
-				x -= center_left_width(printdata_p->string);
+			if (has_align_point(string_data_p->string) == YES) {
+				x -= center_left_width(string_data_p->string);
 			}
 			else {
-				x -= printdata_p->width / 2.0;
+				x -= string_data_p->width / 2.0;
 			}
 			break;
 
@@ -3415,6 +3479,9 @@ int is_hook_call;
 			break;
 		}
 
+		/* Note that mirroring is only done for "title,"
+		 * which can never have isPostScript set, so we don't have to
+		 * deal with mirroring in the special PostScript code.  */
 		if (printdata_p->isPostScript) {
 			outop(O_SAVE);
 			do_moveto(x, y);
@@ -3453,11 +3520,12 @@ int is_hook_call;
 		}
 
 		/* print the string at proper place */
-		pr_wstring(x, y, printdata_p->string, printdata_p->justifytype,
-					printdata_p->width,
+		pr_wstring(x, y, string_data_p->string,
+					printdata_p->justifytype,
+					string_data_p->width,
 					DEFHORZSCALE,
-					printdata_p->inputfile,
-					printdata_p->inputlineno);
+					string_data_p->inputfile,
+					string_data_p->inputlineno);
 	}
 }
 
@@ -5020,7 +5088,10 @@ static void
 setscale()
 
 {
-	OUTP(("%f %f scale\n", Score.scale_factor, Score.scale_factor));
+	double adjust;
+
+	adjust = Score.scale_factor * Score.musicscale;
+	OUTP(("%f %f scale\n", adjust, adjust));
 }
 
 
@@ -5128,6 +5199,7 @@ struct MAINLL *mll_p;	/* FEED for end of current page, or could be
 			if (mll_p->u.feed_p->pagefeed == YES
 							|| Feednumber == 1) {
 				if (BB_IS_SET(BB_BLOCKHEAD)) {
+					begin_non_music_adj();
 					/* Do header/footer */
 					if (Curr_pageside == PGSIDE_LEFT) {
 						if (Feednumber == 1) {
@@ -5170,6 +5242,7 @@ struct MAINLL *mll_p;	/* FEED for end of current page, or could be
 							set_win_coord(0);
 						}
 					}
+					end_non_music_adj();
 				}
 				if (mll_p->u.feed_p->pagefeed == YES) {
 					/* reached top of current page; we're done */
@@ -5291,7 +5364,9 @@ show_the_page()
 {
 	if (PostScript_hooks[PU_ATPAGEEND] != 0) {
 		set_cur(_Page[AE], _Page[AS]);
+		begin_non_music_adj();
 		pr_print(PostScript_hooks[PU_ATPAGEEND], YES);
+		end_non_music_adj();
 	}
 
 	outop(O_RESTORE);
@@ -5310,8 +5385,36 @@ print_blank_page()
 	start_page();
 	outop(O_SAVE);
 	if (PostScript_hooks[PU_ATPAGEBEGIN] != 0) {
+		begin_non_music_adj();
 		pr_print(PostScript_hooks[PU_ATPAGEBEGIN], YES);
+		end_non_music_adj();
 	}
 	OUTP(("%% Intentionally blank page\n"));
 	show_the_page();
+}
+
+
+/* Compensate for musicscale if necessary, for header/foot/top/bottom */
+
+static void
+begin_non_music_adj()
+{
+	if (Score.musicscale != DEFMUSICSCALE) {
+		double adjust;
+
+		outop(O_GSAVE);
+		adjust = (1.0 / Score.musicscale);
+		do_scale(adjust, adjust);
+	}
+	In_music = NO;
+}
+
+
+static void
+end_non_music_adj()
+{
+	if (Score.musicscale != DEFMUSICSCALE) {
+		outop(O_GRESTORE);
+	}
+	In_music = YES;
 }

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -120,9 +120,9 @@ struct COORD_REF {
 };
 
 /*
- * For each coodinate that is pointed to by some location variable, we
+ * For each coordinate that is pointed to by some location variable, we
  * need a bunch of information about it, such as whether it's from a NOTE,
- * BAR, builtin variable, or GRPSYL. If not a builtin varaible, we'll need
+ * BAR, builtin variable, or GRPSYL. If not a builtin variable, we'll need
  * to know what page, score, and (if GRPSYL) staff, it is associated with
  * in order to figure out how to split things that end up on different
  * scores and/or pages.
@@ -204,8 +204,8 @@ struct VAR_EXPORT {
 };
 
 /*
- * Define a structure for the above linked list, holding information
- * about printing.  Can also be on a list off of a PRHEAD struct.
+ * Define a structure for holding information about printing.  It can be used
+ * in a linked list off of either a BLOCKHEAD or PRHEAD struct.
  */
 struct PRINTDATA {
 	struct INPCOORD location;	/* input coordinates */
@@ -219,6 +219,9 @@ struct PRINTDATA {
 	short inputlineno;      	/* line number in inputfile */
 	struct VAR_EXPORT *export_p;	/* vars to export to user PostScript */
 	struct PRINTDATA *next;		/* for linked list */
+	struct PRINTDATA *mirror_p;	/* if mirroring is in effect, this
+					 * points to the string to
+					 * interchange with, else null */
 };
 
 /*
@@ -434,7 +437,8 @@ struct SSV {
 	short saved_ssv_index;	/* index into Saved_parms to restore from */
 
 	/* ======== ITEMS FOR SCORE CONTEXT ONLY ======== */
-	float scale_factor;	/* scale the whole output by this amount */
+	float scale_factor;	/* scale all output (except margins) by this */
+	float musicscale;	/* scale only the music "window" by this */
 
 	float units;		/* INCHES or CM */
 
@@ -1120,6 +1124,11 @@ struct STUFF {
 	char *string;		/* usual convention of 1st 2 bytes = font/size*/
 	short all;		/* does this STUFF actually belong to "all" */
 				/* (the score), not a particular staff? YES/NO*/
+	char *grid_name;	/* For TM_CHORD, the actual grid name; otherwise
+				 * unused. The "string" field will typically be
+				 * the same, but if user provided an alternate
+				 * label to be printed, that will be in "string"
+				 */
 
 	/*
 	 * Define start and end times for the stuff.  "start" and "end.count"

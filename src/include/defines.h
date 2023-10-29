@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -220,6 +220,11 @@
 #define MAXSCALE	(10.0)
 #define DEFSCALE	(1.0)
 
+/* limits for scaling the music window */
+#define MINMUSICSCALE	(0.1)
+#define MAXMUSICSCALE	(10.0)
+#define DEFMUSICSCALE	(1.0)
+
 /* limits for scaling a staff relative to the output as a whole */
 #define MINSTFSCALE	(0.1)
 #define MAXSTFSCALE	(10.0)
@@ -256,7 +261,7 @@
 #define	DEFMINSCSEP	(12.0)	/* default min between scores */
 #define	MINMAXSCSEP	MINMINSCSEP /* min user-specified max between scores */
 #define	DEFMAXSCSEP	(20.0)	/* default max between scores */
-#define MAXSEPVAL	(PGHEIGHT / STEPSIZE) /* max for either one */
+#define MAXSEPVAL	(EFF_PG_HEIGHT / STEPSIZE) /* max for either one */
 #define	MINSTPAD	(-MAXSEPVAL) /* min user-spec. white between staffs */
 #define	MAXSTPAD	(MAXSEPVAL) /* max user white between staffs */
 #define	DEFSTPAD	(0.0)	/* default white between staffs */

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -141,6 +141,7 @@ initstructs()
 	 */
 	/* score context */
 	Score.scale_factor = DEFSCALE;
+	Score.musicscale = DEFMUSICSCALE;
 	Score.units = INCHES;
 	Score.pageheight = DEFPAGEHEIGHT;
 	Score.pagewidth = DEFPAGEWIDTH;
@@ -675,6 +676,10 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 	 */
 	if (i_p->used[SCALE_FACTOR] == YES) {
 		f_p->scale_factor = i_p->scale_factor;
+	}
+
+	if (i_p->used[MUSICSCALE] == YES) {
+		f_p->musicscale = i_p->musicscale;
 	}
 
 	if (i_p->used[UNITS] == YES) {

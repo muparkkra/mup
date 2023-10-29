@@ -24,6 +24,7 @@ uguide_files = \
 	uguide/ext_2.gif \
 	uguide/ext_3.gif \
 	uguide/ext_4.gif \
+	uguide/fileline.html \
 	uguide/fontfile.html \
 	uguide/gensyn.html \
 	uguide/gradmidi.html \

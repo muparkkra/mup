@@ -376,7 +376,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 7.0
+Mup Version 7.1
 .ps
 .vs
 .ev
@@ -390,9 +390,9 @@ Mup Version 7.0
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 7.0
+Mup Music Publisher User's Guide \(em Mup Version 7.1
 .sp 0.5
-\(co Copyright 1995-2022 by Arkkra Enterprises
+\(co Copyright 1995-2023 by Arkkra Enterprises
 .sp 0.5
 All rights reserved.
 .sp
@@ -778,6 +778,9 @@ Passing multiple coordinates to PostScript
 .Hr brace.html
 Printing braces
 .br
+.Hr fileline.html
+Special #file and #line comments
+.br
 .Hr pstools.html
 Converting Mup files to other formats
 <HR>
@@ -807,7 +810,7 @@ http://www.arkkra.com
 </P>
 <HR>
 <P>
-Copyright (c) 1995-2022 by Arkkra Enterprises
+Copyright (c) 1995-2023 by Arkkra Enterprises
 </P>
 ..
 .Ht Introduction to Mup
@@ -860,11 +863,11 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 7.0.
+This User's Guide is for Mup version 7.1.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
-\(co Copyright 1995-2022 by Arkkra Enterprises
+\(co Copyright 1995-2023 by Arkkra Enterprises
 .FE
 .He
 .ig
@@ -1747,7 +1750,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 7.0.
+Mup will then exit. This document is for version 7.1.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -1999,7 +2002,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-7.0
+//!Mup-Arkkra-7.1
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -2013,13 +2016,16 @@ each but the last must end with a "\e" (backslash) character, to
 tell Mup to treat the next line as a continuation of the current line.
 Blank lines can be put between statements to make things easier to read.
 .P
-Comments begin with two slashes and continue to end of line. All comments
-.Ix aF
-will be totally ignored by Mup, and are for your own use to remind yourself
-of something. For example:
+Comments begin with two slashes and continue to end of line. For example:
 .Ex
 // Note: in some early manuscripts, this chord had an accent
 .Ee
+.Ix aF
+Comments will be ignored by Mup, and are for your own use to remind yourself
+of something. (There are a couple exceptions, covered under
+.Hr fileline.html
+Special #file and #line comments
+in the Hints section.)
 .P
 Staffs are numbered from top to bottom, starting at staff 1.
 .Ix gM
@@ -4126,7 +4132,7 @@ for more details.
 You may want to also look at the section on
 .Hr crossst.html
 cross-staff stems,
-for an alternate way to handles some cases where you might
+for an alternate way to handle some cases where you might
 use cross-staff beams.
 .Hh alt
 .H 4 "Alternation"
@@ -8177,6 +8183,20 @@ One way to do this would be to put a space and backspace in the name.
 So, for example, "Am" and "Am \eb" would count as separate chords and could
 have different grid definitions, but the chord names would still look
 the same on output.
+.P
+Sometimes, you might want to have an alternate label printed for a chord 
+at a particular place. An example might be that you have a C chord followed by
+a C/B chord, and want to abbreviate the second to just /B. Another
+case might be wanting a chord name in parentheses for some reason,
+in just one spot. This can be done by giving a string in parentheses,
+after the string for the chord name:
+.Ex
+rom chord above 1: 1 "C"; 2 "C/B" ("/B"); 3 "F" ("(F)"); 4 "F/B" ("/B");
+.Ee
+The first string is the actual chord name, which will be used to look up
+what grid diagram to print, while the parenthesized string specifies what
+label to print. This allows the same chord grid to be used
+with different labels, or the same label to be used for different grids.
 .Ht Music symbols
 .Hd mussym.html
 .H 2 "Mussym"
@@ -8946,7 +8966,7 @@ Another type of print command
 is "title." The full format of this command is:
 .Ix gC
 .Ex
-\fBtitle\fP \fIfontfamily font size  "text1"  "text2"  "text3"\fP
+\fBmirrored title\fP \fIfontfamily font size  "text1"  "text2"  "text3"\fP
 .Ee
 However, only the word "title" and one quoted text string are required.
 .Ix hB
@@ -8982,6 +9002,11 @@ second will be right justified. If three strings are given, they will all
 be printed on the same line, with the first left justified, the second
 centered, and the last right justified.
 .P
+.Ix jS
+Adding "mirrored" at the beginning only has effect when there are at
+least two strings provided and the output is going onto a left page, in
+which case the first and last strings are interchanged.
+.P
 Some samples:
 .Ex
 title bold (12) "Sonata 12"
@@ -8989,6 +9014,7 @@ title (18) "Song Without Words"
 title ital (12) "Text: John Doe" "Tune: Jane Doe"
 title "Suite in C" "Trumpet I" "Waltz"
 title    ""    "A. Composer"
+mirrored title "at inner margin" "at outer margin"
 .Ee
 .P
 .Hm paragrph
@@ -14135,6 +14161,44 @@ gridscale,
 .Hr param.html#gridused
 gridswhereused
 .eP
+.\"-----------------
+.bP
+.Na
+.Hm musicscale
+musicscale
+.De
+This parameter specifies by what factor to scale printed output,
+but unlike the
+.Hr param.html#scale
+scale parameter
+(which applies to the entire page),
+this parameter applies only to the "music" portion of pages, and does
+not affect headers, footers, top or bottom blocks.
+As examples,
+scale=2 prints everything in the music area of the pages
+twice as large as normal, while scale=0.5 prints it at half size.
+This parameter can only be specified before any music or block input.
+.Va
+a number between 0.1 and 10.0
+.Df
+1.0
+.Cn
+score
+.Oo
+.eX
+musicscale=0.95
+.Sa
+.Hr param.html#packfact
+packfact,
+.Hr param.html#packexp
+packexp,
+.Hr param.html#scale
+scale,
+.Hr param.html#stscale
+staffscale
+.Ix fV
+.eP
+.\"-----------------
 .\"---------------
 .bP
 .Na
@@ -15040,6 +15104,8 @@ score
 .eX
 scale=0.95
 .Sa
+.Hr param.html#musicscale
+musicscale,
 .Hr param.html#packfact
 packfact,
 .Hr param.html#packexp
@@ -15488,11 +15554,12 @@ two instruments, say piano and violin, where you want the piano part to
 be written in normal size, but want to show the violin part in smaller
 size, such that while the pianist will have the violin part available
 for reference, it won't take up a lot of space.
-Another possible use is to set staffscale in score context, to make
-all staff-related things a different size, but leave other things, like
-.Hr headfoot.html
-headers and footers,
-unaffected.
+While it is possible to set staffscale in score context, to make
+all staff-related things a different size,
+in most cases it will be better to use the
+.Hr param.html#musicscale
+musicscale parameter
+for that.
 .Va
 0.1 to 10.0
 .Df
@@ -15504,6 +15571,8 @@ forces new score if it changed
 .eX
 staffscale=0.75
 .Sa
+.Hr param.html#musicscale
+musicscale,
 .Hr param.html#scale
 scale
 .eP
@@ -16644,8 +16713,8 @@ If you want to get a little more or less on each page, it is usually best
 to start with changing the
 .Hr param.html#scale
 scale,
-.Hr param.html#stscale
-staffscale,
+.Hr param.html#musicscale
+musicscale,
 .Ix fV
 .Hr param.html#packfact
 packfact,
@@ -16659,7 +16728,7 @@ parameters.
 You may want to experiment with changing these individually first, to get
 a feel for how they work, as trying to change all of them at once may lead to
 interactions that change things more radically than you might expect.
-Changing staffscale in score context lets you adjust the size of the
+Changing musicscale lets you adjust the size of the
 music without affecting the size of the text in headers and footers.
 Adjusting the margins is sometimes helpful as well. Other parameters that
 .Ix gS
@@ -18121,9 +18190,44 @@ bar
 That still wouldn't handle things like special characters in the string,
 or different font sizes, but could handle simple cases, and be a starting
 point for more complicated ones.
+.Ht "Special #file and #line comments"
+.Hd fileline.html
+.H 2 "Special #file and #line comments"
+.P
+There are two "special" kinds of comments. Since Mup takes a text file
+as input, it may sometimes be convenient to write a program which generates
+Mup input, based on some higher-level dscription. But then, if there are
+any errors found in that generated input, it may be difficult to correlate the
+error line that Mup outputs with what line in the original input had
+generated it. To help with that, the generating program could insert
+special comments to override what Mup uses as the current file name and
+line number when reporting errors or warnings.
+.P
+The first special comment format is:
+.Ex
+//#file \fIsomeFileName\fP
+.Ee
+Any warnings or errors encountered after that line will use the
+given \fIsomeFileName\fP instead of the name of the file actually being read.
+The "//#file" must be exactly as shown, with no spaces. That must be followed
+by at least one space or tab. The entire rest of the line
+after those spaces/tabs will be used as the file name.
+.P
+The second special comment format is:
+.Ex
+//#line \fIN\fP
+.Ee
+where \fIN\fP is a number, to be treated as the line number for the following
+line of input. So:
+.Ex
+//#file Etude
+//#line 42
+Any errors on this line will be reported as being from line 42 of file "Etude"
+.Ee
+Anything on the //#line line after the number will be ignored.
 .Ht Converting Mup files to other formats
 .Hd pstools.html
-.H 2 "Converting Mup files to other formats"
+.H 2 "Using PostScript tools on Mup files"
 .P
 Since Mup generates PostScript, almost any PostScript tool can be used
 on its output. In particular, the "ps2pdf" tool that comes with Ghostscript can
@@ -18134,12 +18238,23 @@ let you import EPS files, so this can let you insert Mup output into
 some other document.
 .P
 There is a "psutils" package, available from most Linux archives,
-that contains various Postscript tools. These include "psnup," which lets
+that contains various Postscript tools. The "psnup" program lets
 you print multiple pages on one sheet of paper with more flexibility
 than Mup's
 .Hr param.html#panels
-panelsperpage parameter,
-and "psselect," which prints a subset of pages.
+panelsperpage parameter.
+The "psselect" command prints a subset of pages.
+The "psresize" command may be useful for getting something like a3 paper
+size, which Mup doesn't support directly via the
+.Hr param.html#pgsize
+pagesize parameter,
+or a size that exceeds the range of the
+.Hr param.html#pgheight
+pageheight
+and
+.Hr param.html#pgwidth
+pagewidth
+parameters.
 .P
 You can check the
 .Hr http://www.arkkra.com/doc/userpgms.html
@@ -18926,6 +19041,7 @@ measure repeat\*(hE
 measure rest\*(hD
 MIDI\*(aA
 mid-measure parameter changes\*(jF
+mirrored\*(jS
 mordent\*(gD
 mouse\*(cX
 MS-DOS\*(aI
@@ -19047,7 +19163,7 @@ west\*(dB
 _win tag\*(jO
 with\*(fZ
 X-shaped notes\*(bS
-.\" next string to use is jS
+.\" next string to use is jT
 .fi
 .ad
 .if \n(.g \X'ps: exec %-marker2-'

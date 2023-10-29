@@ -1,0 +1,29 @@
+//!Mup-Arkkra-7.1
+
+header
+	title bold (18) "altgrid.mup"
+	paragraph (14) "This file tests alternate labels for grids."
+
+score
+	gridswhereused=y
+	gridsatend=y
+	staffs=2
+staff 2
+	transpose=up major 2
+grids
+	"A"             " -  o  2  2  2  o "
+	"B"             " - (2  4  4  4  2)"
+	"C6"            " -  3  2  2  1  o "
+	"Cmaj9"         " -  3  2  o  3  o "
+	"D6"            " -  -  o  2  o  2 "
+	"Dmaj9"         " -  -  o (2  5  2)"
+music
+
+1-2: a;;;;
+bold chord above 1,2:  2 "A" ("alt"); 3 "A" ("(A)"); 4 "A";
+rom below 2: 1 "Staff 2 tests transposition";
+bar
+
+1-2: c;;;;
+bold chord above 1,2:  1 "C6" ("c-6"); 2 "C6" ("(c6)"); 3 "Cmaj9"; 4 "Cmaj9" ("same");
+bar

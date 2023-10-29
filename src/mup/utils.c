@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -68,6 +68,7 @@ static struct STRFUNC Trans_table[] = {
 };
 static int Trans_elements = NUMELEM(Trans_table);
 
+extern int In_music;
 static int prev_has_tie P((struct GRPSYL *gs_p, struct MAINLL *mll_p));
 static void chk_tie_out_oct P((struct GRPSYL *gs_p, RATIONAL total_time,
 	double oct_end_count, char *filename, int lineno));
@@ -440,6 +441,8 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
 				 * single line. */
 	struct MAINLL *rightmargin_mll_p;	/* mll_p to use for
 				 * finding the right margin */
+	float effective_width;	/* after adjustment for musicscale,
+				 * for split_string to use as its width */
 
 
 	/* Set _win in this context to zero height at top margin */
@@ -447,15 +450,22 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
 	rightmargin_mll_p = (mll_p ? mll_p->next : 0);
 	set_win_coord(blockhead_p->c);
 	set_win(PGHEIGHT - EFF_TOPMARGIN, PGHEIGHT - EFF_TOPMARGIN,
-		PGWIDTH - eff_rightmargin(rightmargin_mll_p),
-		eff_leftmargin(mll_p));
-	block_width = PGWIDTH - eff_rightmargin(rightmargin_mll_p) -
-							eff_leftmargin(mll_p);
+		PGWIDTH - eff_rightmargin(rightmargin_mll_p) * Score.musicscale,
+		eff_leftmargin(mll_p) * Score.musicscale);
+	block_width = PGWIDTH
+		- eff_rightmargin(rightmargin_mll_p) * Score.musicscale
+		- eff_leftmargin(mll_p) * Score.musicscale;
+	if (context == C_BLOCK) {
+		effective_width = block_width / Score.musicscale;
+	}
+	else {
+		effective_width = block_width;
+	}
 
 	if (blockhead_p->printdata_p != (struct PRINTDATA *) 0) {
 		/* set current to left corner */
-		set_cur(eff_leftmargin((struct MAINLL *)0),
-						PGHEIGHT - EFF_TOPMARGIN);
+		set_cur(eff_leftmargin((struct MAINLL *)0) * Score.musicscale,
+				PGHEIGHT - EFF_TOPMARGIN);
 
 		distance = _Cur[AY];
 
@@ -469,13 +479,13 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
 			if (pr_p->justifytype == J_JUSTPARA ||
 					pr_p->justifytype == J_RAGPARA) {
 				pr_p->string = split_string(pr_p->string,
-								block_width);
+								effective_width);
 			}
 			pr_p->width = strwidth(pr_p->string);
 			/* stretch justified paragraphs to full width */
 			if (pr_p->justifytype == J_JUSTPARA &&
-						pr_p->width < block_width) {
-				pr_p->width = block_width;
+						pr_p->width < effective_width) {
+				pr_p->width = effective_width;
 			}
 
 			/* adjust for justification */
@@ -545,8 +555,9 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
 			if ( lowest < distance) {
 				distance = lowest;
 				set_win(PGHEIGHT - EFF_TOPMARGIN, distance,
-					PGWIDTH - eff_rightmargin((struct MAINLL *)0),
-					eff_leftmargin((struct MAINLL *)0));
+					PGWIDTH -
+					eff_rightmargin(mll_p) * Score.musicscale,
+					eff_leftmargin(mll_p) * Score.musicscale);
 			}
 
 			/* Set to end of string just "printed."
@@ -579,8 +590,8 @@ struct MAINLL *mll_p;		/* for getting margin overrides */
  	 * by offsetting from bottom of page instead of top */
 	if ( (context == C_FOOTER) || (context == C_FOOT2) ) {
 		set_win(EFF_BOTMARGIN + blockhead_p->height, EFF_BOTMARGIN,
-			PGWIDTH - eff_rightmargin((struct MAINLL *)0),
-			eff_leftmargin((struct MAINLL *)0));
+			PGWIDTH - eff_rightmargin((struct MAINLL *)0) * Score.musicscale,
+			eff_leftmargin((struct MAINLL *)0) * Score.musicscale);
 	}
 	set_win_coord(0);
 }
@@ -596,6 +607,8 @@ calc_block_heights()
 	struct MAINLL *mll_p;
 	double topheight = -1.0;	/* if > 0.0, is height of "top" */
 	double botheight = -1.0;	/* if > 0.0, is height of "bottom" */
+	double win_north, win_south;
+	double win_east, win_west;
 
 	debug(2, "calc_block_heights");
 
@@ -716,12 +729,18 @@ calc_block_heights()
 		}
 	}
 
-	set_win(PGHEIGHT - EFF_TOPMARGIN - Header.height
-			- (topheight > 0.0 ? topheight : 0.0),
-			EFF_BOTMARGIN + Footer.height
-			+ (botheight > 0.0 ? botheight : 0.0),
-			PGWIDTH - eff_rightmargin((struct MAINLL *)0),
-			eff_leftmargin((struct MAINLL *)0));
+	if (topheight < 0.0) {
+		topheight = 0.0;
+	}
+	if (botheight < 0.0) {
+		botheight = 0.0;
+	}
+	win_north = EFF_PG_HEIGHT - EFF_TOP_MARGIN -
+				(Header.height + topheight) / Score.musicscale;
+	win_south = EFF_BOT_MARGIN + (Footer.height + botheight) / Score.musicscale;
+	win_east = EFF_PG_WIDTH - eff_rightmargin(0);
+	win_west = eff_leftmargin(0);
+	set_win(win_north, win_south, win_east, win_west);
 }
 
 
@@ -845,11 +864,22 @@ char *fname;			/* filename, for error message */
 int lineno;			/* for error message */
 
 {
-	if (inpcoord_p->hor < 0.0 || inpcoord_p->hor > PGWIDTH) {
+	float musicscale;
+	float eff_width;
+
+	if (In_music == YES) {
+		musicscale = Score.musicscale;
+		eff_width = EFF_PG_WIDTH;
+	}
+	else {
+		musicscale = 1.0;
+		eff_width = PGWIDTH;
+	}
+	if (inpcoord_p->hor < 0.0 || inpcoord_p->hor > eff_width) {
 		if (lineno > 0 && fname != (char *) 0) {
 			l_warning(fname, lineno,
 				"x value of %f is off the page",
-				inpcoord_p->hor * Score.scale_factor);
+				inpcoord_p->hor * Score.scale_factor * musicscale);
 		}
 	}
 	return(inpcoord_p->hor);
@@ -866,11 +896,22 @@ char *fname;			/* filename, for error message */
 int lineno;			/* for error message */
 
 {
-	if (inpcoord_p->vert < 0.0 || inpcoord_p->vert > PGHEIGHT) {
+	float musicscale;
+	float eff_height;
+
+	if (In_music == YES) {
+		musicscale = Score.musicscale;
+		eff_height = EFF_PG_HEIGHT;
+	}
+	else {
+		musicscale = 1.0;
+		eff_height = PGHEIGHT;
+	}
+	if (inpcoord_p->vert < 0.0 || inpcoord_p->vert > eff_height) {
 		if (lineno > 0 && fname != (char *) 0) {
 			l_warning(fname, lineno,
 				"y value of %f is off the page",
-				inpcoord_p->vert * Score.scale_factor);
+				inpcoord_p->vert * Score.scale_factor * musicscale);
 		}
 	}
 	return(inpcoord_p->vert);
@@ -2195,15 +2236,14 @@ int measnum;		/* Write the measure number into dest_string */
  *
  * Returns:     the margin in inches
  *
- * Description: There are two reason that code can't just use Score.rightmargin
- *		but must call this function.  First, the way the "scale" param
- *		works, we pretend the paper is smaller by that amount and then
- *		in PostScript magnify it back to the real size; but margins are
- *		not to be scaled, so we have to fake out the code by dividing
- *		out the scale here.  Second, the user can override the param
- *		on a "newscore" or "newpage".  To ignore a user override, pass
- *		0 for mainll_p, else pass some MLL on that score.
- *		Oh, and third, we have to handle the MG_AUTO case.
+ * Description: There are 3 reasons that code can't just use Score.rightmargin
+ *		but must call this function.  First, the way the scale params
+ *		work, we have to fake the margins as explained in globals.h
+ *		so that in the end, the margins are what the user wants.
+ *		Second, the user can override the param on a "newscore" or
+ *		"newpage".  To ignore a user override, pass 0 for mainll_p,
+ *		else pass some MLL on that score.
+ *		Third, we have to handle the MG_AUTO case.
  */
 
 double
@@ -2213,7 +2253,11 @@ struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
 
 {
 	struct MAINLL *mll_p;
+	float allscale;		/* normal scale and musicscale */
 
+
+	/* both are needed for horizontal work, except in non-music */
+	allscale = Score.scale_factor * Score.musicscale;
 
 	/* if not already at a FEED, find FEED at right end of this score */
 	while (mainll_p != 0 && mainll_p->str != S_FEED)
@@ -2221,7 +2265,7 @@ struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
 
 	/* if there is none, use the parameter */
 	if (mainll_p == 0)
-		return (Score.rightmargin / Score.scale_factor);
+		return (Score.rightmargin / allscale);
 
 	/* handle the case where placement needs to decide it */
 	if (mainll_p->u.feed_p->right_mot == MOT_AUTO) {
@@ -2238,7 +2282,7 @@ struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
 		if (mll_p->next->str == S_BLOCKHEAD) {
 			/* overwrite the senseless MOT_AUTO setting */
 			mainll_p->u.feed_p->right_mot = MOT_UNUSED;
-			return (Score.rightmargin / Score.scale_factor);
+			return (Score.rightmargin / allscale);
 		}
 
 		/* We are not after a block. We have to return something,
@@ -2250,10 +2294,10 @@ struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
 
 	/* if there is no override, use the parameter */
 	if (mainll_p->u.feed_p->right_mot == MOT_UNUSED)
-		return (Score.rightmargin / Score.scale_factor);
+		return (Score.rightmargin / allscale);
 
 	/* use this override value */
-	return (mainll_p->u.feed_p->rightmargin / Score.scale_factor);
+	return (mainll_p->u.feed_p->rightmargin / allscale);
 }
 
 /*
@@ -2263,14 +2307,13 @@ struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
  *
  * Returns:     the margin in inches
  *
- * Description: There are two reason that code can't just use Score.leftmargin
- *		but must call this function.  First, the way the "scale" param
- *		works, we pretend the paper is smaller by that amount and then
- *		in PostScript magnify it back to the real size; but margins are
- *		not to be scaled, so we have to fake out the code by dividing
- *		out the scale here.  Second, the user can override the param
- *		on a "newscore" or "newpage".  To ignore a user override, pass
- *		0 for mainll_p, else pass some MLL on that score.
+ * Description: There are 2 reasons that code can't just use Score.rightmargin
+ *		but must call this function.  First, the way the scale params
+ *		work, we have to fake the margins as explained in globals.h
+ *		so that in the end, the margins are what the user wants.
+ *		Second, the user can override the param on a "newscore" or
+ *		"newpage".  To ignore a user override, pass 0 for mainll_p,
+ *		else pass some MLL on that score.
  */
 
 double
@@ -2279,16 +2322,22 @@ eff_leftmargin(mainll_p)
 struct MAINLL *mainll_p; /* MLL struct on some score, or 0 for normal margin */
 
 {
+	float allscale;		/* normal scale and musicscale */
+
+
+	/* both are needed for horizontal work */
+	allscale = Score.scale_factor * Score.musicscale;
+
 	/* if not already at a FEED, find FEED at left end of this score */
 	while (mainll_p != 0 && mainll_p->str != S_FEED)
 		mainll_p = mainll_p->prev;
 
 	/* if there is none, or there is no override, use the parameter */
 	if (mainll_p == 0 || mainll_p->u.feed_p->left_mot == MOT_UNUSED)
-		return (Score.leftmargin / Score.scale_factor);
+		return (Score.leftmargin / allscale);
 
 	/* use this override value */
-	return (mainll_p->u.feed_p->leftmargin / Score.scale_factor);
+	return (mainll_p->u.feed_p->leftmargin / allscale);
 }
 
 /*
@@ -3024,4 +3073,27 @@ int size;	/* GS_NORMAL, GS_SMALL, or GS_TINY */
 	case GS_TINY:
 		return(TINY_FACTOR);
 	}
+}
+
+
+/* Returns YES if either the horizontal or vertical component
+ * of the given INPCOORD references the page as a whole,
+ * either because its "anchor tag" is _Page, or because its anchor tag is NULL
+ * (which would indicate an absolute location on the page).
+ * In that case, the caller should ensure that musicscale is not applied.
+ */
+
+int
+references_page(coord_p)
+
+struct INPCOORD *coord_p;
+
+{
+	if ( (coord_p->hor_p == _Page)
+			|| (coord_p->hor_p == 0)
+			|| (coord_p->vert_p == _Page)
+			|| (coord_p->vert_p == 0) ) {
+		return(YES);
+	}
+	return(NO);
 }

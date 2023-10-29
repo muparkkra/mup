@@ -6,7 +6,7 @@
 #	If not set, uses $logname <$(logname)@$(hostname)>
 # $2 = architecture. If not set, uses $(arch)
 
-MUPVERSION=7.0
+MUPVERSION=7.1
 SRC_TAR=mup-$MUPVERSION.tar.gz
 if [ ! -f "../$SRC_TAR" ]
 then
@@ -64,7 +64,7 @@ cp ../README README
 cp ../README README.source
 cp ../LICENSE copyright
 touch docs
-echo 7 > compat
+echo 10 > compat
 
 cat >> changelog <<EOF
 mup ($MUPVERSION-1) unstable; urgency=low

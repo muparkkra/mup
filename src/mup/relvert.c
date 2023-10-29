@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -417,7 +417,7 @@ int s;				/* the staff we are to work on */
 
 	/* set up baseline, a rectangle of height 0 spanning the page */
 	Rectab[Reclim].w = 0;
-	Rectab[Reclim].e = PGWIDTH;
+	Rectab[Reclim].e = EFF_PG_WIDTH;
 	Rectab[Reclim].n = 0;
 	Rectab[Reclim].s = 0;
 	inc_reclim();
@@ -520,7 +520,7 @@ int place;			/* above or below? */
 	 * it vertically.
 	 */
 	Rectab[Reclim].w = 0;
-	Rectab[Reclim].e = PGWIDTH;
+	Rectab[Reclim].e = EFF_PG_WIDTH;
 
 	if (place == PL_ABOVE) {
 		Rectab[Reclim].n = halfstaffhi(s) + Stdpad;
@@ -1870,7 +1870,7 @@ float *dist_p;			/* return how close rect can get to staff */
 			struct GRID *grid_p;
 			float gnorth, gsouth;
 
-			grid_p = findgrid(stuff_p->string);
+			grid_p = findgrid(stuff_p->grid_name);
 			/* if none, skip this; stuff.c warned */
 			if (grid_p == 0)
 				break;
@@ -2613,7 +2613,7 @@ int place;			/* above, below, or between? */
 	 * Also set farwest and fareast.
 	 */
 	vfound = 0;			/* no verses have been found yet */
-	farwest = PGWIDTH;		/* init it all the way east */
+	farwest = EFF_PG_WIDTH;		/* init it all the way east */
 	fareast = 0;			/* init it all the way west */
 	for (mainll_p = start_p->next; mainll_p != 0 &&
 			mainll_p->str != S_FEED; mainll_p = mainll_p->next) {
@@ -2675,7 +2675,7 @@ int place;			/* above, below, or between? */
 	/*
 	 * Enclose all the syllables of all the verses (of this place) in one
 	 * big rectangle.  Pad on west and east by LYRIC_SIDEPAD.  Pretend the
-	 * rectangle is PGHEIGHT high.  We don't actually know yet how high
+	 * rectangle is EFF_PG_HEIGHT high.  We don't actually know yet how high
 	 * it is, and this will prevent it from getting between the staff and
 	 * anything else.  Later in this function we will correct the entry
 	 * that stackit put in Rectab, to reflect the true height.  For above
@@ -2692,7 +2692,7 @@ int place;			/* above, below, or between? */
 
 	(void)stackit(farwest - LYRIC_SIDEPAD * STEPSIZE,
 			fareast + LYRIC_SIDEPAD * STEPSIZE,
-			PGHEIGHT, dist, place);
+			EFF_PG_HEIGHT, dist, place);
 
 	/*
 	 * Find the greatest protrusion of any currently existing rectangle
@@ -2778,7 +2778,7 @@ int place;			/* above, below, or between? */
 		 * It's easier to loop through all the syllables than to try to
 		 * find the first and last syllables on the line.
 		 */
-		farwest = PGWIDTH;		/* init it all the way east */
+		farwest = EFF_PG_WIDTH;		/* init it all the way east */
 		fareast = 0;			/* init it all the way west */
 		for (mainll_p = start_p->next;
 				mainll_p != 0 && mainll_p->str != S_FEED;
@@ -3271,7 +3271,7 @@ int s;				/* staff number */
 		Rectab[Reclim].n = protrude;
 		Rectab[Reclim].s = lowpoint;
 		Rectab[Reclim].w = 0;
-		Rectab[Reclim].e = PGWIDTH;
+		Rectab[Reclim].e = EFF_PG_WIDTH;
 
 		inc_reclim();
 	}
@@ -3425,7 +3425,7 @@ int s;				/* staff number */
 		west = start_p->u.bar_p->c[AX];		/* normal bar */
 
 	if (end_p->str == S_FEED)
-		east = PGWIDTH - eff_rightmargin(end_p); /* end of score */
+		east = EFF_PG_WIDTH - eff_rightmargin(end_p); /* end of score */
 	else
 		east = end_p->u.bar_p->c[AX];		/* normal bar */
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -176,11 +176,11 @@ set_muppath(const char * new_muppath)
 	// Get space for the new value and fill it in
 	muppath = new char[newlength];
 	if (need_sep) {
-		(void) sprintf(muppath, "MUPPATH=%s%c%s",
+		(void) snprintf(muppath, newlength, "MUPPATH=%s%c%s",
 			new_muppath, path_separator(), orig_env_muppath);
 	}
 	else {
-		(void) sprintf(muppath, "MUPPATH=%s%s",
+		(void) snprintf(muppath, newlength, "MUPPATH=%s%s",
 			new_muppath, orig_env_muppath);
 	}
 	(void) putenv(muppath);
@@ -420,14 +420,15 @@ lookup_pgm_for_file_suffix(const char * file_suffix)
 	char name[512]; 
 	long len = sizeof(data);
 	// First find entry for file suffix mapping to a class
-	(void) sprintf(name, "Software\\Classes\\%s", file_suffix);
+	(void) snprintf(name, sizeof(name), "Software\\Classes\\%s", file_suffix);
 	HRESULT result = RegQueryValue(HKEY_LOCAL_MACHINE, name, data, &len);
 	if (result != ERROR_SUCCESS) {
 		return(0);
 	}
 
 	// Next look up the program associated with that class
-	(void) sprintf(name, "Software\\Classes\\%s\\shell\\open\\command", data);
+	(void) snprintf(name, sizeof(name),
+			"Software\\Classes\\%s\\shell\\open\\command", data);
 	len = sizeof(data);
 	result = RegQueryValue(HKEY_LOCAL_MACHINE, name, data, &len);
 	if (result != ERROR_SUCCESS) {

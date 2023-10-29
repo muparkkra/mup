@@ -1,5 +1,6 @@
 .\"pl 11.0i
 .\"ll 8.5i
+.Hi
 .de Ph
 .sp 1.5
 .if \\n%>1 \{
@@ -12,6 +13,10 @@
 \}
 .sp
 ..
+.He
+.Hd quickref.html
+.ig
+..
 .wh 0 Ph
 .nf
 .na
@@ -20,9 +25,15 @@
 .lt +0.4i
 .vs +5
 .ps +1
+.Hi
 .ce
 .ft B
-Mup Version 7.0 Statement Summary
+Mup Version 7.1 Statement Summary
+.He
+.ig
+.H 1 "Mup Version 7.1 Statement Summary"
+<PRE>
+..
 .sp
 \fIcontext\fR
 \fIstaffs voices & staffs voices\fB:\fI chord \fB; \fI....\fR
@@ -35,7 +46,7 @@ Mup Version 7.0 Statement Summary
 \fBnewpage leftmargin=\fInum\fB rightmargin=\fInum\fR
 \fBsamescorebegin  \fI....measures of input... \fBsamescoreend\fR
 \fBsamepagebegin  \fI....measures of input or blocks... \fBsamepageend\fR
-\fIfontfamily font \fB(\fIsize\fB) \fImodifier place staffs \fBdist\fI num \fB! \fBalign \fInum \fB: \fIbeat \fB"\fItext\fB" til \fItil_value\fB; \fI....
+\fIfontfamily font \fB(\fIsize\fB) \fImodifier place staffs \fBdist\fI num \fB! \fBalign \fInum \fB: \fIbeat \fB"\fItext\fB ("\fItext\fB") til \fItil_value\fB; \fI....
 \fBmussym (\fIsize\fR) \fIplace staffs \fB: \fIbeat \fB"\fImus_symbol\fB" til \fItil_value\fB; \fI....\fR
 \fIlinetype \fBphrase \fIplace staffs \fB: \fIbeat \fBtil \fItil_value\fB; \fI....\fR
 \fBoctave \fIplace staffs \fB: \fIbeat \fB"\fItext\fB" til \fItil_value\fB; \fI....\fR
@@ -45,7 +56,7 @@ Mup Version 7.0 Statement Summary
 \fBroll \fIdirection staffnum voicenum \fBto \fIstaffnum voicenum \fB:\fI num \fB; \fI....\fR
 \fIprintcmd location \fB"\fItext\fB"\fR
 \fBpostscript \fIpostscript_location \fBwith \fItag \fB= \fItag \fBfile "\fItext\fB"\fR
-\fBtitle \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB" "\fItext\fB" "\fItext\fB"\fR
+\fBmirrored title \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB" "\fItext\fB" "\fItext\fB"\fR
 \fIjustifytype \fBparagraph \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB"
 \fIlinetype \fBline\fI location \fBto\fI location\fR \fBwith \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB"\fR
 \fIlinetype \fBcurve\fI location \fBto\fI location \fBto\fI location ....\fR
@@ -61,12 +72,19 @@ Mup Version 7.0 Statement Summary
 \fBif \fIexpression ..... \fBelse\fI ..... \fBendif\fR
 \fBinclude "\fIfilename\fB"\fR
 \fBfontfile "\fIfilename\fB"\fR
-\fB// \fIcomment\(emarbitrary text that will be ignored.
+\fB// \fIcomment\(emarbitrary text that will be ignored.\fR
 .bp
 .vs -4
 .ps -1
 .ce
+.Hi
 \fBValues used in Mup statements\fR
+.He
+.ig
+</PRE>
+.H 1 "Values used in Mup statements"
+<PRE>
+..
 .ta 1.2i 2.6i 4.0i 5.4i
 \fIaccidental	\fB#\fR, \fB&\fR, \fBx\fR, \fB&&\fR, \fBn\fR or \fB{"\fIacc_name\fB"}
 \fIacc_spec	\fRaccidental symbol name in quotes followed by \fIpitch_spec\fR
@@ -122,7 +140,9 @@ Mup Version 7.0 Statement Summary
 \fImac_params	\fRcomma-separated list of parameter names, same naming rules as \fIMACRO_NAME\fR
 \fIMACRO_NAME	\fRupper case letters, digits, and/or underscores, beginning with a letter
 \fImacro_definition	\fRarbitrary text that will be used wherever \fIMACRO_NAME\fR appears in input
+.Hi
 .bp
+.He
 \fImidi_keyword	\fBtempo=\fInum\fR	\fBprogram=\fInum\fR	\fBparameter=\fInum\fB,\fInum\fR	\fBport=\fInum\fR
 	\fBonvelocity=\fInum\fR	\fBoffvelocity=\fInum\fR	\fBchannel=\fInum\fR	\fBchanpressure=\fInum\fR
 	\fBseqnum=\fInum\fR	\fBtext=\fItext\fR	\fBcopyright=\fItext\fR	\fBname=\fItext\fR
@@ -177,14 +197,21 @@ Mup Version 7.0 Statement Summary
 .bp
 .vs +1
 .ce
+.Hi
 \fBFont/size changes in text strings\fR
+.He
+.ig
+</PRE>
+.H 1 "Font/size changes in text strings"
+.Nf
+..
 .sp
 To change font inside a quoted text string, use \fB\ef(\fIfontfamily font\fB)\fR or \fB\ef(\fIfont_abbr\fB)\fR from the table:
 .TS
 c c s s s s s s
 l c c c c c c c.
 \fIfont\fR	\fIfontfamily\fR 
-	avantgarde	bookman	courier	helvetica	newcentury	palatino	times
+ 	avantgarde	bookman	courier	helvetica	newcentury	palatino	times
 _
 \fRrom\f(CW	AR	BR	CR	HR	NR	PR	TR
 \fBbold\f(CW	AB	BB	CB	HB	NB	PB	TB
@@ -198,10 +225,16 @@ _
 \fB\ef(boldital) \fRor \fB\ef(X) \fRchanges to boldital in current family.
 \fB\es(\fInum\fB) \fRchanges to point size \fInum\fR, 1 to 100.
 \fB\es(+\fInum\fB) \fRincreases the size by \fInum\fR while \fB\es(-\fInum\fB) \fRdecreases it by \fInum\fR points.
-\fB\es(PV)\fR or \fB\es(previous)\fP reverts to previous size.
+\fB\es(previous)\fR or \fB\es(PV)\fP reverts to previous size.
 .sp
 .ce
+.Hi
 \fBMup command line arguments\fR
+.He
+.ig
+.bp
+.H 1 "Mup command line arguments"
+..
 .sp
 .ta 2.0i
 \fB-c \fInum	\fRcombine \fInum\fR or more measures of rest into multirest\fR
@@ -223,7 +256,13 @@ _
 \fB-x \fIM\fB,\fIN\fR	extract measures \fIM\fR through \fIN\fR, negative relative to end, 0 for pickup
 .sp
 .ce
+.Hi
 \fBMupdisp commands\fR
+.He
+.ig
+.bp
+.H 1 "Mupdisp commands"
+..
 .sp
 .ta 3.5i
 \fInum\fR<Enter>	go to page \fInum\fR
@@ -240,7 +279,12 @@ _
 .vs -1
 .bp
 .ce
+.Hi
 \fBArithmetic operator precedence and associativity\fP
+.He
+.ig
+.H 1 "Arithmetic operator precedence and associativity"
+..
 .sp
 These are the arithmetic operators supported by eval expressions and generalized conditionals.
 Operators on each line have equal precedence, which is higher than the precedence of those on the lines below them.
@@ -267,7 +311,13 @@ _
 Note: generalized conditionals can also use "defined()"
 .sp
 .ce
+.Hi
 \fBFunctions for location tag arithmetic and eval expressions\fP
+.He
+.ig
+.bp
+.H 1 "Functions for location tag arithmetic and eval expressions"
+..
 .TS
 center, allbox;
 c c c
@@ -292,7 +342,12 @@ Note: round, floor, and ceiling return whole numbers, and are only supported for
 The others return decimals numbers and are supported for both location tag arithmetic and eval expressions.
 .bp
 .ce
+.Hi
 \fBMup Parameters\fR
+.He
+.ig
+.H 1 "Mup Parameters"
+..
 .ll +0.5i
 .sp
 .ps -2
@@ -310,29 +365,30 @@ addtranspose	\(bu	\(bu			\fBup\fR or \fBdown\fR, followed by \fIinterval\fR and 
 alignlabels	\(bu				\fBcenter\fR, or \fBleft\fR, or \fBright\fR	right
 alignped	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 alignrests	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
-barstyle	\(bu				optional \fBbetween\fP comma-separated lists of staffs or dash-separated ranges, or \fBall\fP	
+barstyle	\(bu				optional \fBbetween\fP comma-separated lists of staffs or dash-separated ranges, or \fBall\fP	 
 beamslope	\(bu	\(bu	\(bu		0.0 to 1.0, 0.0 to 45.0	0.7,20.0
-beamstyle	\(bu	\(bu	\(bu		comma-separated list of \fItime_values\fR that add up to a measure	
+beamstyle	\(bu	\(bu	\(bu		comma-separated list of \fItime_values\fR that add up to a measure	 
 beloworder	\(bu	\(bu			\fBmussym,octave,dyn&othertext&chord,lyrics,pedal	\fRas listed
 betweenorder	\(bu	\(bu			\fBmussym,dyn&othertext&chord,lyrics	\fRas listed
 bottommargin	\(bu				0.0 to pageheight minus 0.5 inches	0.5 inches
-brace	\(bu				comma-separated list of staffs or dash-separated ranges	
-bracket	\(bu				comma-separated list of staffs or dash-separated ranges	
+brace	\(bu				comma-separated list of staffs or dash-separated ranges	 
+bracket	\(bu				comma-separated list of staffs or dash-separated ranges	 
 bracketrepeats	\(bu				\fBy\fR or \fBn\fR	n
 cancelkey	\(bu	\(bu			\fBy\fR or \fBn\fR	n
 carryaccs	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 chorddist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	3.0
-chordtranslation	\(bu	\(bu			nothing or "German" or string like "do re mi fa sol la si"	
+chordtranslation	\(bu	\(bu			nothing or "German" or string like "do re mi fa sol la si"	 
 clef	\(bu	\(bu			T{
 \s-2\fBtreble\fB,\fBtreble8\fR,\fB8treble\fR,\fBfrenchviolin\fR,\fBsoprano\fR,\fBmezzosoprano\fR,\fBalto\fR,\fBtenor\fR,\fBbaritone\fR,\fBbass\fR,\fB8bass\fR,\fBbass8\fR,\fBsubbass\fR\s+2
 T}	treble
 cue	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 defaultkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
-defaultphraseside	\(bu	\(bu	\(bu		\fBabove\fP, \fBbelow\fP, or nothing	
+defaultphraseside	\(bu	\(bu	\(bu		\fBabove\fP, \fBbelow\fP, or nothing	 
 defoct	\(bu	\(bu	\(bu		0 to 9	based on clef
 dist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	2.0
 division	\(bu				MIDI division, 1 to 1536 (ticks per quarter note)	192
 dyndist	\(bu	\(bu			0.0 to 50.0 (stepsizes)	2.0
+.Hi
 .TE
 .TS
 allbox;
@@ -340,6 +396,7 @@ c c c c c c c
 lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
 Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
 _
+.He
 emptymeas	\(bu	\(bu	\(bu		string containing music input	"ms;"
 endingkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
 endingstyle	\(bu				\fBtop\fR, \fBbarred\fR, or \fBgrouped\fR	top
@@ -380,6 +437,7 @@ measnumfontfamily	\(bu				T{
 T}	times
 measnumsize	\(bu				1 to 100 (points)	11
 measnumstyle	\(bu				\fBboxed\fR, \fBcircled\fR, or \fBplain\fR	plain
+.Hi
 .TE
 .TS
 allbox;
@@ -387,9 +445,11 @@ c c c c c c c
 lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
 Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
 _
+.He
 midlinestemfloat	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
 minalignscale	\(bu	\(bu			0.1 to 1.0	0.667
 mingridheight	\(bu	\(bu			2 to 99	4
+musicscale	\(bu				0.1 to 10.0	1.0
 noteheads	\(bu	\(bu	\(bu		string containing 1 or 7 headshape names	"norm"
 noteinputdir	\(bu	\(bu	\(bu		\fBup\fP, \fBdown\fR, or \fBany\fP	any
 noteleftfont	\(bu	\(bu	\(bu		\fBrom\fR, \fBbold\fR, \fBital\fR, or \fBboldital\fR	rom
@@ -408,7 +468,7 @@ pagesize	\(bu				\fBletter, legal, flsa, halfletter, a4, a5, a6\fR then optional
 pagewidth	\(bu				2.0 to 24.0 inches or 5.0 to 61.0 cm	8.5 inches
 panelsperpage	\(bu				1 or 2	1
 pedstyle	\(bu	\(bu			\fBline\fR, \fBpedstar\fR, or \fBalt pedstar\fR	line
-printedtime	\(bu	\(bu			times signature or one or two strings	
+printedtime	\(bu	\(bu			times signature or one or two strings	 
 printkeymap	\(bu			\(bu	\fB"\fIkeymap_name\fB"	\fR""
 printmultnum	\(bu	\(bu			\fBy\fR or \fBn\fR	y
 rehearsalkeymap	\(bu	\(bu			\fB"\fIkeymap_name\fB"	\fR""
@@ -421,6 +481,7 @@ rightmargin	\(bu				0.0 to pagewidth minus 0.5 inches	0.5 inches
 scale	\(bu				0.1 to 10.0	1.0
 scorepad	\(bu				\fInum\fR or \fInum\fB,\fInum\fR, negative pageheight to pageheight (stepsizes)	2.0,2.0
 scoresep	\(bu				\fInum\fR or \fInum\fB,\fInum\fR, 6.0 to pageheight (stepsizes)	12.0,20.0
+.Hi
 .TE
 .TS
 allbox;
@@ -428,6 +489,7 @@ c c c c c c c
 lB cw(0.3i) cw(0.3i) cw(0.3i) cw(0.3i) lw(3.5i) l.
 Parameter	Score	Staff  	Voice	Hd/Ft	Valid Values	Default
 _
+.He
 shapes	\(bu	\(bu	\(bu		shapes context name as a string	empty
 size	\(bu	\(bu		\(bu	1 to 100	12
 slashesbetween	\(bu				\fBy\fR or \fBn\fR	n
@@ -438,7 +500,7 @@ staffscale	\(bu	\(bu			0.1 to 10.0	1.0
 staffsep	\(bu	\(bu			6.0 to pageheight (stepsizes)	10.0
 stemlen	\(bu	\(bu	\(bu		0.0 to 100.0 (stepsizes)	7.0
 stemshorten	\(bu	\(bu	\(bu		0.0 to 2.0, 0.0 to 7.0, -4 to 50, -4 to 50 (stepsizes)	1.0,2.0,1,6
-subbarstyle	\(bu				\fIlinetype bartype appearance staff_list \fBtime\fI counts\fP
+subbarstyle	\(bu				\fIlinetype bartype appearance staff_list \fBtime\fI counts\fP	 
 swingunit	\(bu	\(bu	\(bu		time value or nothing	nothing
 sylposition	\(bu	\(bu			-100 to 100 (points)	-5
 tabwhitebox	\(bu	\(bu	\(bu		\fBy\fR or \fBn\fR	n
@@ -464,7 +526,10 @@ withsize	\(bu	\(bu	\(bu		1 to 100	12
 .TE
 .bp
 .po +0.5i
-Music symbols can be used in text strings by using \fB\e(\fIsymbol_name\fB)\fR. Prefix with \fBsm\fR for smaller version.
+.ig
+<IMG SRC="uguide/muschar.gif" ALT="music characters">
+..
+Music symbols can be used in text strings by using \fB\e(\fIsymbol_name\fB)\fR, or \fB\e(sm\fIsymbol_name\fB)\fR for smaller version.
 .ie \n(.g \{
 .mk Px
 .sp -1
@@ -481,6 +546,16 @@ Music symbols can be used in text strings by using \fB\e(\fIsymbol_name\fB)\fR. 
 .ps +2
 .ce 3 \}
 .in 2.3i
+.Hi
 \f(NXArkkra Enterprises\f(NR
 http://www.arkkra.com
 support@arkkra.com
+.He
+.ig
+.bp
+\f(BIArkkra Enterprises\fP
+.Hr http://www.arkkra.com
+http://www.arkkra.com
+.Hr mailto:support@arkkra.com
+support@arkkra.com
+..

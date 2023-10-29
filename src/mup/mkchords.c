@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1492,6 +1492,7 @@ struct MAINLL *mll_p;		/* MLL struct for these groups' staff */
 		src_p->stemdir = UNKNOWN;
 		src_p->breakbeam = NO;
 		src_p->beamloc = NOITEM;
+		src_p->tuploc = NOITEM;
 		src_p->notelist = 0;
 		src_p->nnotes = 0;
 		src_p->tie = NO;

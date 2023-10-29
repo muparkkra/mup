@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -281,7 +281,8 @@ CALL_BACK(Run_parameters_dialog, clear_form)
 	saved_combine_measures[0] = '\0';
 	rest_combine_p->value(saved_combine_measures);
 
-	(void) sprintf(saved_first_page, "%d", MINFIRSTPAGE);
+	(void) snprintf(saved_first_page, sizeof(saved_first_page),
+						"%d", MINFIRSTPAGE);
 	first_page_p->value(saved_first_page);
 	default_p->value(1);
 	right_p->value(0);
@@ -894,7 +895,8 @@ Run::Run_Mup(bool midi, Action action)
 	char full_firstpage_param[20];	// first page, including optional side
 	if (parameters_p->first_page_p->size() > 0) {
 		command[arg_offset++] = "-p";
-		(void) sprintf(full_firstpage_param, "%s%s",
+		(void) snprintf(full_firstpage_param,
+					sizeof(full_firstpage_param), "%s%s",
 					parameters_p->first_page_p->value(),
 					parameters_p->saved_pageside);
 		command[arg_offset++] = full_firstpage_param;
@@ -902,6 +904,7 @@ Run::Run_Mup(bool midi, Action action)
 
 	// page list
 	// Add -o option and its argument, if needed.
+	char ooption[parameters_p->page_list_p->size() + 15];
 	if (parameters_p->saved_pages_set != Run_parameters_dialog::ALL_PAGES
 			|| parameters_p->saved_pages_direction
 			== Run_parameters_dialog::REVERSED_ORDER
@@ -911,14 +914,13 @@ Run::Run_Mup(bool midi, Action action)
 		// the selected pages list and null terminator.
 		// Might not need that much, but not worth the time
 		// to shorten a local variable by a few bytes.
-		char ooption[parameters_p->staff_list_p->size() + 15];
 		if (parameters_p->saved_pages_set ==
 					Run_parameters_dialog::ODD_PAGES) {
-			(void) sprintf(ooption, "odd");
+			(void) snprintf(ooption, sizeof(ooption), "odd");
 		}
 		else if (parameters_p->saved_pages_set ==
 					Run_parameters_dialog::EVEN_PAGES) {
-			(void) sprintf(ooption, "even");
+			(void) snprintf(ooption, sizeof(ooption), "even");
 		}
 		else {
 			ooption[0] = '\0';
@@ -1186,7 +1188,8 @@ Run::Run_Mup(bool midi, Action action)
 		}
 		if (mup_output[0] != dir_separator()) {
 			// Relative path
-			(void) sprintf(fullpath + strlen(fullpath),
+			(void) snprintf(fullpath + strlen(fullpath),
+				sizeof(fullpath) - strlen(fullpath),
 				"%c%s", dir_separator(),
 				mup_output);
 		}

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -232,9 +232,12 @@ transgroups()
 			for (stuff_p = mainll_p->u.staff_p->stuff_p;
 					stuff_p != 0; stuff_p = stuff_p->next) {
 				if (stuff_p->string != 0 &&
-						stuff_p->modifier == TM_CHORD)
+						stuff_p->modifier == TM_CHORD) {
 					stuff_p->string = tranchstr(stuff_p->
 						string, stuff_p->all ? 0 : s);
+					stuff_p->grid_name = tranchstr(stuff_p->
+						grid_name,stuff_p->all ? 0 : s);
+				}
 			}
 
 			/*

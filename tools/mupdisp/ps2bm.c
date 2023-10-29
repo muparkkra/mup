@@ -1,5 +1,5 @@
 char * license_text = 
-" Copyright (c) 1995-2022  by Arkkra Enterprises.\n\
+" Copyright (c) 1995-2023  by Arkkra Enterprises.\n\
  All rights reserved.\n\
 \n\
  Redistribution and use in source and binary forms,\n\
@@ -69,7 +69,7 @@ char * license_text =
 #define BORDER		8
 
 /* Ghostscript temp file */
-char gstempfile[L_tmpnam];
+char gstempfile[32];
 
 void cleanup(int status);
 
@@ -97,10 +97,17 @@ char **argv;
 	}
 
 	name = argv[1];
-	if (tmpnam(gstempfile) == 0) {
-		fprintf(stderr, "unable to create temporary file\n");
-		exit(1);
-	}
+	/* We used to use tmpnam() to create a temp file name,
+	 * but some compilers now object to that. They suggest using
+	 * mkstemp, but that returns a file description, rather than
+	 * creating a file name. Since we need to create a file that
+	 * we can then open by name and lseek in, mkstemp is not usable.
+	 * Since this is just for building Mup, and we shouldn't really have
+	 * to worry about some other process clobbering our tmp file,
+	 * even just a hard-coded file name should be fine, but we'll
+	 * do with pid, to be more like what tmpnam had done.
+	 */
+	(void) snprintf(gstempfile, sizeof(gstempfile), "ps2bm.tmp.%d", getpid());
 
 	/* arrange to remove temp file */
 	for (i = 1; i < NSIG; i++) {

@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -167,6 +167,8 @@ static void yydebugtoken P((void));
 static void push_if_line P((int if_type));
 static void pop_if_line P((void));
 static char *if_type_name P((int if_type));
+static void filename_override P((void));
+static void linenum_override P((void));
 %}
 
 
@@ -213,6 +215,7 @@ maj		|
 major		{ yylval.intval = MAJOR; return(T_XPOS_INT); }
 
 title		return(T_TITLE);
+mirrored	return(T_MIRRORED);
 
 score		return(T_SCORE);
 staff		return(T_STAFF);
@@ -516,6 +519,7 @@ staffscale	{ yylval.intval = STAFFSCALE; return(T_FNUMVAR); }
 gridscale	{ yylval.intval = GRIDSCALE; return(T_FNUMVAR); }
 minalignscale	{ yylval.intval = MINALIGNSCALE; return(T_FNUMVAR); }
 scale		{ yylval.intval = SCALE_FACTOR; return(T_FNUMVAR); }
+musicscale	{ yylval.intval = MUSICSCALE; return(T_FNUMVAR); }
 stemlen		{ yylval.intval = STEMLEN; return(T_FNUMVAR); }
 stemshorten	{ yylval.intval = BEAMSHORT; return(T_SHORTEN); }
 leftspace	{ yylval.intval = LEFTSPACE; return(T_2FNUMVAR); }
@@ -532,7 +536,16 @@ lyricsalign	{ yylval.intval = LYRICSALIGN; return(T_FNUMVAR); }
 extendlyrics	{ yylval.intval = EXTENDLYRICS; return(T_YESNOVAR); }
 pageheight	{ yylval.intval = PAGEHEIGHT; return(T_FNUMVAR); }
 pagewidth	{ yylval.intval = PAGEWIDTH; return(T_FNUMVAR); }
-pagesize	{ return(T_PSVAR); }
+pagesize	{	/* pagesize actually affects both pageheight
+			 * and pagewidth, but the only time yylval would
+			 * actually be used is on "unset pagesize"
+			 * which is pointless (since it can only be set
+			 * at score level). So we just need it to be
+			 * set to something that isn't invalid,
+			 * so that we can silently ignore the unset,
+			 * as is done for other pointless unsets. */
+			yylval.intval = PAGEHEIGHT; return(T_PSVAR);
+		}
 letter		{ yylval.intval = PS_LETTER; return(T_PAGESIZE); }
 legal		{ yylval.intval = PS_LEGAL; return(T_PAGESIZE); }
 flsa		{ yylval.intval = PS_FLSA; return(T_PAGESIZE); }
@@ -687,6 +700,8 @@ ystemoffset	{ return(T_STEMOFFSET); }
 			}
 		}
 
+"//#file"[ 	][^\r\n]*	{  filename_override(); }
+"//#line"[ 	][0-9]*		{  linenum_override(); }
 "//"		to_eol();
 
 if			{
@@ -1299,6 +1314,7 @@ int num_args;		/* number of arguments expected */
 			case '"':	/* could be a quote inside a string */
 			case ',':	/* would normally mean end of argument */
 			case ')':	/* would normally mean end of argument list */
+			case '(':	/* like for \(oe) */
 			case '\\':	/* user wants a real backslash */
 				/* escaped to allow literal, so copy the
 				 * character without backslash to buffer */
@@ -2332,4 +2348,26 @@ int if_type;	/* IT_* value */
 	 * vague and generic "if" */
 	default:	return("if");
 	}
+}
+
+
+/* Handle a special //#file comment to override the input file name */
+
+static void
+filename_override()
+
+{
+	Curr_filename = strdup(yytext + 7 + strspn(yytext + 7, " \t"));
+	to_eol();
+}
+
+
+/* Handle a special //#line comment to override the input line number */
+
+static void
+linenum_override()
+
+{
+	yylineno = atoi(yytext + 7) - 1;
+	to_eol();
 }

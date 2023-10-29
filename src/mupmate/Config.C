@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -76,7 +76,7 @@ FileLocations_dialog::FileLocations_dialog(void)
 
 	muppath_p = new Fl_Input(200, 135, 400, 30, "Folder for Mup include Files");
 	static char include_tip_text[200];
-	(void) sprintf(include_tip_text,
+	(void) snprintf(include_tip_text, sizeof(include_tip_text),
 			"Set the default folder (or list of folders,\n"
 			"separated by %c characters) for\n"
 			"storing your Mup \"include\" files.",
@@ -604,7 +604,7 @@ Preferences_dialog::set_size_list(Fl_Font font, uchar curr_size)
 			break;
 		}
 		char num_as_string[16];
-		(void) sprintf(num_as_string, "%d", sizelist[i]);
+		(void) snprintf(num_as_string, sizeof(num_as_string), "%d", sizelist[i]);
 		size_p->add(num_as_string, 0, 0, 0, 0);
 		// If this is closest index to desired size, mark as current
 		if ( abs(sizelist[i] - currvalue) > abs(sizelist[i] - curr_size) ) {

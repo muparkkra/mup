@@ -2,7 +2,7 @@
 " Language:	Mup music notation language
 " Maintainer:	Arkkra Enterprises <support@arkkra.com>
 " URL:		http://www.arkkra.com/ftp/pub/unix/user.pgms/mup.vim
-" Last Change:  22 June 2022 ( Mup 7.0 )
+" Last Change:  23 Ocoter 2023 ( Mup 7.1 )
 
 " Quit when a syntax file was already loaded
 if exists("b:current_syntax")
@@ -57,7 +57,8 @@ syn keyword Type portrait landscape
 syn keyword Type equal pythagorean meantone cents
 
 syn keyword Function midi rom ital bold boldital
-syn keyword Function title left center right print nl paragraph ragged justified
+syn keyword Function title left center right print
+syn keyword Function mirrored nl paragraph ragged justified
 syn keyword Function newscore newpage
 syn keyword Function samescorebegin samescoreend samepagebegin samepageend
 syn keyword Function reh rehearsal num let mnum exit
@@ -86,7 +87,8 @@ syn keyword Statement scoresep stafflines ontheline warn numbermrpt printmultnum
 syn keyword Statement midlinestemfloat numbermultrpt defaultphraseside
 syn keyword Statement gridswhereused gridsatend mingridheight tabwhitebox timeunit
 syn keyword Statement topmargin bottommargin botmargin leftmargin rightmargin units
-syn keyword Statement packfact packexp staffscale gridscale scale beamslope slope tupletslope
+syn keyword Statement packfact packexp staffscale gridscale musicscale scale
+syn keyword Statement beamslope slope tupletslope
 syn keyword Statement transpose addtranspose lyricsalign pageheight pagewidth pagesize
 syn keyword Statement endingstyle rehstyle pedstyle release
 syn keyword Statement brace bracket barstyle subbarstyle aboveorder beloworder betweenorder

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -157,6 +157,9 @@ UINT32B context;
 /* Save a parameter setting in the given TIMEDSSV. We only support a very
  * limited list of parameters that can be changed mid-measure,
  * so this checks for valid ones.
+ * This only handles a single value per parameter; if a parameter can set
+ * multiple fields, e.g. VCOMBINE or CLEF, the others must be handled
+ * by the caller.
  */
 
 void
@@ -197,10 +200,6 @@ int value;
 
 		case VCOMBINE:
 			timedssv_p->ssv.vcombinequal = value;
-			/* Note that vcombine has additional fields.
-			 * Since so far, that is the only mid-measure changeable
-			 * parameter that is not a single values,
-			 * those other fields are handled by the caller. */
 			break;
 
 		default:

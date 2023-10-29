@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -84,6 +84,8 @@ static char *Ped_up_down_str;	/* will point to "\(pedal)" */
 /* static functions */
 static struct STUFF *clone_stufflist P((struct STUFF *stufflist_p,
 			int staffno, int all));
+static char *get_stuff_string P((char *string, int stuff_type, int all,
+			int staffno, char *inputfile, int inputlineno));
 static void do_attach P((int staffno, int all, struct RANGELIST *vno_range_p));
 static void midi_attach P((int staffno, struct STAFF *staff_p,
 			struct RANGELIST *vno_range_p, int all));
@@ -260,7 +262,8 @@ dflt_place()
 
 void
 add_stuff_item(start_count, start_steps, start_gracebackup, string, bars, count,
-		end_steps, end_gracebackup, dist, dist_usage, aligntag)
+		end_steps, end_gracebackup, dist, dist_usage, aligntag,
+		grid_label)
 
 double start_count;		/* where in measure to start this stuff */
 double start_steps;		/* offset by this many stepsizes */
@@ -273,6 +276,7 @@ int end_gracebackup;	/* how many grace notes to back up from end */
 double dist;		/* dist for this specific STUFF, to override param */
 int dist_usage;		/* meaning of dist, SD_*  */
 int aligntag;		/* tag number for aligning STUFFS across score */
+char *grid_label;	/* optional label to use in place of real chord name */
 
 {
 	struct STUFF *new_p;		/* where to store STUFF */
@@ -458,6 +462,32 @@ int aligntag;		/* tag number for aligning STUFFS across score */
 	new_p = newSTUFF(string, dist, dist_usage, aligntag, start_count, start_steps,
 		start_gracebackup, bars, count, end_steps, end_gracebackup,
 		Curr_stuff_type, Modifier, Place, Curr_filename, yylineno);
+
+	if (Modifier == TM_CHORD) {
+		if (grid_label == 0) {
+			/* In the most common case, the label to print and
+			 * the actual grid name will be the same, but need to
+			 * make a copy rather than point both
+			 * to the same string, so that free_stufflist()
+			 * won't attempt to free the same string twice.
+			 */
+			new_p->grid_name = strdup(new_p->string);
+		}
+		else {
+			/* User wants a custom label for this particular
+			 * chord instance, so move what would have been
+			 * the default label to be just the grid name,
+			 * and set the label to the custom value,
+			 * appropriately padded, like the other was.
+			 */
+			new_p->grid_name = new_p->string;
+			new_p->string = pad_string(grid_label, Modifier);
+		}
+	}
+	else if (grid_label != 0) {
+		l_yyerror(Curr_filename, yylineno,
+				"alternate grid label only allowed with 'chord'");
+	} 
 
 	/* if bars > 0, need to save away til info for later error
 	 * checking */
@@ -829,9 +859,6 @@ int all;			/* YES if was "above all" or "below all" */
 {
 	struct STUFF *new_p;	/* copy of STUFF */
 	char *newstring;	/* copy of text string */
-	int font;
-	int fontfamily;
-	int size;
 
 
 	if (stufflist_p == (struct STUFF *) 0) {
@@ -840,62 +867,11 @@ int all;			/* YES if was "above all" or "below all" */
 
 	/* make copy of string with appropriate font and size */
 	if (stufflist_p->string != (char *) 0) {
-		switch(stufflist_p->stuff_type) {
-		case ST_BOLD:
-			font = FONT_TB;
-			break;
-		case ST_OCTAVE:
-			Stuff_size = DFLT_SIZE;
-			font = FONT_TI;
-			break;
-		case ST_ITAL:
-			font = FONT_TI;
-			break;
-		case ST_BOLDITAL:
-			font = FONT_TX;
-			break;
-		default:
-			font = FONT_TR;
-			break;
-		}
-
-		/* figure out the proper size if not already determined */
-		if (Stuff_size  < 0) {
-			if (all == YES) {
-				size = Score.size;
-			}
-			else {
-				size = svpath(staffno, SIZE)->size;
-			}
-		}
-		else {
-			size = Stuff_size;
-		}
-
-		/* determine fontfamily and font if not already known */
-		if (Curr_family == FAMILY_DFLT) {
-			if (all == YES) {
-				fontfamily = Score.fontfamily;
-			}
-			else {
-				fontfamily = svpath(staffno, FONTFAMILY)->
-							fontfamily;
-			}
-		}
-		else {
-			fontfamily = Curr_family;
-		}
-
-		/* clone text string */
-		newstring = copy_string(stufflist_p->string + 2, font, size);
-		if (IS_CHORDLIKE(Modifier)) {
-			newstring = modify_chstr(newstring, Modifier);
-		}
-		fix_string(newstring, fontfamily + font, size,
-			stufflist_p->inputfile, stufflist_p->inputlineno);
-		if (Modifier == TM_FIGBASS || Modifier == TM_ANALYSIS) {
-			newstring = acc_trans(newstring);
-		}
+		newstring = get_stuff_string(stufflist_p->string,
+				stufflist_p->stuff_type,
+				all, staffno,
+				stufflist_p->inputfile,
+				stufflist_p->inputlineno);
 	}
 	else {
 		newstring = (char *) 0;
@@ -915,8 +891,95 @@ int all;			/* YES if was "above all" or "below all" */
 				stufflist_p->place, stufflist_p->inputfile,
 				stufflist_p->inputlineno);
 	new_p->all = (short) all;
+	if (stufflist_p->grid_name != 0) {
+		new_p->grid_name = get_stuff_string(stufflist_p->grid_name,
+				stufflist_p->stuff_type,
+				all, staffno,
+				stufflist_p->inputfile,
+				stufflist_p->inputlineno);
+	}
 	new_p->next = clone_stufflist(stufflist_p->next, staffno, all);
 	return(new_p);
+}
+
+
+/* Make and return a copy of a STUFF string, adjusting the font/size for
+ * the staff, and adjusting chord strings as they need to be.
+ */
+
+static char *
+get_stuff_string(string, stuff_type, all, staffno, inputfile, inputlineno)
+
+char *string;		/* the string to make a copy of */
+int stuff_type;		/* ST_* */
+int all;		/* YES or NO */
+int staffno;
+char *inputfile;
+int inputlineno;
+
+{
+	int font;
+	int fontfamily;
+	int size;
+	char *newstring;
+
+	switch(stuff_type) {
+	case ST_BOLD:
+		font = FONT_TB;
+		break;
+	case ST_OCTAVE:
+		Stuff_size = DFLT_SIZE;
+		font = FONT_TI;
+		break;
+	case ST_ITAL:
+		font = FONT_TI;
+		break;
+	case ST_BOLDITAL:
+		font = FONT_TX;
+		break;
+	default:
+		font = FONT_TR;
+		break;
+	}
+
+	/* figure out the proper size if not already determined */
+	if (Stuff_size  < 0) {
+		if (all == YES) {
+			size = Score.size;
+		}
+		else {
+			size = svpath(staffno, SIZE)->size;
+		}
+	}
+	else {
+		size = Stuff_size;
+	}
+
+	/* determine fontfamily and font if not already known */
+	if (Curr_family == FAMILY_DFLT) {
+		if (all == YES) {
+			fontfamily = Score.fontfamily;
+		}
+		else {
+			fontfamily = svpath(staffno, FONTFAMILY)->
+						fontfamily;
+		}
+	}
+	else {
+		fontfamily = Curr_family;
+	}
+
+	/* clone text string */
+	newstring = copy_string(string + 2, font, size);
+	if (IS_CHORDLIKE(Modifier)) {
+		newstring = modify_chstr(newstring, Modifier);
+	}
+	fix_string(newstring, fontfamily + font, size,
+		inputfile, inputlineno);
+	if (Modifier == TM_FIGBASS || Modifier == TM_ANALYSIS) {
+		newstring = acc_trans(newstring);
+	}
+	return(newstring);
 }
 
 
@@ -955,6 +1018,7 @@ int inputlineno;	/* where stuff was defined in input file */
 
 	CALLOC(STUFF, new_p, 1);
 	new_p->string = string;
+	new_p->grid_name = 0;
 	new_p->start.count = start_count;
 	new_p->start.steps = start_steps;
 	new_p->start.gracebackup = (short) start_gracebackup;
@@ -993,6 +1057,9 @@ struct STUFF *stuff_p;
 	free_stufflist(stuff_p->next);
 	if (stuff_p->string != (char *) 0) {
 		FREE(stuff_p->string);
+	}
+	if (stuff_p->grid_name != (char *)0) {
+		FREE(stuff_p->grid_name);
 	}
 	FREE(stuff_p);
 }
@@ -1339,12 +1406,14 @@ char *string;		/* string for rehearsal mark */
 		 */
 		if (Reh_let < 26) {
 			/* 1-letter long mark */
-			(void) sprintf(reh_str, "%c", Reh_let + 'A');
+			reh_str[0] = (char) (Reh_let + 'A');
+			reh_str[1] = '\0';
 		}
 		else if (Reh_let < 27 * 26) {
 			/* 2-letter long mark */
-			(void) sprintf(reh_str, "%c%c",
-				(Reh_let / 26) + 'A' - 1, (Reh_let % 26) + 'A');
+			reh_str[0] = (char) ((Reh_let / 26) + 'A' - 1);
+			reh_str[1] = (char) ((Reh_let % 26) + 'A');
+			reh_str[2] = '\0';
 		}
 		else {
 			ufatal("too many rehearsal letters!");

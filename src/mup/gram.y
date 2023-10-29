@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -130,6 +130,7 @@ static int Mark_start;			/* Index into Curr_marklist at which
 					 */
 static struct PRINTDATA **Next_print_link_p_p;	/* points to where to attach next
 						 * print command that we get */
+static int Mirrored;			/* YES if title has "mirrored" option */
 static int Item_count;			/* items in current list */
 static int Max_items;			/* current amount of space in lists
 					 * "with" list, curve locations, etc) */
@@ -162,6 +163,7 @@ static int Start_gracebackup;		/* how many grace notes to back up
 					 * before starting a "stuff" */
 static int End_gracebackup;		/* how many grace notes to back up
 					 * before ending a "stuff" */
+static char *Grid_alias;		/* name to used where used */
 static float Til_offset;		/* beat count in "til" clause */
 static float Til_steps;			/* stepsize offset of "til" clause */
 static int Linetype;			/* L_DOTTED, L_DASHED, or L_NORMAL */
@@ -217,10 +219,11 @@ static void clone1ssv P((struct SSV *clone_src_p, struct MAINLL *insert_p,
 		int staffno, int voiceno));
 static void chk_ssv_ranges P((UINT32B context));
 static void var_valid P((void));	 /* check if okay to set location var */
-static void proc_printcmd P((int justifytype, struct INPCOORD *inpc_p,
-		char *str, int font, int size, int got_nl,
-		int isPostScript, int ps_usage, int isfilename, 
+static struct PRINTDATA * proc_printcmd P((int justifytype,
+		struct INPCOORD *inpc_p, char *str, int font, int size,
+		int got_nl, int isPostScript, int ps_usage, int isfilename, 
 		struct VAR_EXPORT *export_p, double extra));
+static void mirror P((struct PRINTDATA *left_p, struct PRINTDATA *right_p));
 static struct VAR_EXPORT *add_export P((char *varname, int index));
 static double extra_needed P((int font, int size, char **string_p));
 static void keyword_notes P((char *str));
@@ -353,6 +356,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_MEASNUM
 %token		T_MIDDLE
 %token		T_MIDI
+%token		T_MIRRORED
 %token		T_MNUM
 %token <intval>	T_MODIFIER
 %token <intval>	T_MULDIV_OP
@@ -390,7 +394,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %token <intval>	T_PRINTTYPE
 %token <intval>	T_PRINTEDTIME
 %token <intval> T_PSHOOKLOC
-%token		T_PSVAR
+%token <intval> T_PSVAR
 %token		T_QUAD
 %token		T_QUESTION
 %token <intval>	T_RANGELISTVAR
@@ -539,6 +543,7 @@ struct VAR_EXPORT *export_p;	/* for Mup variables to be passed to user PostScrip
 %type <intval> opt_side
 %type <intval> opt_size
 %type <intval> opt_str_acc
+%type <stringval> opt_stuff_string
 %type <stringval> opt_string
 %type <intval> opt_ticks
 %type <ratval> opt_time
@@ -3283,8 +3288,19 @@ trans_usage:
 		$$ = $1;
 	};
 	
-title:	T_TITLE tfont title_size titleA opt_semi T_NEWLINE
+title:	opt_mirrored T_TITLE tfont title_size titleA opt_semi T_NEWLINE
 	{
+	};
+
+opt_mirrored:
+	{
+		Mirrored = NO;
+	}
+
+	|
+	T_MIRRORED
+	{
+		Mirrored = YES;
 	};
 
 tfont:	font_family title_font
@@ -3343,7 +3359,7 @@ titleA:
 	{
 		String1 = $1;
 		Extra = extra_needed(Titlefont, Titlesize, &String1);
-		proc_printcmd(J_CENTER, (struct INPCOORD *) 0, String1,
+		(void) proc_printcmd(J_CENTER, (struct INPCOORD *) 0, String1,
 			Titlefont, Titlesize, YES, NO, PU_NORMAL, NO, 0, Extra);
 	}
 
@@ -3351,6 +3367,8 @@ titleA:
 	string string
 	{
 		double tmp_extra;
+		struct PRINTDATA *print1_p;
+		struct PRINTDATA *print2_p;
 
 		/* If one is taller than the default for the font/size,
 		 * figure out how much more to add on. */
@@ -3360,12 +3378,13 @@ titleA:
 		tmp_extra = extra_needed(Titlefont, Titlesize, &String2);
 		Extra = MAX(Extra, tmp_extra);
 
-		proc_printcmd(J_LEFT, (struct INPCOORD *) 0, String1,
+		print1_p = proc_printcmd(J_LEFT, (struct INPCOORD *) 0, String1,
 				Titlefont, Titlesize, YES, NO, PU_NORMAL,
 				NO, 0, Extra);
-		proc_printcmd(J_RIGHT, (struct INPCOORD *) 0, String2,
+		print2_p = proc_printcmd(J_RIGHT, (struct INPCOORD *) 0, String2,
 				Titlefont, Titlesize, NO, NO, PU_NORMAL,
 				NO, 0, (double) 0.0);
+		mirror(print1_p, print2_p);
 	}
 
 	|
@@ -3373,6 +3392,8 @@ titleA:
 	{
 		double tmp_extra;
 		char *string3;
+		struct PRINTDATA *print1_p;
+		struct PRINTDATA *print2_p;
 
 		String1 = $1;
 		Extra = extra_needed(Titlefont, Titlesize, &String1);
@@ -3383,15 +3404,16 @@ titleA:
 		tmp_extra = extra_needed(Titlefont, Titlesize, &string3);
 		Extra = MAX(Extra, tmp_extra);
 
-		proc_printcmd(J_LEFT, (struct INPCOORD *) 0, String1,
+		print1_p = proc_printcmd(J_LEFT, (struct INPCOORD *) 0, String1,
 				Titlefont, Titlesize, YES, NO, PU_NORMAL,
 				NO, 0, Extra);
-		proc_printcmd(J_CENTER, (struct INPCOORD *) 0, String2,
+		(void) proc_printcmd(J_CENTER, (struct INPCOORD *) 0, String2,
 				Titlefont, Titlesize, NO, NO, PU_NORMAL,
 				NO, 0, (double) 0.0);
-		proc_printcmd(J_RIGHT, (struct INPCOORD *) 0, string3,
+		print2_p = proc_printcmd(J_RIGHT, (struct INPCOORD *) 0, string3,
 				Titlefont, Titlesize, NO, NO, PU_NORMAL,
 				NO, 0, (double) 0.0);
+		mirror(print1_p, print2_p);
 	};
 
 paragraph:	opt_paratype T_PARAGRAPH tfont title_size string opt_semi T_NEWLINE
@@ -3455,7 +3477,7 @@ paragraph:	opt_paratype T_PARAGRAPH tfont title_size string opt_semi T_NEWLINE
 						font, size,
 						Curr_filename, yylineno);
 					String1 = map_print_str(strdup(string_start), Curr_filename, yylineno);
-					proc_printcmd($1, (struct INPCOORD*) 0,
+					(void) proc_printcmd($1, (struct INPCOORD*) 0,
 						String1, font, size,
 						YES, NO, PU_NORMAL, NO, 0, 0.0);
 
@@ -3483,7 +3505,7 @@ paragraph:	opt_paratype T_PARAGRAPH tfont title_size string opt_semi T_NEWLINE
 		(void) fix_string(string_start, font, size,
 					Curr_filename, yylineno);
 		String1 = map_print_str(strdup(string_start), Curr_filename, yylineno);
-		proc_printcmd($1, (struct INPCOORD*) 0, String1,
+		(void) proc_printcmd($1, (struct INPCOORD*) 0, String1,
 				font, size, YES, NO, PU_NORMAL, NO, 0, 0.0);
 	};
 
@@ -3633,6 +3655,9 @@ paramname:
 
 	|
 	T_SHAPES
+
+	|
+	T_PSVAR
 	;
 
 string:	string_part
@@ -4020,13 +4045,16 @@ mm_params:
 	;
 
 mm_param_item:
-	T_CLEFVAR T_EQUAL T_CLEF
+	T_CLEFVAR T_EQUAL T_CLEF opt_print_clef
 	{
 		if (Curr_grpsyl_p != 0 && Curr_grpsyl_p->grpsyl == GS_GROUP
 				&& Curr_grpsyl_p->grpvalue == GV_ZERO) {
 			yyerror("mid-measure clef change not allowed after grace note\n");
 		}
 		tssv_update(Curr_tssv_p, $1, $3);
+		if (Curr_tssv_p != 0) {
+			Curr_tssv_p->ssv.forceprintclef = $4;
+		}
 	}
 
 	|
@@ -6033,6 +6061,8 @@ more_lyric_ids:
 	
 	|
 	more_lyric_ids T_SEMICOLON T_PLACE { Place = $3; } staff_list
+	|
+	more_lyric_ids T_SEMICOLON { Place = PL_BELOW; } staff_list
 	;
 
 verse_spec:
@@ -7576,11 +7606,11 @@ stufflist:
 	;
 
 stuff_item:
-	beat_offset steps_offset opt_string til_clause T_SEMICOLON
+	beat_offset steps_offset opt_stuff_string til_clause T_SEMICOLON
 	{
 		add_stuff_item($1, $2, Start_gracebackup, $3,
 			Til_bars, Til_offset, Til_steps, End_gracebackup,
-			Dist, Dist_usage, Aligntag);
+			Dist, Dist_usage, Aligntag, Grid_alias);
 	};
 
 beat_offset:
@@ -7621,6 +7651,24 @@ opt_string:
 	}
 
 	|
+	string
+	{
+		$$ = $1;
+	};
+
+opt_stuff_string:
+	{
+		$$ = 0;
+		Grid_alias = 0;
+	}
+	|
+	string
+	{
+		$$ = $1;
+		Grid_alias = 0;
+	}
+
+	|
 	T_STAR
 	{
 		if (get_stuff_type() != ST_PEDAL) {
@@ -7630,12 +7678,14 @@ opt_string:
 		$$[0] = FONT_MUSIC;
 		$$[1] = DFLT_SIZE;
 		sprintf($$ + 2, "\\(endped)");
+		Grid_alias = 0;
 	}
 
 	|
-	string
+	string T_LPAREN string T_RPAREN
 	{
 		$$ = $1;
+		Grid_alias = $3;
 	};
 
 til_clause:
@@ -7766,13 +7816,22 @@ roll_offsetlist:
 
 printcmd:	printtype opt_loc string
 	{
+		int size;
+
 		if (Curr_family == FAMILY_DFLT) {
 			Curr_family = Score.fontfamily;
 		}
 		String1 = $3;
-		Extra = extra_needed(Curr_family + Curr_font, Curr_size, &String1);
-		proc_printcmd($1, Curr_loc_info_p, String1,
-			Curr_family + Curr_font, Curr_size, $2,
+		size = Curr_size;
+		if (Curr_loc_info_p != 0) {
+			if (references_page(Curr_loc_info_p) == YES) {
+				size = adj_size(size, 1.0 / Score.musicscale,
+					Curr_filename, yylineno);
+			}
+		}
+		Extra = extra_needed(Curr_family + Curr_font, size, &String1);
+		(void) proc_printcmd($1, Curr_loc_info_p, String1,
+			Curr_family + Curr_font, size, $2,
 			NO, PU_NORMAL, NO, 0,
 			($2 == YES ? Extra : (double) 0.0));
 	}
@@ -7780,7 +7839,7 @@ printcmd:	printtype opt_loc string
 	|
 	postscript ps_opt_loc export_list opt_file string
 	{
-		proc_printcmd(J_NONE, Curr_loc_info_p, $5, FONT_UNKNOWN,
+		(void) proc_printcmd(J_NONE, Curr_loc_info_p, $5, FONT_UNKNOWN,
 				DFLT_SIZE, NO, YES, $2, $4, $3, (double) 0.0);
 		if ($4 == NO) {
 			end_raw();
@@ -8359,7 +8418,7 @@ int index;	/* AX, AW, etc or NUMCTYPE if all are to be exported,
  * struct and fill in all the information about what to print and where
  * to print it. */
 
-static void
+static struct PRINTDATA *
 proc_printcmd(justifytype, inpc_p, str, font, size, got_nl, isPostScript, ps_usage, isfilename, export_p, extra)
 
 int justifytype;	/* J_LEFT, etc */
@@ -8384,6 +8443,7 @@ double extra;	/* how much extra vertical padding to add */
 
 	/* save all the info in a PRINTDATA struct */
 	MALLOC(PRINTDATA, curr_print_p, 1);
+	curr_print_p->mirror_p = 0;
 
 	if (inpc_p == (struct INPCOORD *) 0) {
 
@@ -8484,7 +8544,7 @@ double extra;	/* how much extra vertical padding to add */
 			PostScript_hooks[ps_usage]->inputfile);
 		}
 		PostScript_hooks[ps_usage]  = curr_print_p;
-		return;
+		return(curr_print_p);
 	default:
 		break;
 	}
@@ -8532,6 +8592,25 @@ double extra;	/* how much extra vertical padding to add */
 	 * should be linked onto this one, so remember where we are */
 	Next_print_link_p_p = &(curr_print_p->next);
 	curr_print_p->next = (struct PRINTDATA *) 0;
+
+	return(curr_print_p);
+}
+
+
+/* For mirrored titles, point the information about the left and right 
+ * string to each other */
+
+static void
+mirror(left_p, right_p)
+
+struct PRINTDATA *left_p;	/* left when not mirrored */
+struct PRINTDATA *right_p;	/* right when not mirrored */
+
+{
+	if (Mirrored == YES) {
+		left_p->mirror_p = right_p;
+		right_p->mirror_p = left_p;
+	}
 }
 
 

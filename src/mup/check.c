@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -2152,6 +2152,9 @@ int end;	/* Play only through this measure number.
 			if (mll_p->str == S_BAR && mll_p->u.bar_p->bartype != INVISBAR) {
 				bars++;
 				mrbars = 0;
+				if (bars == end) {
+					break;
+				}
 			}
 			if (mll_p->str == S_STAFF &&
 					mll_p->u.staff_p->groups_p[0] != 0 &&

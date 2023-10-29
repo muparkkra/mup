@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -173,6 +173,7 @@ static int dim_tri P((unsigned char *str, char *replacement,
 		int size, int is_chord));
 static int smallsize P((int size));
 static int accsize P((int size));
+static char *expand_shortcut P((int ch, char *diacritical));
 static char *migrate_font_size P((char *string, char *out_p, char *deststring));
 static void validate_tag P((char *tag, char *fname, int lineno));
 
@@ -2094,11 +2095,13 @@ int staffno;		/* which staff it is associated with */
 				int translated;
 
 				translated = *transposed;
+				accidental = *(transposed+1);
 				if ( toupper(translated) == 'B') {
 					switch (accidental) {
 					case '\0':
 					case '#':
 					case 'x':
+					case 'n':
 						/* replace with H */
 						translated = (isupper(*transposed)
 							? 'H' : 'h');
@@ -4102,7 +4105,6 @@ int errmsg;	/* If YES, do a yyerror. Otherwise caller just wants to
 {
 	int h;			/* has number */
 	struct CHARINFO *ci_p;	/* the info we are looking for */
-	char expanded[24];	/* normal versions of shortcuts */
 	char *charname;		/* points to either name or expanded */
 
 	/* First assume we can use name as is */
@@ -4121,61 +4123,47 @@ int errmsg;	/* If YES, do a yyerror. Otherwise caller just wants to
 	if (strlen(name) == 2 && isalpha(name[0])) {
 		switch (name[1]) {
 		case '\'':
-			(void) sprintf(expanded, "%cacute", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "acute");
 			break;
 		case '`':
-			(void) sprintf(expanded, "%cgrave", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "grave");
 			break;
 		case '^':
-			(void) sprintf(expanded, "%ccircumflex", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "circumflex");
 			break;
 		case '~':
-			(void) sprintf(expanded, "%ctilde", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "tilde");
 			break;
 		case ':':
-			(void) sprintf(expanded, "%cdieresis", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "dieresis");
 			break;
 		case '/':
-			(void) sprintf(expanded, "%cslash", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "slash");
 			break;
 		case ',':
-			(void) sprintf(expanded, "%ccedilla", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "cedilla");
 			break;
 		case 'v':
-			(void) sprintf(expanded, "%ccaron", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "caron");
 			break;
 		case 'o':
-			(void) sprintf(expanded, "%cring", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "ring");
 			break;
 		case '(':
-			(void) sprintf(expanded, "%cbreve", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "breve");
 			break;
 		case '-':
-			(void) sprintf(expanded, "%cmacron", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "macron");
 			break;
 		case '.':
-			(void) sprintf(expanded, "%cdotaccent", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "dotaccent");
 			break;
 		case 'c':
-			(void) sprintf(expanded, "%cogonek", name[0]);
-			charname = expanded;
+			charname = expand_shortcut(name[0], "ogonek");
 			break;
 		case 's':
 			if (name[0] == 's') {
-				(void) sprintf(expanded, "germandbls");
-				charname = expanded;
+				charname = "germandbls";
 			}
 			break;
 		default:
@@ -4248,6 +4236,33 @@ int errmsg;	/* If YES, do a yyerror. Otherwise caller just wants to
 		l_yyerror(Curr_filename, yylineno, "'%s' is not a valid character name", charname);
 	}
 	return(BAD_CHAR & 0xff);
+}
+
+/* Given a letter and a diacritical name, return, in a static area, the
+ * full name of the special character. We used to do these inline with
+ * sprintf, but use of sprintf is becoming discouraged, but not all
+ * compiler support snprintf. So this takes buffer overwrite precautions
+ * like snprintf would do, but in a different way.
+ */
+
+static char *
+expand_shortcut(ch, diacritical)
+
+int ch;	/* the letter */
+char *diacritical;	/* the name of the mark to apply to the letter */
+
+{
+	static char expanded[32];
+	int len;
+
+	expanded[0] = (char) ch;
+	len = strlen(diacritical);
+	if (len + 2 > sizeof(expanded)) {
+		pfatal("shortcut expansion buffer is too small.");
+	}
+	strncpy(expanded + 1, diacritical, len);
+	expanded[len + 1] = '\0';
+	return(expanded);
 }
 
 

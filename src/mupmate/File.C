@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -193,8 +193,9 @@ CALL_BACK_A(File, SaveAs, bool honor_auto_display)
 		char * suffixed_filename = 0;
 		if (*suffix == '\0') {
 			// User did not supply a suffix, so we add .mup
-			suffixed_filename = new char[strlen(newfile) + 5];
-			(void) sprintf(suffixed_filename, "%s.mup", newfile);
+			size_t sfleng = strlen(newfile) + 5;
+			suffixed_filename = new char[sfleng];
+			(void) snprintf(suffixed_filename, sfleng, "%s.mup", newfile);
 			newfile = suffixed_filename;
 		}
 		else if (strcasecmp(suffix, ".ps") == 0
@@ -210,7 +211,8 @@ CALL_BACK_A(File, SaveAs, bool honor_auto_display)
 		if (access(newfile, F_OK) == 0) {
 			const char * ask_replace = " already exists. Do you want to replace it?";
 			char question[strlen(newfile) + strlen(ask_replace) + 1];
-			(void) sprintf(question, "%s%s\n", newfile, ask_replace);
+			(void) snprintf(question, sizeof(question),
+						"%s%s\n", newfile, ask_replace);
 			switch (Save_confirm_dialog::confirm_save(question)) {
 			default: // default case should be impossible.
 			case Save_confirm_dialog::Cancel:
@@ -333,7 +335,8 @@ File::save_changes_check(const char * extra_text, bool hide_the_No)
 	}
 	const char * name = effective_filename();
 	char question[200 + strlen(name) + strlen(extra_text)];
-	(void) sprintf(question, "The text in the %s file has changed. "
+	(void) snprintf(question, sizeof(question),
+			"The text in the %s file has changed. "
 			"Do you want to save the changes? %s", name, extra_text);
 	return(Save_confirm_dialog::confirm_save(question, hide_the_No));
 }
@@ -356,8 +359,9 @@ File::load_file(const char * name)
 	if (access(name, F_OK) != 0) {
 		if (strlen(name) < 5 ||
 				strcasecmp(name + strlen(name) - 4, ".mup") != 0) {
-			newname = new char[strlen(name) + 5];
-			(void) sprintf(newname, "%s.mup", name);
+			size_t nnleng = strlen(name) + 5;
+			newname = new char[nnleng];
+			(void) snprintf(newname, nnleng, "%s.mup", name);
 		}
 	}
 	if (newname == 0) {
@@ -391,7 +395,7 @@ File::set_window_label()
 	}
 	const char * name = effective_filename();
 	char label[strlen(name) + 11];
-	(void) sprintf(label, "%s - Mupmate", name);
+	(void) snprintf(label, sizeof(label), "%s - Mupmate", name);
 	parent_window_p->copy_label(label);
 }
 

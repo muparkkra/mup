@@ -1,0 +1,50 @@
+name: mup-mac-build
+run-name: do MacOS build of Mup
+on: workflow_dispatch
+jobs:
+  build-mup:
+    runs-on: macos-latest
+    steps:
+      - name: checkout the Mup code
+        uses: actions/checkout@v3
+        with:
+          repository: muparkkra/mup
+
+      - name: brew install automake
+        run: brew install automake
+
+      - name: brew install fltk
+        run: brew install fltk
+
+      - name: brew install netpbm
+        run: brew install netpbm
+
+      - name: run autoconf
+        run: autoreconf --install
+
+      - name: run configure
+        run: ./configure
+
+      - name: run make
+        run: make
+
+      - name: run test suite
+        run: make check
+
+      - name: create the tar package
+        run: make dist
+
+      - name: run build/packaging script
+        run: (cd packaging; ./builddmg)
+
+      - name: make upload directory
+        run: mkdir macOS-product
+
+      - name: move dmg to upload directory
+        run: mv packaging/mup-osx/MupMate*.dmg macOS-product/
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MacOS-dmg
+          path: macOS-product

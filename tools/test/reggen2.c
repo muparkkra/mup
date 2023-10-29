@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -46,6 +46,7 @@
  * cases in less than a day.
  * Arguments:
  *	-d		use mupdisp instead of mup
+ *	-g		save "good" (0 exit code) generated files
  *	-i iterations	generate this many tests. Default is ITERATIONS
  *					(ITERATIONS is #defined below)
  *	-n		also save files that give non-zero exit codes
@@ -212,6 +213,7 @@ short string_escapes;	/* % of time to do things like \v \s \f etc */
 short modifier;		/* % of time to use chord/analysis/figbass */
 short box;		/* % of time to do boxed string */
 short staffscale;	/* % of time to use staffscale */
+short musicscale;	/* % of time to use musicscale */
 short multi_brack;	/* % of time to do more than one [] on group */
 short gtc;		/* % of time to use ... (good til canceled) */
 short unsetparam;	/* % of time to use use unset */
@@ -666,6 +668,7 @@ struct LIST Paramlist[] = {
 	{ "midlinestemfloat", 0 },
 	{ "minalignscale", 0 },
 	{ "mingridheight", 0 },
+	{ "musicscale", 0 },
 	{ "noteleftfont", 0 },
 	{ "noteleftfontfamily", 0 },
 	{ "noteleftsize", 0 },
@@ -941,6 +944,7 @@ int num_huge_nums;
 int num_non_midi_tests, num_midi_tests;
 
 short savenonzero = NO;	/* if to save files than cause non-zero exit */
+short savegood = NO;	/* if to save files that exit 0 */
 int child;		/* PID of child process */
 FILE *outf;		/* output file */
 int In_ending;		/* if currently doing an ending */
@@ -1035,7 +1039,7 @@ main(int argc, char **argv)
 #ifdef GENONLY
 	while ((a = getopt(argc, argv, "i:p:")) != EOF) {
 #else
-	while ((a = getopt(argc, argv, "di:np:t:v")) != EOF) {
+	while ((a = getopt(argc, argv, "dgi:np:t:v")) != EOF) {
 #endif
 		switch(a) {
 #ifndef GENONLY
@@ -1045,6 +1049,9 @@ main(int argc, char **argv)
 			timeout = 0;
 			break;
 #endif
+		case 'g':
+			savegood = YES;
+			break;
 		case 'i':
 			iterations = atoi(optarg);
 			break;
@@ -1577,6 +1584,11 @@ gen()
 	out("scale=");
 	outfmt("0.%d", myrandom(4,9));
 	newline();
+	if (sometimes(musicscale)) {
+		out("musicscale=");
+		outfmt("%d.%d", myrandom(0,1), myrandom(0, 9));
+		newline();
+	}
 
 	/* establish a beamstyle */
 	if (sometimes(BEAMSTYLE)) {
@@ -3396,6 +3408,9 @@ exectest(char *cmd, int timeout, int verbose, int doing_midi, int *ret_p)
 			if (savenonzero == YES && code != 0) {
 				return(NO);
 			}
+			if (savegood == YES && code == 0) {
+				return(NO);
+			}
 		}
 		else {
 			if (verbose) {
@@ -3742,6 +3757,11 @@ int measrem;	/* measures remaining */
 	}
 	else if (str == GRIDCHORD) {
 		out(picklist(Gridlist, Numgrids, -1));
+		if (sometimes(20)) {
+			out("(");
+			genstring(myrandom(0, 8));
+			out(")");
+		}
 	}
 
 	if (til == YES) {
@@ -4107,6 +4127,7 @@ initvals()
 	modifier = myrandom(0,35);
 	box = myrandom(0,10);
 	staffscale = myrandom(0, 7);
+	musicscale = myrandom(0, 7);
 	multi_brack = myrandom(0, 10);
 	gtc = myrandom(0, 7);
 	unsetparam = myrandom(0, 35);
@@ -4993,7 +5014,9 @@ macro_name()
 	case 3: return("XY___");
 	case 4: return("G_P_1_Q");
 	case 5: return("XXXX");
+	default: break;
 	}
+	return("NOT_POSSIBLE");
 }
 
 

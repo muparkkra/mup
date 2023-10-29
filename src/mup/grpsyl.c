@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -2476,8 +2476,8 @@ int vno;
 	 *	But to be extra safe, we will print the staff as %3d,
 	 *	so in case someone changes MAXSTAFFS to a 3-digit number
 	 *	without realizing this code could be affected,
-	 *	we will still be safe. If they set to 1000 or bigger,
-	 *	and use this code, too bad.
+	 *	we will still be safe. And we have compile time checks
+	 *	for going beyond 3 digit staffs or 1 digit voices.
 	 *	So "SSS V:" adds up to 6 bytes.
 	 *	- a newline at the end (1 byte)
 	 *	- an end-of-buffer marker for flex. (2 bytes)

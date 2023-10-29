@@ -1,6 +1,6 @@
 Name "Mupmate"
 Unicode true
-OutFile "mup70ins.exe"
+OutFile "mup71ins.exe"
 
 LicenseText "You must agree to this license before installing."
 LicenseData "license.txt"

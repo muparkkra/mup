@@ -90,3 +90,16 @@ lyrics above 1: "one two three four"; [3] "a b c d"; "hi ho hi ho";
 lyrics 1: "one two three four"; "a b c d"; "hi ho hi ho";
 lyrics between 1&2: "be-tween the staff"; "this is verse 2";
 bar
+
+newscore
+
+bold above all: 1 "test specifying multiple places";
+bold above all: 1 "1; 2; (using default place on both)";
+1-2: d;;;;
+lyrics 1;2: "one two three four";
+bar
+
+1-2: e;;;;
+bold above all: 1 "above 1; below 2; between 1&2";
+lyrics above 1; below 2; between 1&2: "one two three four";
+bar

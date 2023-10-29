@@ -10,21 +10,24 @@
 # Otherwise, you can use --openwatcom option to give the path to
 # where that compiler is located. This should point to the top level
 # directory, that contains owsetenv.sh and the binl directory.
-# Similarly, you can use the --mingw otpion to give the path to the
+# Similarly, you can use the --mingw option to give the path to the
 # the mingw compiler, which is used to compile mup, mupmate, and mkmupfnt.
 # That should point to the top level directory that contains the
-# i386-mingw32msvc directory.
+# x86_64-w64-mingw32 or similar directory.
+# The --mingw-subdir option can be used to specify the exact name;
+# otherwise it will attempt to deduce.
 # Or for DOS, --djgpp can be used to point to where the djgpp compiler is.
 # The default directories if not specified are /usr/local/openwatcom,
 # /usr/local/mingw, and /usr/local/djgpp.
 # The fltk headers and libraries are assumed to be under the mingw
 # include and lib directories. If not, you can use --fltk to point to
 # where they are.
+# Any command line arguments are added to CFLAGS.
 
 name="$0"
 function usage
 {
-	echo  "usage: $name [--no-mupdisp] [--openwatcom path] [--mingw path] [ --fltk path] [--dos]"
+	echo  "usage: $name [--no-mupdisp] [--openwatcom path] [--mingw path] [--mingw-subdir path] [ --fltk path] [--dos]"
 	exit 1
 }
 
@@ -38,7 +41,7 @@ FLTK_INCLUDE=
 FLTK_LIBS=
 
 # Process the command line arguments
-OPTS=$(getopt --name "$name" --options "h" --longoptions "help,dos,no-mupdisp,openwatcom:,mingw:,fltk:,djgpp:" -- "$@") || usage
+OPTS=$(getopt --name "$name" --options "h" --longoptions "help,dos,no-mupdisp,openwatcom:,mingw:,mingw-subdir:,fltk:,djgpp:" -- "$@") || usage
 eval set -- "$OPTS"
 
 while true
@@ -50,6 +53,7 @@ do
 	--no-mupdisp)  build_mupdisp=no ; shift ;;
 	--openwatcom) OPENWATCOM=$2 ; shift 2 ;;
 	--mingw) MINGW=$2 ; shift 2 ;;
+	--mingw-subdir) MINGW_SUBDIR=$2 ; shift 2 ;;
 	--fltk)
 		FLTK_INCLUDE=-I$2/include
 		FLTK_LIBS=-L$2/lib
@@ -61,11 +65,27 @@ done
 
 if [ "$build_dos" == yes ]
 then
-	CFLAGS=-I$DJGPP/include
+	CFLAGS="-I$DJGPP/include $*"
 	LDFLAGS=-L$DJGPP/lib
 else
 	LDFLAGS="-L$MINGW/lib $FLTK_LIBS"
-	CFLAGS="-I$MINGW/include -I$MINGW/i386-mingw32msvc/include $FLTK_INCLUDE -D__DOS__"
+	# There appears to be much variation in the name for the mingw
+	# compiler, so we try to deduce from various possibilities.
+	if [[ -z "$MINGW_SUBDIR" ]]
+	then
+		for cpu in i386 i586 i686 x86_64 x86
+		do
+			for vers in 64- ""
+			do
+				for name in mingw mingw32msvc mingw32
+				do
+					[[ -x "$MINGW/$cpu-$vers$name/bin/gcc" ]] && MINGW_SUBDIR=$cpu-$vers$name
+				done
+			done
+		done
+	fi
+	[[ -z "$MINGW_SUBDIR" ]] && MINGW_SUBDIR=x86_64-w64-mingw32
+	CFLAGS="-I$MINGW/include -I$MINGW/$MINGW_SUBDIR/include $FLTK_INCLUDE -D__DOS__ $*"
 fi
 
 set -e
@@ -120,19 +140,27 @@ then
 	exit 1
 fi
 
-VERSION=7.0
-VERSION_NO_DOT=70
+VERSION=7.1
+VERSION_NO_DOT=71
 
 if [ "$build_dos" == yes ]
 then
 	BUILD_DIR=mup-$VERSION.dos
 	PATH=$DJGPP/bin:$PATH
 	CC=i386-msdosdjgpp-gcc
+	[[ -x $DJGPP/bin/i586-pc-msdosdjgpp-gcc ]] && CC=$DJGPP/bin/i586-pc-msdosdjgpp-gcc
 else
 	BUILD_DIR=mup-$VERSION.windows
-	PATH=$MINGW/i386-mingw32msvc/bin:$PATH
-	CC=gcc
+	PATH=$MINGW/$MINGW_SUBDIR/bin:$PATH
+	CC=$MINGW/$MINGW_SUBDIR/bin/gcc
 fi
+
+if [[ ! -x "$CC" ]]
+then
+	echo "could not find C compiler; try using --mingw and/or --mingw-subdir"
+	exit 1
+fi
+
 rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 
@@ -207,7 +235,7 @@ then
 		echo need either pamtowicon or ppmtowinicon
 		exit 1
 	fi
-	$MINGW/bin/i386-mingw32msvc-windres -i ../src/mupmate/mupmate.rc -o $BUILD_DIR/icon.o
+	$MINGW/bin/${MINGW_SUBDIR}-windres -i ../src/mupmate/mupmate.rc -o $BUILD_DIR/icon.o
 	rm -f mup16.ppm mup32.ppm mup48.ppm mup16.pgm mup32.pgm mup48.pgm mupicons.ico 
 
 	# Deduce whether to define FLTK_1_1, which has a different signature
@@ -242,7 +270,8 @@ unix2dos < ../mup-input/examples/sample.mup > $BUILD_DIR/sample.mup
 ../src/mup/mup $BUILD_DIR/sample.mup | unix2dos > $BUILD_DIR/sample.ps
 
 unix2dos < ../LICENSE > $BUILD_DIR/license.txt
-for f in overview.html mupfeat.html whatsnew.html faq.html usercomm.html winrun.html
+for f in overview.html mupfeat.html whatsnew.html faq.html \
+	usercomm.html winrun.html quickref.html
 do
 	unix2dos < ../doc/htmldocs/$f > $BUILD_DIR/$f
 done
@@ -279,7 +308,7 @@ unix2dos < ../tools/mup.vim  > $BUILD_DIR/mup.vim
 
 PRODUCT_FILES="mup.exe $MUPDISP mkmupfnt.exe mupprnt.bat \
 	winrun.html license.txt faq.html overview.html \
-	mupfeat.html whatsnew.html uguide.ps mupqref.ps \
+	mupfeat.html whatsnew.html uguide.ps mupqref.ps quickref.html \
 	mup.ps mupdisp.ps mupprnt.ps mkmupfnt.ps \
 	sample.mup sample.ps template.mup \
 	tabstems cyrillic grids grids2 guitar \

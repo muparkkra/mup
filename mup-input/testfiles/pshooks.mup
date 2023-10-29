@@ -1,0 +1,66 @@
+//!Mup-Arkkra
+
+header
+        title bold (18) "pshook.mup"
+        paragraph (14) "This file tests PostScript hooks"
+        title ""
+
+score
+	staffs=2
+	leftmargin=1
+	rightmargin=2
+music
+
+define SOPRANO 1 @
+define ALTO 2 @
+
+define HIGHLIGHT ALTO @
+
+ifdef HIGHLIGHT
+// If HIGHLIGHT is set to a staff number,
+// highlight that staff by drawing a yellow box behind it.
+postscript atscorebegin with _box = _staff.HIGHLIGHT  "
+	newpath
+	Mup_box.w Mup_box.n moveto
+	Mup_box.e Mup_box.n lineto
+	Mup_box.e Mup_box.s lineto
+	Mup_box.w Mup_box.s lineto
+	closepath 0.9 0.9 0.0 setrgbcolor fill stroke"
+endif
+
+postscript atscoreend with _score "newpath
+	0.2 0.6 0.8 setrgbcolor
+	Mup_score.e 20 add Mup_score.y 20 sub moveto
+	7 -15 rlineto 60 15 rlineto stroke"
+
+postscript afterprolog "restore /Myred 1 def save"
+postscript beforetrailer "% this is a pre-trailer comment"
+
+postscript atpagebegin "restore
+    150 250 moveto
+    Myred 0 0 setrgbcolor
+    /NewCenturySchlbk-Bold findfont 24 scalefont setfont
+   (Do not copy) show
+   0 0 0 setrgbcolor
+   save"
+
+postscript atpageend "250 450 moveto 0.5 0.9 0.3 setrgbcolor
+    /NewCenturySchlbk-Italic findfont 24 scalefont setfont
+   (This is from atpageend) show"
+
+SOPRANO: g;8c+;;4;;
+ALTO: e;8g;;4a;e;
+lyrics below SOPRANO,ALTO: "This is a sam-ple";
+bar
+
+newpage
+
+postscript atscoreend with _score "newpath
+	0.9 0.1 0.8 setrgbcolor
+	Mup_score.e 30 add Mup_score.y 30 sub moveto
+	7 -10 rlineto 40 10 rlineto stroke"
+
+SOPRANO: e+;d+;b;c+;
+ALTO: g;b;g;e;
+lyrics below SOPRANO,ALTO: "of high-light-ing.";
+bar

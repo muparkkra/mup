@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1635,10 +1635,10 @@ setstuff()
 				 * for chord/analysis/figbass.
 				 */
 				if (streast - endspace_width(stuff_p->string) >
-				   PGWIDTH - eff_rightmargin(mainll_p) &&
+				   EFF_PG_WIDTH - eff_rightmargin(mainll_p) &&
 				   ! IS_CHORDLIKE(stuff_p->modifier)) {
 					stuff_p->string = split_string(
-						stuff_p->string, PGWIDTH -
+						stuff_p->string, EFF_PG_WIDTH -
 						eff_rightmargin(mainll_p) -
 						stuff_p->c[AW]);
 					streast = stuff_p->c[AW] +
@@ -2240,7 +2240,7 @@ struct STUFF *stuff_p;		/* the chord stuff */
 		return (NO);
 	}
 
-	grid_p = findgrid(stuff_p->string);
+	grid_p = findgrid(stuff_p->grid_name);
 
 	/* if grid was never defined, warn and return no grid here */
 	if (grid_p == 0) {

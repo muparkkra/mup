@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -476,7 +476,7 @@ struct STUFF *stuff_p;
 	curvelist_p->next->next = (struct CRVLIST *) 0;
 	if (stuff_p->carryout == YES) {
 		/* extend to near end of score */
-		curvelist_p->next->x = PGWIDTH - eff_rightmargin(mll_p) - Stepsize;
+		curvelist_p->next->x = EFF_PG_WIDTH - eff_rightmargin(mll_p) - Stepsize;
 	}
 	else  {
 		/* go to just before west of end note */
@@ -1434,7 +1434,7 @@ int is_phrase;			/* YES if phrase, NO if tie or slur */
 	
 	/* if carrying over, extend x to margin */
 	if (stuff_p->carryout) {
-		endlist_p->x = PGWIDTH - eff_rightmargin(mll_p);
+		endlist_p->x = EFF_PG_WIDTH - eff_rightmargin(mll_p);
 	}
 
 	/* set up node for another point on curve */

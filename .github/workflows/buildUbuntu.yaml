@@ -1,0 +1,50 @@
+name: mup-ubuntu-build
+run-name: do Ubuntu build of Mup
+on:
+  workflow_dispatch:
+    inputs:
+      builder_id:
+        description: 'builder_name <email@host>'
+        required: true
+
+jobs:
+  build-mup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install needed packages
+        run: sudo apt-get -y install automake libfltk1.3-dev netpbm libxft-dev libxpm-dev libxinerama-dev groff debhelper dpkg-dev
+
+      - name: checkout the Mup code
+        uses: actions/checkout@v3
+        with:
+          repository: muparkkra/mup
+
+      - name: run autoconf
+        run: autoreconf --install
+
+      - name: run configure
+        run: ./configure
+
+      - name: run make
+        run: make
+
+      - name: run test suite
+        run: make check
+
+      - name: create the tar package
+        run: make dist
+
+      - name: run build/packaging script
+        run: (cd packaging; ./builddeb '${{ github.event.inputs.builder_id }}' amd64)
+
+      - name: make upload directory
+        run: mkdir deb-product
+
+      - name: move deb package to upload directory
+        run: mv packaging/mup-*.debian/mup*.deb deb-product/
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ubuntu
+          path: deb-product

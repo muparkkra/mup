@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -224,6 +224,7 @@ struct MAINLL *nextbar_p;	/* point at MLL for the next bar line */
 	struct GRPSYL *gs_p;	/* starts pointing at first GRPSYL in list */
 	struct TIMEDSSV *tssv_p;/* point along a timed SSV list */
 	RATIONAL offset;	/* current group's offset into measure */
+	int newclefforce;	/* found midmeasure clef being forced */
 
 
 	s = mll_p->u.staff_p->staffno;
@@ -254,8 +255,13 @@ struct MAINLL *nextbar_p;	/* point at MLL for the next bar line */
 			clef = svpath(s, CLEF)->clef;
 
 			/* assign timed SSVs at current offset */
+			newclefforce = NO;	/* keep track whether found */
 			while (tssv_p != 0 && EQ(tssv_p->time_off, offset)) {
 				asgnssv(&tssv_p->ssv);
+				if (tssv_p->ssv.used[CLEF] == YES &&
+				    tssv_p->ssv.forceprintclef == YES) {
+					newclefforce = YES;
+				}
 				tssv_p = tssv_p->next;
 			}
 
@@ -264,13 +270,14 @@ struct MAINLL *nextbar_p;	/* point at MLL for the next bar line */
 
 			/*
 			 * If the clef changed at this time, set it in GRPSYL.
+			 * Also do it if the clef should be printed regardless.
 			 * This could happen with multiple voices on the staff.
 			 * If so, we'll later erase clef from all but one; but
 			 * the choice depends on the coords, which we don't
 			 * know yet, so that is done later.  The erasing is
 			 * done in fixclef() in restsyl.c.
 			 */
-			if (newclef != clef) {
+			if (newclef != clef || newclefforce == YES) {
 				clef = newclef;
 				gs_p->clef = clef;
 			}

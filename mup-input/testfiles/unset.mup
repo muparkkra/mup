@@ -69,6 +69,7 @@ unset measnumstyle
 unset midlinestemfloat
 unset minalignscale
 unset mingridheight
+unset musicscale
 unset noteheads
 unset noteleftfont
 unset noteleftfontfamily

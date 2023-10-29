@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -840,6 +840,10 @@ struct MAINLL *mll_p;	/* gs_p hangs off of here */
 	 * time values of all the groups prior to the first beamed group */
 	for (start_time = Zero, g_p = gs_p->prev; g_p != (struct GRPSYL *) 0;
 					g_p = g_p->prev) {
+		if (g_p->grpvalue == GV_ZERO) {
+			/* Skip grace groups */
+			continue;
+		}
 		start_time = radd(start_time, g_p->fulltime);
 	}
 

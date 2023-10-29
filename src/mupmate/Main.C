@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -762,7 +762,7 @@ main(int argc, char **argv, const char **arge)
 
 	// Get the user's preferences that persists across sessions
 	Preferences_p = new Fl_Preferences(Fl_Preferences::USER,
-					"arkkra.com", "mupmate70");
+					"arkkra.com", "mupmate71");
 
 	// If user is upgrading from earlier version,
 	// we want to migrate their non-version-specific preferences.
@@ -843,7 +843,8 @@ main(int argc, char **argv, const char **arge)
 				main_p->filemenu_p->load_file(argv[1]);
 			}
 			else {
-				(void)sprintf(fullname + strlen(fullname),
+				(void) snprintf(fullname + strlen(fullname),
+					sizeof(fullname) - strlen(fullname),
 					"%c%s", dir_separator(), argv[1]);
 				main_p->filemenu_p->load_file(fullname);
 			}
@@ -871,7 +872,8 @@ main(int argc, char **argv, const char **arge)
 			if (getcwd(curr_dir, sizeof(curr_dir)) == 0) {
 				strcpy(curr_dir, "<Unknown folder>");
 			}
-			sprintf(message, "Unable to change to folder\n"
+			(void) snprintf(message, sizeof(message),
+				"Unable to change to folder\n"
 				"\"%s.\"\nStaying in \"%s\" folder.\n"
 				"Fix setting of \"Folder for Mup Files\"\n"
 				"in Config->File Locations.",

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -178,6 +178,7 @@ static void split_lines_and_curves P((void));
 static void chkline P((struct MAINLL *mll_p));
 static void coordcheck P((struct COORD_INFO *x_info_p,
 		struct COORD_INFO *y_info_p, char *fname, int lineno));
+static int valid_coord P((struct INPCOORD *coord_p));
 static void add_segment P((struct SEGINFO *seginfo_p, double slope,
 		double y_offset, int staffno1, int linetype));
 static double find_effXlength P((double seg1xlen, double seg2xlen,
@@ -554,8 +555,8 @@ struct MAINLL *mll_p;	/* points to LINE */
 
 	/* get relevant info about each referenced coordinate */
 	line_p = mll_p->u.line_p;
-	if ( (line_p->start.hor_p == 0) || (line_p->start.vert_p == 0)
-			|| (line_p->end.hor_p == 0) || (line_p->end.vert_p == 0) ) {
+	if ( (valid_coord( &(line_p->start) ) == NO)
+			 || (valid_coord( &(line_p->end) ) == NO) ) {
 		/* Probably a _staff.N where N is an invisible staff.
 		 * Or in any case, we have nothing to reference, so need to
 		 * skip this one.
@@ -668,8 +669,8 @@ struct MAINLL *mll_p;	/* points to LINE */
 	/* the end x of the first segment is just like the beginning x,
 	 * but offset to the east far enough to
 	 * reach the end of the score. */
-	seg1xlen = PGWIDTH - eff_rightmargin(mll_p) - inpc_x( &(line_p->start),
-					fname, lineno );
+	seg1xlen = EFF_PG_WIDTH - eff_rightmargin(mll_p)
+				- inpc_x( &(line_p->start), fname, lineno );
 
 	/* handle bizarre case of beginning being too far right to deal
 	 * with properly */
@@ -805,6 +806,31 @@ struct MAINLL *mll_p;	/* points to LINE */
 }
 
 
+/* Returns YES if given INPCOORD appears to have valid parse trees for
+ * both x and y, NO if not. If the parse tree is just a tag reference to
+ * a null tag, that it considered invalid. That can happen for cases like
+ * a reference to _staff.1 if staff 1 is invisible.
+ */
+
+static int
+valid_coord(coord_p)
+
+struct INPCOORD *coord_p;
+
+{
+	if ( (coord_p->hexpr_p != 0)
+			&& (coord_p->hexpr_p->op == OP_TAG_REF)
+			&& (coord_p->hexpr_p->left.ltag_p->c == 0) ) {
+		return(NO);
+	}
+	if ( (coord_p->vexpr_p != 0)
+			&& (coord_p->vexpr_p->op == OP_TAG_REF)
+			&& (coord_p->vexpr_p->left.ltag_p->c == 0) ) {
+		return(NO);
+	}
+	return(YES);
+}
+
 /* check if location variables associated with an x and y point to at least
  * the same score on the same page. If not, give up */
 
@@ -915,7 +941,7 @@ int save_feed_info;	/* if YES, do svfeed() call, otherwise not */
 					   if (save_feed_info == YES) {
 						svfeed(m_p, effective_x_len);
 					   }
-					   effective_x_len += PGWIDTH
+					   effective_x_len += EFF_PG_WIDTH
 					      - eff_rightmargin(m_p) -
 					      m_p->next->u.clefsig_p->bar_p->c[AX];
 					}
@@ -986,7 +1012,7 @@ int linetype;
 	new_line_p->start.hor = new_line_p->start.hor_p[AX];
 	new_line_p->start.hexpr_p = 0;
 	new_line_p->end.hor_p = new_line_p->start.hor_p;
-	xleng = PGWIDTH - eff_rightmargin(seginfo_p->mll_p)
+	xleng = EFF_PG_WIDTH - eff_rightmargin(seginfo_p->mll_p)
 					 - new_line_p->start.hor;
 	new_line_p->end.hor = new_line_p->start.hor + xleng;
 	new_line_p->end.hexpr_p = 0;
@@ -1115,8 +1141,7 @@ double staffscale;	/* if negative calculate, otherwise use as is */
 
 	for (n = 0; n < curve_p->ncoord; n++) {
 
-		if ( (curve_p->coordlist[n].hor_p == 0)
-				|| (curve_p->coordlist[n].vert_p == 0) ) {
+		if ( valid_coord( &(curve_p->coordlist[n]) ) == NO) {
 			/* As with lines, unlink so we don't print, but
 			 * don't free, so that calling function can still
 			 * follow the ->next pointer */
@@ -1312,7 +1337,7 @@ double staffscale;	/* if negative calculate, otherwise use as is */
 		 * reach the end of the score.
 		 */
 		curve_p->coordlist[ncoord1 - 1] = curve_p->coordlist[0];
-		offset = PGWIDTH - eff_rightmargin(mll_p)
+		offset = EFF_PG_WIDTH - eff_rightmargin(mll_p)
 				- inpc_x( &(curve_p->coordlist[0]),
 				fname, lineno );
 
@@ -1781,7 +1806,7 @@ int lineno;	/* where original curve was defined */
 	new_crv_p->coordlist[0].hexpr_p = 0;
 
 	/* End at right margin. */
-	xleng = PGWIDTH - eff_rightmargin(seginfo_p->mll_p)
+	xleng = EFF_PG_WIDTH - eff_rightmargin(seginfo_p->mll_p)
 					- new_crv_p->coordlist[0].hor;
 	new_crv_p->coordlist[2].hor = new_crv_p->coordlist[0].hor_p[AX] + xleng;
 	new_crv_p->coordlist[2].hexpr_p = 0;
@@ -1852,6 +1877,10 @@ struct COORD_INFO *cinfo_p;
 	 * than the initial default of zero. */
 	if ((cinfo_p->flags & CT_INVISIBLE) ||
 			(cinfo_p->page == 0 && is_builtin(cinfo_p) == NO)) {
+		return(YES);
+	}
+	else if ((cinfo_p->flags & CT_BUILTIN) && (cinfo_p->staffno != 0)
+			&& (svpath(cinfo_p->staffno, VISIBLE)->visible == NO)) {
 		return(YES);
 	}
 	else {
@@ -2166,7 +2195,7 @@ struct MAINLL *mll_p;
 			/* ...and the value of the horizontal expression is
 			 * in the right margin or beyond...  */
 			if (inpc_x(inpc_p, (char *) 0, -1)
-					> PGWIDTH - eff_rightmargin(mll_p)) {
+				> EFF_PG_WIDTH - eff_rightmargin(mll_p)) {
 				to_pseudo(inpc_p, info_p, mll_p);
 			}
 		}
@@ -2299,7 +2328,7 @@ struct INPCOORD *prev_coord_p;	/* previous coord if any, else NULL */
 	float x, y;
 	float prev_x, prev_y;		/* location of prev_coord_p */
 	struct INPCOORD temp_coord;	/* reference if prev_coord_p is NULL */
-	float right_margin_x;		/* PGWIDTH - eff_rightmargin */
+	float right_margin_x;		/* EFF_PG_WIDTH - eff_rightmargin */
 	float staff_y = 0.0;
 	struct COORD_INFO *xinfo_p, *yinfo_p;	/* for finding which staff,
 					 * clefsig, etc is associated with
@@ -2350,13 +2379,14 @@ struct INPCOORD *prev_coord_p;	/* previous coord if any, else NULL */
 				"points too close together");
 		}
 	}
-	
-	/* Find the x value and see if it is off the right of the page.
-	 * Pretend we don't know the file/lineno, because that way if it is
-	 * off the page, no error message will be printed, which is what we
+
+	/* Find the x value and see if it is beyond
+	 * where the right margin begins.
+	 * Pretend we don't know the file/lineno, because that way if it is,
+	 * no error message will be printed, which is what we
 	 * want, since we hope to be able to patch things up so it isn't
 	 * off the page anymore. */
-	if (x < PGWIDTH - eff_rightmargin(mll_p)) {
+	if (x < EFF_PG_WIDTH - eff_rightmargin(mll_p)) {
 		/* this one is okay as is */
 		return;
 	}
@@ -2434,7 +2464,7 @@ struct INPCOORD *prev_coord_p;	/* previous coord if any, else NULL */
 	 * right edge of the original score, and add that to that pseudo bar
 	 * X of the score we are moving to.
 	 */
-	right_margin_x = PGWIDTH - eff_rightmargin(m_p);
+	right_margin_x = EFF_PG_WIDTH - eff_rightmargin(m_p);
 	coord_p->hor = (x - right_margin_x) + bar_p->c[AX];
 
 	/* If the original was really, really far off the page, even the
@@ -2516,7 +2546,7 @@ struct MAINLL *mll_p;	/* for finding effective margin */
 	else {
 		/* Split curves take more work. First find x length
 		 * on the score containing the first part of the curve */
-		seg1xlen = PGWIDTH - eff_rightmargin(mll_p) -
+		seg1xlen = EFF_PG_WIDTH - eff_rightmargin(mll_p) -
 			inpc_x( &(curve_p->coordlist[0]), fname, lineno );
 
 
@@ -2762,9 +2792,9 @@ eval_all_exprs()
 			 * top/bot have changed, or if there are different
 			 * things for left/right pages. */
 			set_win(m_p->u.feed_p->north_win,
-                        		m_p->u.feed_p->south_win,
-                        		PGWIDTH - eff_rightmargin(0),
-                        		eff_leftmargin(0));
+					m_p->u.feed_p->south_win,
+					EFF_PG_WIDTH - eff_rightmargin(0),
+					eff_leftmargin(0));
 		}
 
 		if (m_p->str == S_LINE) {
@@ -2814,6 +2844,12 @@ int inputlineno;
 {
 	inpcoord_p->hor = eval_expr(inpcoord_p->hexpr_p, inputfile, inputlineno)  * STEPSIZE;
 	inpcoord_p->vert = eval_expr(inpcoord_p->vexpr_p, inputfile, inputlineno) * STEPSIZE;
+	if ( (inpcoord_p->hor_p == _Page) || (inpcoord_p->hor_p == 0) ) {
+		inpcoord_p->hor /= Score.musicscale;
+	}
+	if ( (inpcoord_p->vert_p == _Page) || (inpcoord_p->vert_p == 0) ) {
+		inpcoord_p->vert /= Score.musicscale;
+	}
 }
 
 

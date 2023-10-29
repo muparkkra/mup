@@ -2,8 +2,8 @@
 # Any arguments will be passed as options to the C / C++ compiler commands,
 # so can be used for things like adding -arch options.
 
-version=7.0
-version_no_dot=70
+version=7.1
+version_no_dot=71
 
 srcdir=src
 docdir=doc
@@ -40,7 +40,7 @@ fi
 # Edit in the makefile changes
 orig_makefile=simple.makefile
 osx_makefile=makefile.osx
-sed -e "/^X_LOCATION/s|=.*|= $X_location|" -e "s/-ljpeg/-lfltk_jpeg/" -e "s/-lpng/-lfltk_png/" -e "s/-lz/-lfltk_z/" $orig_makefile > $osx_makefile
+sed -e "/^X_LOCATION/s|=.*|= $X_location|" $orig_makefile > $osx_makefile
 
 # Build the products
 make APPLE=yes optflags="$*" -f $osx_makefile
@@ -50,7 +50,8 @@ rm $osx_makefile
 
 staging_dir=staging
 mkdir $staging_dir
-for d in Macinst.html blind.html faq.html mupfeat.html overview.html usercomm.html whatsnew.html
+for d in Macinst.html blind.html faq.html mupfeat.html overview.html \
+	usercomm.html whatsnew.html quickref.html
 do
 	cp $docdir/htmldocs/$d $staging_dir/
 done

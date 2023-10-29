@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -500,7 +500,7 @@ GoTo_dialog::set_current_line()
 {
 	char num_as_string[16];
 	// fltk numbers lines from 0, so add 1 to get what user expects
-	(void) sprintf(num_as_string, "%d",
+	(void) snprintf(num_as_string, sizeof(num_as_string), "%d",
 		editor_p->buffer()->count_lines(0, editor_p->insert_position()) + 1);
 	linenum_p->value(num_as_string);
 }

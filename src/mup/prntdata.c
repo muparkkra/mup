@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -658,7 +658,7 @@ int staffnum;
 	double gridscrunch;	/* horzscale to apply to grid */
 
 
-	if ((grid_p = findgrid(stuff_p->string)) == 0) {
+	if ((grid_p = findgrid(stuff_p->grid_name)) == 0) {
 		/* placement phase should have printed a warning already */
 		return(NO);
 	}
@@ -1021,8 +1021,10 @@ struct GRPSYL * gs_p;
 
 
 	/* make a parentheses string of proper size in internal string format */
-	(void) sprintf(paren_string, "%c%c(", FONT_TR,
-		adj_size(size_def2font(note_p->notesize), Staffscale, (char *) 0, -1));
+	paren_string[0] = (char) FONT_TR;
+	paren_string[1] = (char) adj_size(size_def2font(note_p->notesize), Staffscale, (char *) 0, -1);
+	paren_string[2] = '(';
+	paren_string[3] = '\0';
 
 	/* center the parentheses vertically on the Y on the note */
 	y = note_p->c[AY] - (strascent(paren_string)
@@ -1769,7 +1771,10 @@ struct GRPSYL *grpsyl_p;	/* info about the group conatining the note */
 
 	if (noteinfo_p->acc_has_paren == YES) {
 		/* create string for "(" */
-		(void) sprintf(paren_string, "%c%c%c", FONT_TR, a_size, '(');
+		paren_string[0] = (char) FONT_TR;
+		paren_string[1] = (char) a_size;
+		paren_string[2] = '(';
+		paren_string[3] = '\0';
 
 		/* To center things vertically on the note, need to
 		 * adjust parentheses downward by difference between
@@ -1799,7 +1804,10 @@ struct GRPSYL *grpsyl_p;	/* info about the group conatining the note */
 	}
 
 	if (noteinfo_p->acc_has_paren == YES) {
-		(void) sprintf(paren_string, "%c%c%c", FONT_TR, a_size, ')');
+		paren_string[0] = (char) FONT_TR;
+		paren_string[1] = (char) a_size;
+		paren_string[2] = ')';
+		paren_string[3] = '\0';
 		pr_string(_Cur[AX], noteinfo_p->c[AY] - y_offset,
 				paren_string, J_LEFT,
 				grpsyl_p->inputfile, grpsyl_p->inputlineno);

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -123,7 +123,7 @@ char *Gs_errfile = "mupdispg.err";      /* ghostscript error file */
 int Bits_per_line = 612; 	/* pixels per line */
 int Bytes_per_line = 77;	/* pixels per line divided by 8 rounded up */
 int Lines_per_page = 792;	/* vertical pixels */
-char *Version = "7.0";
+char *Version = "7.1";
 
 /* misc function declarations */
 static void parsePS P((FILE *file));
@@ -463,6 +463,9 @@ FILE *file;
 			/* remember where prolog ends */
 			Endprolog = ftell(PS_file);
 		}
+		else if (strncmp(buff, "%EndAfterPrologHook", 19) == 0) {
+			Endprolog = ftell(PS_file);
+		} 
 
 		else if (strncmp(buff, "%%Page: ", 8) == 0) {
 			Pagenum = atoi(buff + 8);

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -195,7 +195,7 @@ abshorz()
 			 * of the chunk, and go to the next loop.
 			 */
 			mainll_p->u.feed_p->c[AW] = eff_leftmargin(mainll_p);
-			mainll_p->u.feed_p->c[AE] = PGWIDTH -
+			mainll_p->u.feed_p->c[AE] = EFF_PG_WIDTH -
 					eff_rightmargin(end_p);
 			mainll_p->u.feed_p->c[AX] = (mainll_p->u.feed_p->c[AW]
 					+ mainll_p->u.feed_p->c[AE]) / 2.0;
@@ -282,6 +282,7 @@ barclefsigs()
 	int printtime;			/* timechg or forceprinttime? */
 	int change;			/* did they change clefs/keys/time? */
 	register int s;			/* staff number */
+	int s2;				/* another staff number */
 
 
 	debug(16, "barclefsigs");
@@ -434,6 +435,12 @@ barclefsigs()
 		 * the end of the main linked list, break out.  We don't want
 		 * to put a CLEFSIG after the last bar line, regardless of
 		 * whether it changed anything.
+		 *
+		 * Also, remember in newclefforce[] whether an SSV at this bar
+		 * line forces printing of a clef.  If the clef doesn't
+		 * actually change, we still need to print it if forced
+		 * printing of clef was requested.
+		 *
 		 * Also, if an SSV requests printing the time sig regardless of
 		 * whether it changed, set a flag.  (For alternating time sigs,
 		 * the parse phases generates an SSV at each bar line, and
@@ -442,10 +449,26 @@ barclefsigs()
 		 * simple time sigs, if the user sets the y flag, this code has
 		 * the logic for making sure we print it.)
 		 */
+		for (s = 1; s <= Score.staffs; s++) {
+			newclefforce[s] = NO;
+		}
 		forceprinttime = NO;
 		mainll_p = mainll_p->next;
 		while (mainll_p != 0 && mainll_p->str == S_SSV) {
 			asgnssv(mainll_p->u.ssv_p);
+			if (mainll_p->u.ssv_p->used[CLEF] == YES &&
+			    mainll_p->u.ssv_p->forceprintclef == YES) {
+				if (mainll_p->u.ssv_p->staffno == 0) { /*score*/
+					/* clef SSV relevant to all staffs */
+					for (s2 = 1; s2 <= Score.staffs; s2++) {
+						newclefforce[s2] = YES;
+					}
+				} else {
+					/* clef SSV relevant just one staff */
+					newclefforce[mainll_p->
+						u.ssv_p->staffno] = YES;
+				}
+			}
 			if (mainll_p->u.ssv_p->used[TIME] == YES &&
 			    mainll_p->u.ssv_p->timevis == PTS_ALWAYS) {
 				forceprinttime = YES;
@@ -475,7 +498,6 @@ barclefsigs()
 		newclefsequal = newkeysequal = YES;
 		for (s = 1; s <= Score.staffs; s++) {
 			newclef[s] = svpath(s, CLEF)->clef;
-			newclefforce[s] = svpath(s, CLEF)->forceprintclef;
 			newkey[s] = eff_key(s);
 			newnormkey[s] =
 				svpath(s, STAFFLINES)->printclef == SS_NORMAL &&
@@ -1282,7 +1304,7 @@ short measinscore[];		/* return number of measures in each score */
 		 * now (unless this is the first chunk), so we can use
 		 * width_left_of_score.
 		 */
-		remwidth = PGWIDTH - eff_rightmargin((struct MAINLL *)0)
+		remwidth = EFF_PG_WIDTH - eff_rightmargin((struct MAINLL *)0)
 					- eff_leftmargin(start_p);
 		remwidth -= width_left_of_score(start_p);
 	} else {
@@ -1292,7 +1314,7 @@ short measinscore[];		/* return number of measures in each score */
 		 * margin user override.  Again, for now assume no right either.
 		 * prevfeed_p is not really a FEED; we haven't inserted it yet.
 		 */
-		remwidth = PGWIDTH - eff_rightmargin((struct MAINLL *)0)
+		remwidth = EFF_PG_WIDTH - eff_rightmargin((struct MAINLL *)0)
 					- eff_leftmargin((struct MAINLL *)0);
 		remwidth -= pwidth_left_of_score(start_p, prevfeed_p);
 	}
@@ -1499,8 +1521,9 @@ short measinscore[];		/* return number of measures in each score */
 			 * For now, assume this is not the last score, so no
 			 * user margin override.
 			 */
-			remwidth = PGWIDTH - eff_rightmargin((struct MAINLL *)0)
-					 - eff_leftmargin((struct MAINLL *)0);
+			remwidth = EFF_PG_WIDTH
+					- eff_rightmargin((struct MAINLL *)0)
+					- eff_leftmargin((struct MAINLL *)0);
 			remwidth -= pwidth_left_of_score(mainll_p, prevfeed_p);
 
 			prevfeed_p = mainll_p;	/* where feed would go */
@@ -2181,8 +2204,8 @@ double white;			/* white space to put before normal margin */
 		pfatal("can't find FEED that contains 'rightmargin = auto'");
 	}
 
-	mainll_p->u.feed_p->rightmargin =
-			Score.rightmargin + Score.scale_factor * white;
+	mainll_p->u.feed_p->rightmargin = Score.rightmargin +
+		Score.scale_factor * Score.musicscale * white;
 	mainll_p->u.feed_p->right_mot = MOT_ABSOLUTE;
 }
 
@@ -2229,7 +2252,7 @@ short measinscore[];		/* number of measures in each score */
 		}
 		mainll_p = mainll_p->prev;	/* point at the FEED */
 
-		/* if the only measure on this score is a restart, error */
+		/* if the only measure on this score is a restart, warn */
 		if (measinscore[score] == 1 && this_is_restart(mainll_p)) {
 			l_warning(mainll_p->inputfile, mainll_p->inputlineno,
 				"restart falls alone on a score; "
@@ -2467,7 +2490,7 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 		}
 	}
 
-	scorewidth = PGWIDTH - eff_right - eff_leftmargin(start_p);
+	scorewidth = EFF_PG_WIDTH - eff_right - eff_leftmargin(start_p);
 	scorewidth -= width_left_of_score(start_p);
 
 	/*
@@ -2589,12 +2612,12 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 		if (Score.units == INCHES) {
 			l_ufatal(start_p->inputfile, start_p->inputlineno,
 					"too much (%f inches) to put in score",
-					totwidth * Score.scale_factor);
+					totwidth * Score.scale_factor * Score.musicscale);
 		} else {
 			l_ufatal(start_p->inputfile, start_p->inputlineno,
 					"too much (%f cm) to put in score",
 					totwidth * Score.scale_factor *
-					CMPERINCH);
+					Score.musicscale * CMPERINCH);
 		}
 	}
 
@@ -2717,7 +2740,7 @@ struct MAINLL *end_p;		/* point after the last thing on this score */
 	setssvstate(start_p);
 
 	start_p->u.feed_p->c[AW] = eff_leftmargin(start_p);
-	start_p->u.feed_p->c[AE] = PGWIDTH - eff_right;
+	start_p->u.feed_p->c[AE] = EFF_PG_WIDTH - eff_right;
 	absx = eff_leftmargin(start_p) + width_left_of_score(start_p);
 	start_p->u.feed_p->c[AX] = absx;
 	leftx = 0.0;		/* prevent useless 'used before set' warning */

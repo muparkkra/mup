@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -628,6 +628,9 @@ struct MAINLL *mainll_item_p;	/* where to store info */
 		case SCALE_FACTOR:
 			chg_too_late( "scale");
 			break;
+		case MUSICSCALE:
+			chg_too_late( "musicscale");
+			break;
 		case PAGEHEIGHT:
 		case PAGEWIDTH:
 			chg_too_late( "page size");
@@ -724,6 +727,13 @@ struct MAINLL *mainll_item_p;	/* where to store info */
 				(double) MINSCALE, (double) MAXSCALE,
 				C_SCORE, name, mainll_item_p,
 				&(mainll_item_p->u.ssv_p->scale_factor) );
+		break;
+
+	case MUSICSCALE:
+		(void) do_fassign(var, (double) value,
+				(double) MINMUSICSCALE, (double) MAXMUSICSCALE,
+				C_SCORE, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->musicscale) );
 		break;
 
 	case STAFFSCALE:
@@ -2973,6 +2983,7 @@ int param;	/* #define name from ssvused.h */
 	case MINSCPAD:		return("minimum scorepad");
 	case MINSCSEP:		return("minimum scoresep");
 	case MINSTSEP:		return("staffsep");
+	case MUSICSCALE:	return("musicscale");
 	case NOTEINPUTDIR:	return("noteinputdir");
 	case NOTELEFTFAMILY:	return("noteleftfontfamily");
 	case NOTELEFTFONT:	return("noteleftfont");

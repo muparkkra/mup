@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -199,11 +199,11 @@ struct MAINLL *mll_p;
 			if (Last_y_arrow[gs_p->staffno] != 0.0) {
 				draw_line( (double) (Last_x_arrow[gs_p->staffno]),
 					(double) (Last_y_arrow[gs_p->staffno]),
-					(double) (PGWIDTH
+					(double) (EFF_PG_WIDTH
 					- eff_rightmargin(mll_p) - Stepsize),
 					(double) (Last_y_arrow[gs_p->staffno]));
 				Last_x_arrow[gs_p->staffno] =
-					PGWIDTH - eff_rightmargin(mll_p)
+					EFF_PG_WIDTH - eff_rightmargin(mll_p)
 					- Stepsize;
 			}
 			else {
@@ -223,7 +223,7 @@ struct MAINLL *mll_p;
 				/* fill in a dummy GRPSYL struct with just
 				 * the pieces of information that pr_b_curve
 				 * will need to draw a bend curve */
-				dummy_gs.c[AX] =  PGWIDTH
+				dummy_gs.c[AX] =  EFF_PG_WIDTH
 						- eff_rightmargin(mll_p)
 						- 2.5 * Stepsize;
 				dummy_gs.c[AN] = ylist[0] + 2.4 * Stepsize

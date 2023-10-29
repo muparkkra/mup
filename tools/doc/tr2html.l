@@ -1,6 +1,6 @@
 %{
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -42,7 +42,7 @@
 /* troff to HTML converter.
  * Handles .H  .P   .AL   .DL   .BL   .LI   .LE   .bp   .br   .SK
  * font changes (limited), nroff comments,
- * conversion of  \(em  \(ga \&  \e  & < > 
+ * conversion of  \(em  \(ga \(bu \&  \e  & < > 
  * Converts .TS - .TE tbl blocks to HTML tables,
  * but does only limited troff->HTML conversion of text inside table,
  * so be careful for now!!
@@ -67,6 +67,7 @@
  * .Ht title		use title on next diversion
  * .Hn			don't put trailer on current diversion when closing
  * .Hi			ignore everything till a line containing only .He
+ * .Nf			go into "no fill" mode (add <BR> at input newlines)
  *
  * Extension for Mup uguide: handes .Ex and .Ee by creating <PRE>
  * section for the text and a <IMG> for a .gif version of the PostScript file.
@@ -99,6 +100,13 @@ struct Index_item {
  * of a lower case letter and an upper case letter */
 struct Index_item * Index[26][26];
 
+#define FNT_ROM  0
+#define FNT_ITAL 1
+#define FNT_BOLD 2
+#define FNT_BOLDITAL 3
+#define FNT_CW   4
+
+int nofill = 0;
 int paragraph = 0;	/* non-zero if inside a paragraph */
 int headlevel;		/* current heading level */
 int i;
@@ -128,6 +136,7 @@ int get_a_line(char *buff);
 void add_param_index();
 void chg2ital();
 void chg2bold();
+void chg2boldital();
 void chg2rom();
 void chg2cw();
 void chg2prev();
@@ -140,7 +149,7 @@ void index_entry();
 %option array
 
 %Start EXAMPLE EX1 HEAD HEAD1 REF REFTEXT TMAC DIVERT TITLE NL
-%Start TABLETOP TABLEBODY
+%Start TABLETOP TABLEBODY TABLEBLOCK
 %Start INDEX
 %Start HEADREF
 
@@ -190,6 +199,7 @@ void index_entry();
 ^".Hr"" "*	{ printf("<A HREF=\""); BEGIN REF; doing_name = 0; }
 ^".Hm"" "*	{ printf("<A NAME=\""); BEGIN REF; doing_name = 1; }
 ^".Hh"" "*	{ BEGIN HEADREF; }
+^".Nf"		{ nofill = 1; }
 
 ^".Co"		printf("<HR>\n<CODE>Command line:&nbsp;</CODE>");
 ^".Mo"		printf("<BR>\n<CODE>Mupmate:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</CODE>");
@@ -377,9 +387,17 @@ void index_entry();
 					doing_table_row = 1;
 				}
 				printf("<TD>");
-				expand(yytext);
-				printf("</TD>");
+				if (yytext[0] == 'T' && yytext[1] == '{') {
+					BEGIN TABLEBLOCK;
+				}
+				else {
+					expand(yytext);
+					printf("</TD>");
+				}
 			}
+<TABLEBODY>\t\t		{ printf("<TD></TD>"); yyless(1); }
+<TABLEBLOCK>^"T}"	{ printf("</TD>"); BEGIN TABLEBODY; }
+<TABLEBLOCK>[^\t\n]*	{ expand(yytext); }
 <TABLEBODY>\n		{
 				if (doing_table_row) {
 					printf("\n</TR>\n");
@@ -414,6 +432,13 @@ void index_entry();
 ^".B"\n		|
 ^".ft"" "*B\n	|
 \\fB		{ chg2bold(); }
+
+^".BI"\n		|
+^".ft"" "*BI\n	|
+\\"f(BI"	{ chg2boldital(); }
+
+\\f"(NX"	{ chg2boldital(); }
+\\f"(NR"	{ chg2rom(); }
 
 ^".ft"" "*CW\n	|
 \\f"(CW"	{ chg2cw(); }
@@ -460,6 +485,8 @@ void index_entry();
 ^\.		BEGIN TMAC;
 
 <TMAC>.*\n	BEGIN 0;
+
+\n		{ if (nofill) printf("\n<BR>"); ECHO; }
 
 %%
 
@@ -530,6 +557,7 @@ get_a_line(char *buff)
 			return(0);
 		}
 	}
+	return(1);
 }
 
 /* write contents of param_index to output */
@@ -552,53 +580,67 @@ add_param_index()
 }
 
 void
+endfont()
+{
+	if (font == FNT_ITAL)
+		printf("</I>");
+	else if (font == FNT_BOLD)
+		printf("</B>");
+	else if (font == FNT_CW)
+		printf("</TT>");
+	else if (font == FNT_BOLDITAL)
+		printf("</I></B>");
+}
+
+void
 chg2ital()
 {
+	endfont();
 	printf("<I>");
 	prevfont = font;
-	font = 1;
+	font = FNT_ITAL;
 }
 
 
 void
 chg2bold()
 {
+	endfont();
 	printf("<B>");
 	prevfont = font;
-	font = 2;
+	font = FNT_BOLD;
 }
 
+void
+chg2boldital()
+{
+	endfont();
+	printf("<B><I>");
+	prevfont = font;
+	font = FNT_BOLDITAL;
+}
 
 void
 chg2cw()
 {
+	endfont();
 	printf("<TT>");
 	prevfont = font;
-	font = 3;
+	font = FNT_CW;
 }
 
 void
 chg2rom()
 {
 	prevfont = font;
-	if (font == 1)
-		printf("</I>");
-	else if (font == 2)
-		printf("</B>");
-	else if (font == 3)
-		printf("</TT>");
-	font = 0;
+	endfont();
+	font = FNT_ROM;
 }
 
 void
 chg2prev()
 {
-	if (font == 1)
-		printf("</I>");
-	else if (font == 2)
-		printf("</B>");
-	else if (font == 3)
-		printf("</TT>");
+	endfont();
 	font = prevfont;
 }
 
@@ -625,8 +667,17 @@ expand(char *text)
 				if ( *(text+3) == 'C' && *(text+4) == 'W') {
 					chg2cw();
 				}
+				else if ( *(text+3) == 'N' && *(text+4) == 'X') {
+					chg2bold();
+				}
+				else if ( *(text+3) == 'N' && *(text+4) == 'R') {
+					chg2rom();
+				}
+				else if ( *(text+3) == 'B' && *(text+4) == 'I') {
+					chg2boldital();
+				}
 				else {
-					fprintf(stderr, "unknown 2-letter font name\n");
+					fprintf(stderr, "line %d: unknown 2-letter font name %c%c\n", yylineno, text[3], text[4]);
 				}
 				text += 2;
 				break;
@@ -634,6 +685,10 @@ expand(char *text)
 				fprintf(stderr, "unknown font change\n");
 			}
 			text += 2;
+		}
+		else if (*text == '\\' && *(text+1) == 's') {
+			/* ignore size changes */
+			text += 3;
 		}
 		else if (*text == '\\' && *(text+1) == '&') {
 			text++;
@@ -650,6 +705,10 @@ expand(char *text)
 		}
 		else if (*text == '"') {
 			printf("&quot;");
+		}
+		else if (strncmp(text, "\\(bu", 4) == 0) {
+			printf("X");
+			text += 3;
 		}
 		else {
 			printf("%c", *text);

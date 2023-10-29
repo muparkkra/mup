@@ -43,7 +43,8 @@ XFAIL_TESTS = bad-input/chordinput_err.mup \
 	bad-input/usersym_err.mup
 
 # These tests fails are expected to pass
-SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
+SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup \
+	allchars.mup altgrid.mup assign.mup \
 	beaming.mup beamstem.mup bulge.mup \
 	cancelkey.mup cancelkey2.mup chordinput.mup chordtrans.mup \
 	chordtranslation.mup \
@@ -61,7 +62,7 @@ SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup allchars.mup assign.mup \
 	oneline.mup ontheline.mup optsemi.mup \
 	packexp.mup paper_a4.mup paper_a5.mup paper_a6.mup paper_flsa.mup \
 	paper_halfletter.mup paper_legal.mup \
-	paragraph.mup pedal.mup piledtext.mup \
+	paragraph.mup pedal.mup piledtext.mup pshooks.mup \
 	rehearsal.mup relvert.mup restart.mup restart2.mup \
 	restc.mup rests.mup roll.mup \
 	setgrps.mup setnotes.mup shapes.mup shaped.mup sizes.mup \

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -214,6 +214,7 @@ extern float Debug_coords[2][NUMCTYPE];
 /* =========== defines that depend on the above variables ============= */
 
 /* size of the actual paper, scaled so that the right amount of music fits */
+/* these versions do not take musicscale into account, only scale */
 #define	PGHEIGHT	(Score.pageheight / Score.scale_factor)
 #define	PGWIDTH		(Score.pagewidth  / Score.scale_factor)
 
@@ -221,6 +222,35 @@ extern float Debug_coords[2][NUMCTYPE];
 #define EFF_TOPMARGIN	(Score.topmargin   / Score.scale_factor)
 #define EFF_BOTMARGIN	(Score.botmargin   / Score.scale_factor)
 /* right & left margins use functions eff_rightmargin() & eff_leftmargin() */
+
+/* 
+ * The following macros are used when both scale and musicscale are to be
+ * taken into account.
+ *
+ * "scale" affects the music window, and header/footer/top/bottom windows, but
+ * not margins.  So to scale music, we pretend the page size and margins are
+ * 1/scale as big, draw the other things normally, then apply "scale" to the
+ * whole page.
+ *
+ * "musicscale" affects only the music window.  So, we pretend that the page,
+ * margins, and headers etc. are 1/musicscale as big (printing headers etc. that
+ * big), draw music normally, then apply "musicscale" to the whole page.
+ *
+ * "scale" and "musicscale" interact by multiplying them.  Also, note that
+ * headers etc. don't affect music on the left and right, only top and bottom.
+ */
+#define	EFF_PG_HEIGHT	(Score.pageheight /	\
+				(Score.scale_factor * Score.musicscale))
+#define	EFF_PG_WIDTH	(Score.pagewidth  /	\
+				(Score.scale_factor * Score.musicscale))
+#define EFF_TOP_MARGIN	(Score.topmargin /	\
+				(Score.scale_factor * Score.musicscale))
+#define EFF_BOT_MARGIN	(Score.botmargin /	\
+				(Score.scale_factor * Score.musicscale))
+/*
+ * Not worth having macros for effective header etc. height; just divide the
+ * normal values by Score.musicscale.
+ */
 
 /* =========== externs for global variables in generated code ============= */
 
@@ -666,7 +696,7 @@ extern void chk_stuff_header P((int size, int modifier, int place,
 extern void add_stuff_item P((double start_count, double start_steps,
 		int start_gracebackup, char *string, int bars, double count,
 		double end_steps, int end_gracebackup, double dist,
-		int dist_usage, int aligntag));
+		int dist_usage, int aligntag, char *grid_label));
 extern int string_is_sym P((char *string, int sym, int font));
 extern void attach_stuff P((void));
 extern void meas_stuff_chk P((void));
@@ -1059,5 +1089,6 @@ extern int has_til P((struct STUFF *stuff_p));
 extern double width_subbar P((struct SUBBAR_APPEARANCE *subbar_app_p));
 extern int has_nonnormwith P((struct GRPSYL *gs_p));
 extern int has_normwith P((struct GRPSYL *gs_p));
+extern int references_page P((struct INPCOORD *coord_p));
 
 #endif

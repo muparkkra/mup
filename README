@@ -140,7 +140,7 @@ cross compiler, and/or have tools installed in places it can't find them.
 To build a Mac OS-X .dmg package:
 	cd packaging
 	./builddmg
-The resulting .dmg file will be in the mac-osx sub-directory.
+The resulting .dmg file will be in the mup-osx sub-directory.
 Any arguments will passed along to the C / C++ compiler commands,
 so, for example, to build a universal binary which will run on either i386
 or x86_64

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2022  by Arkkra Enterprises.
+ Copyright (c) 1995-2023  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1871,7 +1871,7 @@ void
 do_eval()
 
 {
-	/* Write the evaulated result into the macro tmp file */
+	/* Write the evaluated result into the macro tmp file */
 	setup_macro(Curr_expr_macro.macname, NO, SETTING_EXPR);
 	if (Expr_result.type == TYPE_INT) {
 		fprintf(Mactmp_write, "%d", Expr_result.intval);
