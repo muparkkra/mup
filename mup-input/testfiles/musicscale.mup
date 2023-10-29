@@ -1,0 +1,32 @@
+//!Mup-Arkkra-7.1
+
+header
+	title bold(18) "musicscale.mup"
+	paragraph (14) "Test of the musicscale parameter"
+	title (24) "from the left margin" "from the rightmargin"
+	title (24) "A" "X"
+
+footer
+	title (16) "left bot" "right bot"
+
+top title (16) "topA" "topB"
+bottom title (16) "botLeft" "botRight"
+
+ifndef S define S 1.0 @ endif
+score
+	//rightmargin=0
+	// scale=0.5
+	label=""
+	musicscale=S
+music
+
+1: c;;;=a;
+right (_win.e, a.y-10) "right justified in window not within a block"
+bar
+
+print (_win.w, _win.s) "print test at window sw"
+center (_win.x, _win.s) "center at window s"
+right (_win.e, _win.s) "right at window sw"
+
+block
+right "right justified in window from within a block"

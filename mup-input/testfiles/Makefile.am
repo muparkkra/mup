@@ -59,6 +59,7 @@ SUCCESS_TESTS = accparen.mup addtimes.mup alignped.mup \
 	multcontext.mup multistuff.mup muschar.mup \
 	mrpt_defoct.mup mrpt_numstaffs.mup  mrpt_params1.mup \
 	mrpt_params2.mup mrpt_row.mup mrpt_time.mup \
+	musicscale.mup \
 	oneline.mup ontheline.mup optsemi.mup \
 	packexp.mup paper_a4.mup paper_a5.mup paper_a6.mup paper_flsa.mup \
 	paper_halfletter.mup paper_legal.mup \

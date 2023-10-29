@@ -18196,7 +18196,7 @@ point for more complicated ones.
 .P
 There are two "special" kinds of comments. Since Mup takes a text file
 as input, it may sometimes be convenient to write a program which generates
-Mup input, based on some higher-level dscription. But then, if there are
+Mup input, based on some higher-level description. But then, if there are
 any errors found in that generated input, it may be difficult to correlate the
 error line that Mup outputs with what line in the original input had
 generated it. To help with that, the generating program could insert

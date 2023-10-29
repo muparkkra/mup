@@ -3385,8 +3385,11 @@ int is_hook_call;
 	/* string_data_p is usually same as printdata_p,
 	 * but for mirrored titles, is the mirror */
 	struct PRINTDATA *string_data_p;
+	int in_block;		/* YES or NO */
 
 
+	/* If doing a block, coordinates will need to be evaluated. */
+	in_block = ((symval("_win", 0) == _Win) ? NO : YES);
 	/* walk down list of things to print */
 	for (  ; printdata_p != (struct PRINTDATA *) 0;
 					printdata_p = printdata_p->next) {
@@ -3439,11 +3442,13 @@ int is_hook_call;
 			continue;
 		}
 
-		/* Headers and footers aren't in the main list, and thus their
-		 * expression don't get evaluated during locvar.c, so make
-		 * sure that has been done. */
-		eval_coord( &(printdata_p->location), printdata_p->inputfile,
+		/* The coordinates in blocks have not been evaluated yet,
+		 * so do them now. */
+		if (in_block == YES) {
+			eval_coord( &(printdata_p->location),
+					printdata_p->inputfile,
 					printdata_p->inputlineno);
+		}
 
 		/* get coordinate of string */
 		x = inpc_x( &(printdata_p->location),
