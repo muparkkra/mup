@@ -14175,8 +14175,8 @@ scale parameter
 this parameter applies only to the "music" portion of pages, and does
 not affect headers, footers, top or bottom blocks.
 As examples,
-scale=2 prints everything in the music area of the pages
-twice as large as normal, while scale=0.5 prints it at half size.
+musicscale=2 prints everything in the music area of the pages
+twice as large as normal, while musicscale=0.5 prints it at half size.
 This parameter can only be specified before any music or block input.
 .Va
 a number between 0.1 and 10.0
