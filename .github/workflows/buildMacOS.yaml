@@ -34,6 +34,9 @@ jobs:
       - name: create the tar package
         run: make dist
 
+      - name: force using static libraries
+        run: rm /usr/local/Cellar/libpng/*/lib/*.dylib /usr/local/Cellar/jpeg-turbo/*/lib/*.dylib /usr/local/Cellar/fltk/*/lib/*.dylib
+
       - name: run build/packaging script
         run: (cd packaging; ./builddmg)
 
