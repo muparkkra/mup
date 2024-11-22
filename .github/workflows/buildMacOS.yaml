@@ -19,6 +19,9 @@ jobs:
       - name: brew install netpbm
         run: brew install netpbm
 
+      - name: brew install ghostscript
+        run: brew install ghostscript
+
       - name: run autoconf
         run: autoreconf --install
 
