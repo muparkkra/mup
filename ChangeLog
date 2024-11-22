@@ -1,3 +1,10 @@
+* Mon Oct 28 2024 ArkkraEnterprises <support@arkkra.com> 7.2
+- support a3 and note paper sizes
+- new pilescale parameter
+- support text below a line in addition to above
+- ph can be modified as dashed or dotted
+- support ability to force end location for underscore or dash in lyrics
+- additional hints in User's Guide
 * Mon Oct 23 2023 ArkkraEnterprises <support@arkkra.com> 7.1
 - musicscale parameter
 - mirrored titles

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -795,7 +795,8 @@ i					 * else -1 */
 	if (firstbar == YES && bartype != INVISBAR) {
 		if (has_pickup() == YES) {
 			/* don't count pickup measure */
-			Meas_num--;
+			set_meas_num(Meas_num - 1, mll_p->inputfile,
+						mll_p->inputlineno);
 		}
 		/* set flag so we won't check again */
 		firstbar = NO;
@@ -803,7 +804,8 @@ i					 * else -1 */
 
 	/* increment measure number for rehearsal numbers */
 	if (bartype != INVISBAR && Got_multirest == 0) {
-		Meas_num++;
+			set_meas_num(Meas_num + 1, mll_p->inputfile,
+						mll_p->inputlineno);
 	}
 
 	/* If there are consecutive repeatends (without a start between them),
@@ -3029,7 +3031,7 @@ int nummeas;		/* how many measures in the multi-rest */
 	Got_some_data = YES;
 
 	/* update measure numbers for rehearsal mark and stuff use */
-	Meas_num += nummeas;
+	set_meas_num(Meas_num + nummeas, Curr_filename, yylineno);
 	multi_stuff(nummeas);
 }
 

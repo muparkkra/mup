@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -183,6 +183,7 @@ initstructs()
 	Score.measnumfont = FONT_TR;
 	Score.measnumsize = MNUM_SIZE;
 	Score.measnumstyle = RS_PLAIN;
+	Score.pilescale = DEFPILESCALE;
 	Score.bracketrepeats = NO;
 	Score.packfact = DFLTPACKFACT;
 	Score.packexp = DFLTPACKEXP;
@@ -913,6 +914,10 @@ struct SSV *i_p;	/* input SSV structure to be copied from */
 
 	if (i_p->used[MEASNUMSTYLE] == YES) {
 		f_p->measnumstyle = i_p->measnumstyle;
+	}
+
+	if (i_p->used[PILESCALE] == YES) {
+		f_p->pilescale = i_p->pilescale;
 	}
 
 	if (i_p->used[BRACKETREPEATS] == YES) {

@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -507,7 +507,7 @@ short allocated[MAXSTAFFS][MAXVOICES];	/* tracks whether to allocate a new
 	struct NOTE *from_note_p;
 	struct NOTE *to_note_p;
 	struct GRPSYL *prev;		/* value to set to_gs_p->prev to */
-	int p;				/* index for phplace */
+	int p;				/* index for phplace/phlinetype */
 
 
 	/* If original group is a grace group, we don't need to add a
@@ -553,6 +553,7 @@ short allocated[MAXSTAFFS][MAXVOICES];	/* tracks whether to allocate a new
 		to_gs_p->phcount = from_gs_p->phcount;
 		for (p = 0; p < from_gs_p->phcount; p++) {
 			to_gs_p->phplace[p] = from_gs_p->phplace[p];
+			to_gs_p->phlinetype[p] = from_gs_p->phlinetype[p];
 		}
 		to_gs_p->ephcount = from_gs_p->ephcount;
 		to_gs_p->ho_usage = from_gs_p->ho_usage;

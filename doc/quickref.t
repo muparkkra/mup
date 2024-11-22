@@ -28,10 +28,10 @@
 .Hi
 .ce
 .ft B
-Mup Version 7.1 Statement Summary
+Mup Version 7.2 Statement Summary
 .He
 .ig
-.H 1 "Mup Version 7.1 Statement Summary"
+.H 1 "Mup Version 7.2 Statement Summary"
 <PRE>
 ..
 .sp
@@ -58,7 +58,7 @@ Mup Version 7.1 Statement Summary
 \fBpostscript \fIpostscript_location \fBwith \fItag \fB= \fItag \fBfile "\fItext\fB"\fR
 \fBmirrored title \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB" "\fItext\fB" "\fItext\fB"\fR
 \fIjustifytype \fBparagraph \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB"
-\fIlinetype \fBline\fI location \fBto\fI location\fR \fBwith \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB"\fR
+\fIlinetype \fBline\fI location \fBto\fI location\fR \fBwith \fIfontfamily font \fB(\fIsize\fB) "\fItext\fB"\fR \fIside\fR
 \fIlinetype \fBcurve\fI location \fBto\fI location \fBto\fI location ....\fR
 \fIlinetype \fBcurve\fI location \fBto\fI location \fBbulge\fI num ....\fR
 \fBdefine\fI MACRO_NAME\fB(\fImac_params\fB) \fImacro_definition \fB@\fR
@@ -464,10 +464,11 @@ packexp	\(bu				0.0 to 1.0	0.8
 packfact	\(bu				0.0 to 10.0	1.0
 pad	\(bu	\(bu	\(bu		-5.0 to 50.0	0.0
 pageheight	\(bu				2.0 to 24.0 inches or 5.0 to 61.0 cm	11.0 inches
-pagesize	\(bu				\fBletter, legal, flsa, halfletter, a4, a5, a6\fR then optional \fBportrait\fR or \fBlandscape\fR	letter
+pagesize	\(bu				\fBletter, legal, flsa, halfletter, note, a3, a4, a5, a6\fR then optional \fBportrait\fR or \fBlandscape\fR	letter
 pagewidth	\(bu				2.0 to 24.0 inches or 5.0 to 61.0 cm	8.5 inches
 panelsperpage	\(bu				1 or 2	1
 pedstyle	\(bu	\(bu			\fBline\fR, \fBpedstar\fR, or \fBalt pedstar\fR	line
+pilescale	\(bu				0.1 to 10.0	0.65
 printedtime	\(bu	\(bu			times signature or one or two strings	 
 printkeymap	\(bu			\(bu	\fB"\fIkeymap_name\fB"	\fR""
 printmultnum	\(bu	\(bu			\fBy\fR or \fBn\fR	y

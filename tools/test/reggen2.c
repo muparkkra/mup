@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -4919,7 +4919,7 @@ int measrem;
 			outfmt("%d\";", myrandom(0,65535));
 		}
 		else if (strcmp(mtype, "hex") == 0) {
-			/*** TODO ***/
+			outfmt("%04x\";", myrandom(0, 65535));
 		}
 		else {
 			outfmt("%s", create_a_name(1,10));

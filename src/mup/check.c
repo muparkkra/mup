@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1104,6 +1104,14 @@ int c;	/* argument to -c command line option;
 				count = 0;
 				begin_p = (struct MAINLL *) 0;
 				begin_valid = NO;
+			}
+
+			/* While we are here, make sure we don't print
+			 * measure numbers on invisible bars, since they
+			 * don't count. */
+			if ((mll_p->u.bar_p->reh_type == REH_BAR_MNUM) &&
+					(mll_p->u.bar_p->bartype == INVISBAR)) {
+				mll_p->u.bar_p->reh_type = REH_NONE;
 			}
 		}
 
@@ -3359,4 +3367,36 @@ struct MAINLL *mll_p; /* points to first STAFF of a mrpt */
 			return;
 		}
 	}
+}
+
+
+/* Set Meas_num to the given value, but if that is out of range,
+ * print an error, and clamp to the extreme. */
+
+void
+set_meas_num(value, filename, lineno)
+
+int value;
+char *filename;
+int lineno;
+
+{
+	/* Measure number really shouldn't be less than 1,
+	 * but it seems safer to allow zero, just in case some code somewhere
+	 * might decrement to zero temporarily, due to pickup
+	 * measure or something. And zero wouldn't really hurt anything,
+	 * unlike being too big, which could wrap around if we didn't
+	 * constrain to fit.
+	 */
+	if (value < 0) {
+		l_yyerror(filename, lineno,
+			"measure number must not be negative");
+		value = 1;
+	}
+	else if (value > MAX_SONG_MEASURES) {
+		l_yyerror(filename, lineno,
+			"measure number must not be more than %d", MAX_SONG_MEASURES);
+		value = MAX_SONG_MEASURES;
+	}
+	Meas_num = value;
 }

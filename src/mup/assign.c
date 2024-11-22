@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -741,6 +741,13 @@ struct MAINLL *mainll_item_p;	/* where to store info */
 				(double) MINSTFSCALE, (double) MAXSTFSCALE,
 				C_SCORE | C_STAFF, name, mainll_item_p,
 				&(mainll_item_p->u.ssv_p->staffscale) );
+		break;
+
+	case PILESCALE:
+		(void) do_fassign(var, (double) value,
+				(double) MINPILESCALE, (double) MAXPILESCALE,
+				C_SCORE, name, mainll_item_p,
+				&(mainll_item_p->u.ssv_p->pilescale) );
 		break;
 
 	case STAFFPAD:
@@ -2819,7 +2826,7 @@ struct SSV *ssv_p;	/* add the info to this struct */
 
 
 /* Save user-specified measure number in given bar struct,
- * after verifying it is valid (that is it > 0).
+ * after verifying it is within range.
  */
 
 void
@@ -2832,15 +2839,13 @@ int mnum;
 	char *old_reh_string;
 	char num_string[16];
 
-	if (mnum < 1) {
-		l_yyerror(Curr_filename, yylineno, "mnum must be > 0");
-	}
-	else if (bar_p->mnum != 0) {
+	if (bar_p->mnum != 0) {
 		l_yyerror(Curr_filename, yylineno,
 			"mnum cannot be specified more than once per bar");
 	}
 	else {
-		Meas_num = bar_p->mnum = mnum;
+		set_meas_num(mnum, Curr_filename, yylineno);
+		bar_p->mnum = Meas_num;
 		/* If user had already specified " reh mnum" on this bar,
 		 * we would already have made a reh_string for it, so we
 		 * have to undo that. It would be nicer to delay the call
@@ -2998,6 +3003,7 @@ int param;	/* #define name from ssvused.h */
 	case PAGEHEIGHT:	return("pageheight");
 	case PAGEWIDTH:		return("pagewidth");
 	case PANELSPERPAGE:	return("panelsperpage");
+	case PILESCALE:		return("pilescale");
 	case PRINTKEYMAP:	return("printkeymap");
 	case PRINTMULTNUM:	return("printmultnum");
 	case REHEARSALKEYMAP:	return("rehearsalkeymap");

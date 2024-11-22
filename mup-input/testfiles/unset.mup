@@ -85,6 +85,7 @@ unset pageheight
 unset panelsperpage
 unset pagewidth
 unset pedstyle
+unset pilescale
 unset printedtime
 unset printkeymap
 unset printmultnum

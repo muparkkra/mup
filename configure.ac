@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([mup], [7.1], [support@arkkra.com])
+AC_INIT([mup], [7.2], [support@arkkra.com])
 AM_INIT_AUTOMAKE([-Wall -Werror])
 
 # Checks for programs.

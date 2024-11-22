@@ -3,7 +3,7 @@
 # This script builds a Mup rpm.
 # Any arguments will be passed along to the rpmbuild -bb command
 
-MUP_VERSION=7.1
+MUP_VERSION=7.2
 ORIG_SRC_TAR=mup-$MUP_VERSION.tar.gz
 if [ ! -f "../$ORIG_SRC_TAR" ]
 then

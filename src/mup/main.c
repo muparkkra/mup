@@ -1,5 +1,5 @@
 char *license_text =
-" Copyright (c) 1995-2023  by Arkkra Enterprises.\n\
+" Copyright (c) 1995-2024  by Arkkra Enterprises.\n\
  All rights reserved.\n\
 \n\
  Redistribution and use in source and binary forms,\n\
@@ -40,7 +40,7 @@ char *license_text =
 ;
 
 static char Copyright[] =
-	"Copyright (c) 1995-2023 by Arkkra Enterprises.\nMup is free software. Use -l option to see license terms.\n";
+	"Copyright (c) 1995-2024 by Arkkra Enterprises.\nMup is free software. Use -l option to see license terms.\n";
 
 /* The file contains the main function for the Mup music publication program,
  * along with some functions that handle commmand line arguments and such. */
@@ -138,7 +138,7 @@ extern FILE *yyout;	/* lex could try to write error output here */
 
 static char **Arglist;		/* global pointer to argv */
 static int Num_args;		/* global copy of argc */
-static char Version[] = "7.1";	/* Mup version number */
+static char Version[] = "7.2";	/* Mup version number */
 static int Quiet = NO;		/* -q option */
 
 /* The different kinds of things that can be argument to -o option.

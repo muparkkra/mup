@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -1068,6 +1068,13 @@ int linenum;			/* input line number, for error messages */
 						break;
 					}
 				}
+				break;
+
+			case STR_UNDER_END:
+				result[r++] = str[s+1];
+				result[r++] = str[s+2];
+				result[r++] = str[s+3];
+				used = 4;
 				break;
 
 			case STR_KEYMAP:

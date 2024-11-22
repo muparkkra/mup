@@ -84,6 +84,7 @@ score
 	pageheight=11
 	pagewidth=8.5
 	panelsperpage=1
+	pilescale=0.78
 	printkeymap="map2"
 	rehearsalkeymap="map1"
 	rehstyle=boxed

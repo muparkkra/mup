@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -520,6 +520,7 @@ gridscale	{ yylval.intval = GRIDSCALE; return(T_FNUMVAR); }
 minalignscale	{ yylval.intval = MINALIGNSCALE; return(T_FNUMVAR); }
 scale		{ yylval.intval = SCALE_FACTOR; return(T_FNUMVAR); }
 musicscale	{ yylval.intval = MUSICSCALE; return(T_FNUMVAR); }
+pilescale	{ yylval.intval = PILESCALE; return(T_FNUMVAR); }
 stemlen		{ yylval.intval = STEMLEN; return(T_FNUMVAR); }
 stemshorten	{ yylval.intval = BEAMSHORT; return(T_SHORTEN); }
 leftspace	{ yylval.intval = LEFTSPACE; return(T_2FNUMVAR); }
@@ -548,6 +549,7 @@ pagesize	{	/* pagesize actually affects both pageheight
 		}
 letter		{ yylval.intval = PS_LETTER; return(T_PAGESIZE); }
 legal		{ yylval.intval = PS_LEGAL; return(T_PAGESIZE); }
+note		{ yylval.intval = PS_NOTE; return(T_PAGESIZE); }
 flsa		{ yylval.intval = PS_FLSA; return(T_PAGESIZE); }
 halfletter	{ yylval.intval = PS_HALFLETTER; return(T_PAGESIZE); }
 portrait	{ yylval.intval = O_PORTRAIT; return(T_ORIENTATION); }

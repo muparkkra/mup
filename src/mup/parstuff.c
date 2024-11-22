@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -95,10 +95,11 @@ static void fix_pedal P((int staffno, struct STUFF *stuff_p));
 static void ped_order_chk P((void));
 static void voice_phrases P((struct MAINLL *mll_p, int vindex));
 static void find_eph P((struct MAINLL *mll_p, struct GRPSYL *gs_p, int vindex,
-		int place));
+		int place, int linetype));
 static void mk_phrase_stuff P((struct MAINLL *mll_p,
 		struct GRPSYL *begin_gs_p, struct MAINLL *end_mll_p,
-		int bars, struct GRPSYL *end_gs_p, int end_ts_den, int place));
+		int bars, struct GRPSYL *end_gs_p, int end_ts_den,
+		int place, int linetype));
 
 
 /* save current stuff type value. Also check that we are in data (music)
@@ -1659,7 +1660,8 @@ int vindex;		/* which voice to check */
 					ph_index < ph_count; ph_index++) {
 			/* There is a ph; go off to find its matching end */
 			find_eph(mll_p, gs_p, vindex,
-					(int) gs_p->phplace[ph_index]);
+					(int) gs_p->phplace[ph_index],
+					(int) gs_p->phlinetype[ph_index]);
 			gs_p->phcount--;
 		}
 
@@ -1678,12 +1680,13 @@ int vindex;		/* which voice to check */
  * and make a phrase STUFF for it. */
 
 static void
-find_eph(mll_p, gs_p, vindex, place)
+find_eph(mll_p, gs_p, vindex, place, linetype)
 
 struct MAINLL *mll_p;	/* Points to STAFF containing the GRPSYL with ph */
 struct GRPSYL *gs_p;	/* The GRPSYL starting the phrase */
 int vindex;		/* which voice */
 int place;		/* PL_* */
+int linetype;		/* L_NORMAL, L_DOTTED, or L_DASHED */
 
 {
 	struct MAINLL *curr_mll_p;	/* in case we cross bar lines */
@@ -1751,7 +1754,8 @@ int place;		/* PL_* */
 			}
 			else {
 				mk_phrase_stuff(mll_p, gs_p, end_mll_p,
-					bars, end_gs_p, end_ts_den, place);
+					bars, end_gs_p, end_ts_den,
+					place, linetype);
 				/* Mark this endphrase as handled. That
 				 * way if the caller comes across a
 				 * GRPSYL that still has eph set, it can
@@ -1775,7 +1779,8 @@ int place;		/* PL_* */
 /* Create a phrase STUFF for embedded ph-eph */
 
 static void
-mk_phrase_stuff(mll_p, begin_gs_p, end_mll_p, bars, end_gs_p, end_ts_den, place)
+mk_phrase_stuff(mll_p, begin_gs_p, end_mll_p, bars, end_gs_p, end_ts_den,
+	place, linetype)
 
 struct MAINLL *mll_p;		/* attach new STUFF to this STAFF */
 struct GRPSYL *begin_gs_p;	/* where the ph was */
@@ -1784,6 +1789,7 @@ int bars;			/* how many bar lines were crossed to eph */
 struct GRPSYL *end_gs_p;	/* where in measure the eph was */
 int end_ts_den;			/* time signature denominator at end */
 int place;			/* PL_* */
+int linetype;			/* L_NORMAL, L_DOTTED or L_DASHED */
 
 {
 	struct GRPSYL *g_p;
@@ -1843,7 +1849,7 @@ int place;			/* PL_* */
 	stuff_p = newSTUFF((char *)0, (double) 0.0, SD_NONE, NOALIGNTAG,
 			begin_beats, (double) 0.0, beg_gracebackup,
 			bars, end_beats, (double) 0.0,
-			end_gracebackup, ST_PHRASE, TM_NONE, place,
+			end_gracebackup, ST_PHRASE, linetype, place,
 			mll_p->inputfile, mll_p->inputlineno);
 
 	stuff_p->vno = begin_gs_p->vno;

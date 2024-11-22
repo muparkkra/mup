@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -136,6 +136,8 @@ extern float Octave_count[MAXSTAFFS+1];
 extern float _Page	[NUMCTYPE];
 extern float _Win	[NUMCTYPE];
 extern float _Cur	[NUMCTYPE];
+
+extern struct PAPER_SIZES Paper_sizes[];
 
 extern struct BLOCKHEAD Header,  Leftheader,  Rightheader;
 extern struct BLOCKHEAD Footer,  Leftfooter,  Rightfooter;
@@ -432,6 +434,7 @@ extern void chk4matching_repeatends P((void));
 extern void expand_repeats P((void));
 extern void set_mrpt_info P((void));
 extern int mrptchar P((struct GRPSYL *grp_p, int *font_p));
+extern void set_meas_num P((int value, char *filename, int lineno));
 
 /* debug.c */
 extern char *stype_name P((int stype));
@@ -806,6 +809,8 @@ extern int stem_x_position P((struct GRPSYL *gs_p));
 extern double find_x_stem P((struct GRPSYL *gs_p));
 extern double size2factor P((int size));
 extern double slash_xlen P((struct GRPSYL *grpsyl_p));
+extern double count2coord P((double count, struct BAR *bar_p,
+		struct CHHEAD *chhead_p, int timeden));
 
 /* print.c */
 extern void print_music P((void));

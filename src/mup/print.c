@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -491,7 +491,7 @@ init4print()
 	initstructs();
 
 	printf("%%!PS-Adobe-1.0\n");
-	printf("%%%%Creator: Mup (Version 7.1)\n");
+	printf("%%%%Creator: Mup (Version 7.2)\n");
 	printf("%%%%Title: music: %s from %s\n", Outfilename, Curr_filename);
 	clockinfo = time((time_t *)0);
 	timeinfo_p = localtime(&clockinfo);
@@ -599,30 +599,6 @@ page1setup()
 }
 
 
-/* table of standard paper sizes, to be used to see if user specified
- * a landscape version of a standard size */
-struct Papersize {
-	int	width;
-	int	height;
-} Paper_size_table[] = { 
-	{ 612, 792 },	/* letter */
-	{ 540, 720},	/* note */
-	{ 612, 1008},	/* legal */
-	{ 595, 842},	/* a4 */
-	{ 421, 595},	/* a5 */
-	{ 297, 421},	/* a6 */
-	{ 612, 936},	/* flsa */
-	{ 396, 612},	/* halfletter */
-	{ 0, 0}
-};
-
-/* how many points away from an exact match to consider a match. This is big
- * enough so that user can be off by a little and still get the desired
- * results, yet not so big as to give false matches. */
-#ifdef FUZZ
-#undef FUZZ
-#endif
-#define FUZZ 24
 
 /* given a paper size, determine if the paper
  * size appears to be the landscape version of a standard paper size.
@@ -630,6 +606,15 @@ struct Papersize {
  * It return this rather than just a boolean
  *  since page height is needed for translate amount.
  */
+
+/* FUZZ is how many points away from an exact match in Paper_sizes
+ * to consider a match. This is big enough so that user can be off
+ * by a little and still get the desired results,
+ * yet not so big as to give false matches. */
+#ifdef FUZZ
+#undef FUZZ
+#endif
+#define FUZZ 24
 
 static int
 use_landscape(pgwidth, pgheight)
@@ -649,11 +634,11 @@ double pgheight;	/* page height in inches */
 	/* for each paper size table entry, see if by interchanging the
 	 * width and height we would end up with something within FUZZ
 	 * points of matching a landscape mode paper size */
-	for (i = 0; Paper_size_table[i].width != 0; i++) {
-		if (pts_width > Paper_size_table[i].height - FUZZ &&
-				pts_width < Paper_size_table[i].height + FUZZ &&
-				pts_height > Paper_size_table[i].width - FUZZ &&
-				pts_height < Paper_size_table[i].width + FUZZ) {
+	for (i = 0; Paper_sizes[i].width != 0; i++) {
+		if (pts_width > Paper_sizes[i].height - FUZZ &&
+				pts_width < Paper_sizes[i].height + FUZZ &&
+				pts_height > Paper_sizes[i].width - FUZZ &&
+				pts_height < Paper_sizes[i].width + FUZZ) {
 			return(pts_height);
 		}
 	}
@@ -907,7 +892,12 @@ int lineno;		/* line number for error messages */
 		 * The vertical is a STEPSIZE above the line.
 		 */
 		str_x = (line_len / 2.0) - (strwidth(line_p->string) / 2.0);
-		str_y = STEPSIZE + strdescent(line_p->string);
+		if (line_p->side == PL_BELOW) {
+			str_y = - STEPSIZE - strascent(line_p->string);
+		}
+		else {
+			str_y = STEPSIZE + strdescent(line_p->string);
+		}
 
 		/* move effective origin of coordinate system to (x1,y1),
 		 * then rotate by the appropriate angle and print string.
@@ -1662,12 +1652,13 @@ int is_pseudobar;	/* YES if is pseudobar at beginning of score */
 			&& (is_pseudobar == NO)
 			&& (Last_staff->groups_p[0] != (struct GRPSYL *) 0)
 			&& (Last_staff->groups_p[0]->is_multirest == YES) ) {
-		Meas_num -= Last_staff->groups_p[0]->basictime;
+		set_meas_num(Meas_num - Last_staff->groups_p[0]->basictime,
+			mll_p->inputfile, mll_p->inputlineno);
 	}
 	else if ((bar_p->bartype != INVISBAR) && (bar_p->bartype != RESTART)
 						&& (is_pseudobar == NO)) {
 		/* normal case, not multirest; just increment measure number */
-		Meas_num++;
+		set_meas_num(Meas_num + 1,  mll_p->inputfile, mll_p->inputlineno);
 	}
 
 	if (is_pseudobar == NO) {
@@ -5042,7 +5033,7 @@ double x;	/* where to put measure number */
 			y_adj = halfstaffhi(staffno) +
 				clefspace(NOCLEF, 1.0, clef, Staffscale, Meas_num)
 				- strascent(mnumstr);
-			pr_string(x + 1.5 * Stepsize,
+			pr_string(x + 2.5 * Stepsize - strwidth(mnumstr) / 2.0,
 					Staffs_y[staffno] + y_adj,
 					mnumstr, J_LEFT, (char *) 0, -1);
 		}

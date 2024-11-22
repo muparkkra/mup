@@ -87,7 +87,7 @@ syn keyword Statement scoresep stafflines ontheline warn numbermrpt printmultnum
 syn keyword Statement midlinestemfloat numbermultrpt defaultphraseside
 syn keyword Statement gridswhereused gridsatend mingridheight tabwhitebox timeunit
 syn keyword Statement topmargin bottommargin botmargin leftmargin rightmargin units
-syn keyword Statement packfact packexp staffscale gridscale musicscale scale
+syn keyword Statement packfact packexp staffscale gridscale musicscale scale pilescale
 syn keyword Statement beamslope slope tupletslope
 syn keyword Statement transpose addtranspose lyricsalign pageheight pagewidth pagesize
 syn keyword Statement endingstyle rehstyle pedstyle release

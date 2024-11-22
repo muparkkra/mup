@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -417,6 +417,7 @@ users_guide_index_file(const char * const doc_dir)
 // List of old versions of Mupmate preference files to potentially check,
 // listed most recent to oldest, and ending with null.
 const char * const oldversions [] = {
+	"mupmate71",
 	"mupmate70",
 	"mupmate69",
 	"mupmate681",

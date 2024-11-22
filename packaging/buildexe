@@ -140,8 +140,8 @@ then
 	exit 1
 fi
 
-VERSION=7.1
-VERSION_NO_DOT=71
+VERSION=7.2
+VERSION_NO_DOT=72
 
 if [ "$build_dos" == yes ]
 then

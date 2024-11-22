@@ -2,8 +2,8 @@
 # Any arguments will be passed as options to the C / C++ compiler commands,
 # so can be used for things like adding -arch options.
 
-version=7.1
-version_no_dot=71
+version=7.2
+version_no_dot=72
 
 srcdir=src
 docdir=doc

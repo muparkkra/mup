@@ -2,7 +2,7 @@
 %{
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -192,18 +192,6 @@ static struct TAG_REF *Curr_timeref_tag_p; /* Time offsets are relative
 					 * to the most recent horizontal tag.
 					 * This points to that tag,
 					 * or is zero if no such tag yet */
-
-/* Row index values must match the PS_* value definitions in defines.h.
- * Column [0] is height in portrait mode, and column [1] is height. */
-double pagesztbl[7][2] = {
-	{ 8.5, 11.0 },		/* PS_LETTER */
-	{ 8.5, 14.0 },		/* PS_LEGAL */
-	{ 8.5, 13.0 },		/* PS_FLSA */
-	{ 5.5, 8.5 },		/* PS_HALFLETTER */
-	{ 8.26, 11.69 },	/* PS_A4 */
-	{ 5.84, 8.26 },		/* PS_A5 */
-	{ 4.12, 5.84 }		/* PS_A6 */
-};
 
 
 
@@ -1396,8 +1384,12 @@ assign:	T_NUMVAR T_EQUAL opt_minus num
 	{
 		double multiplier;
 		multiplier = (Score.units == INCHES ? 1.0 : CMPERINCH);
-		assign_float(PAGEWIDTH, pagesztbl[$3][$4] * multiplier, Currstruct_p);
-		assign_float(PAGEHEIGHT, pagesztbl[$3][$4 ^ 1] * multiplier, Currstruct_p);
+		assign_float( ($4 == 0 ? PAGEWIDTH : PAGEHEIGHT),
+			(double) Paper_sizes[$3].width * multiplier / (double) PPI,
+			Currstruct_p);
+		assign_float( ($4 == 0 ? PAGEHEIGHT : PAGEWIDTH),
+			(double) Paper_sizes[$3].height * multiplier / (double) PPI,
+			Currstruct_p);
 	}
 
 	|
@@ -3112,8 +3104,11 @@ pagesize:
 	|
 	pitch num
 	{
-		if ($1 == (int) 'a' && $2 >= 4 && $2 <= 6) {
+		if ($1 == (int) 'a' && $2 >= 3 && $2 <= 6) {
 			switch ($2) {
+			case 3:
+				$$ = PS_A3;
+				break;
 			case 4:
 				$$ = PS_A4;
 				break;
@@ -4405,10 +4400,17 @@ attr_item:
 	}
 
 	|
-	T_PH ph_opt_place
+	linetype T_PH ph_opt_place
 	{
 		if (Curr_grpsyl_p->phcount < PH_COUNT) {
-			Curr_grpsyl_p->phplace[Curr_grpsyl_p->phcount++] = $2;
+			if ($1 != L_NORMAL && $1 != L_DOTTED && $1 != L_DASHED) {
+				l_warning(Curr_filename, yylineno,
+					"phrase style modifier can only be dotted or dashed");
+				$1 = L_NORMAL;
+			}
+			Curr_grpsyl_p->phplace[Curr_grpsyl_p->phcount] = (char) $3;
+			Curr_grpsyl_p->phlinetype[Curr_grpsyl_p->phcount] = (char) $1;
+			Curr_grpsyl_p->phcount++;
 		}
 		else {
 			l_yyerror(Curr_filename, yylineno,
@@ -5908,7 +5910,12 @@ opt_side:
 	T_PLACE
 	{
 		if (yylval.intval == PL_BETWEEN) {
-			yyerror("between not allowed for tuplet side");
+			if (Currstruct_p->str == S_LINE) {
+				yyerror("between not allowed for line text strin side");
+			}
+			else {
+				yyerror("between not allowed for tuplet side");
+			}
 			$$ = PL_UNKNOWN;
 		}
 	};
@@ -7236,7 +7243,7 @@ numstr:	T_NUMBER
 variable:	loc_variable
 	;
 
-line:		linetype T_LINE line_alloc location T_TO location opt_line_str
+line:		linetype T_LINE line_alloc location T_TO location opt_line_str opt_side
 	{
 		Currstruct_p->u.line_p->linetype = $1;
 		Currstruct_p->u.line_p->start = *($4);
@@ -7244,6 +7251,12 @@ line:		linetype T_LINE line_alloc location T_TO location opt_line_str
 		rep_inpcoord($4, &(Currstruct_p->u.line_p->start));
 		rep_inpcoord($6, &(Currstruct_p->u.line_p->end));
 		Currstruct_p->u.line_p->string = $7;
+
+		if (($7 == 0) && ($8 != PL_UNKNOWN)) {
+			yyerror("above/below only allowed with a string");
+		}
+		Currstruct_p->u.line_p->side =
+				($8 == PL_BELOW ? PL_BELOW : PL_ABOVE);
 
 		/* copies of the location info went into the LINE struct,
 		 * so we can free the original copy of the information */
@@ -8152,7 +8165,21 @@ end_prev_context()
 			}
 		}
 
-		insertMAINLL(Currstruct_p, place_p);
+		/* Usually we want to insert, but if there were syntax
+		 * errors in the bar_info, followed by a context change,
+		 * error recovery could skip over the code that
+		 * would zero Currstruct_p, but we would already have
+		 * inserted it, so we need to not insert it again.
+		 * Oterwise, we could end up with consecutive BAR structs in
+		 * the main list, which is not legal, and could lead to
+		 * problems like an infinite loop in prev_grpsyl().
+		 */
+		if (Currstruct_p->str != S_BAR) {
+			insertMAINLL(Currstruct_p, place_p);
+		}
+		else if (Errorcount == 0) {
+			pfatal("unexpected BAR struct in end_prev_context()");
+		}
 	}
 
 	if (Currstruct_p != 0 && Currstruct_p->str == S_SSV) {

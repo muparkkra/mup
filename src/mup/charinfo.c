@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -3084,6 +3084,21 @@ int textmod;	/* TM_ value */
 			if (verbose == YES) {
 				buff[i++] = '>';
 			}
+			break;
+
+		case STR_UNDER_END:
+			if (verbose == YES) {
+				(void) sprintf(buff + i,
+				"{%dm+%d.%02d}",
+				*((unsigned char*)(str+1)) - UNDER_OFFSET,
+				*((unsigned char*)(str+2)) - UNDER_OFFSET,
+				*((unsigned char*)(str+3)) - UNDER_OFFSET);
+				while(buff[i] != '}') {
+					i++;
+				}
+				i++;
+			}
+			str += 3;
 			break;
 
 		case STR_BOX:

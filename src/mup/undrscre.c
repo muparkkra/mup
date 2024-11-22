@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -47,9 +47,12 @@
 #include "globals.h"
 
 static double end_dashes P((struct MAINLL *mll_p, struct GRPSYL *syl_p,
-		int verse, int place, int *carryover_p));
+		int verse, int place, int *carryover_p, int really_print));
 static double end_underscore P((struct MAINLL *mll_p, struct GRPSYL *syl_p,
-		int verse, int place, int *carryover_p));
+		int verse, int place, int *carryover_p, int really_print));
+static double force_end P((struct MAINLL *mll_p, int staffno,
+		struct GRPSYL *syl_p, int verse, int place, char *spec,
+		int *carryover_p, int really_print));
 static double endx P((struct GRPSYL *last_grp_p, double end));
 static int has_above_lyr P((struct MAINLL *mll_p, RATIONAL begin_time,
 		struct GRPSYL *group_p, int verse));
@@ -64,10 +67,10 @@ static int bar_ends_extender P((struct BAR *bar_p, struct MAINLL *mll_p,
 static void pr_extender P((int ch, double start, double end, double y,
 		int font, int size));
 static void insert_carryover_syllable P((struct MAINLL *mll_p, int staffno,
-		int sylplace, int verseno, char *dash_or_underscore,
+		int sylplace, int verseno, char *the_syl,
 		int font, int size));
 static void add_syllable P((struct STAFF *staff_p, int sylplace, int verseno,
-		char *dash_or_underscore, int font, int size,
+		char *the_syl, int font, int size,
 		double begin_x, struct CHORD *chord_p));
 static void stitch_syl_into_chord P((struct CHORD *chord_p,
 		struct GRPSYL *syl_gs_p));
@@ -158,11 +161,11 @@ int really_print;	/* if YES, actually print, otherwise just return
 	if (last_ch != '\0') {
 		if ( last_ch == '-') {
 			end = end_dashes(mll_p, syl_p, verse, sylplace,
-							&carryover);
+						&carryover, really_print);
 		}
 		else {
 			end = end_underscore(mll_p, syl_p, verse, sylplace,
-							&carryover);
+						&carryover, really_print);
 		}
 
 		if (really_print == NO) {
@@ -204,20 +207,30 @@ int really_print;	/* if YES, actually print, otherwise just return
  */
 
 static double
-end_dashes(mll_p, syl_p, verse, place, carryover_p)
+end_dashes(mll_p, syl_p, verse, place, carryover_p, really_print)
 
 struct MAINLL *mll_p;	/* points to STAFF containing the syl with dash */
 struct GRPSYL *syl_p;	/* this is the syllable with dash */
 int verse;		/* which verse the syl_p is for */
 int place;		/* a PL_* value for where the lyric is */
 int *carryover_p;	/* return value, set to YES if there was a carryover */
+int really_print;
 
 {
 	int staffno;
 	struct BAR *lastbar_p;
+	char *dash_p;
 
 	staffno = syl_p->staffno;
 	*carryover_p = NO;
+
+	if ((dash_p = strchr(syl_p->syl, '-')) != 0) {
+		if (((unsigned char)*(dash_p+1) & 0xff) == STR_UNDER_END) {
+			return(force_end(mll_p, staffno, syl_p, verse, place,
+				dash_p+2, carryover_p, really_print));
+		}
+	}
+
 	lastbar_p = 0;	/* will get set to something better before being used */
 	syl_p = syl_p->next;
 
@@ -307,18 +320,20 @@ int *carryover_p;	/* return value, set to YES if there was a carryover */
  */
 
 static double
-end_underscore(mll_p, syl_p, verse, place, carryover_p)
+end_underscore(mll_p, syl_p, verse, place, carryover_p, really_print)
 
 struct MAINLL *mll_p;	/* points to STAFF containing the syl with underscore */
 struct GRPSYL *syl_p;	/* this is the syllable with underscore */
 int verse;		/* which verse the syl_p is for */
 int place;		/* a PL_* value for where the lyric is */
 int *carryover_p;	/* return value, set to YES if there was a carryover */
+int really_print;
 
 {
 	struct GRPSYL *current_grp_p[MAXVOICES];/* which group we are
 						 * currently dealing with on
 						 * each voice */
+	char *under_p;
 	RATIONAL group_time[MAXVOICES];		/* accumulated time value of
 						 * groups up to the one we
 						 * are currently dealing with */
@@ -355,13 +370,20 @@ int *carryover_p;	/* return value, set to YES if there was a carryover */
 	*carryover_p = NO;	/* assume no carryover for now */
 	staffno = mll_p->u.staff_p->staffno;
 
+	if ((under_p = strchr(syl_p->syl, '_')) != 0) {
+		if (((unsigned char)*(under_p+1) & 0xff) == STR_UNDER_END) {
+			return(force_end(mll_p, staffno, syl_p, verse, place,
+				under_p+2, carryover_p, really_print));
+		}
+	}
+
 	/* Back up from the syllable with underscore to count up time-wise how
 	 * far into the measure it is */
 	current_time = Zero;
 	for (grp_p = syl_p->prev; grp_p != 0; grp_p = grp_p->prev) {
 		current_time = radd(current_time, grp_p->fulltime);
 	}
-		
+
 	/* Set a default end time and place.
 	 * Most likely, we will discover later we need to stop the underscore
 	 * earlier than this, but if the user is using underscore in a strange
@@ -697,6 +719,122 @@ int *carryover_p;	/* return value, set to YES if there was a carryover */
 			current_time = Zero;
 		}
 	}
+}
+
+
+/* If the user specified a {Mm+N} after an extender, we do whatever they say,
+ * rather than deducing where to end the extender.
+ * This function handles that case.
+ */
+
+static double
+force_end(mll_p, staffno, syl_p, verse, place, spec, carryover_p, really_print)
+
+struct MAINLL *mll_p;	/* The syllable GRPSYL hangs off of here */
+int staffno;
+struct GRPSYL *syl_p;
+int verse;
+int place;		/* PL_* value */
+char *spec;		/* The 3 byte values just after the STR_UNDER_END */
+int *carryover_p;	/* Will be updated to YES if carryover was needed */
+int really_print;	/* NO during placement, YES during print */
+
+{
+	int meas;
+	double beats;
+	struct MAINLL *bar_mll_p = 0;
+	struct CHHEAD *chhead_p = 0;
+	double end;
+
+
+	/* Extract the Mm+N values from the internal format */
+	meas = (unsigned char)(spec[0]) - UNDER_OFFSET;
+	beats = (double) ( ((unsigned char)(spec[1]) - UNDER_OFFSET) +
+		( ((unsigned char)(spec[2]) - UNDER_OFFSET) / 100.0) );
+
+	savessvstate();
+	if (meas == 0) {
+		/* Find preceding bar line, or if beginning of song,
+		 * the CLEFSIG with the pseudo-bar */
+		for (  ; mll_p != 0; mll_p = mll_p->prev) {
+			if ((mll_p->str == S_BAR) || (mll_p->str == S_CLEFSIG)) {
+				bar_mll_p = mll_p;
+				break;
+			}
+		}
+	}
+	for (  ; meas > 0; meas--) {
+		/* Go to next bar */
+		for (mll_p = mll_p->next; mll_p != 0; mll_p = mll_p->next) {
+			if (mll_p->str == S_SSV) {
+				asgnssv(mll_p->u.ssv_p);
+			}
+			else if (mll_p->str == S_BAR) {
+				bar_mll_p = mll_p;
+				break;
+			}
+			else if (mll_p->str == S_FEED) {
+				int font;
+				int size;
+				char syl[8];
+
+				/* insert carryover on next score */
+				end_fontsize(syl_p->syl, &font, &size);
+				syl[0] = *(spec-2);
+				syl[1] = STR_UNDER_END;
+				syl[2] = (unsigned char) (meas + UNDER_OFFSET);
+				syl[3] = spec[1];
+				syl[4] = spec[2];
+				syl[5] = '\0';
+				insert_carryover_syllable(mll_p,
+					staffno, place, verse,
+					syl, font, size);
+				*carryover_p = YES;
+				/* end on this score just before bar line */
+				restoressvstate();
+				return(bar_mll_p->u.bar_p->c[AW] - STEPSIZE);
+			}
+		}
+	}
+	if (beats == 0.0) {
+		/* Don't need to go into the next measure.
+		 * Without this code, would get pfatal below if the
+		 * user said to go to the last bar of the song. */
+		restoressvstate();
+		return(bar_mll_p->u.bar_p->c[AW] - STEPSIZE);
+	}
+
+	if (bar_mll_p == 0) {
+		pfatal("could not find next bar in force_end()");
+	}
+
+	/* find the chord head cell */
+	for (mll_p = bar_mll_p; mll_p != 0; mll_p = mll_p->next) {
+		if (mll_p->str == S_CHHEAD) {
+			chhead_p = mll_p->u.chhead_p;
+			break;
+		}
+	}
+	if (chhead_p == 0) {
+		pfatal("could not find chhead in force_end()");
+	}
+
+	/* Get the location that corresponds to the count into the measure */
+	end = count2coord(beats, bar_mll_p->u.bar_p, chhead_p, Score.timeden);
+	restoressvstate();
+
+	if (end < syl_p->c[AE]) {
+		/* User asked us to go backwards. Don't do that. */
+		end = syl_p->c[AE];
+		/* User might not being getting what they intended,
+		 * so give warning, but this function gets called during
+		 * both placement and printing, so only report once. */
+		if ( ! really_print) {
+			l_warning(syl_p->inputfile, syl_p->inputlineno,
+			"lyrics extender end specification goes backwards");
+		}
+	}
+	return(end);
 }
 
 
@@ -1369,14 +1507,14 @@ int verseno;		/* verse number */
 
 
 static void
-insert_carryover_syllable(mll_p, staffno, sylplace, verseno, dash_or_underscore,
+insert_carryover_syllable(mll_p, staffno, sylplace, verseno, the_syl,
 		font, size)
 
 struct MAINLL *mll_p;	/* points to staff info */
 int staffno;		/* staff number */
 int sylplace;		/* PL_ABOVE, etc */
 int verseno;		/* verse number */
-char *dash_or_underscore;	/* "-" or "_" */
+char *the_syl;		/* "-" or "_" plus optional STR_UNDER_END */
 int font;		/* font and size to use for dash or underscore */
 int size;
 
@@ -1446,8 +1584,7 @@ int size;
 				 * a dash. Otherwise we are done */
 				if (staff_p->syls_p[v]->syl == (char *) 0) {
 					staff_p->syls_p[v]->syl =
-						copy_string(dash_or_underscore,
-								font, size);
+						copy_string(the_syl, font, size);
 					/* no longer a "space" syllable */
 					staff_p->syls_p[v]->grpcont = GC_NOTES;
 				}
@@ -1458,7 +1595,7 @@ int size;
 		/* no lyrics in first measure on next score for this
 		 * verse/place. Need to insert one */
 		add_syllable(staff_p, sylplace, verseno,
-					dash_or_underscore, font, size,
+					the_syl, font, size,
 					begin_x, chord_p);
 	}
 }
@@ -1470,13 +1607,12 @@ int size;
  * then free the old arrays */
 
 static void
-add_syllable(staff_p, sylplace, verseno, dash_or_underscore, font, size,
-		begin_x, chord_p)
+add_syllable(staff_p, sylplace, verseno, the_syl, font, size, begin_x, chord_p)
 
 struct STAFF *staff_p;		/* add syllable to this staff */
 int sylplace;			/* PL_ABOVE, etc */
 int verseno;
-char *dash_or_underscore;	/* "-" or "_" */
+char *the_syl;			/* "-" or "_" plus optional STR_UNDER_END */
 int font;
 int size;
 double begin_x;			/* where syllable is to start */
@@ -1516,8 +1652,7 @@ struct CHORD *chord_p;		/* what chord to attach to */
 	/* alloc and fill in the new GRPSYL */
 	new_sylplace[insert_index] = (short) sylplace;
 	new_syls_p[insert_index] = newGRPSYL(GS_SYLLABLE);
-	new_syls_p[insert_index]->syl = copy_string(dash_or_underscore,
-							font, size);
+	new_syls_p[insert_index]->syl = copy_string(the_syl, font, size);
 	new_syls_p[insert_index]->inputlineno = -1;
 	new_syls_p[insert_index]->basictime = -1;
 	new_syls_p[insert_index]->is_multirest = NO;

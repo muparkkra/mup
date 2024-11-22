@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -116,6 +116,8 @@ static char *next_syl P((char **sylstring_p, int *font_p, int *size_p,
 static void do_sylwidth P((char *lyrstring, float *wid_b4_syl_p,
 		float *wid_real_syl_p, float *wid_after_syl_p,
 		int compensating));
+static void proc_explicit_end P((char *sylbuff, int *syl_index_p, 
+		char **lyrstring_cursor_p_p));
 static void count_verses P((struct RANGELIST *used_p));
 static void vno_used P((int vno));
 static void lyr_mismatch P((char *which));
@@ -124,6 +126,9 @@ static void clear_need_extender P((void));
 static void lyr_error P((char *filename, int lineno, char * format, ...));
 #else
 static void lyr_error P((char *filename, int lineno, char * format, va_alist));
+#endif
+#ifdef __DJGPP__
+static double trunc P((double val));
 #endif
 
 
@@ -644,6 +649,11 @@ lyr_new_bar()
 		case STR_BACKSPACE: \
 			destbuff[destindex++] = *++src_p; \
 			break; \
+		case STR_UNDER_END: \
+			destbuff[destindex++] = *++src_p; \
+			destbuff[destindex++] = *++src_p; \
+			destbuff[destindex++] = *++src_p; \
+			break; \
 		default: \
 			break; \
 		} \
@@ -803,6 +813,10 @@ float *c_p;		/* If the user wants a tag associated with the
 			/* end of syllable */
 			/* need to peek ahead to check for non-lyric following */
 			sylbuff[i++] = *p++;
+			/* check for user forcing where to end underscore */
+			if ((*p == '{') && IS_STD_FONT(font)) {
+				proc_explicit_end(sylbuff, &i, &p);
+			}
 			if ( *p != '<') {
 				done = YES;
 				break;
@@ -836,10 +850,14 @@ float *c_p;		/* If the user wants a tag associated with the
 			p++;
 			/* A ~ joins this syllable with the next to make
 			 * them effectively one, but anything else ends
-			 * the syllable. But copy - or _ if they are there */
+			 * the syllable. But copy - or _ if they are there,
+			 * as well as handle any {Mm+N}. */
 			if ( *p != '~') {
 				if (*p == '-' || *p == '_') {
 					sylbuff[i++] = *p++;
+					if ((*p == '{') && IS_STD_FONT(font)) {
+						proc_explicit_end(sylbuff, &i, &p);
+					}
 				}
 				done = YES;
 			}
@@ -942,6 +960,112 @@ float *c_p;		/* If the user wants a tag associated with the
 
 	/* return a copy of the extracted syllable */
 	return(copy_string(sylbuff, font, size));
+}
+
+
+/* This function is a mini-parser for the {Mm+N} to specify where a
+ * lyrics extender should end. It transforms that string into a
+ * STR_UNDER_END and 3 more bytes, for measures, full beats, and
+ * hundredths of a beat. The user might only specify the Mm part or the N
+ * part, or both. White space is skipped.
+ */
+
+static void
+proc_explicit_end(sylbuff, syl_index_p, lyrstring_cursor_p_p)
+
+char *sylbuff;			/* where the syllable is being assembled */
+int *syl_index_p;		/* index into sylbuff; will be updated */
+char **lyrstring_cursor_p_p;	/* place in the input string; will be updated */
+
+{
+	char *cursor_p;		/* where we are in lyrics input string */
+	int syl_index;		/* where we are in syllable output string */
+	char *end_p;		/* points to the ending } */
+	char *m_p;		/* points to the m in {Mm+N} */
+	char *p;		/* current place in the specification */
+	int meas;
+	double beats;
+	int full_beats;	 /* integer portion of beats */
+
+
+	cursor_p = *lyrstring_cursor_p_p;
+	syl_index = *syl_index_p;
+
+	/* move past the { */
+	cursor_p++;
+
+	/* Find the ending } */
+	if ((end_p = strchr(cursor_p, '}')) == 0) {
+		lyr_error(Curr_filename, yylineno,
+			"found a '{' to force ending place for lyrics extender without a matching '}'");
+		return;
+	}
+
+	/* If there is an m, extract the number of measures */
+	m_p = strchr(cursor_p, 'm');
+	if (m_p != 0) {
+		meas = (int) strtol(cursor_p, &p, 10);
+		while (*p == ' ') {
+			p++;
+		}
+		if (m_p != p) {
+			lyr_error(Curr_filename, yylineno,
+				"invalid number of measures");
+			return;
+		}
+		/* Move beyond the m, and any + */
+		p++;
+		while (*p == ' ') {
+			p++;
+		}
+		if ( *p == '+') {
+			p++;
+		}
+		else if (p != end_p) {
+			lyr_error(Curr_filename, yylineno,
+				"invalid format for dash/underscore ending specification");
+			return;
+		}
+	}
+	else {
+		/* User only specified beats, not measures */
+		meas = 0;
+		p = cursor_p;
+	}
+
+	/* Extract the number of beats */
+	beats = strtod(p, &p);
+	while (*p == ' ') {
+		p++;
+	}
+	if (p != end_p) {
+		lyr_error(Curr_filename, yylineno,
+				"invalid format for beats in underscore ending specification");
+	}
+
+	/* Range check the values. They have to fit in bytes. */
+	if (meas < 0 || meas > MAX_UNDER_MEAS) {
+		lyr_error(Curr_filename, yylineno,
+				"number of measures (%d) out of range (0-%d)",
+				meas, MAX_UNDER_MEAS);
+	}
+	full_beats = (int) trunc(beats);
+	if ( (full_beats < 0) || (beats > (double)Score.timenum + 1.0) ) {
+		lyr_error(Curr_filename, yylineno,
+				"number of beats (%.2f) out of range (0-%d)",
+				beats, Score.timenum + 1);
+	}
+
+	/* Construct the internal representation */
+	sylbuff[syl_index++] = STR_UNDER_END;
+	sylbuff[syl_index++] = (char) (meas + UNDER_OFFSET);
+	sylbuff[syl_index++] = (char) (full_beats + UNDER_OFFSET);
+	sylbuff[syl_index++] = (char) (trunc((beats - full_beats) * 100) + UNDER_OFFSET);
+
+	/* Tell the caller how much of the input string was consumed,
+	 * and how much was added to the output string. */
+	*lyrstring_cursor_p_p = end_p + 1;
+	*syl_index_p = syl_index;
 }
 
 
@@ -1599,3 +1723,16 @@ va_dcl
 		l_yyerror(filename, lineno, "%s", buffer);
 	}
 }
+
+
+/* old versions of djgpp don't have a trunc, so provide one */
+#ifdef __DJGPP__
+static double
+trunc(val)
+
+double val;
+
+{
+	return((double)((int)val));
+}
+#endif

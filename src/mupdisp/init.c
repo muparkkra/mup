@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -113,6 +113,7 @@ struct CONFIG Config [] = {
 		at386_error,		/* error reporting function */
 		at386_raster,		/* function to display a raster bitmap centered on screen */
 		VIDLINES,		/* screen vertical lines */
+		640,			/* max pixels wide */
 		0.75			/* aspect ratio */
 	},
 #endif
@@ -127,6 +128,7 @@ struct CONFIG Config [] = {
 		xterm_error,		/* error reporting function */
 		xterm_raster,		/* function to display a raster bitmap centered on screen */
 		XVIDLINES,		/* screen vertical lines */
+		0,			/* max pixels wide unlimited*/
 		1.0			/* aspect ratio */
 	},
 #endif
@@ -141,6 +143,7 @@ struct CONFIG Config [] = {
 		vgalib_error,		/* error reporting function */
 		vgalib_raster,		/* function to display a raster bitmap centered on screen */
 		LINVGAVIDLINES,		/* screen vertical lines */
+		640,			/* max pixels wide */
 		1.0			/* aspect ratio */
 	},
 
@@ -155,6 +158,7 @@ struct CONFIG Config [] = {
 		dos_error,		/* error reporting function */
 		dos_raster,		/* function to display a raster bitmap centered on screen */
 		0,              	/* screen vertical lines--will get set at run time */
+		640,			/* max pixels wide */
 		0.0             	/* aspect ratio adjust--will get set at run time */
 	}
 #endif

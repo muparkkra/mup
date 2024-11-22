@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -840,6 +840,10 @@ int slash;		/* if YES, return any STR_SLASH's found,
 			++(*str_p_p);
 			break;
 
+		case STR_UNDER_END:
+			*str_p_p = *str_p_p + 4;
+			break;
+
 		case STR_VERTICAL:
 			*vertical_p += vert_distance(
 					DECODE_VERT( *++(*str_p_p) ),
@@ -968,7 +972,8 @@ int in_pile;	/* if YES, we are currently in a pile and are about to leave
 		/* entering pile. Save current size, and return new size */
 		Pile_info.orig_size = size;
 		/* constrain new size to be at least MINSIZE */
-		if ((Pile_info.new_size = PILE_A * size / PILE_B) < MINSIZE) {
+		Pile_info.new_size = (int)(Score.pilescale * (double) size);
+		if (Pile_info.new_size < MINSIZE) {
 			Pile_info.new_size = MINSIZE;
 		}
 		return(Pile_info.new_size);
@@ -984,7 +989,8 @@ int in_pile;	/* if YES, we are currently in a pile and are about to leave
 			return(Pile_info.orig_size);
 		}
 		else {
-			if ((new_size = (size * PILE_B) / PILE_A) > MAXSIZE) {
+			new_size = (int) ((double) size / Score.pilescale);
+			if (new_size > MAXSIZE) {
 				/* constrain to no larger than MAXSIZE */
 				new_size = MAXSIZE;
 			}

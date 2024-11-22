@@ -23,6 +23,6 @@ octave 2: 7.8;
 mussym above 1: 0.3 "ferm" til 3;
 bar
 1: c;;;;
-lyrics 1: 4;;;; "none";
+lyrics 1: 4;;;; "none_{102m+16}";
 bar
 

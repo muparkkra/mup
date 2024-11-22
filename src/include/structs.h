@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -366,6 +366,14 @@ struct ACCIDENTALS {
 };
 
 /*
+ * For use in defining a table of paper sizes.
+ */
+struct PAPER_SIZES {
+	int	width;
+	int	height;
+};
+
+/*
  * Define structure holding information about these three contexts:
  *
  *	score		the whole score
@@ -524,6 +532,7 @@ struct SSV {
 	short measnumfont;	/* font for measnum */
 	short measnumsize;	/* point size for measnum */
 	short measnumstyle;	/* style of measnum: RS_* */
+	float pilescale;	/* multiply font size by this in piles */
 	short bracketrepeats;	/* should repeat bars have brackets drawn? */
 	float packfact;		/* horizontal packing factor */
 	float packexp;		/* horizontal packing expansion (exponent) */
@@ -891,6 +900,7 @@ struct LINE {
 	short linetype;			/* type of line */
 	struct INPCOORD start, end;	/* start and end points */
 	char *string;			/* malloc; to be printed by the line */
+	int side;			/* PL_ABOVE or PL_BELOW */
 };
 
 /*
@@ -1583,6 +1593,8 @@ struct GRPSYL {
 
 	/* whether each phrase is above or below */
 	char phplace[PH_COUNT];
+	/* whether each phrase is normal, dotted, or dashed */
+	char phlinetype[PH_COUNT];
 
 	/*
 	 * If tie is set to YES, all notes in the group are to be tied to

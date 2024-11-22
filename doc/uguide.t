@@ -376,7 +376,7 @@ U\|s\|e\|r\|'\|s  G\|u\|i\|d\|e
 .ps 14
 .nr Boxpict 1
 .ce
-Mup Version 7.1
+Mup Version 7.2
 .ps
 .vs
 .ev
@@ -390,9 +390,9 @@ Mup Version 7.1
 .SK
 \ \ \ 
 .sp 5.5i
-Mup Music Publisher User's Guide \(em Mup Version 7.1
+Mup Music Publisher User's Guide \(em Mup Version 7.2
 .sp 0.5
-\(co Copyright 1995-2023 by Arkkra Enterprises
+\(co Copyright 1995-2024 by Arkkra Enterprises
 .sp 0.5
 All rights reserved.
 .sp
@@ -607,9 +607,9 @@ Tablature notation
 .H 2 "Shaped notes"
 .Hr shaped.html
 Shaped notes
-.H 2 "Shape overrides"
+.br
 .Hr shapes.html
-Overridding music symbol appearance
+Overriding music symbol appearance
 <HR>
 .H 2 "Text Strings"
 .Hr textstr.html
@@ -769,6 +769,12 @@ Breaks
 .Hr heeltoe.html
 Organ pedal heel and toe marks
 .br
+.Hr auxinfo.html
+Printing auxiliary information
+.br
+.Hr withmac.html
+Repeated but non-consecutive with lists
+.br
 .Hr muspaper.html
 Generating blank staff paper
 .br
@@ -810,7 +816,7 @@ http://www.arkkra.com
 </P>
 <HR>
 <P>
-Copyright (c) 1995-2023 by Arkkra Enterprises
+Copyright (c) 1995-2024 by Arkkra Enterprises
 </P>
 ..
 .Ht Introduction to Mup
@@ -863,7 +869,7 @@ Appendix A gives a sample input file.
 There is a Quick Reference available that may be useful for jogging your
 memory after you've had a little experience using Mup.
 .P
-This User's Guide is for Mup version 7.1.
+This User's Guide is for Mup version 7.2.
 .\"  Add copyright. Probably better way to do this, but this will work
 .FS " "
 .ce
@@ -1750,7 +1756,7 @@ See also the "visible" parameter.
 Help > About Mupmate
 .Op
 Print the Mup version number. When invoked from command line,
-Mup will then exit. This document is for version 7.1.
+Mup will then exit. This document is for version 7.2.
 .Co
 .Hi
 \fB-x\fP\fIM\fP\fB,\fP\fIN\fP
@@ -2002,7 +2008,7 @@ If the file uses features of newer versions of Mup, and thus would
 not work with older versions, you can add a dash and
 the minimim version number the file requires, as in:
 .Ex
-//!Mup-Arkkra-7.1
+//!Mup-Arkkra-7.2
 .Ee
 .H 2 "Mup General Syntax"
 .P
@@ -4181,12 +4187,14 @@ bar
 .H 4 "Phrase marks"
 .Ix fJ
 .P
+.Hm ph_eph
 Phrase marks
 can be specified by putting "ph" on the chord where you want the phrase
 to begin, and "eph" on the chord where you want it to end.
-The ph can optionally be followed by "above" or "below"
+The ph can optionally be preceded by "dotted" or "dashed" to
+specify the line type, and optionally followed by "above" or "below"
 to specify the side for the phrase mark.
-The "ph" and its matching "eph do not have to be in the same measure.
+The "ph" and its matching "eph" do not have to be in the same measure.
 There is also an alternate way to specify phrase marks,
 described in the section on
 .Hr phrase.html
@@ -5229,6 +5237,47 @@ lyrics 1: 1; "<>";
 bar
 .Ee
 .P
+However, if necessary, it is also possible to tell Mup
+exactly where you want dashes or underscores to end.
+To do that, immediately after the underscore or
+dash character, specify {\fIM\fPm+\fIN\fP}, where \fIM\fP is the number
+of measures (i.e., the number of bar lines to continue to) and \fIN\fP is 
+the number of beats into the final measure where it is to end.
+If either is zero, it can be omitted. The beats can include a decimal
+fraction part. Examples:
+.Ex 1
+.\"score
+.\"leftmargin=1.5
+.\"rightmargin=1.5
+.\"music
+
+1: c;d;r;f;
+// Force underscore to go past the rest to very end of measure.
+// This example only specifies measures, not beats.
+lyrics 1: 1; "Sing_{1m}";
+bar
+
+1: g;c;2c;
+// Force to end just beyond count 4 in current measure.
+// This example only specifies beats, not measures.
+lyrics 1: "me this song_{4.1}";
+bar
+
+newscore
+
+1: d; ph above;e;c;
+// Continue across two bar lines and two more beats.
+// This example specifies both measures and beats.
+lyrics 1: 4;2.; "a-gain_{2m+2}";
+bar
+
+1: d;2.e;
+bar
+
+1: f;2.g eph;
+bar
+.Ee
+.P
 Occasionally, a single chord is used for more than one syllable.
 If the syllables are within the same word, it is sufficient to omit the
 dashes between syllables, so that Mup will treat them as a single syllable.
@@ -5265,14 +5314,19 @@ For example:
 .\"score leftmargin=2; rightmargin=2
 .\"music
 1: d;f;a;g;
-lyrics 1: [1] "this is verse one"; \e
-       [2] "this is verse two";
+lyrics 1: [1] "this is verse one"; [2] "this is verse two";
 bar
 .Ee
 .P
-In this example,
-because of the \e at the end of the first line, both verses are effectively
-on the same input line.
+If verses have different time values, use separate lines of input:
+.Ex 1
+.\"score leftmargin=2; rightmargin=2
+.\"music
+1: f;8e dotted tie;;4g;;
+lyrics 1: [1] "this has four words.";
+lyrics 1: 4;8;;4;; [2] "and this has five words";
+bar
+.Ee
 .P
 .Hm except
 Occasionally, lyrics may occur during only part of a measure.
@@ -7315,6 +7369,7 @@ You cannot put newlines (with \en) in the same string with vertical
 motion.
 .H 2 "Piled text, for superscripts, subscripts, etc."
 .P
+.Hm piled
 It is also possible to "pile up" lines of text in a string.
 Some common uses of this could be for superscripts and subscripts or for
 .Ix iN
@@ -7327,10 +7382,14 @@ here we describe the general-purpose constructs for piling text.
 .Ix iO
 A \e: is used to indicate the beginning of piling. Any subsequent
 instances of \e: in the same string will alternately turn piling off and on.
-When a pile is begun, the text size is automatically made smaller, and
+By default, when a pile is begun,
+the text size is automatically made smaller, and
 the text baseline is moved up, so that the first line of piled text is
 like a superscript, and the next like a subscript. If there are additional
 lines, they are placed below the subscript.
+How much the size is adjusted is controlled by the
+.Hr param.html#pilescale
+pilescale parameter.
 By default, the lines in a pile are placed such that the last digit
 in each line will line up, or if there is no digit, the last character.
 However, you can force different alignment.
@@ -8813,6 +8872,8 @@ a bar, and that bar happens to be at the end of a score other than the
 final score, and the result of evaluating the expression is a location that
 would be out in the right margin or off the right edge of the page, it will
 be moved to act as if the bar was at the beginning of the following score.
+If that adjustment is not desired, make sure the location specified is
+slightly before the bar line.
 .P
 The various kinds of offsets can be combined.
 .Ex
@@ -9481,11 +9542,11 @@ bar
 .P
 It is possible to print a text string by the line by adding
 .Ex
-\fBwith \fP\fIfontfamily font \fP\fB(\fP\fIsize\fP\fB) "\fP\fIstring\fP\fB"\fP
+\fBwith \fP\fIfontfamily font \fP\fB(\fP\fIsize\fP\fB) "\fP\fIstring\fP\fB"\fP \fIside\fP
 .Ee
 at the end of the "line" statement. Only the keyword "with" and the
-text string itself are required; the font and size information is optional.
-As usual, the
+text string itself are required; the font, size, and side information
+is optional.  As usual, the
 .Hr param.html#fontfam
 fontfamily,
 .Hr param.html#font
@@ -9493,8 +9554,9 @@ font,
 and
 .Hr param.html#size
 size
-parameter values are used to get values if the optional items are
-omitted. The most common usage for printing a string with a line is probably
+parameter values are used to get values if the font or size are omitted.
+The side defaults to "above" but can be set to "below."
+The most common usage for printing a string with a line is probably
 for glissandos.
 .Ex 1
 .\"score
@@ -14614,7 +14676,7 @@ This parameter can only be specified before any music or block input.
 If pageheight and/or pagewidth are set in the same context as pagesize,
 whichever is specified last will override the previous.
 .Va
-letter, legal, flsa, halfletter, a4, a5, a6; optionally followed by
+letter, legal, flsa, halfletter, note, a3, a4, a5, a6; optionally followed by
 portrait or landscape.
 .Df
 letter
@@ -14741,7 +14803,24 @@ pedstyle = pedstar
 .Ix dS
 .Ix fL
 .eP
-\"----------------------------------
+.\"----------------------------------
+.bP
+.Na
+.Hm pilescale
+pilescale
+.De
+This parameter defines by what factor to scale text when it is piled.
+.Va
+0.1 to 10.0
+.Df
+0.65
+.Cn
+score
+.Nm
+.eX
+pilescale = 0.8
+.eP
+.\"----------------------------------
 .bP
 .Na
 .Hm printedtime
@@ -15271,7 +15350,7 @@ score, staff, voice
 .eX
 shapes="myshapes"
 .br
-shapes=    // to stop overridding
+shapes=    // to stop overriding
 .Sa
 .Hr param.html#notehead
 noteheads
@@ -17996,6 +18075,42 @@ music
 1: a-;b-;e;f;
 rom below 1: 1 HEEL; 2 TOE;
 rom above 1: 3 TOE; 4 HEEL;
+bar
+.Ee
+.Ht Printing auxiliary information
+.Hd auxinfo.html
+.H 2 "Printing auxiliary information"
+.P
+Some users may like to print some auxiliary information,
+such as the name of the Mup file, or the time the file was last modified.
+That can be accomplished by passing the desired information via a macro
+definition.
+For example, on a Linux system, you could create a shell script:
+.DS
+  mup -DINFO="$(stat --format 'Generated from file %n, last modified %y' $1)" $1
+.DE
+and then in Mup input files, use something like:
+.Ex
+if defined(INFO) then
+footer
+        title `INFO`
+endif
+.Ee
+.Ht Repeated but non-consecutive with lists
+.Hd withmac.html
+.H 2 "Repeated but non-consecutive with lists"
+.P
+Often, the items of
+.Hr chrdattr.html#withlist
+a "with list"
+may apply to multiple chords in a
+measure, but not consecutive ones, so the shortcuts of [] or []... don't help.
+Consider, for example, the case where every other chord has an accent. 
+Rather than repeating "[with >]" for each, a macro can be defined,
+to reduce the amount of typing needed:
+.Ex
+define A [with >] @
+1: A 8d;g-;A d&;g&-;A c;f-;A bn-;en-;
 bar
 .Ee
 .Ht Generating blank staff paper

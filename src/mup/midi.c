@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -336,6 +336,9 @@ char *midifilename;		/* put MIDI data in this file */
 		Octave_bars[staff] = 0;
 		Octave_count[staff] = 0.0;
 		Channel = 0;
+		/* Pedbounce should already be NO, but it doesn't hurt
+		 * to force it, to be more robust if there is some bug. */
+		Pedbounce = NO;
 		for (i = 0; i < MAXHAND; i++) {
 			Onvelocity[i] = (char) DFLT_VELOCITY;
 			Offvelocity[i] = (char) 0;
@@ -456,6 +459,8 @@ char *midifilename;		/* put MIDI data in this file */
 						prepmidi_stuff(last_staff_p,
 								vno, NO);
 					}
+					track_size += do_midi_stuff(Zero,
+							mfile, NO);
 					/* This will update the current
 					 * absolute time to include the
 					 * effective time for this measure. */

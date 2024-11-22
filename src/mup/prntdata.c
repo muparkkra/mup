@@ -1,6 +1,6 @@
 
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -497,6 +497,9 @@ double y;	/* where syllable was printed */
 		case STR_PAGENUM:
 		case STR_NUMPAGES:
 			p++;
+			break;
+		case STR_UNDER_END:
+			p += 3;
 			break;
 		case ' ':
 			if (skipover == NO && IS_STD_FONT(font)) {

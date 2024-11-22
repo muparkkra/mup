@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -3399,4 +3399,74 @@ int s;
 	}
 
 	return (NO);
+}
+
+/*
+ * Name:        count2coord()
+ *
+ * Abstract:    Convert a count in a measure to the absolute horizontal coord.
+ *
+ * Returns:     coordinate corresponding to the given count
+ *
+ * Description: This function, given a count number in a measure, and the
+ *		preceding bar line, chord head cell, and time signature
+ *		denominator, calculates and returns the absolute horizonal
+ *		coordinate of that place.  In a measure, the preceding bar line
+ *		(or pseudo bar line, if this is the first measure of a score)
+ *		is regarded as count 0, and the following bar line is regarded
+ *		as count N + 1, where N is the numerator of the time signature.
+ *		Between any adjacent chords, or chord and bar line, time is
+ *		treated as proportional to distance.
+ */
+
+double
+count2coord(count, bar_p, chhead_p, timeden)
+
+double count;		/* count in measure */
+struct BAR *bar_p;	/* bar at start of measure (pseudobar if 1st in score)*/
+struct CHHEAD *chhead_p;/* chord headcell for this measure */
+int timeden;		/* denominator of time signature in this measure */
+
+{
+	struct CHORD *ch_p, *nch_p;	/* point at CHORD structures */
+	float frac;		/* what fraction of a whole it starts at */
+	float coord;		/* the answer */
+
+
+	if (count < 1) {
+		/*
+		 * The stuff is before the first chord ("count 1").  So we
+		 * consider the preceding bar line to be count 0, and allocate
+		 * time proportionally.
+		 */
+		coord = bar_p->c[AX] + (count / timeden) *
+				bar_p->c[INCHPERWHOLE];
+	} else {
+		/*
+		 * Convert the "count" where this stuff begins to what fraction
+		 * of a whole it starts at.
+		 */
+		frac = (count - 1) / timeden;
+
+		/*
+		 * In this loop, ch_p starts at the first chord and nch_p is
+		 * the next chord.  They move forward in parallel.  We get out
+		 * either when nch_p is 0 (ch_p is the last chord), or when
+		 * nch_p is beyond the place where our stuff goes (the stuff
+		 * goes at or following ch_p).
+		 */
+		for (ch_p = chhead_p->ch_p, nch_p = ch_p->ch_p;
+		     nch_p != 0 && RAT2FLOAT(nch_p->starttime) <= frac;
+		     ch_p = nch_p, nch_p = nch_p->ch_p)
+			;
+
+		/*
+		 * Subtract to find how far (timewise) the stuff is after chord
+		 * ch_p.  Then allocate space proportionally.
+		 */
+		coord = ch_p->c[AX] + (frac - RAT2FLOAT(ch_p->starttime)) *
+				ch_p->c[INCHPERWHOLE];
+	}
+
+	return (coord);
 }

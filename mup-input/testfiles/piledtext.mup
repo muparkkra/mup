@@ -49,6 +49,7 @@ bar
 newpage
 score
 	fontfamily=avantgarde
+	pilescale=0.4
 music
 
 1: c;;;;

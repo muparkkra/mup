@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -489,6 +489,8 @@
 #define MAXMIDIMAPS	(128)	/* number of map MIDI allows */
 
 
+/* the highest values that a measure number is allowed to be */
+#define MAX_SONG_MEASURES	(30000)
 
 /*
  * Define sets of symbols which probably should have been done as enums,
@@ -1212,6 +1214,31 @@
 
 #define STR_KEYMAP		0xf6
 
+/*
+ * This is followed by three bytes, for measures, beats, and hundredths of a
+ * beat, recording where user explicitly says to end a lyrics extender.  The
+ * values are biased by UNDER_OFFSET to avoid being mistaken for a null
+ * terminator.
+ */
+#define STR_UNDER_END		0xf7
+
+/*
+ * The three values for STR_UNDER_END could legally be zero, but we don't
+ * want nulls inside the strings, so they are biased to avoid zero.
+ * Could maybe use 1, but it seems safer to avoid anything that could be
+ * confused with a control character.  This plus the greater of 
+ * {MAX_UNDER_MEAS | MAXNUMERATOR+1 | 99} must be less than the first
+ * STR_* value, to avoid colliding with those.
+ */
+#define UNDER_OFFSET		32
+
+/*
+ * Maximum number of measures allowed in ${Mm+N} for where to end lyrics
+ * extender. 100 seems like plenty, is consistent with the MAXNUMERATOR+1
+ * limit on the number of beats, and fits in a byte, even with biasing.
+ */
+#define MAX_UNDER_MEAS		100
+
 /* chord translation */
 #define	CT_NONE			(0)	/* no translation */
 #define	CT_DOREMI		(1)	/* translate letters to syllables */
@@ -1307,6 +1334,12 @@
 #define IS_EVERY(m)     ((m) >= MINEVERYMEASNUM && (m) <= MAXEVERYMEASNUM)
 
 /*
+ * Strings inside piles are to be scaled by this amount.
+ */
+#define MINPILESCALE	(0.1)
+#define MAXPILESCALE	(10.0)
+#define DEFPILESCALE	(0.65)
+/*
  * Define types of rehearsal letters/numbers.
  */
 #define REH_NONE	(0)	/* none at all */
@@ -1393,15 +1426,17 @@
 
 /*
  * Define the valid page sizes. The values must match the indexes of
- * pagesztbl in gram.y.
+ * Paper_sizes in globals.c.
  */
 #define PS_LETTER	(0)
-#define PS_LEGAL	(1)
-#define PS_FLSA		(2)
-#define PS_HALFLETTER	(3)
+#define PS_NOTE		(1)
+#define PS_LEGAL	(2)
+#define PS_A3		(3)
 #define PS_A4		(4)
 #define PS_A5		(5)
 #define PS_A6		(6)
+#define PS_FLSA		(7)
+#define PS_HALFLETTER	(8)
 
 /* Define page orientations */
 #define O_PORTRAIT	(0)

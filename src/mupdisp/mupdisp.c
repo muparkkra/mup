@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -123,7 +123,7 @@ char *Gs_errfile = "mupdispg.err";      /* ghostscript error file */
 int Bits_per_line = 612; 	/* pixels per line */
 int Bytes_per_line = 77;	/* pixels per line divided by 8 rounded up */
 int Lines_per_page = 792;	/* vertical pixels */
-char *Version = "7.1";
+char *Version = "7.2";
 
 /* misc function declarations */
 static void parsePS P((FILE *file));
@@ -171,7 +171,7 @@ char **argv;
 		char option_marker = '-';
 #endif
 		/* Peek into the arguments to look for -q */
-		for (a = 1; a < argc; a++) {
+		for (a = 1; a < Argc; a++) {
 			if (argv[a][0] == option_marker && argv[a][1] == 'q') {
 				Quiet = YES;
 			}
@@ -211,6 +211,8 @@ char **argv;
 		generalcleanup(1);
 	}
 #endif
+
+	set_gs_params();
 
 	/* if environment variable MUPDISPMODE is set, use the small full page
 	 * mode as the default */

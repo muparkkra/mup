@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -196,6 +196,23 @@ float Octave_count[MAXSTAFFS+1];/* number of counts into measure that
 float _Page	[NUMCTYPE];	/* whole page */
 float _Win	[NUMCTYPE];	/* middle (music) window */
 float _Cur	[NUMCTYPE];	/* current position */
+
+/*
+ * Table of standard paper sizes, to be used to see if user specified
+ * a landscape version of a standard size.
+ */
+struct PAPER_SIZES Paper_sizes[] = {
+	{ 612, 792 },	/* letter */
+	{ 540, 720},	/* note */
+	{ 612, 1008},	/* legal */
+	{ 842, 1190 },	/* a3 */
+	{ 595, 842},	/* a4 */
+	{ 421, 595},	/* a5 */
+	{ 297, 421},	/* a6 */
+	{ 612, 936},	/* flsa */
+	{ 396, 612},	/* halfletter */
+	{ 0, 0}
+};
 
 /*
  * Define the structures for headers and footers.  The ones with no "2" suffix

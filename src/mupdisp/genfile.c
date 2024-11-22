@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -59,19 +59,26 @@
 /* bitmap for message to tell user to wait while we do our thing... */
 #include "waitmsg.bm"
 
+/* Default resolution is 72 points/pixels per inch. We may reduce that for
+ * old devices that have display width limits. */
+#define DFLT_RESOLUTION		72
+
 char Small_adjust[200]; /* PostScript instructions to add to get small
 			 * version of output (small enough for a whole page
 			 * to fit on the screen) */
 char Large_adjust[200]; /* PostScript instructions to add for the large,
 			 * scroll-able version of the output */
 double Reduction_factor;/* how to adjust for small version */
-char Papersize[32];	/* -gXxY geometry argument to Ghostscript */
+char Geom_param[32];	/* -gXxY geometry argument to Ghostscript */
+char Res_param[32];	/* -rXxY resolution parameter to Ghostscript */
+int Resolution = DFLT_RESOLUTION;
 int Use_landscape = NO;
 
 static void do_genfile P((int fd, int do_full));
 static void copyfile P((int srcfile, long start, long end, int destfile));
 static void genfile P((char *outfile, int do_full));
 static void cwrite P((int fd, void *data, int length));
+static void set_reduction_factor P((void));
 
 
 /* generate one of the bitmap files if not already generated,
@@ -84,6 +91,9 @@ gen1file(fullpgmode)
 int fullpgmode;		/* if YES, generate full-page version */
 
 {
+	int eff_bits_per_line;	/* after width squeezing, if necessary */
+	int eff_lines_per_page;	/* after width squeezing, if necessary */
+
 	if (fullpgmode == YES) {
 		/* if bitmap file not already created, make it now */
 		if (Fullbitmaps <= 0) {
@@ -91,11 +101,16 @@ int fullpgmode;		/* if YES, generate full-page version */
 
 			/* generate Postscript to scale and translate
 			 * output appropriately */
+			set_reduction_factor();
+			eff_bits_per_line = Bits_per_line
+					* DFLT_RESOLUTION / Resolution;
+			eff_lines_per_page = Lines_per_page
+					* DFLT_RESOLUTION / Resolution;
 			snprintf(Small_adjust, sizeof(Small_adjust),
 					"%f %f translate\n%f %f scale\n",
-					Bits_per_line
+					eff_bits_per_line
 					* ((1.0 - Reduction_factor) / 2.0),
-					Lines_per_page - (Lines_per_page
+					eff_lines_per_page - (eff_lines_per_page
 					* Reduction_factor
 					* Conf_info_p->adjust) - 4,
 					Reduction_factor,
@@ -105,7 +120,7 @@ int fullpgmode;		/* if YES, generate full-page version */
 					sizeof(Small_adjust) - strlen(Small_adjust),
 					"%d %d translate\n-90 rotate\n",
 					0,
-					Lines_per_page);
+					eff_lines_per_page);
 			}
 
 			/* tell user to wait */
@@ -184,6 +199,10 @@ int do_full;            /* YES if to do full version of page */
 			Exit_errmsg = "unable to redirect stdin\n";
 			(*Conf_info_p->cleanup) (1);
 		}
+#if 0
+system("cat - > PStemp1");
+exit(1);
+#endif
 		if (close(1) < 0) {
 			Exit_errmsg = "unable to close stdout\n";
 			(*Conf_info_p->cleanup) (1);
@@ -201,8 +220,8 @@ int do_full;            /* YES if to do full version of page */
 			(*Conf_info_p->cleanup) (1);
 		}
 		(void) sprintf(outfileopt, "-sOutputFile=%s", outfile);
-		execlp("gs", "gs", "-sDEVICE=bit", Papersize, "-dQUIET",
-					 outfileopt, "-", (char *) 0);
+		execlp("gs", "gs", "-sDEVICE=bit", Geom_param, Res_param,
+				"-dQUIET", outfileopt, "-", (char *) 0);
 		/*FALLTHRU*/
 	case -1:
 		Exit_errmsg = "can't exec Ghostscript";
@@ -238,14 +257,14 @@ int do_full;            /* YES if to do full version of page */
 
 	/* execute Ghostscript on the temp file */
 	sprintf(outfileopt, "-sOutputFile=%s", outfile);
-	ret = spawnlp(P_WAIT, "gs", "gs", "-sDEVICE=bit", Papersize,
+	ret = spawnlp(P_WAIT, "gs", "gs", "-sDEVICE=bit", Geom_param, Res_param,
 		"-dQUIET", "-dNOPAUSE", outfileopt, pstmpfile, (char *) 0);
 
 	if (ret != 0) {
 		/* try executing gs386 instead */
 		/**** probably should check for a specific return code ****/
 		ret = spawnlp(P_WAIT, "gs386", "gs386", "-sDEVICE=bit",
-	  			Papersize, "-dQUIET", "-dNOPAUSE",
+	  			Geom_param, Res_param, "-dQUIET", "-dNOPAUSE",
 				outfileopt, pstmpfile, (char *) 0);
 	}
 
@@ -295,16 +314,16 @@ struct PaperSizeInfo {
 	int x;		/* width, must be <= MAX_BITS_PER_LINE */
 	int y;		/* height, must be <= MAX_LINES_PER_PAGE */
 	char *sizename;	/* name of paper size */
-	double reduction;	/* how much to multiply by in small mode */
 } Size_table[] = {
-	{ 612, 792, "letter", 0.48 },	/* default has to be first */
-	{ 540, 720, "note", 0.525 },
-	{ 612, 1008, "legal", 0.375 },
-	{ 595, 842, "a4", 0.46 },
-	{ 421, 595, "a5", 0.65 },
-	{ 297, 421, "a6", 0.8 },
-	{ 612, 936, "flsa", 0.41 },
-	{ 396, 612, "halfletter", 0.63 },
+	{ 612, 792, "letter" },	/* default has to be first */
+	{ 540, 720, "note" },
+	{ 612, 1008, "legal" },
+	{ 842, 1190, "a3" },
+	{ 595, 842, "a4" },
+	{ 421, 595, "a5" },
+	{ 297, 421, "a6" },
+	{ 612, 936, "flsa" },
+	{ 396, 612, "halfletter" },
 	{ 0, 0, (char *) 0 }
 };
 
@@ -322,7 +341,7 @@ int x, y;
 	int i;
 
 	/* if we've already been called once, we're already done */
-	if (Papersize[0] == '-') {
+	if (Geom_param[0] == '-') {
 		return;
 	}
 
@@ -348,9 +367,6 @@ int x, y;
 	Bits_per_line = Size_table[i].x;
 	Lines_per_page = Size_table[i].y;
 	Bytes_per_line = (Bits_per_line >> 3) + ((Bits_per_line & 0x7) ? 1 : 0);
-	Reduction_factor = Size_table[i].reduction;
-	(void) snprintf(Papersize, sizeof(Papersize), "-g%dx%d",
-					Bits_per_line, Lines_per_page);
 }
 
 
@@ -368,8 +384,58 @@ landscape()
 	Lines_per_page = temp;
 	Bytes_per_line = (Bits_per_line >> 3) + ((Bits_per_line & 0x7) ? 1 : 0);
 	Use_landscape = YES;
-	(void) snprintf(Papersize, sizeof(Papersize), "-g%dx%d",
+}
+
+
+/* Set the Geom_param and Res_param command line options for Ghostscript,
+ * adjusting if necessary for devices that limit width. */
+
+void
+set_gs_params()
+
+{
+	Resolution = DFLT_RESOLUTION;
+	/* If the ouput device is limited in its width, we shrink the
+	 * image to fit within that limit. */
+	if ( (Conf_info_p->max_width >= 320)
+			&& (Bits_per_line > Conf_info_p->max_width) ) {
+		float adjust;
+
+		adjust = (float) Conf_info_p->max_width / (float) Bits_per_line;
+		Bits_per_line = (int) ((float) Bits_per_line * adjust);
+		Lines_per_page = (int) ((float) Lines_per_page * adjust);
+		Resolution = (int) ((float) DFLT_RESOLUTION * adjust);
+	}
+
+	Bytes_per_line = (Bits_per_line >> 3) + ((Bits_per_line & 0x7) ? 1 : 0);
+	(void) snprintf(Geom_param, sizeof(Geom_param), "-g%dx%d",
 					Bits_per_line, Lines_per_page);
+	(void) snprintf(Res_param, sizeof(Res_param), "-r%dx%d",
+					Resolution, Resolution);
+}
+
+
+/* Historically, the "small" mode factor was set to get a height of
+ * about 385 pixels. Several of the non-xterm drivers used 640x480,
+ * and XVIDLINES was 400, so that seemed a reasonable factor
+ * to get the whole page to fit.
+ * The old AT386 was only 350, but probably no one uses that anymore,
+ * and 385 would only chop off the bottom 10%, which is likely mostly margin.
+ * We used to have a hard-coded factor for each page size, which was not
+ * adjusted for landscape. Now we calculate what will yield 20 less than
+ * vlines for the current device.
+ * But some cases are so small already, the ratio might actually make
+ * things bigger (e.g. a6 or halfletter in landscape), so we cap at 0.9
+ */
+#define MAX_REDUCTION_FACTOR   (0.9)
+
+static void
+set_reduction_factor()
+{
+	Reduction_factor = (double) (Conf_info_p->vlines - 20) / Lines_per_page;
+	if (Reduction_factor > MAX_REDUCTION_FACTOR) {
+		Reduction_factor = MAX_REDUCTION_FACTOR;
+	}
 }
 
 
@@ -384,6 +450,8 @@ int do_full;	/* if YES, do full page mode */
 {
 	struct Pginfo *pg_p;    /* for info about each page */
 	char errhandler[200];   /* PostScript error handler redefinition */
+	int eff_bits_per_line;
+	int eff_lines_per_page;
 
 
 	/* arrange to quit Ghostscript on errors (shouldn't get errors
@@ -394,6 +462,9 @@ int do_full;	/* if YES, do full page mode */
 	/* copy the prolog */
 	copyfile(Psfile, Beginprolog, Endprolog, fd);
 	
+	eff_bits_per_line = BITS_PER_LINE * DFLT_RESOLUTION / Resolution;
+	eff_lines_per_page = LINES_PER_PAGE * DFLT_RESOLUTION / Resolution;
+
 	/* for each page add proper scaling, etc information */
 	for (pg_p = Pagehead; pg_p != (struct Pginfo *) 0;
 							pg_p = pg_p->next) {
@@ -403,10 +474,10 @@ int do_full;	/* if YES, do full page mode */
 
 			cwrite(fd, "0.2 setgray\n", 12);
 			sprintf(tmpbuff, "0 0 moveto 0 %d lineto %d %d lineto %d 0 lineto closepath fill\n",
-					Lines_per_page,
-					Bits_per_line,
-					Lines_per_page,
-					Bits_per_line);
+					eff_lines_per_page,
+					eff_bits_per_line,
+					eff_lines_per_page,
+					eff_bits_per_line);
 			cwrite(fd, tmpbuff, strlen(tmpbuff));
 
 			cwrite(fd, Small_adjust, strlen(Small_adjust));
@@ -417,7 +488,7 @@ int do_full;	/* if YES, do full page mode */
 				(void) snprintf(trans, sizeof(trans),
 					"%d %d translate\n",
 					0,
-					Bits_per_line);
+					eff_bits_per_line);
 				cwrite(fd, trans, strlen(trans));
 				cwrite(fd, "-90 rotate\n", 11);
 			}
@@ -429,7 +500,8 @@ int do_full;	/* if YES, do full page mode */
 			if (Use_landscape == YES) {
 				char trans[32];
 				(void) snprintf(trans, sizeof(trans),
-					"0 %d translate\n", Lines_per_page);
+					"0 %d translate\n",
+					eff_lines_per_page);
 				cwrite(fd, trans, strlen(trans));
 				cwrite(fd, "-90 rotate\n", 11);
 			}

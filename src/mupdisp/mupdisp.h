@@ -1,5 +1,5 @@
 /*
- Copyright (c) 1995-2023  by Arkkra Enterprises.
+ Copyright (c) 1995-2024  by Arkkra Enterprises.
  All rights reserved.
 
  Redistribution and use in source and binary forms,
@@ -115,11 +115,11 @@
 #define NO      0
 
 /* define screen and page dimensions */
-/* we only handle the standard sizes that are less than 640 pixels wide.
- * This includes letter, note, legal, a3, a4, a5, a6, flsa, flse,
- * and halfletter  */
-#define MAX_BYTES_PER_LINE	77	/* 612/8 rounded up */
-#define MAX_LINES_PER_PAGE	1008	/* to handle legal size */
+/* Supported page sizes are
+ * letter, note, legal, a3, a4, a5, a6, flsa, flse, and halfletter,
+ * portrait or landscape  */
+#define MAX_BYTES_PER_LINE	149	/* 1190/8 rounded up for a3 landscape */
+#define MAX_LINES_PER_PAGE	1190	/* to handle a3 size */
 
 #define BITS_PER_LINE   Bits_per_line    /* horizontal pixels */
 #define BYTES_PER_LINE  Bytes_per_line   /* Bits_per_line / 8 rounded up */
@@ -145,6 +145,7 @@ struct CONFIG {
 	FUNC    error;          /* call this on bad user input */
 	FUNC    bitmap;         /* call this to display a bitmap */
 	int     vlines;         /* number of lines vertically on screen */
+	int	max_width;	/* if  > 320, limit to no more than this many pixels wide */
 	float   adjust;         /* aspect ratio adjustment */
 };
 
@@ -196,6 +197,7 @@ extern void user_interf P((void));
 extern int scroll P((int line, int distance));
 extern void generalcleanup P((int status));
 extern int create_tmpfile P((char *tmpfname));
+extern void set_gs_params P((void));
 extern int gen1file P((int fullpgmode));
 extern void get_paper_size P((int x, int y));
 extern void landscape P((void));

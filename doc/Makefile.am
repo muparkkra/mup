@@ -4,6 +4,7 @@ uguide_files = \
 	uguide/adjust.html \
 	uguide/altinp.html \
 	uguide/autocue.html \
+	uguide/auxinfo.html \
 	uguide/bars.html \
 	uguide/basics.html \
 	uguide/brackmac.html \
@@ -72,6 +73,15 @@ uguide_files = \
 	uguide/mugex122.gif \
 	uguide/mugex123.gif \
 	uguide/mugex124.gif \
+	uguide/mugex125.gif \
+	uguide/mugex126.gif \
+	uguide/mugex127.gif \
+	uguide/mugex128.gif \
+	uguide/mugex129.gif \
+	uguide/mugex130.gif \
+	uguide/mugex131.gif \
+	uguide/mugex132.gif \
+	uguide/mugex133.gif \
 	uguide/mugex12.gif \
 	uguide/mugex13.gif \
 	uguide/mugex14.gif \
@@ -206,7 +216,8 @@ uguide_files = \
 	uguide/tuplets.html \
 	uguide/udefsym.html \
 	uguide/utilpgms.html \
-	uguide/verses.html
+	uguide/verses.html \
+	uguide/withmac.html
 
 ps_files = quickref.ps uguide.ps
 EXTRA_DIST = uguide.t quickref.t charlist $(uguide_files) $(ps_files)
