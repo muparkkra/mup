@@ -22,6 +22,9 @@ jobs:
       - name: brew install ghostscript
         run: brew install ghostscript
 
+      - name: brew install groff
+        run: brew install groff
+
       - name: run autoconf
         run: autoreconf --install
 
