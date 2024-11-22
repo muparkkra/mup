@@ -272,4 +272,38 @@ bar
 lyrics 1: 2s;2; "last_{1m}";
 bar
 
+newscore
 
+1: c;d;e;f;
+bar
+
+1: g;a;b;c+;
+lyrics 1: "forced ov-er feed_{1m+3}";
+bar
+
+newscore
+
+1: 1c+;
+bar
+
+1: c;d;e;f;
+lyrics 1: "forced ov-er feed";
+bar
+
+1: g;a;b;c+;
+lyrics 1: "mul-ti-ple bars_{3m+2}";
+bar
+
+newscore
+
+1: 1c+;
+bar
+
+1: 1g;
+bar
+
+1: 1e;
+bar
+
+1: 1c;
+endbar

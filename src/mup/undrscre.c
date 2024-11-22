@@ -53,6 +53,9 @@ static double end_underscore P((struct MAINLL *mll_p, struct GRPSYL *syl_p,
 static double force_end P((struct MAINLL *mll_p, int staffno,
 		struct GRPSYL *syl_p, int verse, int place, char *spec,
 		int *carryover_p, int really_print));
+static void add_forced_carryover P((struct MAINLL *mll_p, int staffno,
+		int place, int verse, struct GRPSYL *syl_p,
+		char *spec, int meas));
 static double endx P((struct GRPSYL *last_grp_p, double end));
 static int has_above_lyr P((struct MAINLL *mll_p, RATIONAL begin_time,
 		struct GRPSYL *group_p, int verse));
@@ -724,7 +727,7 @@ int really_print;
 
 /* If the user specified a {Mm+N} after an extender, we do whatever they say,
  * rather than deducing where to end the extender.
- * This function handles that case.
+ * This function handles that case. It returns where to end the extender.
  */
 
 static double
@@ -774,24 +777,20 @@ int really_print;	/* NO during placement, YES during print */
 				break;
 			}
 			else if (mll_p->str == S_FEED) {
-				int font;
-				int size;
-				char syl[8];
-
-				/* insert carryover on next score */
-				end_fontsize(syl_p->syl, &font, &size);
-				syl[0] = *(spec-2);
-				syl[1] = STR_UNDER_END;
-				syl[2] = (unsigned char) (meas + UNDER_OFFSET);
-				syl[3] = spec[1];
-				syl[4] = spec[2];
-				syl[5] = '\0';
-				insert_carryover_syllable(mll_p,
-					staffno, place, verse,
-					syl, font, size);
+				/* Insert carryover on next score.
+				 * This handles the case of the feed being
+				 * in the middle of a set of measures to be
+				 * spanned. There is similar code later
+				 * in this function to handle when the
+				 * feed coincides with the last bar the
+				 * forced extender crosses. */
+				if (really_print == NO) {
+					add_forced_carryover(mll_p, staffno,
+						place, verse, syl_p, spec, meas);
+				}
 				*carryover_p = YES;
-				/* end on this score just before bar line */
 				restoressvstate();
+				/* end on this score just before bar line */
 				return(bar_mll_p->u.bar_p->c[AW] - STEPSIZE);
 			}
 		}
@@ -814,9 +813,27 @@ int really_print;	/* NO during placement, YES during print */
 			chhead_p = mll_p->u.chhead_p;
 			break;
 		}
+		else if (mll_p->str == S_FEED) {
+			/* Handle the case of a feed at the same bar line
+			 * as the last bar of the forced extender. */
+			if (really_print == NO) {
+				add_forced_carryover(mll_p, staffno, place,
+					verse, syl_p, spec, meas);
+			}
+			*carryover_p = YES;
+
+			/* end on this score just before bar line */
+			restoressvstate();
+			return(bar_mll_p->u.bar_p->c[AW] - STEPSIZE);
+		}
 	}
 	if (chhead_p == 0) {
-		pfatal("could not find chhead in force_end()");
+		if (really_print == NO) {
+			l_warning(syl_p->inputfile, syl_p->inputlineno,
+			 	"forced lyric end extended beyond end of song");
+		}
+		restoressvstate();
+		return(bar_mll_p->u.bar_p->c[AW] - STEPSIZE);
 	}
 
 	/* Get the location that corresponds to the count into the measure */
@@ -835,6 +852,37 @@ int really_print;	/* NO during placement, YES during print */
 		}
 	}
 	return(end);
+}
+
+
+/* Add a carryover extender where end location is forced */
+
+static void
+add_forced_carryover(mll_p, staffno, place, verse, syl_p, spec, meas)
+
+struct MAINLL *mll_p;
+int staffno;
+int place;
+int verse;
+struct GRPSYL *syl_p;
+char *spec;
+int meas;
+
+{
+	int font;
+	int size;
+	char syl[8];
+
+	/* insert carryover on next score */
+	end_fontsize(syl_p->syl, &font, &size);
+	syl[0] = *(spec-2);
+	syl[1] = STR_UNDER_END;
+	syl[2] = (unsigned char) (meas + UNDER_OFFSET);
+	syl[3] = spec[1];
+	syl[4] = spec[2];
+	syl[5] = '\0';
+	insert_carryover_syllable(mll_p, staffno, place, verse,
+					syl, font, size);
 }
 
 
