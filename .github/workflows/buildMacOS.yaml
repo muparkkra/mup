@@ -3,7 +3,7 @@ run-name: do MacOS build of Mup
 on: workflow_dispatch
 jobs:
   build-mup:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: checkout the Mup code
         uses: actions/checkout@v3
