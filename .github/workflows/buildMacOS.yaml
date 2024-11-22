@@ -53,7 +53,8 @@ jobs:
         run: mv packaging/mup-osx/MupMate*.dmg macOS-product/
 
       - name: upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: MacOS-dmg
           path: macOS-product
+          overwrite: true
