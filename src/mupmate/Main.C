@@ -69,6 +69,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_ask.H>
 #include <FL/Fl_Tooltip.H>
+#include <FL/Fl_Shared_Image.H>
 
 #include "globals.H"
 #include "Main.H"
